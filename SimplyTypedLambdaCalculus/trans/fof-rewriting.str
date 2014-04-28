@@ -28,7 +28,7 @@ signature
 
 rules
 	R : Module(_, Rules(R), Some(DerivedRules(DR))) -> File(R, <map(T)> DR)
-	R : Module(_, Rules(R), Some(DerivedRules(DR))) -> File(R, [])
+	R : Module(_, Rules(R), None()) -> File(R, [])
 	
 	R : CtxEmpty() -> Pred("empty", [])
 	R : CtxBindVar(ID, TYPE, CTX) -> Pred("bind", [ID, TYPE, CTX])
