@@ -16,6 +16,7 @@
 	TyFuture --  "future(" _1 ")",
 	TyFunction -- "arrow(" _1 "," _2 ")",
 	PremiseCons -- "(" _1 " & " _2 ")",
+	Neq -- "(" _1 " != " _2 ")",
 	
 	MetaVariable -- _1,
 	Meta -- _1,
