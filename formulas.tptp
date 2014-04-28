@@ -77,3 +77,10 @@ fof('identity function',
            abs(x, nat, x), 
            arrow(nat, nat)
     )).
+
+fof('application test',
+    conjecture,
+    tcheck(empty,
+           app(app(abs(x, nat, abs(y, nat, x)), zero), zero),
+           nat
+    )).
