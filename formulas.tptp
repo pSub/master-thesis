@@ -1,5 +1,5 @@
--- Type rules for the simply typed lambda calculus (+Nat) formalized
--- as first-order formulas
+%-- Type rules for the simply typed lambda calculus (+Nat) formalized
+%-- as first-order formulas
 
 fof('zero nat_literal',
     axiom,
@@ -56,7 +56,7 @@ fof('application',
     )).
 
 
--- Some tests
+%-- Some tests
     
 fof('x0+3 has type nat',
     conjecture,
