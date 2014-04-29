@@ -2,6 +2,26 @@
 
 * "A Generator for Type Checkers" H. Gast
 * "Formally Specified Type Checkers for Domain Specific Languages: Experience Report" van den Brand, van der Meer, Serebrenik, Hofkamp
+  - Designed for the quick prototyping of the specification language
+    Chi 2.0, a language for describing concurrent systems.
+  - Well integrated in the Chi tool-chain.
+  - Typing rules are described in the MSDF format that describes
+    typing rules in transition like format. One advantage is that
+    cntext information are only mentioned when needed. This is great
+    for extensibility and modularity.
+  - MSDF also features module structures and imports. Judgments and
+    related stuff are defined implicitly using the transition system.
+  - MSDF is translated to Pyke. Originally Pyton was chosen as target,
+    but Python does not feature backtracking capabilties by default
+    (for cases in which more than one rule is applicable). Pyke has
+    this feature and is inspired by Prolog (it uses the concet of
+    backwardchaining rules).
+  - The transformation form MSDF to Pyke is done with ASD+SDF.
+  - The authors noticed that the integration in the Chi tool-chain
+    required specific knowlege about the AST/DAST, thus protability to
+    other languages is difficult.
+  - The authors also have an interesting perspective on type systems
+    as state machines.
 * "Semantics of Programming Languages: A Tool-oriented Approach" Heering, Jan and Klint, Paul
 * "Programmable Type Systems for Domain Specific Languages" Peter Thiemann
 * "Should Your Specification Language Be Typed?" Lamport, Paulson
