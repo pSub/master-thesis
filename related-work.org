@@ -23,5 +23,31 @@
   - The authors also have an interesting perspective on type systems
     as state machines.
 * "Semantics of Programming Languages: A Tool-oriented Approach" Heering, Jan and Klint, Paul
+  - Observation: The fields semantics, tools and languages drifting
+    further apart.
+  - Reason: Semantics are rarely incooperated into pratical systems
+    and hence do not influence tools and (partly) languages.
+  - Solution: Generate as many language-based tools as possible form a
+    semantic definition. The authors provide a hughe list of tools
+    that could possibly be generated. Currently only generators for
+    parsers and lexers are widely used. The authors have the vision of
+    a development workbench for languages that can be used to generate
+    most tools from a semantic definition.
+  - Existing generation tools that can generate type checkers are
+    + Synthesizer Generator
+    + PSG
+    + ASF+SDF
+    + Centaur
+    + Gem-Mex
+  - Other tools that could potentially generate type checkers
+    + SIS
+    + DSP
+    + GAG
+    + SPS
+    + MESS
+    + Actress
+    + Pregmatic
+    + LDL
+    + Eli
 * "Programmable Type Systems for Domain Specific Languages" Peter Thiemann
 * "Should Your Specification Language Be Typed?" Lamport, Paulson
