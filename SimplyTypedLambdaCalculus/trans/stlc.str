@@ -6,12 +6,22 @@ imports
   libstratego-aterm
   include/STLC
   generate
-
-rules // Analysis
+   
+  lib/runtime/analysis/-
+  lib/editor-common.generated
   
+rules // Analysis
+  editor-analyze = analysis-default-editor
+  
+  analysis-single-default-interface = 
+	analysis-single-default(id, id, id|<language>)
+  analysis-multiple-default-interface = 
+	analysis-multiple-default(parse-file <+ !(), id, id, id|<language>, <project-path>)
+	
+  editor-save = analysis-save-default(|<language>)
 
 rules // Debugging
-  
+	
   // Prints the abstract syntax ATerm of a selection.
   debug-show-aterm:
     (selected, position, ast, path, project-path) -> (filename, result)
@@ -19,3 +29,10 @@ rules // Debugging
       filename := <guarantee-extension(|"aterm")> path;
       result   := selected
       
+rules // Editor services
+  
+  // Resolves a reference when the user control-clicks or presses F3 in the editor.
+  editor-resolve:
+    (node, position, ast, path, project-path) -> definition
+    where
+      definition := <analysis-resolve(|<language>, project-path, path)> node

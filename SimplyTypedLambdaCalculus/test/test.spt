@@ -1,0 +1,14 @@
+module test-
+
+language STLC
+
+setup Common [[
+  module test
+  rules
+]]
+
+test T-Var [[
+~X : ~T in ~C
+============== T-var
+~C |- ~X : ~T
+]] 0 errors

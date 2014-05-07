@@ -17,3 +17,5 @@ language General properties
   extensions    : stl
   table         : include/STLC.tbl
   start symbols : Module
+  
+  observer		: editor-analyze(multifile)
