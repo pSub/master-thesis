@@ -2,8 +2,6 @@ module rules
 
 rules 
 
-
-
 ~X : ~T in ~C
 ============== T-var
 ~C |- ~X : ~T
