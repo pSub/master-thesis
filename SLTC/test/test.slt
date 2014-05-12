@@ -1,0 +1,12 @@
+module test
+
+language PCF
+
+meta-variables	Var "~" { Var Type }
+				Ctx "$" { Context }
+
+definitions
+
+judgments " " Context{I} "|-" Expr{O} ":" Type{O}
+
+rules

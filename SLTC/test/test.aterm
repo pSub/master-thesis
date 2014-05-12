@@ -1,0 +1,27 @@
+Module(
+  ModuleDec("test")
+, Language("PCF")
+, Judgments(
+    MetaVariableList(
+      [ MetaVariableDefinition("Var", MetaVariablePrefix("~"), Scope(["Var", "Type"]))
+      , MetaVariableDefinition("Ctx", MetaVariablePrefix("$"), Scope(["Context"]))
+      ]
+    )
+  )
+, Relations()
+, Judgments(
+    JudgmentList(
+      [ Judgment(
+          "\" \""
+        , Hole("Context", "I")
+        , Judgment(
+            "\"|-\""
+          , Hole("Expr", "O")
+          , Judgment("\":\"", Hole("Type", "O"))
+          )
+        )
+      ]
+    )
+  )
+, Rules([])
+)

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.imp.runtime.languageDescription">
+      <language
+            extensions="slt"
+            description="SLTC"
+            language="SLTC"
+            derivedFrom="DynamicRoot"
+            validator="SLTC.SLTCValidator"
+            validatorClass="SLTC.SLTCValidator"
+      ></language>
+   </extension>
+   <extension
+         id="SLTC.parser"
+         name="SLTC Parser"
+         point="org.eclipse.imp.runtime.parser">
+      <parser
+            class="SLTC.SLTCParseController"
+            language="SLTC">
+      </parser>
+   </extension>    
+</plugin>

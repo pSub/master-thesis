@@ -1,0 +1,31 @@
+module SLTC.main
+
+imports
+  SLTC-Colorer
+  SLTC-Completions
+  SLTC-Folding
+  SLTC-Menus
+  SLTC-Refactorings
+  SLTC-References
+  SLTC-Syntax
+  SLTC-Views
+
+language General properties
+  
+  name:          SLTC
+  id:            SLTC
+  extends:       Root
+  
+  description:   "Spoofax-generated editor for the SLTC language"
+  url:           http://strategoxt.org
+  
+  extensions:    slt
+  table:         include/SLTC.tbl
+  start symbols: Module
+  
+  provider:      include/sltc.ctree
+  provider:      include/sltc-java.jar
+  
+  observer:      editor-analyze (multifile)
+  
+  on save:       editor-save

@@ -1,0 +1,3 @@
+module stc2sdf
+
+imports languages/sdf2/syntax/Sdf2

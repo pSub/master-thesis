@@ -1,0 +1,10 @@
+module editor/SLTC-Outliner
+
+imports
+  include/SLTC
+  lib/runtime/editor/outline-library
+  lib/runtime/editor/origins
+  editor/SLTC-Outliner.generated
+
+rules
+  
