@@ -34,12 +34,8 @@ exports
 
   context-free syntax
   	Name "{" Mode "}" -> Hole {cons("Hole")}
-  	Hole Judgment -> FixedJudgment {cons("Judgment")}
-  	Separator Hole -> Judgment {cons("Judgment")}
-  	Separator Hole Judgment -> Judgment {cons("Judgment")}
-  	Judgment Separator -> Judgment {cons("Judgment")}
-  	Judgment -> FixedJudgment
-  	{FixedJudgment "\n"}* -> JudgmentList {cons("JudgmentList")}
+  	Separator? {Hole Separator}* Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
+  	{Judgment "\n"}* -> JudgmentList {cons("JudgmentList")}
 
 %% Typing Rules
   lexical syntax
