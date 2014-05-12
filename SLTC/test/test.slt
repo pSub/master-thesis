@@ -7,6 +7,6 @@ meta-variables	Var "~" { Var Type }
 
 definitions
 
-judgments " " Context{I} "|-" Expr{O} ":" Type{O}
+judgments Context{I} "|-" Expr{O} ":" Type{O}
 
 rules
