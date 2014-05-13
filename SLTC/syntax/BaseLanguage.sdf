@@ -1,0 +1,53 @@
+module BaseLanguage[TypingJudgment] %%FIXME: Does it make sense to instantiate TypingJudgment with some generated SDF file
+imports Common
+
+exports
+  context-free syntax
+    "module" MID                            -> ModuleDec      {cons("ModuleDec")}
+    "language" ID							-> Language       {cons("Language")}
+    "meta-variables" MetaVariableList 		-> MetaVariables  {cons("Judgments")}
+    "definitions"           				-> Definitions    {cons("Relations")}
+    "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
+    "rules" TypingRule*                     -> Rules          {cons("Rules")}
+    
+    ModuleDec Language MetaVariables Definitions Judgments Rules -> Module {cons("Module")}
+
+%% Language
+%% TODO: Maybe we need to define some interface-like thing to access everything relevant
+
+%% Meta-Variables	
+  context-free syntax
+  	"{" ID+ "}"-> Scope {cons("Scope")}
+  	"\"" SpecialChars "\"" -> Prefix {cons("MetaVariablePrefix")}
+  	Name Prefix Scope -> MetaVariableDefinition {cons("MetaVariableDefinition")}
+  	MetaVariableDefinition* -> MetaVariableList {cons("MetaVariableList")}
+  	
+%% Definitions
+	
+%% Judgments
+
+  lexical syntax
+  	"\"" ~[\"a-zA-Z]* "\"" -> Separator
+  	"I" -> Mode
+  	"O" -> Mode
+
+  context-free syntax
+  	Name "{" Mode "}" -> Hole {cons("Hole")}
+  	Separator? {Hole Separator}* Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
+  	{Judgment "\n"}* -> JudgmentList {cons("JudgmentList")}
+
+%% Typing Rules
+  lexical syntax
+    "===" "="*     -> RuleSep 
+    
+  lexical restrictions
+    RuleSep -/- [\=]
+
+  context-free syntax
+    RuleSep Name                                         -> RuleSepName           {cons("RuleName"), "layout(1.first.line = 2.last.line)"}
+    TypingRulePremises RuleSepName TypingRuleConsequence -> TypingRule            {cons("TypingRule"), "layout(1.first.col == 2.first.col && 2.first.col == 3.first.col)"}
+    RuleSepName TypingRuleConsequence                    -> TypingRule            {cons("TypingRule"), "layout(1.first.col == 2.first.col)"}
+    TypingRulePremiseList                                -> TypingRulePremises    {cons("PremiseList")}
+    TypingJudgment                                       -> TypingRuleConsequence 
+    TypingJudgment                                       -> TypingRulePremiseList 
+    TypingJudgment TypingRulePremiseList                 -> TypingRulePremiseList {cons("PremiseCons"), "layout(1.first.col == 2.first.col)"}
