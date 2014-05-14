@@ -5,7 +5,7 @@ exports
   context-free syntax
     "module" MID                            -> ModuleDec      {cons("ModuleDec")}
     "language" ID							-> Language       {cons("Language")}
-    "meta-variables" MetaVariableList 		-> MetaVariables  {cons("Judgments")}
+    "meta-variables" MetaVariableList 		-> MetaVariables  {cons("MetaVariables")}
     "contexts" Contexts    				    -> Contexts       {cons("Contexts")}
     "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
