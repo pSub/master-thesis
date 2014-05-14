@@ -16,7 +16,7 @@ exports
 		"~" [a-zA-Z]+ -> Var {cons("Metavariable")}
 		"~" [a-zA-Z]+ -> Type {cons("Metavariable")}
 		"~" [a-zA-Z]+ -> Exp {cons("Metavariable")}
-		"~" [a-zA-Z]+ -> ID {cons("Metavariable")}
+		"%" [a-zA-Z]+ -> ID {cons("Metavariable")}
 		"$" [a-zA-Z]+ -> Context {cons("MetaCtx")}
 		
 	%% Judgments
