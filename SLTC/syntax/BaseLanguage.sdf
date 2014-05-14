@@ -6,11 +6,11 @@ exports
     "module" MID                            -> ModuleDec      {cons("ModuleDec")}
     "language" ID							-> Language       {cons("Language")}
     "meta-variables" MetaVariableList 		-> MetaVariables  {cons("Judgments")}
-    "definitions"           				-> Definitions    {cons("Relations")}
+    "contexts" Contexts    				    -> Contexts       {cons("Contexts")}
     "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
     
-    ModuleDec Language MetaVariables Definitions Judgments Rules -> Module {cons("Module")}
+    ModuleDec Language MetaVariables Contexts Judgments Rules -> Module {cons("Module")}
 
 %% Language
 %% TODO: Maybe we need to define some interface-like thing to access everything relevant
@@ -22,7 +22,10 @@ exports
   	Name Prefix Scope -> MetaVariableDefinition {cons("MetaVariableDefinition")}
   	MetaVariableDefinition* -> MetaVariableList {cons("MetaVariableList")}
   	
-%% Definitions
+%% Contexts
+  context-free syntax
+  	ID ":=" {ID "x"}+ -> ContextDefinition {cons("ContextDefinition")}
+  	ContextDefinition* -> Contexts {cons("Contexts")}
 	
 %% Judgments
 

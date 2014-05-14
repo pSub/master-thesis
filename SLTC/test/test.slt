@@ -2,10 +2,11 @@ module test
 
 language PCF
 
-meta-variables	Var "~" { Var Type Exp ID }
+meta-variables	Var "~" { Var Type Exp }
 				Ctx "$" { Context }
+				Id  "%" { ID }
 
-definitions
+contexts Context := Var x Type
 
 judgments Context{I} "|-" Exp{O} ":" Type{O}
 
@@ -16,7 +17,7 @@ $C |- ~X : ~T
  
 (~X : ~S ; $C) |- ~E : ~T
 ===================================== T-abs
-$C |- (fun ~X : ~S (~E)) : ~S -> ~T
+$C |- (fun %X : ~S (~E)) : ~S -> ~T
  
 $C |- ~E : ~S -> ~T
 $C |- ~F : ~S
