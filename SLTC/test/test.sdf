@@ -1,0 +1,18 @@
+module Generated
+imports PCF
+
+exports
+  context-free syntax
+    "~" [a-zA-Z]+ -> Var     {cons("Metavariable")}
+    "~" [a-zA-Z]+ -> Type    {cons("Metavariable")}
+    "~" [a-zA-Z]+ -> Exp     {cons("Metavariable")}
+    "$" [a-zA-Z]+ -> Context {cons("Metavariable")}
+    "%" [a-zA-Z]+ -> ID      {cons("Metavariable")}
+
+  context-free syntax
+    "()"                     -> Context {cons("Context")}
+    Var ":" Type ";" Context -> Context {cons("Context")}
+    "(" Context ")"          -> Context {cons("Context")}
+
+  context-free syntax
+    Context "|-" Exp ":" Type -> TypingJudgment {cons("Judgment")}
