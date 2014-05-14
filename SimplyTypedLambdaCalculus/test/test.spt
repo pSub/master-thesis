@@ -10,5 +10,5 @@ setup Common [[
 test T-Var [[
 ~X : ~T in ~C
 ============== T-var
-~C |- ~X : ~T
-]] 0 errors
+~C, ~B |- ~X : ~T
+]] parse fails
