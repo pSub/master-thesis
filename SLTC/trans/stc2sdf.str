@@ -1,3 +1,42 @@
 module stc2sdf
 
-imports languages/sdf2/syntax/Sdf2
+imports libstratego-lib
+imports include/SLTC	
+imports org/sugarj/languages/Sdf2
+
+rules
+	R : Module(_, Language(t), MetaVariables(MetaVariableList(Meta)), Contexts(Contexts(Ctx)), Judgments(JudgmentList(Judg)), _)
+		-> 'module("Generated", imports(t), 
+			exports(
+				conc-grammars(context-free-syntax(Meta),
+				conc-grammars(context-free-syntax(Ctx),
+				context-free-syntax(Judg)))
+			)
+		)
+		
+	R : ContextDefinition(Name, X) -> [ 
+		prod("\"()\"", Name, attr),
+		prod(<concat-strings> [elem, " \";\" ", Name], Name,  attr),
+		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, attr) //FIXME: we need a bracket attribute here
+	]
+		where
+			attr := <concat-strings> ["{cons(\"", Name , "\")}"];
+			elem := <concat-strings><intersperse(|" \":\" ")> (X)
+			
+	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
+		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, attr)\)> ids
+		where
+			attr := "{cons(\"Metavariable\")}"
+				
+	R : Judgment(None(), positions, None()) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", "{cons(\"Judgment\")}")
+		where
+			names := <map(proj <+ id)> positions
+			
+	proj : Hole(name, _) -> name
+				
+    intersperse (|s) : [] -> []
+    intersperse (|s) : [x] -> [x]
+    intersperse (|s) : [x|y] -> [x,s| <intersperse(|s)> y]
+	
+strategies
+	toSdf = innermost(R)

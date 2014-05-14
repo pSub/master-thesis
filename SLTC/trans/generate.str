@@ -1,8 +1,23 @@
 module generate
 
 imports
-	
+	libstratego-lib
+    libstratego-gpp
+    libstratego-aterm
 	include/SLTC
+	trans/stc2sdf
 
-rules 
+rules
+	
 
+  generate-sdf :
+  	   (selected, position, ast, path, project-path) -> (filename, result)
+  with
+    filename := <guarantee-extension(|"sdf")> path;
+    //result := <toSdf> selected
+    aterm := <toSdf> selected;
+    result := <pp-sdf> aterm
+    
+  pp-sdf =
+    ast2abox(|[<parse-pptable-file> "org/sugarj/languages/Sdf2.pp"]);
+    box2text-string(|100)
