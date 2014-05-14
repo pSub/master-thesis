@@ -15,25 +15,24 @@ rules
 		)
 		
 	R : ContextDefinition(Name, X) -> [ 
-		prod("\"()\"", Name, attr),
-		prod(<concat-strings> [elem, " \";\" ", Name], Name,  attr),
-		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, attr) //FIXME: we need a bracket attribute here
+		prod("\"()\"", Name, <cons> Name),
+		prod(<concat-strings> [elem, " \";\" ", Name], Name,  <cons> Name),
+		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <attr> "bracket")
 	]
 		where
-			attr := <concat-strings> ["{cons(\"", Name , "\")}"];
 			elem := <concat-strings><intersperse(|" \":\" ")> (X)
 			
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
-		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, attr)\)> ids
-		where
-			attr := "{cons(\"Metavariable\")}"
+		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, <cons> "Metavariable")\)> ids
 				
-	R : Judgment(None(), positions, None()) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", attr)
+	R : Judgment(None(), positions, None()) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", <cons> "Judgment")
 		where
-			names := <map(proj <+ id)> positions;
-			attr := "{cons(\"Judgment\")}"
+			names := <map(proj <+ id)> positions
 			
 	proj : Hole(name, _) -> name
+
+	cons : name -> <attr><concat-strings> ["cons(\"", name , "\")"]
+	attr : str  -> <concat-strings> ["{", str, "}"]
 				
     intersperse (|s) : [] -> []
     intersperse (|s) : [x] -> [x]
