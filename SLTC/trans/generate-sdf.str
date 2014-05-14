@@ -1,4 +1,4 @@
-module stc2sdf
+module generate-sdf
 
 imports libstratego-lib
 imports include/SLTC	
@@ -28,9 +28,10 @@ rules
 		where
 			attr := "{cons(\"Metavariable\")}"
 				
-	R : Judgment(None(), positions, None()) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", "{cons(\"Judgment\")}")
+	R : Judgment(None(), positions, None()) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", attr)
 		where
-			names := <map(proj <+ id)> positions
+			names := <map(proj <+ id)> positions;
+			attr := "{cons(\"Judgment\")}"
 			
 	proj : Hole(name, _) -> name
 				
