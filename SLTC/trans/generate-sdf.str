@@ -23,7 +23,7 @@ rules
 			elem := <concat-strings><intersperse(|" \":\" ")> (X)
 			
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
-		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, <cons> "Metavariable")\)> ids
+		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, <cons> "MetaVariable")\)> ids
 				
 	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", <cons> "Judgment")
 			where
