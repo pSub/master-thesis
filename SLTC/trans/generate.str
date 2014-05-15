@@ -13,7 +13,7 @@ rules
   generate-sdf :
   	   (selected, position, ast, path, project-path) -> (filename, result)
   with
-    filename := <guarantee-extension(|"sdf")> path;
+    filename := "syntax/Generated.sdf";
     //result := <toSdf> selected
     aterm := <toSdf> selected;
     result := <pp-sdf> aterm
