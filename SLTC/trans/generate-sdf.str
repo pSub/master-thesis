@@ -25,10 +25,11 @@ rules
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, <cons> "Metavariable")\)> ids
 				
-	R : Judgment(None(), positions, None()) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", <cons> "Judgment")
-		where
-			names := <map(proj <+ id)> positions
-			
+	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", <cons> "Judgment")
+			where
+				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
+				names := <map(proj <+ id)> merged // <concat>[<option-to-string> s1, pos, <option-to-string> s2]
+
 	proj : Hole(name, _) -> name
 
 	cons : name -> <attr><concat-strings> ["cons(\"", name , "\")"]
@@ -37,6 +38,9 @@ rules
     intersperse (|s) : [] -> []
     intersperse (|s) : [x] -> [x]
     intersperse (|s) : [x|y] -> [x,s| <intersperse(|s)> y]
+
+    option-to-string : Some(s) -> s
+    option-to-string : None()  -> ""
 	
 strategies
 	toSdf = innermost(R)
