@@ -24,7 +24,7 @@ exports
 %% Meta-Variables	
   context-free syntax
   	"{" ID+ "}"-> Scope {cons("Scope")}
-  	"\"" SpecialChars "\"" -> Prefix {cons("MetaVariablePrefix")}
+	"\"" PrefixChars "\"" -> Prefix {cons("MetaVariablePrefix")}
   	Name Prefix Scope -> MetaVariableDefinition {cons("MetaVariableDefinition")}
   	MetaVariableDefinition* -> MetaVariableList {cons("MetaVariableList")}
   	
