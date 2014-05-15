@@ -6,7 +6,7 @@ meta-variables	Var "~" { Var Type Exp }
 				Ctx "$" { Context }
 				Id  "%" { ID }
 
-contexts Context := Var x Type
+contexts Context := Var{I} x Type{O}
 
 judgments Context{I} "|-" Exp{O} ":" Type{O}
 

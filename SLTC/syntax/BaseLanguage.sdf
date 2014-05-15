@@ -15,6 +15,14 @@ exports
 %% Language
 %% TODO: Maybe we need to define some interface-like thing to access everything relevant
 
+  lexical syntax
+	"\"" ~[\"a-zA-Z]* "\"" -> Separator
+	"I" -> Mode
+	"O" -> Mode
+
+  context-free syntax
+	Name "{" Mode "}" -> Hole {cons("Hole")}
+
 %% Meta-Variables	
   context-free syntax
   	"{" ID+ "}"-> Scope {cons("Scope")}
@@ -24,18 +32,11 @@ exports
   	
 %% Contexts
   context-free syntax
-  	ID ":=" {ID "x"}+ -> ContextDefinition {cons("ContextDefinition")}
+	ID ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
   	ContextDefinition* -> Contexts {cons("Contexts")}
 	
 %% Judgments
-
-  lexical syntax
-  	"\"" ~[\"a-zA-Z]* "\"" -> Separator
-  	"I" -> Mode
-  	"O" -> Mode
-
   context-free syntax
-  	Name "{" Mode "}" -> Hole {cons("Hole")}
   	Separator? {Hole Separator}* Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
   	{Judgment "\n"}* -> JudgmentList {cons("JudgmentList")}
 

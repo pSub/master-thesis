@@ -22,17 +22,17 @@ rules
 
 	]
 		where
-			elem := <concat-strings><intersperse(|" \":\" ")> (X)
+			elem := <concat-strings><intersperse(|" \":\" ")><names> X
 			
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" [a-zA-Z]+"], scope, <cons> "MetaVariable")\)> ids
 				
-	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", <cons> "Judgment")
+	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> <names> merged, "TypingJudgment", <cons> "Judgment")
 			where
-				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
-				names := <map(proj <+ id)> merged
+				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
 
 	proj : Hole(name, _) -> name
+	names : list -> <map(proj <+ id)> list
 
 	cons : name -> <attr><concat-strings> ["cons(\"", name , "\")"]
 	attr : str  -> <concat-strings> ["{", str, "}"]
