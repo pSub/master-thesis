@@ -12,6 +12,7 @@ judgments Context{I} "|-" Exp{O} ":" Type{O}
 
 rules
 
+~X : ~T in $C
 =============== T-var
 $C |- ~X : ~T
  
