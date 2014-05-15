@@ -14,8 +14,8 @@ rules
 			)
 		)
 		
-	R : ContextDefinition(Name, X) -> [ 
-		prod("\"()\"", Name, <cons> Name),
+	R : ContextDefinition(Name, X) -> [
+		prod("\"()\"", Name, <cons><concat-strings> ["Empty-", Name] ),
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,  <cons> Name),
 		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <attr> "bracket")
 	]
