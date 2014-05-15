@@ -28,7 +28,7 @@ rules
 	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> names, "TypingJudgment", <cons> "Judgment")
 			where
 				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
-				names := <map(proj <+ id)> merged // <concat>[<option-to-string> s1, pos, <option-to-string> s2]
+				names := <map(proj <+ id)> merged
 
 	proj : Hole(name, _) -> name
 
