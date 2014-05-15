@@ -12,8 +12,6 @@ exports
     
     ModuleDec Language MetaVariables Contexts Judgments Rules -> Module {cons("Module")}
 
-%% Language
-%% TODO: Maybe we need to define some interface-like thing to access everything relevant
 
   lexical syntax
 	"\"" ~[\"a-zA-Z]* "\"" -> Separator
