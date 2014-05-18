@@ -3,17 +3,16 @@ imports PCF
 
 exports
   context-free syntax
-    "~" [a-zA-Z]+ -> Var     {cons("MetaVariable")}
     "~" [a-zA-Z]+ -> Type    {cons("MetaVariable")}
     "~" [a-zA-Z]+ -> Exp     {cons("MetaVariable")}
     "$" [a-zA-Z]+ -> Context {cons("MetaVariable")}
     "%" [a-zA-Z]+ -> ID      {cons("MetaVariable")}
 
   context-free syntax
-    "()"                      -> Context        {cons("Empty-Context")}
-    Var ":" Type ";" Context  -> Context        {cons("Context")}
-    "(" Context ")"           -> Context        {bracket}
-    Var ":" Type "in" Context -> TypingJudgment {cons("Check-Context")}
+    "()"                     -> Context        {cons("Empty-Context")}
+    ID ":" Type ";" Context  -> Context        {cons("Context")}
+    "(" Context ")"          -> Context        {bracket}
+    ID ":" Type "in" Context -> TypingJudgment {cons("Check-Context")}
 
   context-free syntax
      Context "|-" Exp ":" Type  -> TypingJudgment {cons("Judgment")}
