@@ -10,6 +10,7 @@ exports
     "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
     
+    %%TODO: Make 'language' optional in preparation for imports
     ModuleDec Language MetaVariables Contexts Judgments Rules -> Module {cons("Module")}
 
 
