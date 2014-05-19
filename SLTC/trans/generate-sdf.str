@@ -1,7 +1,7 @@
 module generate-sdf
 
 imports libstratego-lib
-imports include/SLTC	
+imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
 rules
@@ -19,7 +19,6 @@ rules
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,  <cons> Name),
 		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <attr> "bracket"),
 		prod(<concat-strings> [elem, " \"in\" ", Name], "TypingJudgment" ,<cons><concat-strings> ["Check-", Name])
-
 	]
 		where
 			elem := <concat-strings><intersperse(|" \":\" ")><names> X
