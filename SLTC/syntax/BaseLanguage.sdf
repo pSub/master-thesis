@@ -36,7 +36,7 @@ exports
 	
 %% Judgments
   context-free syntax
-  	Separator? {Hole Separator}* Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
+	Separator? {Hole Separator}+ Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
   	{Judgment "\n"}* -> JudgmentList {cons("JudgmentList")}
 
 %% Typing Rules
