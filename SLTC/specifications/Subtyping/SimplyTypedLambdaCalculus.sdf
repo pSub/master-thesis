@@ -1,0 +1,19 @@
+module SimplyTypedLambdaCalculus
+
+imports Common
+
+exports
+	
+  context-free start-symbols
+    Exp
+    
+  lexical syntax
+  	[a-z]+ -> ID
+    
+  context-free syntax
+	ID -> Exp {cons("Var")}
+  	"\\" ID ":" Type "." Exp -> Exp {cons("Abs")}
+  	Exp Exp -> Exp {cons("App")}
+  	
+  context-free syntax
+  	Type "->" Type -> Type {cons("Arrow")}

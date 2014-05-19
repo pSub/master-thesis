@@ -1,0 +1,38 @@
+module Typesystem
+
+language SimplyTypedLambdaCalculus
+
+meta-variables 	Term "~" { Type Exp }
+				Ctx "$" { Context }
+				Id "%" { ID }
+
+contexts Context := ID{I} x Type{O}
+
+judgments
+Context{I} "|-" Exp{I} ":" Type{O} | Type{I} "<:" Type{I}
+
+rules
+
+%x : ~T in $C
+==============
+$C |- ~x : ~T
+
+(%x : ~T ; $C) |- ~t : ~T
+=================================
+$C |- \ %x : ~T . ~t : ~T -> ~T
+
+$C |- ~t1 : ~T11 -> ~T12
+$C |- ~t2 : ~T2
+~T2 <: ~T11 
+=========================
+$C |- ~t1 ~t2 : ~S
+
+========
+~S <: ~S 
+
+~S <: ~T
+~T <: ~U
+========
+~S <: ~U
+
+
