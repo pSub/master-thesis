@@ -2,9 +2,10 @@ definition
 module org/sugarj/languages/Plain
 exports
   context-free syntax
-    PlainDecHead PlainBody   -> ToplevelDeclaration              {cons("PlainDec")}
-    AnnoOrSugarMod* "plain" JavaId PlainExtension? -> PlainDecHead {cons("PlainDecHead")}
-    "." JavaID -> PlainExtension
+%% FIXME: Will I ever need this? If so, how I make this compile?
+%%    PlainDecHead PlainBody   -> ToplevelDeclaration              {cons("PlainDec")}
+%%    AnnoOrSugarMod* "plain" JavaId PlainExtension? -> PlainDecHead {cons("PlainDecHead")}
+%%    "." JavaID -> PlainExtension
   
   syntax
     "{" <PlainContent-LEX> "}"              -> <PlainBody-CF>    {cons("PlainBody")}
