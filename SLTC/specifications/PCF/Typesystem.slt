@@ -5,6 +5,7 @@ language PCF
 meta-variables	Term "~" { Type Exp }
 				Ctx "$" { Context }
 				Id "%" { ID }
+				Num "&" { INT }
 
 contexts Context := ID{I} x Type{O}
 
@@ -24,3 +25,42 @@ $C |- ~E : ~S -> ~T
 $C |- ~F : ~S
 ==================== T-app
 $C |- ~E ~F : ~T
+
+
+(%x : ~U ; $C) |- ~e : ~T -> ~T 
+==============================
+$C |- fix %x : ~U ( ~e ) : ~T
+
+$C |- ~e1 : ~T
+(%x : ~T ; $C) |- ~e2 : ~U 
+===============================
+$C |- let %x : ~T = ~e1 in ~e2 : ~U
+
+==============
+$C |- &i : int
+
+$C |- ~e1 : int
+$C |- ~e2 : ~T
+$C |- ~e3 : ~T
+====================================
+$C |- ifz ~e1 then ~e2 else ~e3 : ~T
+
+$C |- ~e1 : int
+$C |- ~e2 : int
+====================
+$C |- ~e1 + ~e2 : int
+
+$C |- ~e1 : int
+$C |- ~e2 : int
+====================
+$C |- ~e1 - ~e2 : int
+
+$C |- ~e1 : int
+$C |- ~e2 : int
+====================
+$C |- ~e1 * ~e2 : int
+
+$C |- ~e1 : int
+$C |- ~e2 : int
+====================
+$C |- ~e1 / ~e2 : int
