@@ -9,9 +9,10 @@ exports
     "contexts" Contexts    				    -> Contexts       {cons("Contexts")}
     "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
+    "conjectures" TypingJudgment*           -> Conjectures    {cons("Conjectures")}
     
     %%TODO: Make 'language' optional in preparation for imports
-    ModuleDec Language MetaVariables Contexts Judgments Rules -> Module {cons("Module")}
+    ModuleDec Language MetaVariables Contexts Judgments Rules Conjectures? -> Module {cons("Module")}
 
 
   lexical syntax

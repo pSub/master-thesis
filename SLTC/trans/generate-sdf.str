@@ -5,7 +5,7 @@ imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
 rules
-	R : Module(_, Language(t), MetaVariables(MetaVariableList(Meta)), Contexts(Contexts(Ctx)), Judgments(JudgmentList(Judg)), _)
+	R : Module(_, Language(t), MetaVariables(MetaVariableList(Meta)), Contexts(Contexts(Ctx)), Judgments(JudgmentList(Judg)), _, _)
 		-> 'module("Generated", imports(t), 
 			exports(
 				conc-grammars(context-free-syntax(Meta),
