@@ -1,0 +1,46 @@
+module Typesystem
+
+language SimplyTypedLambdaCalculus
+
+meta-variables 	Term "~" { Type Exp }
+				Ctx "$" { Context Store }
+				Id "%" { ID LOC }
+
+contexts Context := ID{I} x Type{O}
+		 Store   := LOC{I} x Type{O}
+
+judgments
+Context{I} "|" Store{I} "|-" Exp{I} ":" Type{O}
+
+rules
+
+
+%x : ~T in $C
+==================
+$C | $S |- ~x : ~T
+
+(%x : ~T ; $C) | $S |- ~t : ~T
+=================================
+$C | $S |- \ %x : ~T . ~t : ~T -> ~T
+
+$C | $S |- ~t1 : ~T11 -> ~T12
+$C | $S |- ~t2 : ~T2
+=========================
+$C | $S |- ~t1 ~t2 : ~S
+
+%l : ~T in $S
+===============
+$C | $S |- %l : Ref ~T
+
+$C | $S |- ~t : ~T
+==================
+$C | $S |- ref ~t : Ref ~T
+
+$C | $S |- ~t : Ref ~T
+=======================
+$C | $S |- ! ~t : ~T
+
+$C | $S |- ~t1 : Ref ~T
+$C | $S |- ~t2 : ~T
+=======================
+$C | $S |- ~t1 := ~t2 : Unit
