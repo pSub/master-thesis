@@ -13,6 +13,8 @@ Context{I} "|-" Exp{I} ":" Type{O} | Type{I} "<:" Type{I}
 
 rules
 
+/* Typing rules */
+
 %x : ~T in $C
 ==============
 $C |- ~x : ~T
@@ -26,6 +28,8 @@ $C |- ~t2 : ~T2
 ~T2 <: ~T11 
 =========================
 $C |- ~t1 ~t2 : ~S
+
+/* Definition of the subtyping relation */
 
 ========
 ~S <: ~S 
