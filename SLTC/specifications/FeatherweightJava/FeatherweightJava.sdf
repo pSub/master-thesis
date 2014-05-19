@@ -1,0 +1,25 @@
+module FeatherweightJava
+
+imports Common
+
+exports
+	
+  lexical syntax
+  	[a-z]+ -> ID
+  	
+  context-free syntax
+  	ID -> Exp
+  	Exp "." ID -> Exp {cons("FieldAccess")}
+  	Exp "." ID "(" Exp* ")" -> Exp {cons("MethodInvokation")}
+  	"new" ID "(" Exp* ")" -> Exp {cons("ObjectCreation")}
+  	"(" ID ")" Exp -> Exp {cons("Cast")}
+  	Exp ";" Exp -> Exp {cons("Sequence")}
+  	
+  context-free syntax
+  	"class" ID "extends" ID "{" (ID ID)* Constructor Method* "}" -> Class {cons("Class")}
+  	
+  context-free syntax
+  	ID "(" (ID ID)* ")" "{" ("super(" ID* ")")? ("this." ID " = " ID)* "}" -> Constructor {cons("Method")}
+  	
+  context-free syntax
+  	ID ID "(" "return" Exp ")"-> Method {cons("Method")}
