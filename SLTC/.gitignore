@@ -24,4 +24,6 @@ utils
 lib/runtime
 lib/*.generated.str
 lib-refactoring/*.generated.str
-test/*.aterm
+
+*.aterm
+syntax/Generated.sdf
