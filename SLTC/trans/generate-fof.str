@@ -1,0 +1,100 @@
+module generate-fof
+
+imports libstratego-lib
+imports utils
+imports include/SLTC
+
+signature
+	//FIXME: What is the advantage of defining the sorts explicitly
+	constructors
+		False : Prop
+    	True  : Prop
+    	Not   : Prop -> Prop
+    	And   : Prop * Prop -> Prop
+    	Or    : Prop * Prop -> Prop
+    	Impl  : List(Prop) * Prop -> Prop
+    	BiImpl : Prop * Prop -> Prop
+    	Eq    : Prop * Prop -> Prop
+    	Neq : Prop * Prop -> Prop
+    	Var   : String -> Prop
+    	Pred  : String * List(Prop) -> Prop 
+    	All   : List(Var) * Prop -> Prop
+    	Exits : List(Var) * Prop -> Prop
+    	
+    	Axiom : Type
+    	Conjecture : Type
+    	
+    	Formula : String * Type * Prop -> FOF
+		FOFGoal : List(Formula) * Formula -> File    
+		
+		AuxCons : String * String * List(String) -> AuxCons	
+    	
+ rules 	
+ 	//TODO: Generate a separate file for each test
+	// S : Module(ModuleDec(_),
+	// 		   Language(l),
+	// 		   MetaVariables(m),
+	// 		   Contexts(c),
+	// 		   Judgments(j),
+	// 		   Rules,
+	// 		   Tests) -> FOFGoal(Rules, Tests)
+	          
+    makeNeq : (x,y) -> Neq(x,y)
+    makeVar : x -> Var(x)
+	
+	// Generate context definitions
+	// TODO: Rename to makeContexts
+	// TODO: Reduce code duplication and improve efficiency
+	S : ContextDefinition(Name, Consituents) -> [
+	    Formula("lookup base", Axiom(), All([NAME|<conc>(inputs, outputs)],
+	                                            Pred(lookup,
+	                                            <conc> (inputs, [Pred(bind, [NAME|<conc> (inputs, outputs)])], outputs)))),
+	    Formula("lookup step", Axiom(), All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
+	                                            Impl(<map(makeNeq)><zip> (inputs, inputs2), 
+	                                                 Pred(lookup, <conc>(inputs, [Pred(bind, [Name|<conc> (inputs, outputs)])], outputs))
+	                                            )
+	    ))
+	]
+	   where
+	       lookup := <conc-strings> ("lookup-", Name);
+	       bind := <conc-strings> ("bind-", Name);
+	       NAME := <makeVar><upper-case> Name;
+	       indexedConsituents := <zip> (<newnames(|"X")><length> Consituents, Consituents);
+	       inputs := <map(makeVar)><map(fst)><filter(?(_, Hole(_, "I")))> indexedConsituents;
+	       outputs := <map(makeVar)><map(fst)><filter(?(_, Hole(_, "O")))> indexedConsituents;
+	       inputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> inputs;
+	       outputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> outputs
+	
+	// Translate all generic construtors into an auxillary data structure
+	S : Constructor#(Args) -> AuxCons(cons, name, Args)
+		where
+			[cons, name] := <string-tokenize(|['-'])> Constructor;
+			<is-bin-op> cons
+			
+	is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment"
+
+			
+	
+	// Contexts in typing rules
+	S : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
+	S : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind-", name], varargs)
+	   where varargs := <map(makeVar)> args
+	S : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], varargs)
+	   where varargs := <map(makeVar)> args
+	
+	// Typingjudgments
+	S : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
+		
+	// R : TypingRule(RuleName(_, NAME), CONSEQUENCE) -> Formula(NAME, Axiom(), All([], CONSEQUENCE))
+	// R : TypingRule(PREMISES, RuleName(_, NAME), CONSEQUENCE) -> Formula(NAME, Axiom(), All(boundVariables, Impl(PREMISES, CONSEQUENCE)))
+	// 	with
+	// 		//TODO: In which cases can meta-variables be bound?
+	// 		premiseVariables := <collect-all(?MetaVariable(_))> PREMISES;
+	// 		consequenceVariables := <collect-all(?MetaVariable(_))> CONSEQUENCE;
+	// 		boundVariables := <union> (premiseVariables, consequenceVariables)
+	// 
+	// //TODO: Tests		
+	// T : Formula(N, _, P) -> Formula(N, Conjecture(), P)
+
+strategies
+	toFOF = innermost(S) //; File(\xs -> <conc> (<base-rules>, xs)\)
