@@ -9,22 +9,13 @@ exports
     
   lexical syntax
   	[a-z]+ -> ID
-  	[0-9]+ -> LOC
-  	
-  lexical restrictions
-  	ID -/- [a-z]
     
   context-free syntax
 	ID -> Exp {cons("Var")}
   	"\\" ID ":" Type "." Exp -> Exp {cons("Abs")}
   	Exp Exp -> Exp {cons("App")}
-  	"unit" -> Exp {cons("Unit")}
-  	"ref" Exp -> Exp {cons("Ref")}
-  	"!" Exp -> Exp {cons("Deref")}
-  	Exp ":=" Exp -> Exp {cons("Ass")}
-  	LOC -> Exp {cons("Loc")}
+  	"{" (ID "=" Exp)* "}" -> Exp {cons("Record")}
+  	Exp "." ID -> Exp {cons("Projection")}
   	
   context-free syntax
-  	Type "->" Type -> Type {cons("TArrow")}
-  	"Unit" -> Type {cons("TUnit")}
-  	"Ref" Type -> Type {cons("TRef")}
+  	Type "->" Type -> Type {cons("Arrow")}
