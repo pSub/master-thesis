@@ -22,6 +22,7 @@ exports
 
   context-free syntax
 	Name "{" Mode "}" -> Hole {cons("Hole")}
+	"all" ID+ -> All {cons("All")}
 
 %% Meta-Variables	
   context-free syntax
@@ -37,8 +38,9 @@ exports
 	
 %% Judgments
   context-free syntax
-	Separator? {Hole Separator}+ Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
-  	{Judgment "\n"}* -> JudgmentList {cons("JudgmentList")}
+	All? Separator? {Hole Separator}+ Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
+	%%FIXME: Separate with newlines
+	{Judgment "|"}* -> JudgmentList {cons("JudgmentList")}
 
 %% Typing Rules
   lexical syntax
