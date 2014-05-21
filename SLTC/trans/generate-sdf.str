@@ -6,7 +6,13 @@ imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
 rules
-	R : Module(_, Language(t), MetaVariables(MetaVariableList(Meta)), Contexts(Contexts(Ctx)), Judgments(JudgmentList(Judg)), _, _)
+	R : Module(_,
+               Language(t),
+               MetaVariables(MetaVariableList(Meta)),
+               Contexts(Contexts(Ctx)),
+               Judgments(JudgmentList(Judg)),
+               _,
+               _)
 		-> 'module("Generated", imports(t), 
 			exports(
 				conc-grammars(context-free-syntax(Meta),
@@ -14,35 +20,33 @@ rules
 				context-free-syntax(Judg)))
 			)
 		)
-		
+				
 	R : ContextDefinition(Name, X) -> [
-		prod("\"()\"", Name, <cons><concat-strings> ["Empty-", Name] ),
-		prod(<concat-strings> [elem, " \";\" ", Name], Name,  <cons> Name),
-		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <attr> "bracket"),
-		prod(<concat-strings> [elem, " \"in\" ", Name], "TypingJudgment" ,<cons><concat-strings> ["Check-", Name])
+		prod("\"()\"", Name, <make-cons><concat-strings> ["Empty-", Name]),
+		prod(<concat-strings> [elem, " \";\" ", Name], Name, <make-cons> Name),
+		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <make-attr> "bracket"),
+		prod(<concat-strings> [elem, " \"in\" ", Name], "TypingJudgment", 
+							   <make-cons><concat-strings> ["Check-", Name])
 	]
 		where
 			elem := <concat-strings><intersperse(|" \":\" ")><names> X
 			
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
-		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariableChars+"], scope, <cons> "MetaVariable")\)> ids
+		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariableChars+"],
+						    scope,
+						    <make-cons> "MetaVariable")\)> ids
 				
-	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> <names> merged, "TypingJudgment", <cons> "Judgment")
+	R : Judgment(_, s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
+	                                     "TypingJudgment",
+	                                     <make-cons> "TypingJudgment")
 			where
 				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
 
 	proj : Hole(name, _) -> name
 	names : list -> <map(proj <+ id)> list
 
-	cons : name -> <attr><concat-strings> ["cons(\"", name , "\")"]
-	attr : str  -> <concat-strings> ["{", str, "}"]
-				
-    intersperse (|s) : [] -> []
-    intersperse (|s) : [x] -> [x]
-    intersperse (|s) : [x|y] -> [x,s| <intersperse(|s)> y]
-
-    option-to-string : Some(s) -> s
-    option-to-string : None()  -> ""
+	make-cons : name -> <make-attr><concat-strings> ["cons(\"", name , "\")"]
+	make-attr : str  -> <concat-strings> ["{", str, "}"]
 	
 strategies
 	toSdf = innermost(R)
