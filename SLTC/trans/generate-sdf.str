@@ -21,24 +21,25 @@ rules
 			)
 		)
 				
-	R : ContextDefinition(Name, X) -> [
-		prod("\"()\"", Name, <make-cons><concat-strings> ["Empty-", Name]),
-		prod(<concat-strings> [elem, " \";\" ", Name], Name, <make-cons> Name),
+	R : ContextDefinition(Name, Definition) -> [
+		prod("\"()\"", Name, <make-cons><concat-strings> ["ContextEmpty-", Name]),
+		prod(<concat-strings> [elem, " \";\" ", Name], Name,
+							  <make-cons><concat-strings> ["ContextBind-", Name]),
 		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <make-attr> "bracket"),
 		prod(<concat-strings> [elem, " \"in\" ", Name], "TypingJudgment", 
-							   <make-cons><concat-strings> ["Check-", Name])
+							   <make-cons><concat-strings> ["ContextLookup-", Name])
 	]
 		where
-			elem := <concat-strings><intersperse(|" \":\" ")><names> X
+			elem := <concat-strings><intersperse(|" \":\" ")><names> Definition
 			
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariableChars+"],
 						    scope,
-						    <make-cons> "MetaVariable")\)> ids
+						    <make-cons><concat-strings> ["MetaVariable-", scope])\)> ids
 				
 	R : Judgment(_, s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
 	                                     "TypingJudgment",
-	                                     <make-cons> "TypingJudgment")
+	                                     <make-cons> <newname> "TypingJudgment-")
 			where
 				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
 
