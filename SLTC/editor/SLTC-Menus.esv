@@ -37,4 +37,5 @@ menus
   menu: "Generation"
     
     action: "Generate SDF"         = generate-sdf (openeditor) (realtime)
+    action: "Generate FOF"         = gererate-fof (openeditor) (realtime)
 

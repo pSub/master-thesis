@@ -1,4 +1,6 @@
 module utils
+
+imports libstratego-lib
 	
 rules
 	intersperse (|s) : [] -> []
@@ -7,3 +9,9 @@ rules
 
     option-to-string : Some(s) -> s
     option-to-string : None()  -> ""
+    
+    newnames(|l) : 0 -> []
+    newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
+    
+    fst : (a, b) -> a
+    snd : (a, b) -> b

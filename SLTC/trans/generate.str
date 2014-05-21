@@ -6,10 +6,10 @@ imports
     libstratego-aterm
 	include/SLTC
 	trans/generate-sdf
+	trans/generate-fof
 
 rules
 	
-
   generate-sdf :
   	   (selected, position, ast, path, project-path) -> (filename, result)
   with
@@ -21,3 +21,10 @@ rules
   pp-sdf =
     ast2abox(|[<parse-pptable-file> "lib/org/sugarj/languages/Sdf2.pp"]);
     box2text-string(|100)
+
+
+  generate-fof :
+	   (selected, position, ast, path, project-path) -> (filename, result)
+  with
+    filename := <guarantee-extension(|"fof")> path;
+    result := <toFOF> selected
