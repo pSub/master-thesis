@@ -58,10 +58,10 @@ signature
 	   where
 	       lookup := <conc-strings> ("lookup-", Name);
 	       bind := <conc-strings> ("bind-", Name);
-	       NAME := <makeVar><upper-case> Name;
+	       NAME := <upper-case;makeVar> Name;
 	       indexedConsituents := <zip> (<newnames(|"X")><length> Consituents, Consituents);
-	       inputs := <map(makeVar)><map(fst)><filter(?(_, Hole(_, "I")))> indexedConsituents;
-	       outputs := <map(makeVar)><map(fst)><filter(?(_, Hole(_, "O")))> indexedConsituents;
+	       inputs := <filter(?(_, Hole(_, "I"));fst;makeVar)> indexedConsituents;
+	       outputs := <filter(?(_, Hole(_, "O"));fst;makeVar)> indexedConsituents;
 	       inputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> inputs;
 	       outputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> outputs
 	
