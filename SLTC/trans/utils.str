@@ -1,0 +1,9 @@
+module utils
+	
+rules
+	intersperse (|s) : [] -> []
+    intersperse (|s) : [x] -> [x]
+    intersperse (|s) : [x|y] -> [x,s| <intersperse(|s)> y]
+
+    option-to-string : Some(s) -> s
+    option-to-string : None()  -> ""
