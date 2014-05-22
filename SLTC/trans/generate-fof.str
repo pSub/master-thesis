@@ -32,13 +32,14 @@ signature
     	
  rules 	
  	//TODO: Generate a separate file for each test
-	S : Module(ModuleDec(_),
+	makeGoal : Module(ModuleDec(_),
 			   Language(l),
 			   MetaVariables(m),
 			   Contexts(Contexts(ContextDefinitions)),
 			   Judgments(j),
-			   Rules,
-			   Tests) -> FOFGoal(<map(makeContexts); flatten-list> ContextDefinitions, Rules, True())
+			   Rules(TypingRules),
+			   Tests) -> FOFGoal(<map(makeContexts); flatten-list> ContextDefinitions,
+			   <trans; map(\Formula(name, prop) -> Formula(name, Axiom(), prop)\)> TypingRules, True())
 	          
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
@@ -50,7 +51,6 @@ signature
             <is-bin-op> cons
 
     is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
-
     free-vars : v@Var(_) -> [<strip-annos> v]
     free-vars : All(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : Exists(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
@@ -98,4 +98,5 @@ signature
 	// T : Formula(N, _, P) -> Formula(N, Conjecture(), P)
 
 strategies
-	toFOF = innermost(S) //; File(\xs -> <conc> (<base-rules>, xs)\)
+	toFOF = makeGoal
+	trans = innermost(S)
