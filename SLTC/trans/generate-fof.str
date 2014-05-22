@@ -19,12 +19,13 @@ signature
     	Var   : String -> Prop
     	Pred  : String * List(Prop) -> Prop 
     	All   : List(Var) * Prop -> Prop
-    	Exits : List(Var) * Prop -> Prop
+	Exists : List(Var) * Prop -> Prop
     	
     	Axiom : Type
     	Conjecture : Type
     	
     	Formula : String * Type * Prop -> FOF
+	Formula : String * Prop -> FOF
 		FOFGoal : List(Formula) * Formula -> File    
 		
 		AuxCons : String * String * List(String) -> AuxCons	
@@ -41,10 +42,22 @@ signature
 	          
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
+
+    // Translate all generic construtors into an auxillary data structure
+    S : Constructor#(Args) -> AuxCons(cons, name, Args)
+        where
+            [cons, name] := <string-tokenize(|['-'])> Constructor;
+            <is-bin-op> cons
+
+    is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
+
+    free-vars : v@Var(_) -> [<strip-annos> v]
+    free-vars : All(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
+    free-vars : Exists(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
+    free-vars : cons#(xs) -> <map(free-vars);unions> xs
 	
 	// Generate context definitions
 	// TODO: Rename to makeContexts
-	// TODO: Reduce code duplication and improve efficiency
 	S : ContextDefinition(Name, Consituents) -> [
 	    Formula("lookup base", Axiom(), All([NAME|<conc>(inputs, outputs)],
 	                                            Pred(lookup,
@@ -60,20 +73,14 @@ signature
 	       bind := <conc-strings> ("bind-", Name);
 	       NAME := <upper-case;makeVar> Name;
 	       indexedConsituents := <zip> (<newnames(|"X")><length> Consituents, Consituents);
-	       inputs := <filter(?(_, Hole(_, "I"));fst;makeVar)> indexedConsituents;
-	       outputs := <filter(?(_, Hole(_, "O"));fst;makeVar)> indexedConsituents;
+	       inputs := <filter(?(_, Hole(_, "I")); fst; makeVar)> indexedConsituents;
+	       outputs := <filter(?(_, Hole(_, "O")); fst; makeVar)> indexedConsituents;
 	       inputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> inputs;
 	       outputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> outputs
-	
-	// Translate all generic construtors into an auxillary data structure
-	S : Constructor#(Args) -> AuxCons(cons, name, Args)
-		where
-			[cons, name] := <string-tokenize(|['-'])> Constructor;
-			<is-bin-op> cons
-			
-	is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment"
 
-			
+
+    // FIXME: Why does the name is in a nested list?
+    S : AuxCons("MetaVariable", scope, [[name]]) -> Var(<upper-case> name)
 	
 	// Contexts in typing rules
 	S : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
@@ -82,18 +89,15 @@ signature
 	S : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], varargs)
 	   where varargs := <map(makeVar)> args
 	
-	// Typingjudgments
+	// Typing judgments
 	S : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
 		
-	// R : TypingRule(RuleName(_, NAME), CONSEQUENCE) -> Formula(NAME, Axiom(), All([], CONSEQUENCE))
-	// R : TypingRule(PREMISES, RuleName(_, NAME), CONSEQUENCE) -> Formula(NAME, Axiom(), All(boundVariables, Impl(PREMISES, CONSEQUENCE)))
-	// 	with
-	// 		//TODO: In which cases can meta-variables be bound?
-	// 		premiseVariables := <collect-all(?MetaVariable(_))> PREMISES;
-	// 		consequenceVariables := <collect-all(?MetaVariable(_))> CONSEQUENCE;
-	// 		boundVariables := <union> (premiseVariables, consequenceVariables)
-	// 
-	// //TODO: Tests		
+	// Typing rules
+	S : TypingRule(RuleName(_, Name), Consequence) -> Formula(Name, All(<free-vars> Consequence, Consequence))
+	S : TypingRule(Premises, RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(Premises, Consequence)))
+		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
+
+	// TODO: Conjectures
 	// T : Formula(N, _, P) -> Formula(N, Conjecture(), P)
 
 strategies
