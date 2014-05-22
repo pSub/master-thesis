@@ -83,10 +83,8 @@ signature
 	
 	// Contexts in typing rules
 	S : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
-	S : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind-", name], varargs)
-	   where varargs := <map(makeVar)> args
-	S : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], varargs)
-	   where varargs := <map(makeVar)> args
+	S : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind-", name], args)
+	S : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], args)
 	
 	// Typing judgments
 	S : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
