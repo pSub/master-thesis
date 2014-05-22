@@ -32,13 +32,13 @@ signature
     	
  rules 	
  	//TODO: Generate a separate file for each test
-	// S : Module(ModuleDec(_),
-	// 		   Language(l),
-	// 		   MetaVariables(m),
-	// 		   Contexts(c),
-	// 		   Judgments(j),
-	// 		   Rules,
-	// 		   Tests) -> FOFGoal(Rules, Tests)
+	S : Module(ModuleDec(_),
+			   Language(l),
+			   MetaVariables(m),
+			   Contexts(Contexts(ContextDefinitions)),
+			   Judgments(j),
+			   Rules,
+			   Tests) -> FOFGoal(<map(makeContexts); flatten-list> ContextDefinitions, Rules, True())
 	          
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
@@ -58,7 +58,7 @@ signature
 	
 	// Generate context definitions
 	// TODO: Rename to makeContexts
-	S : ContextDefinition(Name, Consituents) -> [
+	makeContexts : ContextDefinition(Name, Consituents) -> [
 	    Formula("lookup base", Axiom(), All([NAME|<conc>(inputs, outputs)],
 	                                            Pred(lookup,
 	                                            <conc> (inputs, [Pred(bind, [NAME|<conc> (inputs, outputs)])], outputs)))),
