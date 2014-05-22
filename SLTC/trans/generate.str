@@ -27,4 +27,10 @@ rules
 	   (selected, position, ast, path, project-path) -> (filename, result)
   with
     filename := <guarantee-extension(|"fof")> path;
-    result := <toFOF> selected
+    //result := <toFOF> selected
+    aterm := <toFOF> selected;
+    result := <pp-slt> aterm
+    
+  pp-slt =
+    ast2abox(|[<parse-pptable-file> "syntax/fof.pp"]);
+    box2text-string(|100)
