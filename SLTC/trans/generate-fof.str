@@ -26,7 +26,7 @@ signature
     	
     	Formula : String * Type * Prop -> FOF
 	Formula : String * Prop -> FOF
-		FOFGoal : List(Formula) * Formula -> File    
+		FOFGoal : List(Formula) * List(Formula) * Formula -> File
 		
 		AuxCons : String * String * List(String) -> AuxCons	
     	
