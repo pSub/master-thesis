@@ -79,8 +79,7 @@ signature
 	       outputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> outputs
 
 
-    // FIXME: Why does the name is in a nested list?
-    S : AuxCons("MetaVariable", scope, [[name]]) -> Var(<upper-case> name)
+    S : AuxCons("MetaVariable", scope, [name]) -> Var(<concat-strings; upper-case> name)
 	
 	// Contexts in typing rules
 	S : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
