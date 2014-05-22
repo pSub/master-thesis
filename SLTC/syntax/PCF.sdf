@@ -1,0 +1,46 @@
+%% Copied from https://github.com/metaborg/metaborg-pcf
+
+module PCF
+imports Common
+
+exports
+
+  %% This was added since my Common.sdf does not define INT	
+  lexical syntax
+	"-"? [0-9]+          -> INT
+	
+  context-free start-symbols
+    Exp
+
+  sorts Exp Param Type
+
+  context-free syntax
+    ID                                 -> Exp   {cons("Var")}
+    Exp Exp                            -> Exp   {cons("App"), left}
+    "fun" Param "(" Exp ")"            -> Exp   {cons("Fun")}
+    "fix" Param "(" Exp ")"            -> Exp   {cons("Fix")}
+    "let" ID ":" Type "=" Exp "in" Exp -> Exp   {cons("Let")}
+    ID ":" Type                        -> Param {cons("Param")}
+    INT                                -> Exp   {cons("Num")}
+    Exp "+" Exp                        -> Exp   {cons("Add"), left}
+    Exp "-" Exp                        -> Exp   {cons("Sub"), left}
+    Exp "*" Exp                        -> Exp   {cons("Mul"), left}
+    Exp "/" Exp                        -> Exp   {cons("Div"), left}
+    "(" Exp ")"                        -> Exp   {bracket}
+    "ifz" Exp "then" Exp "else" Exp    -> Exp   {cons("Ifz")}
+    "int"                              -> Type  {cons("IntType")}
+    Type "->" Type                     -> Type  {cons("FunType")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Param {cons("COMPLETION-Param")}
+    CONTENTCOMPLETE -> Exp   {cons("COMPLETION-Exp")}
+    CONTENTCOMPLETE -> Type  {cons("COMPLETION-Type")}
+
+  context-free priorities
+    Exp Exp -> Exp >
+    Exp "*" Exp -> Exp >
+    {left:
+      Exp "+" Exp -> Exp
+      Exp "-" Exp -> Exp
+    } >
+    "ifz" Exp "then" Exp "else" Exp -> Exp
