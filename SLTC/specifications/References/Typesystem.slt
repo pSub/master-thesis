@@ -10,10 +10,9 @@ contexts Context := ID{I} x Type{O}
 		 Store   := LOC{I} x Type{O}
 
 judgments
-Context{I} "|" Store{I} "|-" Exp{I} ":" Type{O}
+Context{I} "|" Store{I} "|-" Exp{I} ":" Type{O}.
 
 rules
-
 
 %x : ~T in $C
 ==================

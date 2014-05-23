@@ -38,9 +38,8 @@ exports
 	
 %% Judgments
   context-free syntax
-	All? Separator? {Hole Separator}+ Separator?-> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
-	%%FIXME: Separate with newlines
-	{Judgment "|"}* -> JudgmentList {cons("JudgmentList")}
+	All? Separator? {Hole Separator}+ Separator? "." -> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
+	Judgment* -> JudgmentList {cons("JudgmentList")}
 
 %% Typing Rules
   lexical syntax

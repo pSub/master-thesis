@@ -9,7 +9,8 @@ meta-variables 	Term "~" { Type Exp }
 contexts Context := ID{I} x Type{O}
 
 judgments
-Context{I} "|-" Exp{I} ":" Type{O} | Type{I} "<:" Type{I}
+Context{I} "|-" Exp{I} ":" Type{O}.
+Type{I} "<:" Type{I}.
 
 rules
 
