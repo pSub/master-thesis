@@ -3,11 +3,9 @@ exports
   lexical syntax
     [a-zA-Z] [a-zA-Z0-9]*              -> ID 
     [a-zA-Z0-9\-]+					   -> Name
-    [a-zA-Z\~\$\%\&]                    -> PrefixChars
-    
-    %% How could numbers be allowed without creating ambiguties everywhere
-    [a-zA-Z]                          -> MetaVariableChars
-    
+    [a-zA-Z\~\$\%\&]                   -> PrefixChars    
+    [a-zA-Z0-9]                        -> MetaVariableChars
+    MetaVariableChars+                 -> MetaVariable 
     {ID "."}+                          -> MID          
     [\ \t\n\r]                         -> LAYOUT       
     [\*]                               -> CommentChar  
@@ -15,9 +13,9 @@ exports
     "//" ~[\n\r]* [\n\r] | EOF         -> LAYOUT       
                                        -> EOF
 
-    "module"                           -> ReservedWord 
-    "language"                         -> ReservedWord 
-    "meta-variables"                   -> ReservedWord 
+    "module"                           -> ReservedWord
+    "language"                         -> ReservedWord
+    "meta-variables"                   -> ReservedWord
     "definitions"                      -> ReservedWord
     "judgments"                        -> ReservedWord
     "rules"                            -> ReservedWord
@@ -25,6 +23,7 @@ exports
 
   lexical restrictions
     CommentChar -/- [\/]
+    MetaVariable -/- [a-zA-Z0-9]
     ID -/- [a-zA-Z0-9\_]
     MID -/- [\.]
     EOF -/- ~[]
