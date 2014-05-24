@@ -33,7 +33,7 @@ rules
 			elem := <concat-strings><intersperse(|" \":\" ")><names> Definition
 			
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
-		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariableChars+"],
+		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
 						    scope,
 						    <make-cons><concat-strings> ["MetaVariable-", scope])\)> ids
 				
