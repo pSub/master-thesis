@@ -6,6 +6,7 @@ imports include/SLTC
 
 signature
 	//FIXME: What is the advantage of defining the sorts explicitly
+	sorts Prop Type FOF File
 	constructors
 		False : Prop
     	True  : Prop
@@ -17,18 +18,19 @@ signature
     	Eq    : Prop * Prop -> Prop
     	Neq : Prop * Prop -> Prop
     	Var   : String -> Prop
-    	Pred  : String * List(Prop) -> Prop 
+    	Pred  : String * List(Prop) -> Prop
+    	Term  : String * List(Prop) -> Prop 
     	All   : List(Var) * Prop -> Prop
-	Exists : List(Var) * Prop -> Prop
+	    Exists : List(Var) * Prop -> Prop
     	
     	Axiom : Type
     	Conjecture : Type
     	
     	Formula : String * Type * Prop -> FOF
-	Formula : String * Prop -> FOF
+	    Formula : String * Prop -> FOF
 		FOFGoal : List(Formula) * List(Formula) * Formula -> File
 		
-		AuxCons : String * String * List(String) -> AuxCons	
+		AuxCons : String * String * List(Prop) -> Prop
     	
  rules 	
  	//TODO: Generate a separate file for each test
@@ -43,14 +45,8 @@ signature
 	          
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
-
-    // Translate all generic construtors into an auxillary data structure
-    S : Constructor#(Args) -> AuxCons(cons, name, Args)
-        where
-            [cons, name] := <string-tokenize(|['-'])> Constructor;
-            <is-bin-op> cons
-
-    is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
+    
+    // FIXME: When using topdown we have MetaVariable-* instead of Var
     free-vars : v@Var(_) -> [<strip-annos> v]
     free-vars : All(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : Exists(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
@@ -76,26 +72,50 @@ signature
 	       outputs := <filter(?(_, Hole(_, "O")); fst; makeVar)> indexedConsituents;
 	       inputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> inputs;
 	       outputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> outputs
-
-
-    S : AuxCons("MetaVariable", scope, [name]) -> Var(<concat-strings; upper-case> name)
+	       
+    // Translate all generic construtors into an auxillary data structure
+    makeAux : Constructor#(Args) -> AuxCons(cons, name, Args)
+        where
+            [cons, name] := <string-tokenize(|['-'])> Constructor;
+            <is-bin-op> cons
+            is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
+    
+    makeMetaVariable : AuxCons("MetaVariable", scope, name) -> Var(<concat-strings; upper-case> name)
 	
 	// Contexts in typing rules
-	S : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
-	S : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind-", name], args)
-	S : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], args)
-	
-	// Typing judgments
-	S : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
-		
-	// Typing rules
-	S : TypingRule(RuleName(_, Name), Consequence) -> Formula(Name, All(<free-vars> Consequence, Consequence))
-	S : TypingRule(Premises, RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(Premises, Consequence)))
-		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
+	makeContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
+	makeContextBind : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind-", name], args)
+	makeContextLookup : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], args)
+	makeContext = makeContextEmpty <+ makeContextBind <+ makeContextLookup
 
+	// Typing judgments
+	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
+			
+	// Typing rules
+	makeTypingRule : TypingRule(RuleName(_, Name), Consequence) -> Formula(Name, All(<free-vars> Consequence, Consequence))
+	makeTypingRule : TypingRule(Premises, RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(Premises, Consequence)))
+		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
+			    
+    makeTerm : v@cons#([]) -> Var(cons)
+    makeTerm : v@cons#(args) -> Term(cons, args)
+       where <debug> [cons, args];
+             <"Ifz"> cons;
+      
+    
 	// TODO: Conjectures
 	// T : Formula(N, _, P) -> Formula(N, Conjecture(), P)
 
 strategies
 	toFOF = makeGoal
-	trans = innermost(S)
+	S = makeTypingRule <+ makeAux
+	T = makeTypingRule <+ makeTerm
+	rewriteAuxCons = makeContext <+ makeTypingJudgment <+ makeMetaVariable
+	
+	trans = topdown(makeAux < rewriteAuxCons + try(T))
+	
+	// trans = topdown(S < try(rewriteAuxCons) + id) WORKING
+	//trans = topdown(repeat(makeAux < rewriteAuxCons + fail))
+	//trans = innermost(S < rewriteAuxCons + fail)
+	//trans = topdown(try(S)); topdown(try(rewriteAuxCons))
+	
+	
