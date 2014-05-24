@@ -10,6 +10,9 @@ rules
     option-to-string : Some(s) -> s
     option-to-string : None()  -> ""
     
+    option-to-string-newname(|l) : Some(s) -> s
+    option-to-string-newname(|l) : None() -> <newname> l
+
     newnames(|l) : 0 -> []
     newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
     
