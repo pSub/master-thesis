@@ -13,13 +13,14 @@ exports
     [\*]                               -> CommentChar  
     "/*" ( ~[\*] | CommentChar )* "*/" -> LAYOUT       
     "//" ~[\n\r]* [\n\r] | EOF         -> LAYOUT       
-                                       -> EOF          
+                                       -> EOF
+
     "module"                           -> ReservedWord 
     "language"                         -> ReservedWord 
     "meta-variables"                   -> ReservedWord 
     "definitions"                      -> ReservedWord
-    "judgments" -> ReservedWord
-    "rules" -> ReservedWord 
+    "judgments"                        -> ReservedWord
+    "rules"                            -> ReservedWord
     ReservedWord                       -> ID           {reject}
 
   lexical restrictions

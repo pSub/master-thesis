@@ -1,4 +1,4 @@
-module BaseLanguage[TypingJudgment] %%FIXME: Does it make sense to instantiate TypingJudgment with some generated SDF file
+module BaseLanguage[TypingJudgment]
 imports Common
 
 exports
@@ -11,7 +11,8 @@ exports
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
     "conjectures" TypingJudgment*           -> Conjectures    {cons("Conjectures")}
     
-    %%TODO: Make 'language' optional in preparation for imports
+    %%TODO: When introducing imports it might make sense to treat most
+    %% consituents as optional.
     ModuleDec Language MetaVariables Contexts Judgments Rules Conjectures? -> Module {cons("Module")}
 
 
@@ -24,7 +25,7 @@ exports
 	Name "{" Mode "}" -> Hole {cons("Hole")}
 	"all" ID+ -> All {cons("All")}
 
-%% Meta-Variables	
+%% Meta-variables
   context-free syntax
   	"{" ID+ "}"-> Scope {cons("Scope")}
 	"\"" PrefixChars "\"" -> Prefix {cons("MetaVariablePrefix")}
