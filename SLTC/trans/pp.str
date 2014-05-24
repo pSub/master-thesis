@@ -4,19 +4,14 @@ imports
 
 	libstratego-gpp
 	lib/runtime/tmpl/pp
-	Common.pp.generated
-	SLTC.pp.generated
-
+	
 rules
 	
   pp-SLTC-string =
 	 !V([], <id>)
     ; box2text-string(|120)
       
-  pp-partial-SLTC-string =
-    prettyprint-example
-    ; !V([], <id>)
-    ; box2text-string(|120)
+  pp-partial-SLTC-string = fail
       
   pp-debug :
     ast -> result
