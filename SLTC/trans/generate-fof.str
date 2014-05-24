@@ -57,7 +57,6 @@ signature
     free-vars : cons#(xs) -> <map(free-vars);unions> xs
 	
 	// Generate context definitions
-	// TODO: Rename to makeContexts
 	makeContexts : ContextDefinition(Name, Consituents) -> [
 	    Formula("lookup base", Axiom(), All([NAME|<conc>(inputs, outputs)],
 	                                            Pred(lookup,
