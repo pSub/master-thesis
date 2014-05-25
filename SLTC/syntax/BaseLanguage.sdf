@@ -55,5 +55,5 @@ exports
     RuleSepName TypingRuleConsequence                    -> TypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col")}
     TypingRulePremiseList                                -> TypingRulePremises    {cons("PremiseList")}
     TypingJudgment                                       -> TypingRuleConsequence 
-    TypingJudgment                                       -> TypingRulePremiseList 
+    TypingJudgment                                       -> TypingRulePremiseList {cons("PremiseBase")}
     TypingJudgment TypingRulePremiseList                 -> TypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}

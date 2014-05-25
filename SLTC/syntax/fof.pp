@@ -17,6 +17,7 @@
 	Var -- _1,
 	Pred -- _1 "(" _2 ")",
 	Pred.2:iter-star-sep -- _1 ",",
+	Term -- _1,
 	Term -- _1 "(" _2 ")",
 	Term.2:iter-star-sep -- _1 ","	
 ]

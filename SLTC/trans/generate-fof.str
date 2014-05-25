@@ -19,6 +19,7 @@ signature
     	Neq : Prop * Prop -> Prop
     	Var   : String -> Prop
     	Pred  : String * List(Prop) -> Prop
+    	Term  : String -> Prop
     	Term  : String * List(Prop) -> Prop 
     	All   : List(Var) * Prop -> Prop
 	    Exists : List(Var) * Prop -> Prop
@@ -45,8 +46,8 @@ signature
 	          
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
-    to-premise-list : PremiseBase(p) -> [p]
-    to-premise-list : PremiseCons(p, ps) -> [p|<to-premise-list> ps]
+    to-premise-list : PremiseBase(p) -> p
+    to-premise-list : PremiseCons(p, ps) -> And(p,<to-premise-list> ps)
     to-axiom : Formula(name, prop) -> Formula(name, Axiom(), prop)
     
     // FIXME: When using topdown we have MetaVariable-* instead of Var
@@ -62,14 +63,14 @@ signature
 	                                            <conc> (inputs, [Pred(bind, [NAME|<conc> (inputs, outputs)])], outputs)))),
 	    Formula("lookup step", Axiom(), All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
 	                                            Impl(<map(makeNeq)><zip> (inputs, inputs2), 
-	                                                 Pred(lookup, <conc>(inputs, [Pred(bind, [Name|<conc> (inputs, outputs)])], outputs))
+	                                                 Pred(lookup, <conc>(inputs, [Pred(bind, [NAME|<conc> (inputs, outputs)])], outputs))
 	                                            )
 	    ))
 	]
 	   where
-	       lookup := <conc-strings> ("lookup-", Name);
-	       bind := <conc-strings> ("bind-", Name);
-	       NAME := <upper-case;makeVar> Name;
+	       lookup := <conc-strings> ("lookup", Name);
+	       bind := <conc-strings> ("bind", Name);
+	       NAME := <upper-case; makeVar> Name;
 	       indexedConsituents := <zip> (<newnames(|"X")><length> Consituents, Consituents);
 	       inputs := <filter(?(_, Hole(_, "I")); fst; makeVar)> indexedConsituents;
 	       outputs := <filter(?(_, Hole(_, "O")); fst; makeVar)> indexedConsituents;
@@ -86,13 +87,13 @@ signature
     makeMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; upper-case; makeVar> name
 	
 	// Contexts in typing rules
-	makeContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
-	makeContextBind : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind-", name], args)
-	makeContextLookup : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup-", name], args)
+	makeContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty", name], [])
+	makeContextBind : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind", name], args)
+	makeContextLookup : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup", name], args)
 	makeContext = makeContextEmpty <+ makeContextBind <+ makeContextLookup
 
 	// Typing judgments
-	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
+	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
 	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(<free-vars> consequence', consequence'))
@@ -101,14 +102,14 @@ signature
 	   with consequence' := <trans> consequence;
             premises' := <to-premise-list; trans> premises;
 	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence')
-
+	        
 	
 	// Wrap terms of the programming language into construtors
     // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
 	makeTerm : v@cons#([]) -> v
 	   where <string-starts-with(|"\"")> cons
 	   prop-construtor = "False" <+ "True" <+ "Axiom" <+ "Conjecture"
-	makeTerm : cons#([]) -> Term(cons,[])
+	makeTerm : cons#([]) -> Term(<lower-case> cons)
 	   where <if [] then fail else id end> cons
     makeTerm : v@cons#(args) -> Term(<lower-case> cons, args)
       where <if [] then fail else id end> cons;
