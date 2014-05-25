@@ -92,7 +92,7 @@ signature
 	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
 			
 	// Typing rules
-	makeTypingRule : TypingRule(RuleName(_, Name), Consequence) -> Formula(Name, All(<free-vars> Consequence, Consequence))
+	makeTypingRule : TypingRule(RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(<free-vars> Consequence, Consequence))
 	makeTypingRule : TypingRule(Premises, RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(Premises, Consequence)))
 		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
 	
