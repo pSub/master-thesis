@@ -97,15 +97,17 @@ signature
 		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
 	
 	// Wrap terms of the programming language into construtors
+    // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
 	makeTerm : v@cons#([]) -> v
+	   where <string-starts-with(|"\"")> cons
+	   prop-construtor = "False" <+ "True" <+ "Axiom" <+ "Conjecture"
+	makeTerm : cons#([]) -> Term(cons,[])
+	   where <if [] then fail else id end> cons
     makeTerm : v@cons#(args) -> Term(<lower-case> cons, args)
       where <if [] then fail else id end> cons;
             <if prop-constructor then fail else id end> cons 
-      prop-constructor = "All"  <+ "False" <+ "True"   <+ "Not"    <+ 
-                          "And"  <+ "Or"    <+ "Impl"   <+ "BiImpl" <+ 
-                          "Eq"   <+ "Neq"   <+ "Var"    <+ "Pred"   <+ 
-                          "Term" <+ "All"   <+ "Exists" <+ "Axiom"  <+
-                          "Conjecture"
+      prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+
+                         "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
     
 	// TODO: Conjectures
 	// T : Formula(N, _, P) -> Formula(N, Conjecture(), P)
