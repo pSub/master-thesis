@@ -74,7 +74,7 @@ signature
 	       outputs2 := <map(\ Var(s) -> Var(<conc-strings> (s, "_")) \)> outputs
 	       
     // Translate all generic construtors into an auxillary data structure
-    makeAux : Constructor#(Args) -> AuxCons(cons, name, Args)
+    makeAuxCons : Constructor#(Args) -> AuxCons(cons, name, Args)
         where
             [cons, name] := <string-tokenize(|['-'])> Constructor;
             <is-bin-op> cons
@@ -95,27 +95,23 @@ signature
 	makeTypingRule : TypingRule(RuleName(_, Name), Consequence) -> Formula(Name, All(<free-vars> Consequence, Consequence))
 	makeTypingRule : TypingRule(Premises, RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(Premises, Consequence)))
 		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
-			    
-    makeTerm : v@cons#([]) -> Var(cons)
-    makeTerm : v@cons#(args) -> Term(cons, args)
-       where <debug> [cons, args];
-             <"Ifz"> cons;
-      
+	
+	// Wrap terms of the programming language into construtors
+	makeTerm : v@cons#([]) -> v
+    makeTerm : v@cons#(args) -> Term(<lower-case> cons, args)
+      where <if [] then fail else id end> cons;
+            <if prop-constructor then fail else id end> cons 
+      prop-constructor = "All"  <+ "False" <+ "True"   <+ "Not"    <+ 
+                          "And"  <+ "Or"    <+ "Impl"   <+ "BiImpl" <+ 
+                          "Eq"   <+ "Neq"   <+ "Var"    <+ "Pred"   <+ 
+                          "Term" <+ "All"   <+ "Exists" <+ "Axiom"  <+
+                          "Conjecture"
     
 	// TODO: Conjectures
 	// T : Formula(N, _, P) -> Formula(N, Conjecture(), P)
 
 strategies
 	toFOF = makeGoal
-	S = makeTypingRule <+ makeAux
-	T = makeTypingRule <+ makeTerm
+	
 	rewriteAuxCons = makeContext <+ makeTypingJudgment <+ makeMetaVariable
-	
-	trans = topdown(makeAux < rewriteAuxCons + try(T))
-	
-	// trans = topdown(S < try(rewriteAuxCons) + id) WORKING
-	//trans = topdown(repeat(makeAux < rewriteAuxCons + fail))
-	//trans = innermost(S < rewriteAuxCons + fail)
-	//trans = topdown(try(S)); topdown(try(rewriteAuxCons))
-	
-	
+	trans = topdown(makeAuxCons < rewriteAuxCons + try(makeTypingRule <+ makeTerm))
