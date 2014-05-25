@@ -41,10 +41,13 @@ signature
 			   Judgments(j),
 			   Rules(TypingRules),
 			   Tests) -> FOFGoal(<map(makeContexts); flatten-list> ContextDefinitions,
-			   <trans; map(\Formula(name, prop) -> Formula(name, Axiom(), prop)\)> TypingRules, True())
+			   <map(makeTypingRule; to-axiom)> TypingRules, True())
 	          
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
+    to-premise-list : PremiseBase(p) -> [p]
+    to-premise-list : PremiseCons(p, ps) -> [p|<to-premise-list> ps]
+    to-axiom : Formula(name, prop) -> Formula(name, Axiom(), prop)
     
     // FIXME: When using topdown we have MetaVariable-* instead of Var
     free-vars : v@Var(_) -> [<strip-annos> v]
@@ -80,7 +83,7 @@ signature
             <is-bin-op> cons
             is-bin-op = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
     
-    makeMetaVariable : AuxCons("MetaVariable", scope, name) -> Var(<concat-strings; upper-case> name)
+    makeMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; upper-case; makeVar> name
 	
 	// Contexts in typing rules
 	makeContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty-", name], [])
@@ -92,9 +95,13 @@ signature
 	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("tcheck-", name), args)
 			
 	// Typing rules
-	makeTypingRule : TypingRule(RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(<free-vars> Consequence, Consequence))
-	makeTypingRule : TypingRule(Premises, RuleName(_, Name), Consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(Premises, Consequence)))
-		with free-vars-in-rule := <union> (<free-vars> Premises, <free-vars> Consequence)
+	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(<free-vars> consequence', consequence'))
+	   with consequence' := <trans> consequence
+	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, All(free-vars-in-rule, Impl(premises', consequence')))
+	   with consequence' := <trans> consequence;
+            premises' := <to-premise-list; trans> premises;
+	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence')
+
 	
 	// Wrap terms of the programming language into construtors
     // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
@@ -116,4 +123,4 @@ strategies
 	toFOF = makeGoal
 	
 	rewriteAuxCons = makeContext <+ makeTypingJudgment <+ makeMetaVariable
-	trans = topdown(makeAuxCons < rewriteAuxCons + try(makeTypingRule <+ makeTerm))
+	trans = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
