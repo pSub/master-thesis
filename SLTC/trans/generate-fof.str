@@ -105,16 +105,17 @@ signature
 	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
-	// TODO: Remove All() if there are no free variables
-	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name,
-	                                                                       All(<free-vars> consequence', consequence'))
-	   with consequence' := <trans> consequence
-	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name,
-	                                                                                              All(free-vars-in-rule, Impl(premises', consequence')))
+	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, prop)
+	   with consequence' := <trans> consequence;
+	        free-vars-in-rule := <free-vars> consequence';
+	        prop := <if [] then <id> consequence' else <id> All(free-vars-in-rule, consequence') end> free-vars-in-rule
+	        
+	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, prop)
 	   with consequence' := <trans> consequence;
             premises' := <to-premise-list; trans> premises;
-	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence')
-	        
+	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
+	        implication := Impl(premises', consequence');
+	        prop := <if [] then <id> implication else <id> All(free-vars-in-rule, implication) end> free-vars-in-rule
 	
 	// Wrap terms of the programming language into construtors
     // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
