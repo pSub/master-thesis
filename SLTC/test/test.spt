@@ -1,0 +1,39 @@
+module test-
+
+language SLTC
+
+setup Common
+
+test empty-module [[
+  module test
+  language test
+  meta-variables
+  contexts
+  judgments
+  rules
+  conjectures
+]] parse succeeds
+
+test empty-module-with-conjecture-section [[
+  module test
+  language test
+  meta-variables
+  contexts
+  judgments
+  rules
+  conjectures
+]] parse succeeds
+
+test simply-module-without-rules [[
+  module test
+  language PCF
+  meta-variables  Term "~" { Type Exp }
+                  Ctx "$" { Context }
+                  Id "%" { ID }
+                  Num "&" { INT }
+  contexts Context := ID{I} x Type{O}
+  judgments
+  Context{I} "|-" Exp{I} ":" Type{O}.
+  Type{I} "<:" Type{I}.
+  rules
+]] parse succeeds
