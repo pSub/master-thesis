@@ -35,17 +35,19 @@ signature
 		AuxCons : String * String * List(Prop) -> Prop
     	
  rules 	
- 	//TODO: Generate a separate file for each test
-	makeGoal : Module(ModuleDec(_),
+	makeGoals : Module(ModuleDec(_),
 			   Language(l),
 			   MetaVariables(m),
 			   Contexts(Contexts(ContextDefinitions)),
 			   Judgments(j),
 			   Rules(TypingRules),
-			   Some(Conjectures(Tests))) -> FOFGoal(<map(makeContexts); flatten-list> ContextDefinitions,
-			                     <map(makeTypingRule; to-axiom)> TypingRules,
-			                     <map(makeTypingRule; to-conjecture)> Tests)
-	          
+			   Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(context-formulas,
+			                                                      typing-rule-formulas,
+			                                                      <makeTypingRule; to-conjecture> goal)\)> Goals
+        where
+            context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
+            typing-rule-formulas := <map(makeTypingRule; to-axiom)> TypingRules
+
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
     
@@ -132,7 +134,7 @@ signature
                          "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
 
 strategies
-	toFOF = makeGoal
+	toFOF = makeGoals
 	
 	rewriteAuxCons = makeContext <+ makeTypingJudgment <+ makeMetaVariable
 	trans = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
