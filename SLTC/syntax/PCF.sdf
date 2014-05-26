@@ -7,7 +7,18 @@ exports
 
   %% This was added since my Common.sdf does not define INT	
   lexical syntax
-	"-"? [0-9]+          -> INT
+	"-"? [0-9]+ -> INT
+	"ifz" -> ID {reject}
+	"then" -> ID {reject}
+	"else" -> ID {reject}
+	"fix" -> ID {reject}
+	"fun" -> ID {reject}
+	"let" -> ID {reject}
+	"in" -> ID {reject}
+	"int" -> ID {reject}
+
+  lexical restrictions
+      INT -/- [0-9]
 	
   context-free start-symbols
     Exp
