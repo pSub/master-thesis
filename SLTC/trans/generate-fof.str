@@ -120,13 +120,14 @@ signature
 	// Wrap terms of the programming language into construtors
     // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
 	makeTerm : v@cons#([]) -> v
-	   where <string-starts-with(|"\"")> cons
-	   prop-construtor = "False" <+ "True" <+ "Axiom" <+ "Conjecture"
+	   where <string-starts-with(|"\"")> cons;
+	         <not(prop-constructor)> cons
+	   prop-construtor = "False" <+ "True"
 	makeTerm : cons#([]) -> Term(<lower-case> cons)
-	   where <if [] then fail else id end> cons
+	   where <not([])> cons
     makeTerm : v@cons#(args) -> Term(<lower-case> cons, args)
-       where <if [] then fail else id end> cons;
-             <if prop-constructor then fail else id end> cons 
+       where <not([])> cons;
+             <not(prop-constructor)> cons
        prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+
                          "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
 
