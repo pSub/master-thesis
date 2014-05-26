@@ -68,5 +68,9 @@ $C |- ~e2 : int
 $C |- ~e1 / ~e2 : int
 
 conjectures
+
+============= 
 () |- 1 : int
+
+======
 (a : int ; ()) |- x + 1 : int

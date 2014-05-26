@@ -9,7 +9,7 @@ exports
     "contexts" Contexts    				    -> Contexts       {cons("Contexts")}
     "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
-    "conjectures" TypingJudgment*           -> Conjectures    {cons("Conjectures")}
+    "conjectures" TypingRule*               -> Conjectures    {cons("Conjectures")}
     
     %%TODO: When introducing imports it might make sense to treat most
     %% consituents as optional.
