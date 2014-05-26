@@ -77,9 +77,9 @@ signature
 	       bind := <conc-strings> ("bind", Name);
 	       NAME := <upper-case; makeVar> Name;
 	       indexedConsituents := <zip> (<newnames(|"X")><length> Consituents, Consituents);
-	       consituents := <map(fst; makeVar)> indexedConsituents;
-	       inputs := <filter(?(_, Hole(_, "I")); fst; makeVar)> indexedConsituents;
-	       outputs := <filter(?(_, Hole(_, "O")); fst; makeVar)> indexedConsituents;
+	       consituents := <map(Fst; makeVar)> indexedConsituents;
+	       inputs := <filter(?(_, Hole(_, "I")); Fst; makeVar)> indexedConsituents;
+	       outputs := <filter(?(_, Hole(_, "O")); Fst; makeVar)> indexedConsituents;
 	       inputs2 := <map(append(|"_"))> inputs;
 	       outputs2 := <map(append(|"_"))> outputs
            append(|p) = \ Var(s) -> <conc-strings; makeVar> (s, p) \
