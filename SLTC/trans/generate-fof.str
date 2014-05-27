@@ -51,12 +51,12 @@ signature
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
     
-    to-premise-list : PremiseBase(p) -> p
-    to-premise-list : PremiseCons(p, ps) -> And(p,<to-premise-list> ps)
+    premise-to-list : PremiseBase(p) -> [p]
+    premise-to-list : PremiseCons(p, ps) -> [p | <premise-to-list> ps]
     to-axiom : Formula(name, prop) -> Formula(name, Axiom(), prop)
     to-conjecture : Formula(name, prop) -> Formula(name, Conjecture(), prop)
 
-    // Collect free variables    
+    // Collect free variables
     free-vars : v@Var(_) -> [<strip-annos> v]
     free-vars : All(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : Exists(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
@@ -67,12 +67,12 @@ signature
 	    Formula("lookup base",
 	            Axiom(),
 	            All([NAME|<conc>(inputs, outputs)],
-	                Pred(lookup, <conc> (inputs, [Pred(bind, <conc> (consituents, [NAME]))], outputs)))),
+	                Pred(lookup, <conc> (inputs, outputs, [Pred(bind, <conc> (consituents, [NAME]))])))),
 	    Formula("lookup step",
 	            Axiom(),
 	            All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
-	                Impl(<zip; map(makeNeq)> (inputs, inputs2),
-	                Pred(lookup, <conc>(inputs, [Pred(bind, <conc> (consituents, [NAME]))], outputs)))))
+	                Impl([Pred(lookup, <concat> [inputs, outputs, [NAME]]) | <zip; map(makeNeq)> (inputs, inputs2)],
+	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (consituents, [NAME]))])))))
 	]
 	   where
 	       lookup := <conc-strings> ("lookup", Name);
@@ -114,7 +114,7 @@ signature
 	        
 	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, prop)
 	   with consequence' := <trans> consequence;
-            premises' := <to-premise-list; trans> premises;
+            premises' := <premise-to-list; trans> premises;
 	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
 	        implication := Impl(premises', consequence');
 	        prop := <if [] then <id> implication else <id> All(free-vars-in-rule, implication) end> free-vars-in-rule
