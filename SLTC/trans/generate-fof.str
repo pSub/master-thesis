@@ -43,18 +43,16 @@ signature
 			   Rules(TypingRules),
 			   Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(context-formulas,
 			                                                      typing-rule-formulas,
-			                                                      <makeTypingRule; to-conjecture> goal)\)> Goals
+			                                                      <makeGoal> goal)\)> Goals
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas := <map(makeTypingRule; to-axiom)> TypingRules
+            typing-rule-formulas := <map(makeTypingRule)> TypingRules
 
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
     
     premise-to-list : PremiseBase(p) -> [p]
     premise-to-list : PremiseCons(p, ps) -> [p | <premise-to-list> ps]
-    to-axiom : Formula(name, prop) -> Formula(name, Axiom(), prop)
-    to-conjecture : Formula(name, prop) -> Formula(name, Conjecture(), prop)
 
     // Collect free variables
     free-vars : v@Var(_) -> [<strip-annos> v]
@@ -107,18 +105,26 @@ signature
 	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
-	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, prop)
+	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
 	   with consequence' := <trans> consequence;
 	        free-vars-in-rule := <free-vars> consequence';
 	        prop := <if [] then <id> consequence' else <id> All(free-vars-in-rule, consequence') end> free-vars-in-rule
 	        
-	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, prop)
+	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
 	   with consequence' := <trans> consequence;
             premises' := <premise-to-list; trans> premises;
 	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
 	        implication := Impl(premises', consequence');
 	        prop := <if [] then <id> implication else <id> All(free-vars-in-rule, implication) end> free-vars-in-rule
-	
+	        
+	// Conjectures
+	makeGoal : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), consequence')
+       with consequence' := <trans> consequence            
+    makeGoal : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), implication)
+       with consequence' := <trans> consequence;
+            premises' := <premise-to-list; trans> premises;
+            implication := Impl(premises', consequence')
+            
 	// Wrap terms of the programming language into construtors
     // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
 	makeTerm : v@cons#([]) -> v
