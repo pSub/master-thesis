@@ -38,4 +38,14 @@ menus
     
     action: "Generate SDF"         = generate-sdf (openeditor) (realtime)
     action: "Generate FOF"         = gererate-fof (openeditor) (realtime)
+    
+ menu: "Verification"
+    
+    action: "Verify with Vampire" = verify-vampire
+    action: "Clean" = clean-proofs
+  
+menu: "Check consistency"
+    action: "Check consistency with Vampire" = check-consitency-vampire
+    action: "Check consistency with Vampire (120 seconds)" = check-consitency-vampire-120
+    
 

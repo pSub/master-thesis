@@ -7,6 +7,7 @@ imports
 	include/SLTC
 	trans/generate-sdf
 	trans/generate-fof
+	trans/verification
 
 rules
 	
@@ -29,8 +30,35 @@ rules
     filename := <guarantee-extension(|"fof")> path;
     //result := <toFOF> selected
     aterm := <toFOF> selected;
-    result := <pp-slt> aterm
+    result := <pp-fof> aterm
     
-  pp-slt =
+  pp-fof =
     ast2abox(|[<parse-pptable-file> "syntax/fof.pp"]);
     box2text-string(|100)
+    
+  generate-files(|base) =
+    ?files;
+    names := <generate-file-names(|base)> files;
+    <zip> (names, files);
+    map(write-file);
+    !names
+
+  generate-file-names(|base) = generate-file-names(|base, 0)
+  generate-file-names(|base, i) : [] -> []
+  generate-file-names(|base, i) : [output | rest] -> [outfile | <generate-file-names(|base, <inc> i)> rest]
+  where
+    <get-extension> base => ext;
+    <remove-extension> base => basename;
+    <conc-strings> (basename, "-", <int-to-string> i) => filename;
+    <add-extension> (filename, ext) => outfile
+  
+  write-file : (file, output) -> <id>
+  where
+    <fopen> (file, "w") => stream;
+    <fputs> (output, stream);
+    <fclose> stream
+    
+  error(s) = debug(s);fail
+  pp-debug(pp) = bottomup(is-string <+ is-list <+ pp <+ debug(!"pp failed: "))
+
+    
