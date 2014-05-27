@@ -36,14 +36,14 @@ signature
     	
  rules 	
 	makeGoals : Module(ModuleDec(_),
-			   Language(l),
-			   MetaVariables(m),
-			   Contexts(Contexts(ContextDefinitions)),
-			   Judgments(j),
-			   Rules(TypingRules),
-			   Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(context-formulas,
-			                                                      typing-rule-formulas,
-			                                                      <makeGoal> goal)\)> Goals
+			    Language(l),
+			    MetaVariables(m),
+			    Contexts(Contexts(ContextDefinitions)),
+			    Judgments(j),
+			    Rules(TypingRules),
+			    Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(context-formulas,
+			                                                       typing-rule-formulas,
+			                                                       <makeGoal> goal)\)> Goals
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
             typing-rule-formulas := <map(makeTypingRule)> TypingRules

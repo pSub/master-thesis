@@ -6,8 +6,8 @@ exports
     "module" MID                            -> ModuleDec      {cons("ModuleDec")}
     "language" ID							-> Language       {cons("Language")}
     "meta-variables" MetaVariableList 		-> MetaVariables  {cons("MetaVariables")}
-    "contexts" Contexts    				    -> Contexts       {cons("Contexts")}
-    "judgments" JudgmentList                -> Judgments      {cons("Judgments")}
+    "contexts" ContextDefinition*		    -> Contexts       {cons("Contexts")}
+    "judgments" Judgment*                   -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
     "conjectures" TypingRule*               -> Conjectures    {cons("Conjectures")}
     
@@ -23,7 +23,6 @@ exports
 
   context-free syntax
 	Name "{" Mode "}" -> Hole {cons("Hole")}
-	"all" ID+ -> All {cons("All")}
 
 %% Meta-variables
   context-free syntax
@@ -35,12 +34,11 @@ exports
 %% Contexts
   context-free syntax
 	ID ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
-  	ContextDefinition* -> Contexts {cons("Contexts")}
 	
 %% Judgments
   context-free syntax
-	All? Separator? {Hole Separator}+ Separator? "." -> Judgment {cons("Judgment")} %%FIXME: How do I avoid this warning
-	Judgment* -> JudgmentList {cons("JudgmentList")}
+    %%FIXME: How do I avoid this warning
+	Separator? {Hole Separator}+ Separator? "." -> Judgment {cons("Judgment")}
 
 %% Typing Rules
   lexical syntax
