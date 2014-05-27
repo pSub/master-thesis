@@ -70,7 +70,7 @@ signature
 	            Axiom(),
 	            All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
 	                Impl([Pred(lookup, <concat> [inputs, outputs, [NAME]]) | <zip; map(makeNeq)> (inputs, inputs2)],
-	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (consituents, [NAME]))])))))
+	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (<map(append(|"_"))> consituents, [NAME]))])))))
 	]
 	   where
 	       lookup := <conc-strings> ("lookup", Name);
