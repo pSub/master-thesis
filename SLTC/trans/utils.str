@@ -15,3 +15,6 @@ rules
 
     newnames(|l) : 0 -> []
     newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
+
+    to-list(c1,c2) : c1#([arg1]) -> [arg1]
+    to-list(c1,c2) : c2#([arg1, arg2]) -> [arg1 | <to-list(c1,c2)> arg2]

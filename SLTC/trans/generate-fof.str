@@ -50,9 +50,6 @@ signature
 
     makeNeq : (x,y) -> Neq(x,y)
     makeVar : x -> Var(x)
-    
-    premise-to-list : PremiseBase(p) -> [p]
-    premise-to-list : PremiseCons(p, ps) -> [p | <premise-to-list> ps]
 
     // Collect free variables
     free-vars : v@Var(_) -> [<strip-annos> v]
@@ -112,7 +109,7 @@ signature
 	        
 	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
 	   with consequence' := <trans> consequence;
-            premises' := <premise-to-list; trans> premises;
+            premises' := <to-list(PremiseBase, PremiseCons); trans> premises;
 	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
 	        implication := Impl(premises', consequence');
 	        prop := <if [] then <id> implication else <id> All(free-vars-in-rule, implication) end> free-vars-in-rule
@@ -122,7 +119,7 @@ signature
        with consequence' := <trans> consequence            
     makeGoal : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), implication)
        with consequence' := <trans> consequence;
-            premises' := <premise-to-list; trans> premises;
+            premises' := <to-list(PremiseBase, PremiseCons); trans> premises;
             implication := Impl(premises', consequence')
             
 	// Wrap terms of the programming language into construtors
