@@ -40,7 +40,7 @@ exports
     "(" Exp ")"                        -> Exp   {bracket}
     "ifz" Exp "then" Exp "else" Exp    -> Exp   {cons("Ifz")}
     "int"                              -> Type  {cons("IntType")}
-    Type "->" Type                     -> Type  {cons("FunType")}
+    Type "->" Type                     -> Type  {cons("FunType"),right}
 
   context-free syntax
     CONTENTCOMPLETE -> Param {cons("COMPLETION-Param")}
