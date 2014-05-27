@@ -1,11 +1,48 @@
 %% Copied from https://github.com/metaborg/metaborg-pcf
 
 module PCF
-imports Common
+%% imports Common
 
 exports
+    
+    
+  lexical syntax
 
-  %% This was added since my Common.sdf does not define INT	
+    [a-zA-Z][a-zA-Z0-9]* -> ID
+    "-"? [0-9]+          -> INT
+
+    "\"" StringChar* "\"" -> STRING
+    ~[\"\n]               -> StringChar
+    "\\\""                -> StringChar
+    BackSlashChar         -> StringChar
+    "\\"                  -> BackSlashChar
+
+    [\ \t\n\r] -> LAYOUT
+
+    [\*]                             -> CommentChar
+    "/*" (~[\*] | CommentChar)* "*/" -> LAYOUT
+    "//" ~[\n\r]* ([\n\r] | EOF)     -> LAYOUT
+
+    -> EOF
+
+ lexical restrictions
+
+    CommentChar   -/- [\/]
+    INT           -/- [0-9]
+    ID            -/- [a-zA-Z0-9\_]
+
+
+    EOF           -/- ~[]
+
+    BackSlashChar -/- [\"]
+
+ context-free restrictions
+
+
+    LAYOUT? -/- [\ \t\n\r]
+    LAYOUT? -/- [\/].[\/]
+    LAYOUT? -/- [\/].[\*]
+    
   lexical syntax
 	"-"? [0-9]+ -> INT
 	"ifz" -> ID {reject}
@@ -16,9 +53,6 @@ exports
 	"let" -> ID {reject}
 	"in" -> ID {reject}
 	"int" -> ID {reject}
-
-  lexical restrictions
-      INT -/- [0-9]
 	
   context-free start-symbols
     Exp
@@ -40,8 +74,8 @@ exports
     "(" Exp ")"                        -> Exp   {bracket}
     "ifz" Exp "then" Exp "else" Exp    -> Exp   {cons("Ifz")}
     "int"                              -> Type  {cons("IntType")}
-    Type "->" Type                     -> Type  {cons("FunType"),right}
-
+    Type "->" Type                     -> Type  {cons("FunType"), right}
+    "(" Type ")"                       -> Type  {bracket}
   context-free syntax
     CONTENTCOMPLETE -> Param {cons("COMPLETION-Param")}
     CONTENTCOMPLETE -> Exp   {cons("COMPLETION-Exp")}
