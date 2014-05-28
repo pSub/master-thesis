@@ -13,9 +13,9 @@ judgments Context{I} "|-" Exp{I} ":" Type{O}.
 
 rules
 
-%X : ~T in $C
+%X : ~T in $CTX
 =============== T-var
-$C |- ~X : ~T
+$CTX |- ~X : ~T
  
 (%X : ~T1 ; $CTX) |- ~E : ~T2
 ===================================== T-abs
@@ -85,7 +85,24 @@ conjectures
 (x : int ; y : int ;  ()) |- x + y : int
 
 ===
-() |- fun f : int -> int (fun x : int (x)) : (int -> int) -> (int -> int)
+() |- fix f : int -> int (fun n: int (ifz n then 1 else n * (f (n - 1)))) : int -> int
 
 ===
-() |- fun f : int -> int (f 1) : (int -> int) -> int
+() |- let fac : int -> int = 
+  fix f : int -> int (
+    fun n : int (  
+      ifz n then 1 
+      else n * (f (n - 1))
+    )
+  )
+ in (fac 3) : int
+
+===
+() |- fun x : int (fun y : int (y)) : int -> int -> int
+
+===
+(x : int; y : int -> int ; y : int ; ()) |- y : int
+
+===
+() |- fun f : int -> int (fun x : int (f x)) : (int -> int) -> int -> int
+
