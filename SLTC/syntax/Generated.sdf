@@ -1,6 +1,8 @@
 module Generated
 imports PCF
 
+imports Common
+
 exports
   context-free syntax
     "~" MetaVariable -> Type    {cons("MetaVariable-Type")}
@@ -16,4 +18,4 @@ exports
     ID ":" Type "in" Context -> TypingJudgment {cons("ContextLookup-Context")}
 
   context-free syntax
-     Context "|-" Exp ":" Type  -> TypingJudgment {cons("TypingJudgment-4")}
+     Context "|-" Exp ":" Type  -> TypingJudgment {cons("TypingJudgment-3")}
