@@ -121,7 +121,7 @@ rules
     consistency-filename = remove-extension; <conc-strings> (<id>, "-consistency.fof")	
 
 rules
-	verify-vampire = verify-vampire(|"30")
+	verify-vampire = verify-vampire(|"10")
 	verify-vampire-60 = verify-vampire(|"60")
 	verify-vampire-120 = verify-vampire(|"120")
 	verify-vampire-600 = verify-vampire(|"600")
