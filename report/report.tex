@@ -9,7 +9,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage[USenglish]{babel}
 \usepackage{amsbsy,amscd,amsfonts,amssymb,amstext,amsmath,amsthm,latexsym}
-% Package mathpartir is currently not available in NixOS
+% Package mathpartir is currently not available in nixpkgs
 %\usepackage{mathpartir}
 \usepackage{stmaryrd}
 \usepackage{dot2texi}
@@ -24,12 +24,13 @@
 
 %% options
 %%%%%%%%%%
-\newtheorem{definition}{Definition}
-\newtheorem{example}{Example}
-\newtheorem{lemma}{Lemma}
-\newtheorem{theorem}{Theorem}
-\newtheorem{claim}{Claim}
-\numberwithin{definition}{chapter}
+% Currently no such things seem to be needed.
+% \newtheorem{definition}{Definition}
+% \newtheorem{example}{Example}
+% \newtheorem{lemma}{Lemma}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{claim}{Claim}
+% \numberwithin{definition}{chapter}
 \bibliographystyle{alphaurl}
 \makeglossaries
 
@@ -60,18 +61,41 @@
 %%%%%%%%%%%%%%%%%%%
 \tableofcontents
 
-% TODO: Where do I put the "I would like to thank …"
-% TODO: Search for a better word for 'goal'
+\todo[inline]{Where do I put the "I would like to thank …"}
+\todo[inline]{Search for a better word for 'goal'}
 
 % Content
 %%%%%%%%%
 \chapter{Introduction}
+\section{Motiviation}
+\todo[inline]{Extract everything useful from this text and
+build a readable introduction from it}
+Type systems are means to put focus on meaningful programs. In other
+words they help the programmer to catch errors by helping building
+abstractions and by enforcing those abstractions thorough the
+program. We are dealing with static type systems, i.e. abstractions
+are enforced before the execution. Those type systems help to reduce
+development time and to reveal errors earlier. \todo{Cite Stefan
+  Hanenberg}
+
+Static type systems are typically integrated into the compiler of the
+programming language. \todo{Proof this} This makes it hard to extend a
+given type system or to implement a type system for an (embedded)
+domain specific language. In addition the implementation of a type
+system is time expensive and error prone.
+
+The goal of this thesis is to design a language for the specification
+of static type systems in the style of natural deduction and to
+generate based on such specifications an efficient implementation.
+\section{Contributions}
+\section{Structure}
 
 \chapter{Preliminaries}
 \section{Tools}
 \subsection{Spoofax}
 \subsection{SDF}
 \subsection{Stratego}
+\subsection{Sugar-*}
 \subsection{Alternatives}
 \section{Type Systems}
 \section{First-Order Logic}
@@ -99,11 +123,12 @@
 \section{Integration in Tool Chains}
 \section{Security Type Systems}
 
-\chapter{Future Work}
-
-\chapter{Related Work}
-\section{Specification Languages}
-\section{Type Checker Generation}
+\chapter{Summary}
+\section{Conclusion}
+\section{Future Work}
+\section{Related Work}
+\subsection{Specification Languages}
+\subsection{Type Checker Generation}
 
 % Bibliography
 %%%%%%%%%%%%%%
