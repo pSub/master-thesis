@@ -38,7 +38,7 @@ signature
 	makeGoals : Module(ModuleDec(_),
 			    Language(l),
 			    MetaVariables(m),
-			    Contexts(Contexts(ContextDefinitions)),
+			    Contexts(ContextDefinitions),
 			    Judgments(j),
 			    Rules(TypingRules),
 			    Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(context-formulas,
