@@ -66,7 +66,8 @@ signature
 	    Formula("lookup step",
 	            Axiom(),
 	            All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
-	                Impl([Pred(lookup, <concat> [inputs, outputs, [NAME]]) | <zip; map(makeNeq)> (inputs, inputs2)],
+	                // FIXME: Having constaints for inequality of variables as premises breaks typechecking
+	                Impl([Pred(lookup, <concat> [inputs, outputs, [NAME]])], //| <zip; map(makeNeq)> (inputs, inputs2)],
 	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (<map(append(|"_"))> consituents, [NAME]))])))))
 	]
 	   where
