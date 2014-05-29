@@ -68,8 +68,22 @@
 %%%%%%%%%
 \chapter{Introduction}
 \section{Motiviation}
+\todo[inline]{Somehow mention that we are always talking about static
+  type systems}
+
+Type systems try to solve the problem of ensuring that programs have
+meaning. They assign types to expressions and have rules that state
+which expressions of which types can be combined. A type checker
+ensures that the expressions of a program meet those rules, if those
+rules are met, the program is called well-typed. Essentially a type
+system ensures that a program has meaning, by approximating its
+semantics. They also can be used to establish abstractions and to
+enforce the adherence to these abstractions.
+
+
 \todo[inline]{Extract everything useful from this text and
-build a readable introduction from it}
+build a readable motivation from it}
+
 Type systems are means to put focus on meaningful programs. In other
 words they help the programmer to catch errors by helping building
 abstractions and by enforcing those abstractions thorough the
@@ -87,8 +101,22 @@ system is time expensive and error prone.
 The goal of this thesis is to design a language for the specification
 of static type systems in the style of natural deduction and to
 generate based on such specifications an efficient implementation.
+
 \section{Contributions}
+The main contributions of this thesis are:
+\begin{enumerate}
+\item A declarative specification language for static type systems, in
+  which typing rules can be written in the style of natural deduction
+  and which builds SDF definitions of programming languages.
+\item The transformation of type system specifications into equivalent
+  first-order formulas in the TPTP format, suitable to be passed to
+  automated theorem provers.
+\item A generator that creates type checkers from type system
+  specifications and which is designed for performance.
+\end{enumerate}
+
 \section{Structure}
+\todo[inline]{Describe how the thesis is structured.}
 
 \chapter{Preliminaries}
 \section{Tools}
@@ -98,6 +126,33 @@ generate based on such specifications an efficient implementation.
 \subsection{Sugar-*}
 \subsection{Alternatives}
 \section{Type Systems}
+\textit{Type theory} started as an attempt by Gottlob Frege to solve Russel's
+paradox, that shows that \naive set theory is inconsistent. Frege
+argued that a predicate requires an object as argument and cannot have
+itself as an argument, as it is the subject.\todo{Make this more
+  precise} So the initial motivation for type theory was to avoid
+paradoxes and contradictions in logics and rewrite systems. The term
+\textit{type system} refers to type theories whose logics rewrite
+systems are programming languages. Type systems address therefore
+similar problems as general type theory. The problem they address is
+to ensure that programs have meaning, whereas in type theory the
+problem is the ensure the consistency of a logic.
+
+What does it mean to ``ensure that programs have meaning''. First, it
+means that one wants to filter the useful programs. It is not useful
+to have a syntactically valid program that has no semantics. This is
+done by assigning types to the expressions of the program. A
+\textit{type checker} can then check, whether those types match with
+the expressions. If the type checker succeeds the program is
+\textit{well-typed} and has meaning. Second, a type system allows to
+establish abstractions through user definable data types. When type
+checking a program, it is also ensured that those abstractions are not
+violated.\footnote{This is only true for so called ``strong'' type
+  systems.} In this thesis \textit{static} type systems are
+considered. In a static type system types are checked prior to
+execution. This early checks can provide guarantees about the programs
+behavior 
+
 \section{First-Order Logic}
 
 
