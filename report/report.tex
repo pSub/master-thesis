@@ -83,6 +83,24 @@ system ensures that a program has meaning, by approximating its
 semantics. They also can be used to establish abstractions and to
 enforce the adherence to these abstractions.
 
+Although type systems are a useful tool increase software quality,
+there is a lack of tools that help to create and modify type
+checkers. Almost all type checkers are implemented by hand and are far
+away from their formal models. In addition it is non-trivial to write
+or even extend a type checker. Therefore current tools are not suited
+for quick prototyping of type system features for new or existing
+languages. This is also true for the development of domain specific
+languages (DSL). In that sense type systems are underprivileged in
+comparison to parsers. Parser generators are widely spread and
+accepted tools.
+
+The goal of this thesis is to close that gap in the tool chain. A
+declarative specification language is developed, in which type systems
+can be represented very close to the standard formalisms. Two things
+are generated from those specifications. First, a representation of
+the type system as first-order formulas, intended to support proving
+properties of the type system. Second, an efficient type checker that
+can be integrated in existing tool chains.
 \section{Contributions}
 The main contributions of this thesis are:
 \begin{enumerate}
