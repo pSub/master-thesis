@@ -63,6 +63,8 @@
 
 \todo[inline]{Where do I put the "I would like to thank …"}
 \todo[inline]{Search for a better word for 'goal'}
+\todo[inline]{How do we refer to all the different types of
+  languages? This should be done uniformly.}
 
 % Content
 %%%%%%%%%
@@ -70,6 +72,7 @@
 \section{Motiviation}
 \todo[inline]{Somehow mention that we are always talking about static
   type systems}
+\todo[inline]{Mention studies on type systems, e.g. by Hanenberg}
 
 Type systems try to solve the problem of ensuring that programs have
 meaning. They assign types to expressions and have rules that state
@@ -79,28 +82,6 @@ rules are met, the program is called well-typed. Essentially a type
 system ensures that a program has meaning, by approximating its
 semantics. They also can be used to establish abstractions and to
 enforce the adherence to these abstractions.
-
-
-\todo[inline]{Extract everything useful from this text and
-build a readable motivation from it}
-
-Type systems are means to put focus on meaningful programs. In other
-words they help the programmer to catch errors by helping building
-abstractions and by enforcing those abstractions thorough the
-program. We are dealing with static type systems, i.e. abstractions
-are enforced before the execution. Those type systems help to reduce
-development time and to reveal errors earlier. \todo{Cite Stefan
-  Hanenberg}
-
-Static type systems are typically integrated into the compiler of the
-programming language. \todo{Proof this} This makes it hard to extend a
-given type system or to implement a type system for an (embedded)
-domain specific language. In addition the implementation of a type
-system is time expensive and error prone.
-
-The goal of this thesis is to design a language for the specification
-of static type systems in the style of natural deduction and to
-generate based on such specifications an efficient implementation.
 
 \section{Contributions}
 The main contributions of this thesis are:
