@@ -65,6 +65,7 @@
 \todo[inline]{Search for a better word for 'goal'}
 \todo[inline]{How do we refer to all the different types of
   languages? This should be done uniformly.}
+\todo[inline]{Use glossary for abbreviations.}
 
 % Content
 %%%%%%%%%
@@ -123,6 +124,7 @@ In this section the tools used in this thesis are introduced. Their
 capabilities and usage is presented and it is argued for what purpose
 they are used in the thesis and why they are suite for those.
 \subsection{SDF}
+\todo[inline]{Citations needed.}
 The syntax definition formalism (SDF) is a formalism to define syntax
 like the Backus-Naur-From (BNF). SDF allows to define lexical and
 context-free grammars and is, in contrast to BNF, modular. This
@@ -154,7 +156,37 @@ good tool for defining complex syntax for natural deduction rules. The
 modularity and composability make it possible to define that syntax of
 the specification language independent of the language under
 consideration.
-\subsection{Stratego}
+\subsection{Stratego/XT}
+Stratego is a framework for the development of transformation
+systems. It consists of the transformation language Stratego and a set
+of tools XT for tasks like parsing and pretty printing. The paradigm
+of Stratego is to use user-definable strategies for
+rewriting. In Stratego the following abstraction levels can be
+distiguished.
+
+\begin{description}
+\item[Transformation rules] are basic rewrite rules on the structure
+  of the abstract syntax tree (AST).
+\item[Transformation strategies] are the glue between the
+  transformation rules. They combine rules and define the order of
+  application and the traversal order of the AST. These strategies can
+  be defined generically. Context information are passed using
+  \textit{scoped dynamic rewrite rules} during the traversal, as
+  normal rewrite rules are context-free.
+\item[Transformation tools] allow to compile transformation strategies
+  into a stand-alone program. The interface between such programs is
+  the ATerm format for ASTs.
+\item[Transformation systems] describe a set of programs created by
+  the transformation tools, that form a source-to-source
+  transformation usually including a parser and pretty printer.
+\end{description}
+
+\todo[inline]{Create and explain an small example}
+
+Stratego interacts well with SDF and has facilities to integrate
+nicely into tool-chains. In addition it allows to write abstract and
+generic transformation. That makes it a good choice for the
+transformation system.
 \subsection{Spoofax}
 \todo[inline]{Citations needed.}
 Spoofax started with the goal to provide an IDE for SDF and
