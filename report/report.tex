@@ -233,12 +233,29 @@ violated.\footnote{This is only true for so called ``strong'' type
 considered. In a static type system types are checked prior to
 execution. This early checks can provide guarantees about the programs
 behavior 
-
 \section{First-Order Logic}
 
 
 \chapter{Specification Language}
-\section{Goals}
+The goal of this thesis is to create a generator for type checkers,
+like there are generators for lexers and parers. Such a generator can
+only be a useful tool, if the specifications from which the type
+checkers are generated are easy to read and write for people who are
+familiar with type systems and if the specification language is
+expressible enough to handle real-world languages. As there is no
+common format for type system specifications, a new specification
+language was designed with the following goals in mind:
+
+\begin{enumerate}
+\item Close to the formal or mathematical notations that are commonly
+  used to close the gap between the formal model and the
+  implementation side.
+\item Declarative, makes it easy to try things out and increases
+  maintainability and readability of specifications.
+\item Modularity, it should be possible to combine type systems to
+  increase reuse.
+\item Existing programming language definitions should integrate nicely.
+\end{enumerate}
 \section{Design \& Architecture}
 \section{Implementation}
 
