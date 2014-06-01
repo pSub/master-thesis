@@ -14,8 +14,13 @@ exports
 	ID -> Exp {cons("Var")}
   	"\\" ID ":" Type "." Exp -> Exp {cons("Abs")}
   	Exp Exp -> Exp {cons("App")}
-  	"{" (ID "=" Exp)* "}" -> Exp {cons("Record")}
+  	-> RecordEntries {cons("RecordEntries")}
+  	ID "=" Exp RecordEntries -> RecordEntries {cons("RecordEntries")}
+  	"{" RecordEntries"}" -> Exp {cons("Record")}
   	Exp "." ID -> Exp {cons("Projection")}
   	
   context-free syntax
-  	Type "->" Type -> Type {cons("Arrow")}
+  	Type "->" Type -> Type {cons("T-Arrow")}
+  	-> TRecordEntries {cons("TRecordEntries")}
+  	(ID ":" Type) TRecordEntries -> TRecordEntries {cons("TRecordEntries")}
+  	"{" TRecordEntries "}" -> Type {cons("T-Record")}
