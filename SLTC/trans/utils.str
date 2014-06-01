@@ -12,7 +12,10 @@ rules
     
     option-to-string-newname(|l) : Some(s) -> s
     option-to-string-newname(|l) : None() -> <newname> l
-
+    
+    maybe(f|s) : None() -> s
+    maybe(f|s) : Some(s') -> <f> s' 
+    
     newnames(|l) : 0 -> []
     newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
 

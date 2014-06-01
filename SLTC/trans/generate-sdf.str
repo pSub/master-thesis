@@ -39,17 +39,13 @@ rules
 						    scope,
 						    <make-cons'> ["MetaVariable-", scope])\)> ids
 	
-	//FIXME: Reduce code duplication		
-	R : Judgment(s1, pos, s2, None()) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
+	R : Judgment(s1, pos, s2, built-in) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
 	                                  "TypingJudgment",
-	                                  <newname; make-cons> "TypingJudgment-")
+	                                  <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
+	                                  		| <newname> typing-judgment); make-cons> built-in)
 			where
-				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
-	R : Judgment(s1, pos, s2, Some(BuiltIn(s))) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
-	                                  "TypingJudgment",
-	                                  <conc-strings; make-cons> ("TypingJudgment-", s))
-			where
-				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
+				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
+				typing-judgment := "TypingJudgment-"
 
 	names : list -> <map(try(proj(Hole|1)))> list
 
