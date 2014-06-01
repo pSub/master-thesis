@@ -36,13 +36,18 @@ exports
 	ID ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
 	
 %% Judgments
+  lexical syntax
+    "Eq" -> Feature
+    "Neq" -> Feature
+
   context-free syntax
     %%FIXME: How do I avoid this warning
-	Separator? {Hole Separator}+ Separator? "." -> Judgment {cons("Judgment")}
+	Separator? {Hole Separator}+ Separator? BuiltIn? "." -> Judgment {cons("Judgment")}
+	"is" Feature-> BuiltIn {cons("BuiltIn")}
 
 %% Typing Rules
   lexical syntax
-    "===" "="*     -> RuleSep 
+    "===" "="*     -> RuleSep
     
   lexical restrictions
     RuleSep -/- [\=]

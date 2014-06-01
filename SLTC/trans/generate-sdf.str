@@ -37,10 +37,16 @@ rules
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
 						    scope,
 						    <make-cons'> ["MetaVariable-", scope])\)> ids
-				
-	R : Judgment(s1, pos, s2) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
+	
+	//FIXME: Reduce code duplication		
+	R : Judgment(s1, pos, s2, None()) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
 	                                  "TypingJudgment",
 	                                  <newname; make-cons> "TypingJudgment-")
+			where
+				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
+	R : Judgment(s1, pos, s2, Some(BuiltIn(s))) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
+	                                  "TypingJudgment",
+	                                  <conc-strings; make-cons> ("TypingJudgment-", s))
 			where
 				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2])
 

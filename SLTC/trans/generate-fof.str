@@ -100,6 +100,8 @@ signature
 	makeContext = makeContextEmpty <+ makeContextBind <+ makeContextLookup
 
 	// Typing judgments
+	makeTypingJudgment : AuxCons("TypingJudgment", "Neq", [arg1, arg2]) -> Neq(arg1, arg2)
+	makeTypingJudgment : AuxCons("TypingJudgment", "Eq", [arg1, arg2]) -> Eq(arg1, arg2)
 	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
