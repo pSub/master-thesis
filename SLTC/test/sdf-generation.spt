@@ -1,0 +1,20 @@
+module sdf-generation
+
+language SLTC
+
+setup Common
+
+test empty-module [[
+  module test
+  imports test
+  language test
+  meta-variables
+  contexts
+  judgments
+  rules
+  conjectures
+]] run toSdf to  module("Generated"
+        			   , [imports("test"), imports("Common")]
+        			   , exports(conc-grammars(context-free-syntax([]),
+        			     		 conc-grammars(context-free-syntax([]),
+        			     		 			   context-free-syntax([])))))

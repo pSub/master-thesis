@@ -1,4 +1,4 @@
-module test-
+module syntax
 
 language SLTC
 
@@ -35,5 +35,7 @@ test simply-module-without-rules [[
   judgments
   Context{I} "|-" Exp{I} ":" Type{O}.
   Type{I} "<:" Type{I}.
+  Exp{I} "=" Exp{I} is Eq.
+  Exp{I} "!=" Exp{I} is Neq.
   rules
 ]] parse succeeds
