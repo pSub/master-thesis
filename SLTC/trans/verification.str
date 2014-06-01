@@ -22,7 +22,7 @@ rules
 	CurrentFileFOF = CurrentFile; guarantee-extension(|"fof")
 	
 	constraint-warning :
-		Module(m,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
+		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
 	where
 		msg := $[Verification result outdated or not started yet, use verification menu to re-verify.];
 		consistency-msg := $[Consistency check outdated or not started yet, use verification menu to re-check.];
@@ -35,7 +35,7 @@ rules
 		consistency-msgs := <filter(\() -> (m, consistency-msg)\)> consistency-results
 	
 	constraint-note :
-		Module(m,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
+		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
 	where
 		rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
@@ -56,7 +56,7 @@ rules
 	
 	
 	constraint-error : 
-		Module(m,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
+		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
 	where
 		rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
@@ -110,7 +110,7 @@ rules
 		task-setup(|project-path);
 	    filename := <consistency-filename> path;
 	    false-goal := Conjectures([TypingRule(RuleName("", "FALSE"), False())]);
-	    ast-with-false := <Module(id, id, id, id, id, filter(?Conjectures(_)), id); append(|[false-goal])> ast;
+	    ast-with-false := <Module(id, id,id, id, id, id, filter(?Conjectures(_)), id); append(|[false-goal])> ast;
 	    
 	    [goal] := <toFOF <+ error(!"fof-trans failed: ")> ast-with-false;
 	    string := <pp-fof <+ pp-debug(pp-fof)> goal;

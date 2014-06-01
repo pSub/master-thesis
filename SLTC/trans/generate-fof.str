@@ -36,6 +36,7 @@ signature
     	
  rules 	
 	makeGoals : Module(ModuleDec(_),
+			    imports,
 			    Language(l),
 			    MetaVariables(m),
 			    Contexts(ContextDefinitions),

@@ -15,6 +15,7 @@ exports
 
     "module"                           -> ReservedWord
     "language"                         -> ReservedWord
+    "imports"						   -> ReservedWord
     "meta-variables"                   -> ReservedWord
     "definitions"                      -> ReservedWord
     "judgments"                        -> ReservedWord

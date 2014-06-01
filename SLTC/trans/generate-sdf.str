@@ -7,7 +7,8 @@ imports org/sugarj/languages/Sdf2
 
 rules
 	R : Module(_,
-               Language(t),
+               _,
+			   Language(t),
                MetaVariables(MetaVariableList(Meta)),
                Contexts(Ctx),
                Judgments(Judg),
