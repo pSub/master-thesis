@@ -14,7 +14,7 @@ exports
     
     %%TODO: When introducing imports it might make sense to treat most
     %% consituents as optional.
-    ModuleDec Language Imports? MetaVariables Contexts Judgments Rules Conjectures? -> Module {cons("Module")}
+    ModuleDec Imports? Language MetaVariables Contexts Judgments Rules Conjectures? -> Module {cons("Module")}
 
 
   lexical syntax
