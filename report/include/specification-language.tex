@@ -72,6 +72,34 @@ syntax. Typing rules specify the type system and conjectures are used
 to provide test cases and are optional. A typing rule consists of a possible empty list
 of typing judgments, an optional name and a typing judgment as
 conclusion.
+
+\begin{figure}
+\begin{verbatim}
+module example
+imports common
+language simply-typed-lambda-calculus
+meta-variables 	Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+contexts Context := ID{I} x Type{O}
+judgments Context{I} "|-" Exp{I} ":" Type{O}.
+rules
+
+%x : ~T in $C
+============== T-Var
+$C |- ~x : ~T
+
+(%x : ~T ; $C) |- ~t : ~T
+================================= T-Abs
+$C |- \ %x : ~T . ~t : ~T -> ~T
+
+$C |- ~t1 : ~T11 -> ~T12
+$C |- ~t2 : ~T2
+========================= T-App
+$C |- ~t1 ~t2 : ~S
+\end{verbatim}
+\caption{Specification for a type system for the simply typed lambda calculus}
+\end{figure}
 \section{Implementation}
 
 %%% Local Variables: 
