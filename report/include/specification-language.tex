@@ -1,0 +1,80 @@
+
+\chapter{Specification Language}
+The goal of this thesis is to create a generator for type checkers,
+like there are generators for lexers and parers. Such a generator can
+only be a useful tool, if the specifications from which the type
+checkers are generated are easy to read and write for people who are
+familiar with type systems and if the specification language is
+expressible enough to handle real-world languages. As there is no
+common format for type system specifications, a new specification
+language was designed with the following goals in mind:
+
+\begin{enumerate}
+\item Close to the formal or mathematical notations that are commonly
+  used to close the gap between the formal model and the
+  implementation side.
+\item Declarative, makes it easy to try things out and increases
+  maintainability and readability of specifications.
+\item Modularity, it should be possible to combine type systems to
+  increase reuse.
+\item Existing programming language definitions should integrate nicely.
+\end{enumerate}
+\section{Design \& Architecture}
+A specification is divided into eight sections, of which two are
+optional. The three sections are for organizational purposes. The
+first section declare the name of the specification. This name is a
+unique identifier and used for imports. The second section declares
+which other specifications are imported. The third section declares
+the language for which a type system should be specified. This
+language needs to be present in SDF and there must be a module with
+exactly that name. \todo[inline]{Does it make sense to allow imported
+  files to declare a language?}
+
+In the fourth section meta-variables are declared. The declaration of
+a meta-variable consists of an identifier, of a prefix and of a set of
+non-terminals of the base language. The identifier can be used to
+distinguish different kinds of meta-variables.\todo{Currently this is
+  not used} A meta-variable can consist of letters and numbers, to
+ensure that we can parse meta-variables of different kinds
+unambiguously every meta-variable must be prepended with the declared
+prefix. As we want to introduce meta-variables at different positions
+in the base language we need a way to extend the syntax of the base
+language. The set of non-terminals in a meta-variable definition lists
+the non-terminals that shall be extended.
+
+\todo[inline]{Make up my mind about the name of those environments}
+In the fifth section all environments that will be used in the
+judgments are defined. Informally these environments are declared as
+cross-products of non-terminals, i.e. an environment is a set
+consisting of pairs of terminals that can be produced by the
+non-terminals in the declaration. Every environment has a name, which
+can be used in further declarations. Lookups may differ for
+environments and use cases, therefore one has to annotate the
+non-terminals with input and output tags. Terminals at positions that
+are tagged with input are used to look up terminals tagged with output
+that are saved in the environment. An environment for which all
+non-terminals are tagged with input, is equivalent to a normal look up
+in a set and will return whether the tuple could be found. An
+environment with only outputs acts as a sink, one can put things into
+it, but never retrieve anything back.
+
+The sixth section declares type judgments. Type judgments can be
+declared in a flexible way, non-terminals can be mixed arbitrarily
+with separators. This allows the programmer\todo{Is this the right
+  word?} to declare the type judgments as close to formalizations as
+possible. As for environments the non-terminals in the type judgments
+have to be annotated with input/output-tags to determine what should
+be computed.
+
+In the last two sections the typing rules and conjectures are
+declared. Both typing rules and conjectures have the same
+syntax. Typing rules specify the type system and conjectures are used
+to provide test cases and are optional. A typing rule consists of a possible empty list
+of typing judgments, an optional name and a typing judgment as
+conclusion.
+\section{Implementation}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../report"
+%%% End: 

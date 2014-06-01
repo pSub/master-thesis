@@ -1,0 +1,122 @@
+
+\chapter{Preliminaries}
+\section{Tools}
+In this section the tools used in this thesis are introduced. Their
+capabilities and usage is presented and it is argued for what purpose
+they are used in the thesis and why they are suite for those.
+\subsection{SDF}
+\todo[inline]{Citations needed.}
+The syntax definition formalism (SDF) is a formalism to define syntax
+like the Backus-Naur-From (BNF). SDF allows to define lexical and
+context-free grammars and is, in contrast to BNF, modular. This
+modularity allows to compose SDF syntax definitions. SDF is also
+supported by parser generators. In contrast to traditional parser
+generators like YACC, SDF specifications are purely declarative, which
+increases understandability of the specifications.
+
+The modularity of SDF is a consequence of being a generalized LR
+parsable. Generalized parsing means that parsing might be
+indeterminate, i.e. ambiguities in the specifications are
+allowed. This might not seem to be an advantage, but generalized
+parsing has some nice implications. First the class of supported
+grammars is bigger and therefore enforces less restrictions and allows
+a natural definition of languages. Second, it enables the modularity
+of SDF. The composition of normal LR grammars is not guaranteed to be
+an LR grammar again, but this is guaranteed for generalized LR
+grammars.
+
+An other advantage is that SDF is also scannerless parsable, that
+means that tokenization and parsing can be done in a single step.
+
+\todo[inline]{Create and explain an small example}
+\todo[inline]{Talk about layout constraints}
+
+SDF is used in this thesis to define the syntax of the specification
+language for type systems. Features like layout constraints make SDF a
+good tool for defining complex syntax for natural deduction rules. The
+modularity and composability make it possible to define that syntax of
+the specification language independent of the language under
+consideration.
+\subsection{Stratego/XT}
+Stratego is a framework for the development of transformation
+systems. It consists of the transformation language Stratego and a set
+of tools XT for tasks like parsing and pretty printing. The paradigm
+of Stratego is to use user-definable strategies for
+rewriting. In Stratego the following abstraction levels can be
+distiguished.
+
+\begin{description}
+\item[Transformation rules] are basic rewrite rules on the structure
+  of the abstract syntax tree (AST).
+\item[Transformation strategies] are the glue between the
+  transformation rules. They combine rules and define the order of
+  application and the traversal order of the AST. These strategies can
+  be defined generically. Context information are passed using
+  \textit{scoped dynamic rewrite rules} during the traversal, as
+  normal rewrite rules are context-free.
+\item[Transformation tools] allow to compile transformation strategies
+  into a stand-alone program. The interface between such programs is
+  the ATerm format for ASTs.
+\item[Transformation systems] describe a set of programs created by
+  the transformation tools, that form a source-to-source
+  transformation usually including a parser and pretty printer.
+\end{description}
+
+\todo[inline]{Create and explain an small example}
+
+Stratego interacts well with SDF and has facilities to integrate
+nicely into tool-chains. In addition it allows to write abstract and
+generic transformation. That makes it a good choice for the
+transformation system.
+\subsection{Spoofax}
+\todo[inline]{Citations needed.}
+Spoofax started with the goal to provide an IDE for SDF and
+Stratego. It was then developed to a language workbench for Eclipse
+that allows language development with editor support for both, the
+languages used for development and the developed language. Smooth
+switching between both editor services. The editor for the developed
+language can be deployed standalone. Those editor services provide
+syntactic and semantic analysis based on live parses, with error
+recovery and origin tracking. Those facilities are implemented
+language pragmatic, which allows developers to focus on language
+specific parts.
+
+Spoofax is used in this thesis to provide editor support for the
+specification language and as glue between SDF and Stratego in the
+development of the specification language, the formula generator and
+the type checker generator.
+\subsection{Sugar-*}
+\subsection{Alternatives}
+\section{Type Systems}
+\textit{Type theory} started as an attempt by Gottlob Frege to solve Russel's
+paradox, that shows that \naive set theory is inconsistent. Frege
+argued that a predicate requires an object as argument and cannot have
+itself as an argument, as it is the subject.\todo{Make this more
+  precise} So the initial motivation for type theory was to avoid
+paradoxes and contradictions in logics and rewrite systems. The term
+\textit{type system} refers to type theories whose logics rewrite
+systems are programming languages. Type systems address therefore
+similar problems as general type theory. The problem they address is
+to ensure that programs have meaning, whereas in type theory the
+problem is the ensure the consistency of a logic.
+
+What does it mean to ``ensure that programs have meaning''. First, it
+means that one wants to filter the useful programs. It is not useful
+to have a syntactically valid program that has no semantics. This is
+done by assigning types to the expressions of the program. A
+\textit{type checker} can then check, whether those types match with
+the expressions. If the type checker succeeds the program is
+\textit{well-typed} and has meaning. Second, a type system allows to
+establish abstractions through user definable data types. When type
+checking a program, it is also ensured that those abstractions are not
+violated.\footnote{This is only true for so called ``strong'' type
+  systems.} In this thesis \textit{static} type systems are
+considered. In a static type system types are checked prior to
+execution. This early checks can provide guarantees about the programs
+behavior 
+\section{First-Order Logic}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../report"
+%%% End: 
