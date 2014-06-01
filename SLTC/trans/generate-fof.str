@@ -41,15 +41,36 @@ signature
 			    Contexts(ContextDefinitions),
 			    Judgments(j),
 			    Rules(TypingRules),
-			    Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(context-formulas,
+			    Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(<concat> [context-formulas, helper],
 			                                                       typing-rule-formulas,
 			                                                       <makeGoal> goal)\)> Goals
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas := <map(makeTypingRule)> TypingRules
+            typing-rule-formulas := <map(makeTypingRule)> TypingRules;
+            helper := <collect-all(?Term(name, args));
+                       nub;
+            		   mapconcat(\Term(name, args) ->
+            		   			 [<makeInjectivity> (name, <length> args),
+            		   			  <makeUnivalence> (name, <length> args)] \)> typing-rule-formulas
 
     makeNeq : (x,y) -> Neq(x,y)
+    makeEq : (x,y) -> Eq(x,y)
     makeVar : x -> Var(x)
+    
+    //TODO: Is the formulation important? What about using the contraposition?
+    makeInjectivity : (name, n) -> Formula(<conc-strings> (name, "-injective"),
+    									   Axiom(),
+    									   Impl(<zip; map(makeNeq)> (Xs, Ys), Neq(Term(name, Xs), Term(name, Ys)))
+    									   )
+    	where Xs := <newnames(|"X")> n;
+    		  Ys := <newnames(|"Y")> n
+    makeUnivalence : (name, n) -> Formula(<conc-strings> (name, "-univalent"),
+    									  Axiom(),
+    									  Impl([Eq(Term(name, Xs), Var("Y")), Eq(Term(name, Xs), Var("Z"))],
+    									       Eq(Var("Y"), Var("Z")))
+    									 )
+    	where Xs := <newnames(|"X")> n
+    
 
     // Collect free variables
     free-vars : v@Var(_) -> [<strip-annos> v]
