@@ -9,8 +9,10 @@ exports
     
   lexical syntax
   	[a-z]+ -> ID
+	[0-9]+ -> Int
     
   context-free syntax
+	Int -> Exp {cons("Int")}
 	ID -> Exp {cons("Var")}
   	"\\" ID ":" Type "." Exp -> Exp {cons("Abs")}
   	Exp Exp -> Exp {cons("App")}

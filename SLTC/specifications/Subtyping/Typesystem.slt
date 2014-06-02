@@ -6,6 +6,7 @@ meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { Context }
 				Id "%" { ID }
 				R "$" {TRecordEntries RecordEntries}
+				Num "&" { Int }
 
 contexts Context := ID{I} x Type{O}
 
@@ -17,6 +18,9 @@ rules
 
 /* Typing rules */
 
+==============
+$C |- &i : int
+
 %x : ~T in $C
 ============== T-var
 $C |- ~x : ~T
@@ -27,9 +31,10 @@ $C |- \ %x : ~T . ~t : ~T -> ~T
 
 $C |- ~t1 : ~T11 -> ~T12
 $C |- ~t2 : ~T2
-~T2 <: ~T11 
+~T2 <: ~T11
 ========================= T-app
 $C |- ~t1 ~t2 : ~S
+
 
 /* This rule does not look like it is working */
 $C |- ~t : { %l : ~T $R }
@@ -42,8 +47,7 @@ $C |- {} : {}
 $C |- ~e : ~T
 $C |- { $R } : { $S }
 =====================================
-$C |- { %l = ~e $R } : { %l : ~T $S } 
-
+$C |- { %l = ~e $R } : { %l : ~T $S }
 
 /* Definition of the subtyping relation */
 
