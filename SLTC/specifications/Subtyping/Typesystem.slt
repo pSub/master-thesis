@@ -13,6 +13,8 @@ contexts Context := ID{I} x Type{O}
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 Type{I} "<:" Type{I}.
+ID{I} "!=" ID{I} is Neq.
+Type{I} "!=" Type{I} is Neq.
 
 rules
 
@@ -25,21 +27,26 @@ $C |- &i : int
 ============== T-var
 $C |- ~x : ~T
 
-(%x : ~T ; $C) |- ~t : ~T
+(%x : ~T ; $C) |- ~e : ~T
 ================================= T-abs
-$C |- \ %x : ~T . ~t : ~T -> ~T
+$C |- \ %x : ~T . ~e : ~T -> ~T
 
-$C |- ~t1 : ~T11 -> ~T12
-$C |- ~t2 : ~T2
+$C |- ~e1 : ~T11 -> ~T12
+$C |- ~e2 : ~T2
 ~T2 <: ~T11
 ========================= T-app
-$C |- ~t1 ~t2 : ~S
+$C |- ~e1 ~e2 : ~S
 
+$C |- ~e : { %l : ~T $R }
+========================= T-proj1
+$C |- ~e . %l : ~T
 
-/* This rule does not look like it is working */
-$C |- ~t : { %l : ~T $R }
-========================= T-proj
-$C |- ~t . %l : ~T
+$C |- {%m = ~e2 $R} : { %m : ~S $U }
+%m != %l
+~S != ~T
+$C |- { $R } . %l : ~T
+============================= T-proj2
+$C |- {%m = ~e1 $R} . %l : ~T
 
 ============= T-empty
 $C |- {} : {}
@@ -79,7 +86,6 @@ $C |- { %l = ~e $R } : { %l : ~T $S }
 =============================== width
 { %l : ~T $R } <: { %l : ~T $S}
 
-
 conjectures
 
 ===
@@ -98,4 +104,17 @@ conjectures
 () |- {x=0 y=1} : {x : int y : int}
 
 ===
-() |- {x=0}.x : int
+() |- {x=0 y=1}.x : int
+
+===
+() |- {y=0 x=1}.x : int
+
+===
+() |- \x : {y : int} . x : { y : int } -> { y : int }
+
+
+===
+() |- (\x : {y : int} . x) {y=1} : { y : int }
+
+===
+() |- (\x : {y : int} . x) {y=1 x=1} : { y : int }
