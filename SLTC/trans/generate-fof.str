@@ -34,7 +34,11 @@ signature
 		
 		AuxCons : String * String * List(Prop) -> Prop
     	
- rules 	
+ rules
+ 	//FIXME: Why do things break if replace is inlined?
+    replace-var(|old,new) = innermost(replace(|old, new))
+    replace(|old, new) : old -> Var(new)
+
 	makeGoals : Module(ModuleDec(_),
 			    imports,
 			    Language(l),
@@ -47,12 +51,16 @@ signature
 			                                                       <makeGoal> goal)\)> Goals
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas := <map(makeTypingRule)> TypingRules;
+            typing-rule-formulas-dirty := <map(makeTypingRule)> TypingRules;
+            //FIXME: Replace only lower-case variables to make debugging easier
+			variables := <collect-all(?Var(_))> typing-rule-formulas-dirty;
+            typing-rule-formulas := <foldl(\(var, formula) -> <replace-var(|var, <newname> "X")> formula\)> (variables, typing-rule-formulas-dirty);
             helper := <collect-all(?Term(name, args));
                        nub;
             		   mapconcat(\Term(name, args) ->
             		   			 [<makeInjectivity> (name, <length> args),
             		   			  <makeUnivalence> (name, <length> args)] \)> typing-rule-formulas
+
 
     makeNeq : (x,y) -> Neq(x,y)
     makeEq : (x,y) -> Eq(x,y)
@@ -113,7 +121,7 @@ signature
             is-generic = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
     
     // Meta-variables
-    makeMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; upper-case; makeVar> name
+    makeMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; makeVar> name
 	
 	// Contexts in typing rules
 	makeContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty", name])
