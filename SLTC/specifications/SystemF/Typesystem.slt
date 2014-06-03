@@ -1,0 +1,46 @@
+module Typesystem
+
+language SystemF
+
+meta-variables 	Term "~" { Type Exp }
+				Ctx "$" { TermBinding TypeBinding }
+				Id "%" { ID }
+
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
+
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+
+rules
+
+%x : ~T in $C1
+============== T-Var
+$C1 | $C2 |- %x : ~T
+
+(%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
+==================================== T-Abs
+$C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
+
+$C1 | $C2 |- ~t1 : ~T11 -> ~T12
+$C1 | $C2 |- ~t2 : ~T11
+========================== T-App
+$C1 | $C2 |- ~t1 ~t2 : ~T12
+
+/* How to encode the freshness condition */
+$C1 | (%x ; $C2) |- ~t2 : ~T2
+======================================= T-Tabs
+$C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
+
+$C1 | $C2 |- ~e : all %x . ~T
+~U = [ %x -> ~S ] ~T
+==============================
+$C1 | $C2 |- ~e [ ~S ] : ~T
+
+
+conjectures
+
+===
+() | () |- \ x . \ y : x . x : all x . (x -> x)
