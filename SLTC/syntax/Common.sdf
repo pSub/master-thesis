@@ -20,12 +20,13 @@ exports
     "definitions"                      -> ReservedWord
     "judgments"                        -> ReservedWord
     "rules"                            -> ReservedWord
+    "conjectures"                      -> ReservedWord
     ReservedWord                       -> ID           {reject}
 
   lexical restrictions
     CommentChar -/- [\/]
     MetaVariable -/- [a-zA-Z0-9]
-    ID -/- [a-zA-Z0-9\_]
+    ID -/- [a-zA-Z0-9\_\-]
     MID -/- [\.]
     EOF -/- ~[]
 
