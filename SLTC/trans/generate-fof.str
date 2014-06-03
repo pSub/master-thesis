@@ -18,6 +18,7 @@ signature
     	Eq    : Prop * Prop -> Prop
     	Neq : Prop * Prop -> Prop
     	Var   : String -> Prop
+    	Var   : String * String -> Prop
     	Pred  : String -> Prop
     	Pred  : String * List(Prop) -> Prop
     	Term  : String -> Prop
@@ -53,7 +54,7 @@ signature
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
             typing-rule-formulas-dirty := <map(rewriteTypingRule)> TypingRules;
             //FIXME: Replace only lower-case variables to make debugging easier
-			variables := <collect-all(?Var(_))> typing-rule-formulas-dirty;
+			variables := <collect-all(?Var(_,_))> typing-rule-formulas-dirty;
             typing-rule-formulas := <foldl(\(var, formula) -> <replace-var(|var, <newname> "X")> formula\)> (variables, typing-rule-formulas-dirty);
             helper := <collect-all(?Term(name, args));
                        nub;
@@ -63,7 +64,6 @@ signature
 
 
     makeNeq : (x,y) -> Neq(x,y)
-    makeVar : x -> Var(x)
     
     //TODO: Is the formulation important? What about using the contraposition?
     makeInjectivity : (name, n) -> Formula(<conc-strings> (name, "-injective"),
@@ -103,10 +103,10 @@ signature
 	       // Index non-terminals with new names
 	       indexed-non-terminals := <zip> (<length; newnames(|"X")> raw-non-terminals, raw-non-terminals);
 		   // extract the list of new names
-	       non-terminals := <map(Fst; makeVar)> indexed-non-terminals;
+	       non-terminals := <map(Fst; \s -> Var(s)\)> indexed-non-terminals;
 	       // filter out the in- and outputs
-	       inputs := <filter(?(_, Hole(_, "I")); Fst; makeVar)> indexed-non-terminals;
-	       outputs := <filter(?(_, Hole(_, "O")); Fst; makeVar)> indexed-non-terminals;
+	       inputs := <filter(?(_, Hole(_, "I")); Fst; \s -> Var(s)\)> indexed-non-terminals;
+	       outputs := <filter(?(_, Hole(_, "O")); Fst; \s -> Var(s)\)> indexed-non-terminals;
 	       // duplicate the in-and outputs by appending underscores
 	       inputs2 := <map(append(|"_"))> inputs;
 	       outputs2 := <map(append(|"_"))> outputs;
@@ -114,8 +114,8 @@ signature
 	       // Auxiliary definitions
 	       lookup := <conc-strings> ("lookup", name);
 	       bind := <conc-strings> ("bind", name);
-	       NAME := <upper-case; makeVar> name
-           append(|p) = \ Var(s) -> <conc-strings; makeVar> (s, p) \
+	       NAME := Var(<upper-case> name)
+           append(|p) = \ Var(s) -> Var(<conc-strings> (s, p)) \
 
 	       
     // Translate all generic construtors into an auxillary data structure
@@ -130,7 +130,7 @@ signature
             			 "MetaVariable"
     
     // Meta-variables
-    rewriteMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; makeVar> name
+    rewriteMetaVariable : AuxCons("MetaVariable", scope, name) -> Var(<concat-strings> name, scope)
 	
 	// Contexts in typing rules
 	rewriteContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty", name])
