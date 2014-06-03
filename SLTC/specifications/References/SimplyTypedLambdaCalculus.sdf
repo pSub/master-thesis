@@ -40,3 +40,4 @@ exports
   	"int" -> Type {cons("TInt")}
   	"Unit" -> Type {cons("TUnit")}
   	"Ref" Type -> Type {cons("TRef")}
+  	"(" Type ")" -> Type {bracket}

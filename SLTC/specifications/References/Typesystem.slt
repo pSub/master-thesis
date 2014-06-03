@@ -52,3 +52,9 @@ conjectures
 
 ===
 () | () |- ref 0 : Ref int
+
+===
+() | () |- ! (ref 0) : int
+
+===
+() | () |- (ref 0) := 7 : Unit
