@@ -1,4 +1,3 @@
-
 \chapter{Specification Language}
 The goal of this thesis is to create a generator for type checkers,
 like there are generators for lexers and parers. Such a generator can
@@ -20,6 +19,10 @@ language was designed with the following goals in mind:
 \item Existing programming language definitions should integrate nicely.
 \end{enumerate}
 \section{Design \& Architecture}
+This sections explains the architecture of a specification with
+references to a small example specification and then argues how this
+design realizes all goals stated above.
+
 A specification is divided into eight sections, of which two are
 optional. The three sections are for organizational purposes. The
 first section declare the name of the specification. This name is a
@@ -69,10 +72,12 @@ be computed.
 In the last two sections the typing rules and conjectures are
 declared. Both typing rules and conjectures have the same
 syntax. Typing rules specify the type system and conjectures are used
-to provide test cases and are optional. A typing rule consists of a possible empty list
-of typing judgments, an optional name and a typing judgment as
-conclusion.
+to provide test cases and are optional. A typing rule consists of a
+possible empty list of typing judgments, an optional name and a typing
+judgment as conclusion.
 
+\todo[inline]{Refer to the parts in the code from the description of
+  sections above}
 \begin{figure}
 \begin{verbatim}
 module example
@@ -100,7 +105,35 @@ $C |- ~t1 ~t2 : ~S
 \end{verbatim}
 \caption{Specification for a type system for the simply typed lambda calculus}
 \end{figure}
+
+How does this design reflect the goals declared above?
+
+\begin{description}
+\item[Usage] Mathematical definitions of type systems usually consist
+  of judgment, rules and auxiliary definitions for environments. All
+  those elements can be represented in a natural way in the
+  specification language. Judgments can be defined as an arbitrary, as long
+  as this syntax does not create ambiguities, combination of
+  non-terminals and separation symbols. Rules are written in a natural
+  deduction style, because this is the most common representation for
+  typing rules and acknowledges the deductive nature of typing rules
+  in general. Environments can be defined using a set like
+  notation. This is close to the intuitive semantics of environments
+  and allows to generate commonly used syntax.
+\item[Declarative] Everything that can be defined in the specification
+  language has no side effects or possibilities to embed executable
+  code.
+\item[Modularity] \todo[inline]{Imports are not implemented yet.}
+\item[Integration] Type systems can be defined for every programming
+  language for which a SDF syntax definition exists. These definitions
+  can in most cases be used in the specification language without
+  modifications. Modifications are needed if one wants to use a
+  language concept inductively in the type system, but has not
+  implemented this concept with explicit induction in the
+  syntax.\todo[inline]{Given an example.}
+\end{description}
 \section{Implementation}
+\todo[inline]{Integration with sugar-lang is not done yet.}
 
 %%% Local Variables: 
 %%% mode: latex
