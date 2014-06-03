@@ -4,7 +4,8 @@ language SimplyTypedLambdaCalculus
 
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { Context Store }
-				Id "%" { ID LOC }
+				Id "%" { ID }
+				Loc "&" { LOC Int }
 
 contexts Context := ID{I} x Type{O}
 		 Store   := LOC{I} x Type{O}
@@ -13,6 +14,9 @@ judgments
 Context{I} "|" Store{I} "|-" Exp{I} ":" Type{O}.
 
 rules
+
+===================
+$C | $S |- &i : int
 
 %x : ~T in $C
 ==================
@@ -27,9 +31,9 @@ $C | $S |- ~t2 : ~T2
 =========================
 $C | $S |- ~t1 ~t2 : ~S
 
-%l : ~T in $S
+&l : ~T in $S
 ===============
-$C | $S |- %l : Ref ~T
+$C | $S |- loc(&l) : Ref ~T
 
 $C | $S |- ~t : ~T
 ==================
@@ -43,3 +47,8 @@ $C | $S |- ~t1 : Ref ~T
 $C | $S |- ~t2 : ~T
 =======================
 $C | $S |- ~t1 := ~t2 : Unit
+
+conjectures
+
+===
+() | () |- ref 0 : Ref int
