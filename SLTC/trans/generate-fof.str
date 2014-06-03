@@ -48,10 +48,10 @@ signature
 			    Rules(TypingRules),
 			    Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(<concat> [context-formulas, helper],
 			                                                       typing-rule-formulas,
-			                                                       <makeGoal> goal)\)> Goals
+			                                                       <makeConjecture> goal)\)> Goals
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas-dirty := <map(makeTypingRule)> TypingRules;
+            typing-rule-formulas-dirty := <map(rewriteTypingRule)> TypingRules;
             //FIXME: Replace only lower-case variables to make debugging easier
 			variables := <collect-all(?Var(_))> typing-rule-formulas-dirty;
             typing-rule-formulas := <foldl(\(var, formula) -> <replace-var(|var, <newname> "X")> formula\)> (variables, typing-rule-formulas-dirty);
@@ -63,7 +63,6 @@ signature
 
 
     makeNeq : (x,y) -> Neq(x,y)
-    makeEq : (x,y) -> Eq(x,y)
     makeVar : x -> Var(x)
     
     //TODO: Is the formulation important? What about using the contraposition?
@@ -88,28 +87,34 @@ signature
     free-vars : cons#(xs) -> <map(free-vars); unions> xs
 	
 	// Generate context definitions
-	makeContexts : ContextDefinition(Name, Consituents) -> [
+	makeContexts : ContextDefinition(name, raw-non-terminals) -> [
 	    Formula("lookup base",
 	            Axiom(),
 	            All([NAME|<conc>(inputs, outputs)],
-	                Pred(lookup, <conc> (inputs, outputs, [Pred(bind, <conc> (consituents, [NAME]))])))),
+	                Pred(lookup, <conc> (inputs, outputs, [Pred(bind, <conc> (non-terminals, [NAME]))])))),
 	    Formula("lookup step",
 	            Axiom(),
 	            All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
 	                // FIXME: Having constaints for inequality of variables as premises breaks typechecking
 	                Impl([Pred(lookup, <concat> [inputs, outputs, [NAME]])], //| <zip; map(makeNeq)> (inputs, inputs2)],
-	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (<map(append(|"_"))> consituents, [NAME]))])))))
+	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (<map(append(|"_"))> non-terminals, [NAME]))])))))
 	]
 	   where
-	       lookup := <conc-strings> ("lookup", Name);
-	       bind := <conc-strings> ("bind", Name);
-	       NAME := <upper-case; makeVar> Name;
-	       indexedConsituents := <zip> (<newnames(|"X")><length> Consituents, Consituents);
-	       consituents := <map(Fst; makeVar)> indexedConsituents;
-	       inputs := <filter(?(_, Hole(_, "I")); Fst; makeVar)> indexedConsituents;
-	       outputs := <filter(?(_, Hole(_, "O")); Fst; makeVar)> indexedConsituents;
+	       // Index non-terminals with new names
+	       indexed-non-terminals := <zip> (<length; newnames(|"X")> raw-non-terminals, raw-non-terminals);
+		   // extract the list of new names
+	       non-terminals := <map(Fst; makeVar)> indexed-non-terminals;
+	       // filter out the in- and outputs
+	       inputs := <filter(?(_, Hole(_, "I")); Fst; makeVar)> indexed-non-terminals;
+	       outputs := <filter(?(_, Hole(_, "O")); Fst; makeVar)> indexed-non-terminals;
+	       // duplicate the in-and outputs by appending underscores
 	       inputs2 := <map(append(|"_"))> inputs;
-	       outputs2 := <map(append(|"_"))> outputs
+	       outputs2 := <map(append(|"_"))> outputs;
+	       
+	       // Auxiliary definitions
+	       lookup := <conc-strings> ("lookup", name);
+	       bind := <conc-strings> ("bind", name);
+	       NAME := <upper-case; makeVar> name
            append(|p) = \ Var(s) -> <conc-strings; makeVar> (s, p) \
 
 	       
@@ -118,41 +123,51 @@ signature
         where
             [cons, name] := <string-tokenize(|['-'])> Constructor;
             <is-generic> cons
-            is-generic = "ContextEmpty" <+ "ContextBind" <+ "ContextLookup" <+ "TypingJudgment" <+ "MetaVariable"
+            is-generic = "ContextEmpty" <+
+            			 "ContextBind" <+
+            			 "ContextLookup" <+
+            			 "TypingJudgment" <+
+            			 "MetaVariable"
     
     // Meta-variables
-    makeMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; makeVar> name
+    rewriteMetaVariable : AuxCons("MetaVariable", scope, name) -> <concat-strings; makeVar> name
 	
 	// Contexts in typing rules
-	makeContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty", name])
-	makeContextBind : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind", name], args)
-	makeContextLookup : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup", name], args)
-	makeContext = makeContextEmpty <+ makeContextBind <+ makeContextLookup
+	rewriteContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty", name])
+	rewriteContextBind : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind", name], args)
+	rewriteContextLookup : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup", name], args)
+	rewriteContext = rewriteContextEmpty <+ rewriteContextBind <+ rewriteContextLookup
 
 	// Typing judgments
-	makeTypingJudgment : AuxCons("TypingJudgment", "Neq", [arg1, arg2]) -> Neq(arg1, arg2)
-	makeTypingJudgment : AuxCons("TypingJudgment", "Eq", [arg1, arg2]) -> Eq(arg1, arg2)
-	makeTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
+	rewriteTypingJudgment : AuxCons("TypingJudgment", "Neq", [arg1, arg2]) -> Neq(arg1, arg2)
+	rewriteTypingJudgment : AuxCons("TypingJudgment", "Eq", [arg1, arg2]) -> Eq(arg1, arg2)
+	rewriteTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
-	makeTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
-	   with consequence' := <trans> consequence;
+	rewriteTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
+	   with // Rewrite consequence and collect all free variables
+	   	    consequence' := <rewrite> consequence;
 	        free-vars-in-rule := <free-vars> consequence';
+	        // if there are non free variables omit quantification as
+	        // it is illegal in TPTP to quantify over no variables.
 	        prop := <if [] then <id> consequence' else <id> All(free-vars-in-rule, consequence') end> free-vars-in-rule
 	        
-	makeTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
-	   with consequence' := <trans> consequence;
-            premises' := <to-list(PremiseBase, PremiseCons); trans> premises;
+	rewriteTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
+	   with // Rewrite consequence and premises and collect all free variables
+	   	    consequence' := <rewrite> consequence;
+            premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
 	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
 	        implication := Impl(premises', consequence');
+			// if there are non free variables omit quantification as
+	        // it is illegal in TPTP to quantify over no variables.
 	        prop := <if [] then <id> implication else <id> All(free-vars-in-rule, implication) end> free-vars-in-rule
 	        
 	// Conjectures
-	makeGoal : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), consequence')
-       with consequence' := <trans> consequence            
-    makeGoal : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), implication)
-       with consequence' := <trans> consequence;
-            premises' := <to-list(PremiseBase, PremiseCons); trans> premises;
+	makeConjecture : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), consequence')
+       with consequence' := <rewrite> consequence            
+    makeConjecture : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), implication)
+       with consequence' := <rewrite> consequence;
+            premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
             implication := Impl(premises', consequence')
             
 	// Wrap terms of the programming language into construtors
@@ -163,14 +178,14 @@ signature
 	   prop-construtor = "False" <+ "True"
 	makeTerm : cons#([]) -> Term(<lower-case> cons)
 	   where <not([])> cons
-    makeTerm : v@cons#(args) -> Term(<lower-case> cons, args)
+    makeTerm : cons#(args) -> Term(<lower-case> cons, args)
        where <not([])> cons;
              <not(prop-constructor)> cons
        prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+
-                         "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
+                          "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
 
 strategies
 	toFOF = makeGoals
 	
-	rewriteAuxCons = makeContext <+ makeTypingJudgment <+ makeMetaVariable
-	trans = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
+	rewriteAuxCons = rewriteContext <+ rewriteTypingJudgment <+ rewriteMetaVariable
+	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
