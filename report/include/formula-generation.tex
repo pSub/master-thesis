@@ -4,6 +4,70 @@
 \subsection{Expressiveness}
 \subsection{Tool-Support}
 \section{Translations}
+For the generation of first-order formulas not all sections of a
+specification are important. The section that declares the
+meta-variables and the section that declares the judgments are not
+used directly at all. With regard to formula generation they are only
+used to ensure correct syntax.
+
+\todo[inline]{Implement imports and describe how they are handled.}
+
+Environments declarations are translated in a uniform way. For every
+environment two formulas are generated. These two formulas handle the
+look-up of entries in the environment. One formula for the base case
+and one for the step case of the lookup.
+
+\begin{multline}
+  \forall e, x_1, \dots, x_n, y_1, \dots, y_m . \\ (lookup_e(x_1,\dots,x_n,y_1,\dots,y_m, bind(x_1,\dots,x_n,y_1,\dots,y_m,e)))
+\end{multline}
+
+The above formula represents the base case of environment
+look-ups. All non-terminals in the environment definition tagged with
+input are translated into variables $x_1 \dots x_n$ and all tagged
+with output are translated into variables $y_1 \dots y_m$
+respectively. The variable $e$ ranges over all possible
+environments. The $bind$ predicate used in this formula allows to add
+new input/output pairs to the environment. In the implementation the
+order of arguments is a bit different, but this difference is for the
+discussion of the concept negligible. For details see the next
+section.\todo{Use a reference} The predicate $lookup$ that is defined
+also takes input/output pairs and an environment. In the base case the
+environment given to $lookup$ contains the input/output pairs of
+$lookup$ directly. Therefore those are trivially contained in the
+environment.
+
+\todo[inline]{Format look-up step formula nicely.}
+\begin{multline}
+  \forall e, x_1, \dots, x_n, x_1', \dots, x_n', y_1, \dots, y_m, y_1', \dots,
+  y_m' . \\
+  (lookup(x_1, \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup(x_1,
+  \dots, x_n, y_1, \dots, y_m, bind(x_1',\dots,x_n',y_1',\dots,y_m',e))
+\end{multline}
+
+This formula represents the step case of environment look-ups. Its
+intuition is that if some input/output pair is contained in an
+environment $e$ the it is also contained in an environment in which a,
+possibly different, input/output pair is stored. Variables $x_i$ and
+$x_i'$ are non-terminals from the environment declaration tagged with
+input, $y_i$ and $y_i'$ are non-terminals tagged with output
+respectively.
+
+The AST nodes of the programming language are translated into
+predicates. To help theorem provers for each of those predicates an
+axiom for injectivity and univalence is created. Those hold by
+definition of the AST nodes.
+
+The most important part is the translation of the typing
+rules. Depending on whether the typing rules has premises either of
+the following schema is used:
+
+\begin{align}
+  \forall FV(c) &. c \\
+  \forall FV(p_1,\dots, p_n) &. p_1 \land \dots \land p_n \implies c
+\end{align}
+
+
+
 \section{Implementation}
 \section{Performance}
 %%% Local Variables: 
