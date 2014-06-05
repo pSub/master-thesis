@@ -13,6 +13,7 @@ TypeBinding := ID{I}
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "!=" ID{I} is Neq.
 
 rules
 
@@ -36,11 +37,44 @@ $C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
 
 $C1 | $C2 |- ~e : all %x . ~T
 ~U = [ %x -> ~S ] ~T
-==============================
-$C1 | $C2 |- ~e [ ~S ] : ~T
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
 
+
+=====================
+~S = [ %x -> ~S ] %x
+
+%y != %x
+====================
+%y = [ %x -> ~S ] %x
+
+====================
+int = [ %x -> ~S ] int
+
+~U1 = [ %x -> ~S ] ~T1
+~U2 = [ %x -> ~S ] ~T2
+====================================
+~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
 
 conjectures
 
 ===
 () | () |- \ x . \ y : x . y : all x . (x -> x)
+
+===
+() | () |- \ x . \ f : x -> x . \ a : x . (f (f a)) : all x . ((x -> x) -> (x -> x))
+
+===
+() | () |- (\ x . \ y : x . y) [ int ] : int -> int
+
+===
+() | () |- (\ x . \ f : x -> x . \ a : x . (f (f a))) [ int ] : (int -> int) -> (int -> int)
+
+===
+() | () |- (\ x . \ f : x -> x . \ a : x . (f (f a))) [ int -> int ] : ((int -> int) -> (int -> int)) -> ((int -> int)-> (int -> int))
+
+===
+() | () |- (\ x . \ y . \ z : x . z) [ int ] : all y . (int -> int) 
+
+===
+() | () |- (\ x . \ y . \ z : x . z) [ int ] [ int ] : (int -> int) 
