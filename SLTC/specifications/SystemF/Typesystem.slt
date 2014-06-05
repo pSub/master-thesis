@@ -43,4 +43,4 @@ $C1 | $C2 |- ~e [ ~S ] : ~T
 conjectures
 
 ===
-() | () |- \ x . \ y : x . x : all x . (x -> x)
+() | () |- \ x . \ y : x . y : all x . (x -> x)
