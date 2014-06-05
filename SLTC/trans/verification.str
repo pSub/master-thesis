@@ -208,7 +208,7 @@ rules
 		<read-text-file> tmp
 
 	
-	vampire-command = !"/home/pascal/.nix-profile/bin/vampire"
+	vampire-command = !"vampire"
 	vampire-options(|time) =
 		!["-t", time, 
 	      "--mode", "casc",
