@@ -17,8 +17,10 @@ ID{I} "!=" ID{I} is Neq.
 
 rules
 
+/* Typing rules */
+
 %x : ~T in $C1
-============== T-Var
+=============== T-Var
 $C1 | $C2 |- %x : ~T
 
 (%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
@@ -27,7 +29,7 @@ $C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
 
 $C1 | $C2 |- ~t1 : ~T11 -> ~T12
 $C1 | $C2 |- ~t2 : ~T11
-========================== T-App
+================================ T-App
 $C1 | $C2 |- ~t1 ~t2 : ~T12
 
 /* How to encode the freshness condition */
@@ -41,14 +43,20 @@ $C1 | $C2 |- ~e : all %x . ~T
 $C1 | $C2 |- ~e [ ~S ] : ~U
 
 
+/* Type substitution */
+
 =====================
 ~S = [ %x -> ~S ] %x
 
 %y != %x
 ====================
-%y = [ %x -> ~S ] %x
+%y = [ %x -> ~S ] %y
 
-====================
+~U = [ %x -> ~S ] ~T
+================================
+(all %y . ~U) = [ %x -> ~S ] (all %y . ~T)
+
+======================
 int = [ %x -> ~S ] int
 
 ~U1 = [ %x -> ~S ] ~T1
@@ -72,6 +80,12 @@ conjectures
 
 ===
 () | () |- (\ x . \ f : x -> x . \ a : x . (f (f a))) [ int -> int ] : ((int -> int) -> (int -> int)) -> ((int -> int)-> (int -> int))
+
+===
+() | () |- (\ x . \ y . \ z : x . z) : all x . all y . (x -> x)
+
+===
+() | () |- (\ x . \ y . \ z : y . z) : all x . all y . (y -> y)
 
 ===
 () | () |- (\ x . \ y . \ z : x . z) [ int ] : all y . (int -> int) 
