@@ -85,7 +85,10 @@ conclusion of the typing rule. This makes sense as the intuition was,
 that the conclusion of the typing rule is derivable if all premises
 are derivable, which is exactly the semantics of this implication.
 
-Type judgments are translated into simple predicates.
+Type judgments are translated into simple predicates. Equality and
+inequality can be expressed via judgments with the annotation ``is
+Eq'' and ``is Neq'', respectively. Those judgments must have exactly
+two non-terminals.
 \section{Implementation}
 \section{Performance}
 %%% Local Variables: 
