@@ -62,12 +62,30 @@ rules. Depending on whether the typing rules has premises either of
 the following schema is used:
 
 \begin{align}
-  \forall FV(c) &. c \\
-  \forall FV(p_1,\dots, p_n) &. p_1 \land \dots \land p_n \implies c
+  &\forall FV(c) &.\,& c \\
+  &\forall FV(p_1,\dots, p_n) &.\,& p_1 \land \dots \land p_n \implies c
 \end{align}
 
+\todo[inline]{In the following free variables are actually free
+  meta-variables.}
+The meta-variables $p_i$ are the premises and $c$ is the conclusion of
+the typing rules. The intuition of a typing rule is that the
+conclusion can be derived if all premises can be derived. In terms of
+first-order logic ``derived'' means for arbitrary formulas that there
+is a proof and for predicates that the predicate holds under the given
+interpretation. Therefore a typing rule without premises is translated
+into a formula that consists of the conclusion and all-quantifies all
+free variables of the conclusion. Free variables are all-quantified,
+because all possible variants of the conclusion have to be derivable.
+Typing rules with premises are translated into a single
+implication. The premise of the implication is the conjunction of all
+premises of the typing rule. This ensures that all premises need to be
+derivable/satisfied. The conclusion of the implication is the
+conclusion of the typing rule. This makes sense as the intuition was,
+that the conclusion of the typing rule is derivable if all premises
+are derivable, which is exactly the semantics of this implication.
 
-
+Type judgments are translated into simple predicates.
 \section{Implementation}
 \section{Performance}
 %%% Local Variables: 
