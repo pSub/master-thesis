@@ -82,6 +82,7 @@ signature
 
     // Collect free variables
     free-vars : v@Var(_) -> [<strip-annos> v]
+    free-vars : v@Var(_,_) -> [<strip-annos> v]
     free-vars : All(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : Exists(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : cons#(xs) -> <map(free-vars); unions> xs
