@@ -64,7 +64,7 @@ signature
             typing-rule-formulas-dirty := <map(rewriteTypingRule)> TypingRules;
             //FIXME: Replace only lower-case variables to make debugging easier
 			variables := <collect-all(?Var(_,_))> typing-rule-formulas-dirty;
-            typing-rule-formulas := <foldl(\(var, formula) -> <innermost(?var; !Var(<newname> "X"))> formula\)>
+            typing-rule-formulas := <foldl(\(var, formula) -> <replace(|var, Var(<newname> "X"), formula)>\)>
 								 (variables, typing-rule-formulas-dirty);
             helper := <collect-all(?Term(name, args));
                        nub;

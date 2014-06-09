@@ -23,3 +23,5 @@ rules
     to-list(c1,c2) : c2#([arg1, arg2]) -> [arg1 | <to-list(c1,c2)> arg2]
     
     proj(c|n) : c#(args) -> <index(|n)> args
+
+    replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
