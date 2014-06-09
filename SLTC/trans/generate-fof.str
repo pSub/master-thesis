@@ -172,11 +172,8 @@ signature
             implication := Impl(premises', consequence')
             
 	// Wrap terms of the programming language into construtors
-    // FIXME: Distinguishing between strings and constructors with zero arguments is hacky
-	makeTerm : v@cons#([]) -> v
-	   where <string-starts-with(|"\"")> cons;
-	         <not(prop-constructor)> cons
-	   prop-construtor = "False" <+ "True"
+	makeTerm : v -> v
+	   where <is-string> v
 	makeTerm : cons#([]) -> Term(<lower-case> cons)
 	   where <not([])> cons
     makeTerm : cons#(args) -> Term(<lower-case> cons, args)
