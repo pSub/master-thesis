@@ -67,14 +67,15 @@ signature
     //TODO: Is the formulation important? What about using the contraposition?
     makeInjectivity : (name, n) -> Formula(<conc-strings> (name, "-injective"),
     									   Axiom(),
-    									   Impl(<zip; map(makeNeq)> (Xs, Ys), Neq(Term(name, Xs), Term(name, Ys)))
+									   All(<conc>(Xs, Ys), Impl(<zip; map(makeNeq)> (Xs, Ys),
+									                            Neq(Term(name, Xs), Term(name, Ys))))
     									   )
     	where Xs := <newnames(|"X")> n;
     		  Ys := <newnames(|"Y")> n
     makeUnivalence : (name, n) -> Formula(<conc-strings> (name, "-univalent"),
     									  Axiom(),
-    									  Impl([Eq(Term(name, Xs), Var("Y")), Eq(Term(name, Xs), Var("Z"))],
-    									       Eq(Var("Y"), Var("Z")))
+									  All(["Y" | ["Z" | Xs]], Impl([Eq(Term(name, Xs), Var("Y")), Eq(Term(name, Xs), Var("Z"))],
+									       Eq(Var("Y"), Var("Z"))))
     									 )
     	where Xs := <newnames(|"X")> n
     
