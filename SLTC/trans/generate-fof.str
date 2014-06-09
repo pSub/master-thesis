@@ -35,9 +35,20 @@ signature
 		
 		AuxCons : String * String * List(Prop) -> Prop
     	
+    	
+// TODO: Abstract from the concret representation of the output format (e.g. to genrate latex files)
+// 1) Identifiy the relevant places
+// 2) Extract them into a separate module
+// 3) Combine the modules
+//
+// It would be the best thing, if most of the characteristics of the output format would
+// be present in the pretty-printing file.
+
+// Relevant parts:
+// 1) Renaming of all variables
+// 2) Separation into multiple files 
+
  rules
-
-
 	makeGoals : Module(ModuleDec(_),
 			    imports,
 			    Language(l),
