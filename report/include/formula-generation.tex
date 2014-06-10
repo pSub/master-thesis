@@ -90,6 +90,15 @@ inequality can be expressed via judgments with the annotation ``is
 Eq'' and ``is Neq'', respectively. Those judgments must have exactly
 two non-terminals.
 \section{Implementation}
+The implementation details of the translation from the specification
+language into first-order formula is described in this section.
+
+\todo[inline]{Extend for imports.}
+The implementation is organized in the following steps. Fist, the
+module is split up into its components. Those are: module description,
+programming language, meta-variables, environments, judgments, typing
+rules and conjectures. 
+
 \section{Performance}
 %%% Local Variables: 
 %%% mode: latex
