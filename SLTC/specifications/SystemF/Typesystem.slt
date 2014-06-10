@@ -91,4 +91,7 @@ conjectures
 () | () |- (\ x . \ y . \ z : x . z) [ int ] : all y . (int -> int) 
 
 ===
-() | () |- (\ x . \ y . \ z : x . z) [ int ] [ int ] : (int -> int) 
+() | () |- (\ x . \ y . \ z : x . z) [ int ] [ int ] : (int -> int)
+
+===
+() | () |- (\ x . \ x . \ y : x . y) : all x . all x . (x -> x)
