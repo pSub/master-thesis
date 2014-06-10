@@ -1,0 +1,27 @@
+module test
+
+language PCF
+
+meta-variables	Term "~" { Exp }
+				Ctx "$" { Context }
+				Id "%" { ID }
+
+contexts Context := ID{I} x ID{O}
+		 CT      := ID{I} x Class{O}
+
+judgments Context{I} "|-" Exp{I} ":" Type{O} | ID{I} "<:" ID{I}	  
+
+rules
+
+=========
+%C <: %C
+
+
+%A <: %B
+%B <: %C
+=========
+%A <: %C
+
+(class %C extends %D { ... } ; %CT)
+===================================
+%C <: %D
