@@ -25,3 +25,5 @@ rules
     proj(c|n) : c#(args) -> <index(|n)> args
 
     replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
+
+    fanout : v -> (v, v)

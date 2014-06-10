@@ -45,7 +45,7 @@ signature
 // be present in the pretty-printing file.
 
 // Relevant parts:
-// 1) Renaming of all variables
+// 1) Renaming of all variables (DONE)
 // 2) Separation into multiple files 
 
  rules
@@ -61,11 +61,7 @@ signature
 			                                                       <makeConjecture> goal)\)> Goals
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas-dirty := <map(rewriteTypingRule)> TypingRules;
-            //FIXME: Replace only lower-case variables to make debugging easier
-			variables := <collect-all(?Var(_,_))> typing-rule-formulas-dirty;
-            typing-rule-formulas := <foldl(\(var, formula) -> <replace(|var, Var(<newname> "X"), formula)>\)>
-								 (variables, typing-rule-formulas-dirty);
+            typing-rule-formulas := <map(rewriteTypingRule)> TypingRules;
             helper := <collect-all(?Term(name, args));
                        nub;
             		   mapconcat(\Term(name, args) ->
@@ -194,7 +190,10 @@ signature
                           "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
 
 strategies
-	toFOF = makeGoals
-	
+	toFOF = makeGoals; makeVariablesUnique
+
 	rewriteAuxCons = rewriteContext <+ rewriteTypingJudgment <+ rewriteMetaVariable
 	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
+	
+	//FIXME: Replace only lower-case variables to make debugging easier
+	makeVariablesUnique = (fanout; (collect-all(?Var(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var(<newname> "X"), f)>\) + fail
