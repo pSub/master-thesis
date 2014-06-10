@@ -1,7 +1,7 @@
 #+TITLE: Related Work
 
-* "A Generator for Type Checkers" H. Gast
-* "Formally Specified Type Checkers for Domain Specific Languages: Experience Report" van den Brand, van der Meer, Serebrenik, Hofkamp
+* A Generator for Type Checkers by H. Gast
+* Formally Specified Type Checkers for Domain Specific Languages: Experience Report by van den Brand, van der Meer, Serebrenik, Hofkamp
   - Designed for the quick prototyping of the specification language
     Chi 2.0, a language for describing concurrent systems.
   - Well integrated in the Chi tool-chain.
@@ -22,7 +22,10 @@
     other languages is difficult.
   - The authors also have an interesting perspective on type systems
     as state machines.
-* "Semantics of Programming Languages: A Tool-oriented Approach" Heering, Jan and Klint, Paul
+* Programmable Type Systems for Domain Specific Languages by Peter Thiemann
+  - The type system of Haskell is extended to ensure the correct generation of HTML
+  - They employ a first-order functional logic programming language at type level to express domain specific concepts
+* Semantics of Programming Languages: A Tool-oriented Approach by Heering, Jan and Klint, Paul
   - Observation: The fields semantics, tools and languages drifting
     further apart.
   - Reason: Semantics are rarely incooperated into pratical systems
@@ -49,5 +52,14 @@
     + Pregmatic
     + LDL
     + Eli
-* "Programmable Type Systems for Domain Specific Languages" Peter Thiemann
-* "Should Your Specification Language Be Typed?" Lamport, Paulson
+* Should Your Specification Language Be Typed? by Lamport, Paulson
+* A Formal Description of a Type Checking Algorithm by Naeem, Harrison
+  - Formal description of a type checker of a object oriented programming language called POOL.
+  - POOL: class-based strongly typed object oriented programming language with parametric types
+  - Type checking done bottom-up
+  - Computing least common type for assignments
+* Ott: Effective tool support for the working semanticist by Swell, Nardelli, Owens, Peskine, Ridge, Sarkar, Strniska
+  - Designed a meta-language to faciliate development of languages
+  - This meta-language aims at concise and definitions that are easy to read/edit
+  - Meta-language is divided into two languages, one is specifically desinged to describe binding constructs
+  - Meta-language is compiled to proof-assistent and latex code
