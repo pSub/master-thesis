@@ -195,5 +195,4 @@ strategies
 	rewriteAuxCons = rewriteContext <+ rewriteTypingJudgment <+ rewriteMetaVariable
 	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
 	
-	//FIXME: Replace only lower-case variables to make debugging easier
 	makeVariablesUnique = (fanout; (collect-all(?Var(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var(<newname> "X"), f)>\) + fail
