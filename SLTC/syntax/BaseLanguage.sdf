@@ -18,7 +18,7 @@ exports
 
 
   lexical syntax
-	"\"" ~[\"a-zA-Z]* "\"" -> Separator
+	"\"" ~[\"]* "\"" -> Separator
 	"I" -> Mode
 	"O" -> Mode
 
