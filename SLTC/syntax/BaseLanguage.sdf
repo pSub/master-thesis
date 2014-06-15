@@ -40,6 +40,7 @@ exports
   lexical syntax
     "Eq" -> Feature
     "Neq" -> Feature
+    "Not" -> Feature
 
   context-free syntax
     %%FIXME: How do I avoid this warning

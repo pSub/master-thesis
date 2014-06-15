@@ -149,6 +149,7 @@ signature
 	// Typing judgments
 	rewriteTypingJudgment : AuxCons("TypingJudgment", "Neq", [arg1, arg2]) -> Neq(arg1, arg2)
 	rewriteTypingJudgment : AuxCons("TypingJudgment", "Eq", [arg1, arg2]) -> Eq(arg1, arg2)
+	rewriteTypingJudgment : AuxCons("TypingJudgment", "Not", [arg]) -> Not(arg)
 	rewriteTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
