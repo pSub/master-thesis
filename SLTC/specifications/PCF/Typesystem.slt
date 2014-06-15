@@ -13,18 +13,29 @@ judgments Context{I} "|-" Exp{I} ":" Type{O}.
 
 rules
 
-%X : ~T in $CTX
+/* FIXME: Maybe it is not a good idea that diffent types
+   of meta-variables have diffent scopes. The following
+   T-var' rule looks similar to T-Var but is malicous, as it
+   introduces all-quantified variables that will not be
+   instantiated.
+  
+%X : ~T in $C
+=============== T-var'
+$C |- ~X : ~T 
+*/
+
+%X : ~T in $C
 =============== T-var
-$CTX |- ~X : ~T
+$C |- %X : ~T
  
-(%X : ~T1 ; $CTX) |- ~E : ~T2
+(%X : ~T1 ; $C) |- ~E : ~T2
 ===================================== T-abs
-$CTX |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
+$C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
  
-$CTX |- ~E1 : ~T1 -> ~T2
-$CTX |- ~E2 : ~T1
+$C |- ~E1 : ~T1 -> ~T2
+$C |- ~E2 : ~T1
 ==================== T-app
-$CTX |- ~E1 ~E2 : ~T2
+$C |- ~E1 ~E2 : ~T2
 
 (%f : ~T -> ~T ; $C) |- ~e : ~T -> ~T 
 ========================================= T-fix
@@ -105,4 +116,3 @@ conjectures
 
 ===
 () |- fun f : int -> int (fun x : int (f x)) : (int -> int) -> int -> int
-
