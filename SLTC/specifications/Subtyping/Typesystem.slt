@@ -13,8 +13,6 @@ contexts Context := ID{I} x Type{O}
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 Type{I} "<:" Type{I}.
-ID{I} "!=" ID{I} is Neq.
-Type{I} "!=" Type{I} is Neq.
 
 rules
 
@@ -37,14 +35,8 @@ $C |- ~e2 : ~T1
 $C |- ~e1 ~e2 : ~T2
 
 $C |- ~e : { %l : ~T $R }
-========================= T-proj1
+========================= T-proj
 $C |- ~e . %l : ~T
-
-$C |- {%m = ~e2 $R} : { %m : ~S $U }
-%m != %l
-$C |- { $R } . %l : ~T
-============================= T-proj2
-$C |- {%m = ~e1 $R} . %l : ~T
 
 ============= T-empty
 $C |- {} : {}
@@ -141,6 +133,12 @@ conjectures
 
 ===
 () |- (\r : {x : int} . (r.x)) {y=0 x=0} : int
+
+===
+() |- (\r : {x : int} . (r.x)) {y=(\x : int. x) x=0} : int
+
+===
+() |- (\r : {x : int -> int} . (r.x)) {y=0 x=(\x : int. x)} : int -> int
 
 ===
 () |- (\x : {x : int} . (x.x)) {y=0 x=0} : int
