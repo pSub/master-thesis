@@ -16,9 +16,10 @@ exports
   	Int -> Exp {cons("Int")}
 	ID -> Exp {cons("Var")}
   	"\\" ID ":" Type "." Exp -> Exp {cons("Abs")}
-  	Exp Exp -> Exp {cons("App")}
+  	Exp Exp -> Exp {cons("App"), left}
   	"\\" ID "." Exp -> Exp {cons("Tabs")}
 	Exp "[" Type "]" -> Exp {cons("Tapp")}
+	
   	
   	"(" Exp ")" -> Exp   {bracket}
   	
@@ -26,6 +27,6 @@ exports
   context-free syntax
   	"int" -> Type {cons("TInt")}
   	ID -> Type {cons("TVar")}
-  	Type "->" Type -> Type {cons("TArrow")}
+  	Type "->" Type -> Type {cons("TArrow"), right}
 	"all" ID "." Type -> Type {cons("TAll")}
 	"(" Type ")" -> Type {bracket}
