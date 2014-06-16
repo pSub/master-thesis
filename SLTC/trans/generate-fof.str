@@ -8,32 +8,32 @@ signature
 	//FIXME: What is the advantage of defining the sorts explicitly
 	sorts Prop Type FOF File
 	constructors
-		False : Prop
-    	True  : Prop
-    	Not   : Prop -> Prop
-    	And   : Prop * Prop -> Prop
-    	Or    : Prop * Prop -> Prop
-    	Impl  : List(Prop) * Prop -> Prop
-    	BiImpl : Prop * Prop -> Prop
-    	Eq    : Prop * Prop -> Prop
-    	Neq : Prop * Prop -> Prop
-    	Var   : String -> Prop
-    	Var   : String * String -> Prop
-    	Pred  : String -> Prop
-    	Pred  : String * List(Prop) -> Prop
-    	Term  : String -> Prop
-    	Term  : String * List(Prop) -> Prop 
-    	All   : List(Var) * Prop -> Prop
-	    Exists : List(Var) * Prop -> Prop
+		False__ : Prop
+    	True__  : Prop
+    	Not__   : Prop -> Prop
+    	And__   : Prop * Prop -> Prop
+    	Or__    : Prop * Prop -> Prop
+    	Impl__  : List(Prop) * Prop -> Prop
+    	BiImpl__ : Prop * Prop -> Prop
+    	Eq__    : Prop * Prop -> Prop
+    	Neq__ : Prop * Prop -> Prop
+    	Var__   : String -> Prop
+    	Var__   : String * String -> Prop
+    	Pred__  : String -> Prop
+    	Pred__  : String * List(Prop) -> Prop
+    	Term__  : String -> Prop
+    	Term__  : String * List(Prop) -> Prop
+    	All__   : List(Var) * Prop -> Prop
+    	Exists__ : List(Var) * Prop -> Prop
     	
-    	Axiom : Type
-    	Conjecture : Type
+    	Axiom__ : Type
+    	Conjecture__ : Type
     	
-    	Formula : String * Type * Prop -> FOF
-	    Formula : String * Prop -> FOF
-		FOFGoal : List(Formula) * List(Formula) * Formula -> File
+    	Formula__ : String * Type * Prop -> FOF
+    	Formula__ : String * Prop -> FOF
+    	FOFGoal__ : List(Formula) * List(Formula) * Formula -> File
 		
-		AuxCons : String * String * List(Prop) -> Prop
+		AuxCons__ : String * String * List(Prop) -> Prop
     	
     	
 // TODO: Abstract from the concret representation of the output format (e.g. to genrate latex files)
@@ -56,65 +56,72 @@ signature
 			    Contexts(ContextDefinitions),
 			    Judgments(j),
 			    Rules(TypingRules),
-			    Some(Conjectures(Goals))) -> <map(\goal -> FOFGoal(<concat> [context-formulas, helper],
+			    Some(Conjectures(Conjectures))) -> <map(\conjecture -> FOFGoal__(<concat> [context-formulas,
+			    																		 helper,
+			    																		 <makeConjecture;makeInequalities> conjecture
+			    																		 ],
 			                                                       typing-rule-formulas,
-			                                                       <makeConjecture> goal)\)> Goals
+			                                                       <makeConjecture> conjecture)\)> Conjectures
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
             typing-rule-formulas := <map(rewriteTypingRule)> TypingRules;
-            helper := <collect-all(?Term(name, args));
+            helper := <collect-all(?Term__(name, args));
                        nub;
-            		   mapconcat(\Term(name, args) ->
+            		   mapconcat(\Term__(name, args) ->
             		   			 [<makeInjectivity> (name, <length> args),
             		   			  <makeUnivalence> (name, <length> args)] \)> typing-rule-formulas
 
 
-    makeNeq : (x,y) -> Neq(x,y)
+    makeNeq : (x,y) -> Neq__(x,y)
+    
+	makeInequalities : ast -> <collect-all(?Term__(_,[x])); debug; tails; mapconcat(makeInequality)> ast
+	makeInequality : [] -> []
+	makeInequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <makeNeq>(x, y))\)> ys
     
     //TODO: Is the formulation important? What about using the contraposition?
-    makeInjectivity : (name, n) -> Formula(<conc-strings> (name, "-injective"),
-    									   Axiom(),
-									   All(<conc>(Xs, Ys), Impl(<zip; map(makeNeq)> (Xs, Ys),
-									                            Neq(Term(name, Xs), Term(name, Ys))))
+    makeInjectivity : (name, n) -> Formula__(<conc-strings> (name, "-injective"),
+    									   Axiom__(),
+									   All__(<conc>(Xs, Ys), Impl__(<zip; map(makeNeq)> (Xs, Ys),
+									                            Neq__(Term__(name, Xs), Term__(name, Ys))))
     									   )
     	where Xs := <newnames(|"X")> n;
     		  Ys := <newnames(|"Y")> n
-    makeUnivalence : (name, n) -> Formula(<conc-strings> (name, "-univalent"),
-    									  Axiom(),
-									  All(["Y" | ["Z" | Xs]], Impl([Eq(Term(name, Xs), Var("Y")), Eq(Term(name, Xs), Var("Z"))],
-									       Eq(Var("Y"), Var("Z"))))
+    makeUnivalence : (name, n) -> Formula__(<conc-strings> (name, "-univalent"),
+    									  Axiom__(),
+									  All__(["Y" | ["Z" | Xs]], Impl__([Eq__(Term__(name, Xs), Var__("Y")), Eq__(Term__(name, Xs), Var__("Z"))],
+									       Eq__(Var__("Y"), Var__("Z"))))
     									 )
     	where Xs := <newnames(|"X")> n
     
 
     // Collect free variables
-    free-vars : v@Var(_) -> [<strip-annos> v]
-    free-vars : v@Var(_,_) -> [<strip-annos> v]
-    free-vars : All(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
-    free-vars : Exists(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
+    free-vars : v@Var__(_) -> [<strip-annos> v]
+    free-vars : v@Var__(_,_) -> [<strip-annos> v]
+    free-vars : All__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
+    free-vars : Exists__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : cons#(xs) -> <map(free-vars); unions> xs
 	
 	// Generate context definitions
 	makeContexts : ContextDefinition(name, raw-non-terminals) -> [
-	    Formula("lookup base",
-	            Axiom(),
-	            All([NAME|<conc>(inputs, outputs)],
-	                Pred(lookup, <conc> (inputs, outputs, [Pred(bind, <conc> (non-terminals, [NAME]))])))),
-	    Formula("lookup step",
-	            Axiom(),
-	            All([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
+	    Formula__("lookup base",
+	            Axiom__(),
+	            All__([NAME|<conc>(inputs, outputs)],
+	                Pred__(lookup, <conc> (inputs, outputs, [Pred__(bind, <conc> (non-terminals, [NAME]))])))),
+	    Formula__("lookup step",
+	            Axiom__(),
+	            All__([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
 	                // FIXME: Having constaints for inequality of variables as premises breaks typechecking
-	                Impl([Pred(lookup, <concat> [inputs, outputs, [NAME]])], //| <zip; map(makeNeq)> (inputs, inputs2)],
-	                Pred(lookup, <conc>(inputs, outputs, [Pred(bind, <conc> (<map(append(|"_"))> non-terminals, [NAME]))])))))
+	                Impl__([Pred__(lookup, <concat> [inputs, outputs, [NAME]]) ], //| <zip; map(makeNeq)> (inputs, inputs2)],
+	                Pred__(lookup, <conc>(inputs, outputs, [Pred__(bind, <conc> (<map(append(|"_"))> non-terminals, [NAME]))])))))
 	]
 	   where
 	       // Index non-terminals with new names
 	       indexed-non-terminals := <zip> (<length; newnames(|"X")> raw-non-terminals, raw-non-terminals);
 		   // extract the list of new names
-	       non-terminals := <map(Fst; \s -> Var(s)\)> indexed-non-terminals;
+	       non-terminals := <map(Fst; \s -> Var__(s)\)> indexed-non-terminals;
 	       // filter out the in- and outputs
-	       inputs := <filter(?(_, Hole(_, "I")); Fst; \s -> Var(s)\)> indexed-non-terminals;
-	       outputs := <filter(?(_, Hole(_, "O")); Fst; \s -> Var(s)\)> indexed-non-terminals;
+	       inputs := <filter(?(_, Hole(_, "I")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
+	       outputs := <filter(?(_, Hole(_, "O")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
 	       // duplicate the in-and outputs by appending underscores
 	       inputs2 := <map(append(|"_"))> inputs;
 	       outputs2 := <map(append(|"_"))> outputs;
@@ -122,12 +129,12 @@ signature
 	       // Auxiliary definitions
 	       lookup := <conc-strings> ("lookup", name);
 	       bind := <conc-strings> ("bind", name);
-	       NAME := Var(<upper-case> name)
-           append(|p) = \ Var(s) -> Var(<conc-strings> (s, p)) \
+	       NAME := Var__(<upper-case> name)
+           append(|p) = \ Var__(s) -> Var__(<conc-strings> (s, p)) \
 
 	       
     // Translate all generic construtors into an auxillary data structure
-    makeAuxCons : Constructor#(Args) -> AuxCons(cons, name, Args)
+    makeAuxCons : Constructor#(Args) -> AuxCons__(cons, name, Args)
         where
             [cons, name] := <string-tokenize(|['-'])> Constructor;
             <is-generic> cons
@@ -138,62 +145,72 @@ signature
             			 "MetaVariable"
     
     // Meta-variables
-    rewriteMetaVariable : AuxCons("MetaVariable", scope, name) -> Var(<concat-strings> name, scope)
+    rewriteMetaVariable : AuxCons__("MetaVariable", scope, name) -> Var__(<concat-strings> name, scope)
 	
 	// Contexts in typing rules
-	rewriteContextEmpty : AuxCons("ContextEmpty", name, []) -> Pred(<concat-strings> ["empty", name])
-	rewriteContextBind : AuxCons("ContextBind", name, args) -> Pred(<concat-strings> ["bind", name], args)
-	rewriteContextLookup : AuxCons("ContextLookup", name, args) -> Pred(<concat-strings> ["lookup", name], args)
+	rewriteContextEmpty : AuxCons__("ContextEmpty", name, []) -> Pred__(<concat-strings> ["empty", name])
+	rewriteContextBind : AuxCons__("ContextBind", name, args) -> Pred__(<concat-strings> ["bind", name], args)
+	rewriteContextLookup : AuxCons__("ContextLookup", name, args) -> Pred__(<concat-strings> ["lookup", name], args)
 	rewriteContext = rewriteContextEmpty <+ rewriteContextBind <+ rewriteContextLookup
 
 	// Typing judgments
-	rewriteTypingJudgment : AuxCons("TypingJudgment", "Neq", [arg1, arg2]) -> Neq(arg1, arg2)
-	rewriteTypingJudgment : AuxCons("TypingJudgment", "Eq", [arg1, arg2]) -> Eq(arg1, arg2)
-	rewriteTypingJudgment : AuxCons("TypingJudgment", "Not", [arg]) -> Not(arg)
-	rewriteTypingJudgment : AuxCons("TypingJudgment", name, args) -> Pred(<conc-strings>("'tcheck", name, "'"), args)
+	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Neq", [arg1, arg2]) -> Neq__(arg1, arg2)
+	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
+	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
+	rewriteTypingJudgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
 			
 	// Typing rules
-	rewriteTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
+	rewriteTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula__(<option-to-string-newname(|"formula")> Name, Axiom__(), prop)
 	   with // Rewrite consequence and collect all free variables
 	   	    consequence' := <rewrite> consequence;
 	        free-vars-in-rule := <free-vars> consequence';
 	        // if there are non free variables omit quantification as
 	        // it is illegal in TPTP to quantify over no variables.
-	        prop := <if [] then <id> consequence' else <id> All(free-vars-in-rule, consequence') end> free-vars-in-rule
+	        prop := <if [] then <id> consequence' else <id> All__(free-vars-in-rule, consequence') end> free-vars-in-rule
 	        
-	rewriteTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"formula")> Name, Axiom(), prop)
+	rewriteTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula__(<option-to-string-newname(|"formula")> Name, Axiom__(), prop)
 	   with // Rewrite consequence and premises and collect all free variables
 	   	    consequence' := <rewrite> consequence;
             premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
 	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
-	        implication := Impl(premises', consequence');
+	        implication := Impl__(premises', consequence');
 			// if there are non free variables omit quantification as
 	        // it is illegal in TPTP to quantify over no variables.
-	        prop := <if [] then <id> implication else <id> All(free-vars-in-rule, implication) end> free-vars-in-rule
+	        prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
 	        
 	// Conjectures
-	makeConjecture : TypingRule(RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), consequence')
+	makeConjecture : TypingRule(RuleName(_, Name), consequence) -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), consequence')
        with consequence' := <rewrite> consequence            
-    makeConjecture : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula(<option-to-string-newname(|"goal")> Name, Conjecture(), implication)
+    makeConjecture : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), implication)
        with consequence' := <rewrite> consequence;
             premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
-            implication := Impl(premises', consequence')
+            implication := Impl__(premises', consequence')
             
 	// Wrap terms of the programming language into construtors
+	// makeTerm : v -> Term__(<string-as-chars(Tl)> v)
+	//    where <is-string> v; <string-starts-with(|"@")> v
+	// makeTerm : v -> <conc-strings> ("@", v)
+	//    where <is-string> v; <not(string-starts-with(|"@"))> v
+	makeTerm' : Term__(v) -> Term__(v)
+	   where <is-string> v
+	
 	makeTerm : v -> v
 	   where <is-string> v
-	makeTerm : cons#([]) -> Term(<lower-case> cons)
+	makeTerm : cons#([]) -> Term__(<lower-case> cons)
 	   where <not([])> cons
-    makeTerm : cons#(args) -> Term(<lower-case> cons, args)
+    makeTerm : cons#(args) -> Term__(<lower-case> cons, args)
        where <not([])> cons;
-             <not(prop-constructor)> cons
+             not(<conc-strings; (prop-constructor, "__")> cons)
        prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+
                           "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
 
 strategies
-	toFOF = makeGoals; makeVariablesUnique
+	toFOF = makeGoals; makeVariablesUnique; removeDashes
 
 	rewriteAuxCons = rewriteContext <+ rewriteTypingJudgment <+ rewriteMetaVariable
-	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm))
+	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm' <+ makeTerm))
 	
-	makeVariablesUnique = (fanout; (collect-all(?Var(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var(<newname> "X"), f)>\) + fail
+	makeVariablesUnique = (fanout; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)>\) + fail
+	
+	// FIXME: Remove all dashes from constructor names
+	removeDashes = id
