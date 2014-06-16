@@ -58,7 +58,7 @@ signature
 			    Rules(TypingRules),
 			    Some(Conjectures(Conjectures))) -> <map(\conjecture -> FOFGoal__(<concat> [context-formulas,
 			    																		 helper,
-			    																		 <makeConjecture;makeInequalities> conjecture
+			    																		 <makeConjecture; makeInequalities> conjecture
 			    																		 ],
 			                                                       typing-rule-formulas,
 			                                                       <makeConjecture> conjecture)\)> Conjectures
@@ -74,7 +74,7 @@ signature
 
     makeNeq : (x,y) -> Neq__(x,y)
     
-	makeInequalities : ast -> <collect-all(?Term__(_,[x])); debug; tails; mapconcat(makeInequality)> ast
+	makeInequalities : ast -> <collect-all(?Term__(_)); nub; tails; mapconcat(makeInequality)> ast
 	makeInequality : [] -> []
 	makeInequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <makeNeq>(x, y))\)> ys
     
@@ -110,8 +110,7 @@ signature
 	    Formula__("lookup step",
 	            Axiom__(),
 	            All__([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
-	                // FIXME: Having constaints for inequality of variables as premises breaks typechecking
-	                Impl__([Pred__(lookup, <concat> [inputs, outputs, [NAME]]) ], //| <zip; map(makeNeq)> (inputs, inputs2)],
+	                Impl__([Pred__(lookup, <concat> [inputs, outputs, [NAME]]) | <zip; map(makeNeq)> (inputs, inputs2)],
 	                Pred__(lookup, <conc>(inputs, outputs, [Pred__(bind, <conc> (<map(append(|"_"))> non-terminals, [NAME]))])))))
 	]
 	   where
@@ -185,14 +184,11 @@ signature
        with consequence' := <rewrite> consequence;
             premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
             implication := Impl__(premises', consequence')
-            
-	// Wrap terms of the programming language into construtors
-	// makeTerm : v -> Term__(<string-as-chars(Tl)> v)
-	//    where <is-string> v; <string-starts-with(|"@")> v
-	// makeTerm : v -> <conc-strings> ("@", v)
-	//    where <is-string> v; <not(string-starts-with(|"@"))> v
-	makeTerm' : Term__(v) -> Term__(v)
+
+	wrapString : v -> Term__(v)
 	   where <is-string> v
+	makeTerm' : Term__(n, args) -> Term__(n, <map(wrapString <+ id)> args)
+	makeTerm' : Pred__(n, args) -> Pred__(n, <map(wrapString <+ id)> args)
 	
 	makeTerm : v -> v
 	   where <is-string> v
@@ -201,14 +197,14 @@ signature
     makeTerm : cons#(args) -> Term__(<lower-case> cons, args)
        where <not([])> cons;
              not(<conc-strings; (prop-constructor, "__")> cons)
-       prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+
+       prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+ "Formula" <+
                           "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
 
 strategies
 	toFOF = makeGoals; makeVariablesUnique; removeDashes
 
 	rewriteAuxCons = rewriteContext <+ rewriteTypingJudgment <+ rewriteMetaVariable
-	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm' <+ makeTerm))
+	rewrite = topdown(makeAuxCons < rewriteAuxCons + try(makeTerm)); topdown(try(makeTerm'))
 	
 	makeVariablesUnique = (fanout; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)>\) + fail
 	
