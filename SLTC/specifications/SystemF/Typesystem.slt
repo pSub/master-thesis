@@ -13,6 +13,7 @@ TypeBinding := ID{I}
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "fresh in" TypeBinding{I}.
 ID{I} "!=" ID{I} is Neq.
 
 rules
@@ -32,8 +33,8 @@ $C1 | $C2 |- ~t2 : ~T11
 ================================ T-App
 $C1 | $C2 |- ~t1 ~t2 : ~T12
 
-/* How to encode the freshness condition */
 $C1 | (%x ; $C2) |- ~t2 : ~T2
+%x fresh in $C2
 ======================================= T-Tabs
 $C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
 
@@ -64,6 +65,16 @@ int = [ %x -> ~S ] int
 ====================================
 ~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
 
+/* Freshness of type variables */
+
+==============
+%x fresh in ()
+
+%x != %y
+%x fresh in $C
+=====================
+%x fresh in (%y ; $C)
+
 conjectures
 
 ===
@@ -82,6 +93,9 @@ conjectures
 () | () |- (\ x . \ f : x -> x . \ a : x . (f (f a))) [ int -> int ] : ((int -> int) -> (int -> int)) -> ((int -> int)-> (int -> int))
 
 ===
+() | (x ; ()) |- \ y . (\ f : x . f) : all y . (x -> x)
+
+===
 () | () |- (\ x . \ y . \ z : x . z) : all x . all y . (x -> x)
 
 ===
@@ -92,6 +106,3 @@ conjectures
 
 ===
 () | () |- (\ x . \ y . \ z : x . z) [ int ] [ int ] : (int -> int)
-
-===
-() | () |- (\ x . \ x . \ y : x . y) : all x . all x . (x -> x)
