@@ -27,3 +27,5 @@ rules
     replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
 
     fanout : v -> (v, v)
+    
+    tails : xs -> [xs | <if [] then [] else <Tl; tails> xs end> xs] 
