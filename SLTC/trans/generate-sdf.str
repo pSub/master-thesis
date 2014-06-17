@@ -14,44 +14,55 @@ rules
                Judgments(Judg),
                _,
                _)
-		-> 'module("Generated", [imports(t), imports("Common")], 
-			exports(
-				conc-grammars(context-free-syntax(Meta),
-				conc-grammars(context-free-syntax(Ctx),
-				context-free-syntax(Judg)))
-			)
-		)
-				
+		  -> 'module("Generated",
+		             [imports(t), imports("Common")], 
+			         exports(
+				        conc-grammars(context-free-syntax(Meta),
+                        conc-grammars(context-free-syntax(Ctx),
+				        context-free-syntax(Judg)))
+			         )
+		      )
+
+	// Generate syntax of context definitons	
 	R : ContextDefinition(Name, Definition) -> [
-		prod("\"()\"", Name, <make-cons'>["ContextEmpty-", Name]),
+		prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", Name]),
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,
 							   <make-cons'> ["ContextBind-", Name]),
 		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <make-attr> "bracket"),
 		prod(<concat-strings> [elem, " \"in\" ", Name], "TypingJudgment", 
 							   <make-cons'> ["ContextLookup-", Name])
-	]
+	   ]
 		where
 			elem := <names; intersperse(|" \":\" "); concat-strings> Definition
-			
-			
+
+	// Generate syntax of meta-variable definitions	
 	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
 						    scope,
 						    <make-cons'> ["MetaVariable-", scope])\)> ids
-	
-	R : Judgment(s1, pos, s2, built-in) -> prod(<concat-strings><intersperse(|" ")> <names> merged,
-	                                  "TypingJudgment",
-	                                  <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
-	                                  		| <newname> typing-judgment); make-cons> built-in)
+
+	// Generate syntax of typing judgments
+	R : Judgment(s1, pos, s2, built-in) 
+	       -> prod(<names; intersperse(|" "); concat-strings> merged,
+	               "TypingJudgment",
+	               <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
+                         | <newname> typing-judgment); make-cons> built-in)
 			where
 				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
 				typing-judgment := "TypingJudgment-"
 
+    // Extract position 1 (the name) of the hole for all elements of the list
 	names : list -> <map(try(proj(Hole|1)))> list
 
+    // Create a constructor attribute
 	make-cons : name -> <concat-strings; make-attr> ["cons(\"", name , "\")"]
+
+	// Concatenate a given list of strings and create a constructor attribute
+	// from the result  
 	make-cons' = concat-strings ; make-cons
+
+	// Create an attribute from the given string
 	make-attr : str  -> <concat-strings> ["{", str, "}"]
-	
+
 strategies
 	toSdf = innermost(R)
