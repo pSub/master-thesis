@@ -1,0 +1,111 @@
+module Typesystem
+
+language STWL
+
+meta-variables 	Exp "~" { Exp Type }
+				// TODO Replace ~1 and ~2 with subscript a and b
+				AExp "~1" { AExp }
+				BExp "~2" { BExp }				
+				Dom "$" { Domain }
+				Id "%" { ID }
+				Num "&" { Int }
+
+contexts Domain := ID{I} x Type{O}
+
+judgments
+Domain{I} "|-" AExp{I} ":" Type{O}.
+Domain{I} "|-" BExp{I} ":" Type{O}.
+Domain{I} "|" Type{I} "|-" Exp{I}.
+
+rules
+
+================ num
+$dom |- &i : low
+
+%i : low in $dom
+================ var
+$dom |- %i : low
+
+$dom |- ~1e1 : low
+$dom |- ~1e2 : low
+========================= opa
+$dom |- ~1e1 + ~1e2 : low
+
+================== true
+$dom |- true : low
+
+=================== false
+$dom |- false : low
+
+$dom |- ~2e : low
+===================== not
+$dom |- not ~2e : low
+
+$dom |- ~1e1 : low
+$dom |- ~1e2 : low
+========================= opr
+$dom |- ~1e1 < ~1e2 : low
+
+$dom |- ~2e1 : low
+$dom |- ~2e2 : low
+=========================== opb
+$dom |- ~2e1 and ~2e2 : low
+
+================== higha
+$dom |- ~1e : high
+
+================== highb
+$dom |- ~2e : high
+
+================== skip
+$dom | ~pc |- skip
+
+$dom | high |- ~e
+================= sub
+$dom | low |- ~e
+
+%x : high in $dom
+======================== assgnh
+$dom | ~pc |- %x := ~1e
+
+$dom |- ~1e : low
+======================= assgnl
+$dom | low |- %x := ~1e
+
+$dom | ~pc |- ~e
+$dom | ~pc |- ~f
+===================== seq
+$dom | ~pc |- ~e ; ~f
+
+$dom |- ~2b : ~pc
+$dom | ~pc |- ~e
+================================ while
+$dom | ~pc |- while ~2b do ~e od
+
+$dom |- ~2b : ~pc
+$dom | ~pc |- ~e
+$dom | ~pc |- ~f
+==================================== ite
+$dom | ~pc |- if ~2b then ~e else ~f
+
+conjectures
+
+===
+(z : high ;()) | high |- if z < 0 then z := 0 else z := 1
+
+// Order of domain makes a difference in proof search!
+// For the next two conjectures the applied rules are given
+
+// VerificationSuccess(["lookup base","var","assgnl","goal21","opa"])
+===
+(x : low ; y : low ; z : high ; ()) | low |- z := x + y
+
+// VerificationSuccess(["lookup base","assgnh","goal23"])
+===
+(z : high ; y : low ; x : low ; ()) | low |- z := x + y
+
+===
+(x : low ; y : low ; ()) | low |- x := x + y
+
+===
+(x : low ; y : low ; ()) |- (x + 5) + y : high

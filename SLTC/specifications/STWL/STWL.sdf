@@ -1,0 +1,54 @@
+module STWL
+exports
+	
+  context-free start-symbols
+    Exp
+    
+  lexical syntax
+  	%% This definition creates ambiguties
+  	%%[a-z]+ -> ID
+  	[a-zA-Z][a-zA-Z0-9]* -> ID
+  	[0-9]+ -> Int
+  	
+  	"int" -> ID {reject}
+  	"true" -> ID {reject}
+  	"false" -> ID {reject}
+  	"skip" -> ID {reject}
+  	"if" -> ID {reject}
+  	"then" -> ID {reject}
+  	"else" -> ID {reject}
+  	"while" -> ID {reject}
+  	"do" -> ID {reject}
+  	"od" -> ID {reject}
+  	"not" -> ID {reject}
+  	"and" -> ID {reject}
+    
+  context-free syntax
+  	"+" -> SymOpA {cons("SymOpA")}
+  	Int -> AExp {cons("Num")}
+  	ID -> AExp {cons("Var")}
+  	AExp SymOpA AExp -> AExp {cons("OpA")}
+  	"(" AExp ")" -> AExp {bracket}
+
+  	
+  context-free syntax
+	"and" -> SymOpB {cons("SymOpB")}
+  	"<" -> SymOpR {cons("SymOpR")}
+  	"true" -> BExp {cons("True")}
+  	"false" -> BExp {cons("False")}
+  	"not" BExp -> BExp {cons("Not")}
+  	AExp SymOpR AExp -> BExp {cons("OpR")}
+  	BExp SymOpB BExp -> BExp {cons("OpB")}
+  	"(" BExp ")" -> BExp {bracket}
+  	
+  context-free syntax
+  	"skip" -> Exp {cons("Skip")}
+  	ID ":=" AExp -> Exp {cons("Ass")}
+  	Exp ";" Exp -> Exp {cons("Comp")}
+  	"if" BExp "then" Exp "else" Exp -> Exp {cons("Cond")}
+  	"while" BExp "do" Exp "od" -> Exp {cons("While")}
+  	"(" Exp ")" -> Exp {bracket}
+  	
+  context-free syntax
+  	"low" -> Type {cons("Tlow")}
+  	"high" -> Type {cons("Thigh")}
