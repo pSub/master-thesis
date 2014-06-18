@@ -33,6 +33,7 @@ signature
     	
     	Formula__ : String * Type * Prop -> FOF
     	Formula__ : String * Prop -> FOF
+    	FOFGoal__ : List(Formula) * List(Formula) -> File
     	FOFGoal__ : List(Formula) * List(Formula) * Formula -> File
 		
 		AuxCons__ : String * String * List(Prop) -> Prop
@@ -51,6 +52,7 @@ signature
 // 2) Separation into multiple files 
 
  rules
+    // FIXME: Deal with the case with no conjectures
 	makeConjectures : Module(ModuleDec(_),
 			                 imports,
 			                 Language(l),
@@ -235,7 +237,7 @@ strategies
 	// variable nodes are replaced with unscoped fresh variables, variable by variable.
 	makeVariablesUnique = (fanout; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)> \) 
 	                                                               + fail
-	
+	                                                               
 	// Dashes in predicate names are not valid in TPTP
 	// FIXME: It would be nice, if it is guaranteed, that the renaming creates no collisions
 	// FIXME: Try to rename other invalid characters
