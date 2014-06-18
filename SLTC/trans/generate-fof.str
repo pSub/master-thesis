@@ -8,6 +8,8 @@ signature
 	//FIXME: What is the advantage of defining the sorts explicitly
 	sorts Prop Type FOF File
 	constructors
+	    // Constructors are postfixed with two underscores to
+	    // avoid collisions with other constructors.
 		False__ : Prop
     	True__  : Prop
     	Not__   : Prop -> Prop
@@ -234,5 +236,8 @@ strategies
 	makeVariablesUnique = (fanout; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)> \) 
 	                                                               + fail
 	
-	// FIXME: Remove all dashes from constructor names
-	removeDashes = id
+	// Dashes in predicate names are not valid in TPTP
+	// FIXME: It would be nice, if it is guaranteed, that the renaming creates no collisions
+	// FIXME: Try to rename other invalid characters
+	removeDashes = topdown(try(\Term__(name, args) -> Term__(<string-replace(|"-", "")> name, args)\ <+
+	                           \Term__(name) -> Term__(<string-replace(|"-", "")> name)\))
