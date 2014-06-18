@@ -13,6 +13,8 @@ meta-variables 	Exp "~" { Exp Type }
 contexts Domain := ID{I} x Type{O}
 
 judgments
+// TODO: Make the domain implicit e.g. using the following notation
+// [Domain{I}] "|-" AExp ":" Type{O}.
 Domain{I} "|-" AExp{I} ":" Type{O}.
 Domain{I} "|-" BExp{I} ":" Type{O}.
 Domain{I} "|" Type{I} "|-" Exp{I}.
