@@ -199,7 +199,7 @@ signature
 
     // Wrap strings into terms
 	wrapString : v -> Term__(v)
-	   where <is-string> v
+	   where <is-string ; map(is-alphanum)> v
 
 	// Wrap all strings that are parameters of Term__ or Pred__ into terms
 	rewriteString : Term__(n, args) -> Term__(n, <map(wrapString <+ id)> args)
