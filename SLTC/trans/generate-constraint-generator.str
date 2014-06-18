@@ -1,0 +1,49 @@
+module generate-constraint-generator
+
+imports libstratego-lib
+imports utils
+imports include/SLTC
+
+signature
+    sorts
+    constructors
+       Rule : Pattern * Outputs * Constraints -> Rule
+       Pattern : Term -> Pattern
+       Outputs : List(String) -> Outputs
+       
+       Term__ : String * List(String) -> Constraint              // Constructor x Parameters
+       Eq__ : Term * Term -> Constraint
+       Constraints : List(Constraint) -> Constraints
+       
+       ConstraintGenerator : List(Rule)
+       
+rules
+    
+    makeConstraintGenerator : 
+        Module(ModuleDec(_),
+               imports,
+               Language(l),
+               MetaVariables(m),
+               Contexts(ContextDefinitions),
+               Judgments(j),
+               Rules(TypingRules),
+               _)
+        -> []
+                      
+    // Preparation for constraint generator generation:
+    // 1) Rewrite all language constructs into a Term strukture that
+    //    is easily analyzable. Do this in a modular way, as input
+    //    programs need to be transformed as well.
+    // 2) Analyize typing rules and create rewrite rules that transform
+    //    typing rules into constraint generation rules.
+    // 3) Adapt the format of the rules if neccessary.
+    
+    // After a prototype works:
+    // 1) Postfix constructors of the specification language with dubble
+    //    underscores to avoid collision.
+    // 2) Search for ways to optimize the constraint generation rules
+    //    2.1) Make not syntax directed rules work
+    //    2.2) Exploid facts that can be proven easily
+    
+strategies
+    to-constraint-generator = id
