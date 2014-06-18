@@ -27,7 +27,7 @@ exports
   	"+" -> SymOpA {cons("SymOpA")}
   	Int -> AExp {cons("Num")}
   	ID -> AExp {cons("Var")}
-  	AExp SymOpA AExp -> AExp {cons("OpA")}
+  	AExp SymOpA AExp -> AExp {cons("Op-A")}
   	"(" AExp ")" -> AExp {bracket}
 
   	
@@ -37,8 +37,8 @@ exports
   	"true" -> BExp {cons("True")}
   	"false" -> BExp {cons("False")}
   	"not" BExp -> BExp {cons("Not")}
-  	AExp SymOpR AExp -> BExp {cons("OpR")}
-  	BExp SymOpB BExp -> BExp {cons("OpB")}
+  	AExp SymOpR AExp -> BExp {cons("Op-R")}
+  	BExp SymOpB BExp -> BExp {cons("Op-B")}
   	"(" BExp ")" -> BExp {bracket}
   	
   context-free syntax
