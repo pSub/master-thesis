@@ -103,11 +103,11 @@ signature
 	
 	// Generate context definitions
 	makeContexts : ContextDefinition(name, raw-non-terminals) -> [
-	    Formula__("lookup base",
+	    Formula__(<conc-strings> ("lookup base ", name),
 	              Axiom__(),
 	              All__([NAME|<conc>(inputs, outputs)],
 	                    Pred__(lookup, <conc> (inputs, outputs, [Pred__(bind, <conc> (non-terminals, [NAME]))])))),
-	    Formula__("lookup step",
+	    Formula__(<conc-strings> ("lookup step ", name),
 	              Axiom__(),
 	              All__([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
 	                    Impl__([Pred__(lookup, <concat> [inputs, outputs, [NAME]]) | <zip; map(makeNeq)> (inputs, inputs2)],
