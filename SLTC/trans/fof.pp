@@ -1,4 +1,5 @@
 [
+    FOFGoal__ -- V [ _1 _ 2],
 	FOFGoal__ -- V [ _1 _2 _3 ],
 	Formula__ -- H hs=0 ["fof('" _1 "', " _2 ", " _3 ")."],
 	Axiom__ -- "axiom",

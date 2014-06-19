@@ -38,7 +38,6 @@ signature
 		AuxCons__ : String * String * List(Prop) -> Prop
 
  rules
-    // FIXME: Deal with the case with no conjectures
 	makeConjectures : Module(ModuleDec(_),
 			                 imports,
 			                 Language(l),
@@ -46,14 +45,15 @@ signature
 			                 Contexts(ContextDefinitions),
 			                 Judgments(j),
 			                 Rules(TypingRules),
-			                 Some(Conjectures(Conjectures)))
-			          -> <map(\conjecture -> FOFGoal__(<concat> [ context-formulas
-			    												, helper
-			    												, <makeConjecture; makeInequalities> conjecture
-			    												],
-			                                            typing-rule-formulas,
-			                                            <makeConjecture> conjecture)
-			                  \)> Conjectures
+			                 some-conjectures) //Some(Conjectures(Conjectures)))
+			          -> <maybe(\Conjectures(conjectures) ->
+			                      <map(\conjecture -> 
+			                             FOFGoal__(<conc> (aux-formulas,
+			                                               <makeConjecture; makeInequalities> conjecture),
+			                                        typing-rule-formulas,
+			                                        <makeConjecture> conjecture)
+			                           \)> conjectures
+			                   \ | [FOFGoal__(aux-formulas, typing-rule-formulas)])> some-conjectures
         where
             context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
             typing-rule-formulas := <map(rewriteTypingRule)> TypingRules;
@@ -63,7 +63,8 @@ signature
             		   mapconcat(\Term__(name, args) -> [ <makeInjectivity> (name, <length> args)
             		   			                        ,  <makeUnivalence> (name, <length> args)
             		   			                        ]
-            		   			 \)> typing-rule-formulas
+            		   			 \)> typing-rule-formulas;
+            aux-formulas := <conc> (context-formulas, helper)
 
 
     // Auxilary function that allows 'pointfree' notation. 
