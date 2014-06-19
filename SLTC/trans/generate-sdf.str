@@ -1,6 +1,5 @@
 module generate-sdf
 
-imports libstratego-lib
 imports utils
 imports include/SLTC
 imports org/sugarj/languages/Sdf2

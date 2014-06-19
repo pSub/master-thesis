@@ -1,7 +1,6 @@
 module verification
 
 imports
-  libstratego-lib
   libstratego-gpp
   libstratego-aterm
   include/SLTC

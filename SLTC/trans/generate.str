@@ -1,7 +1,6 @@
 module generate
 
 imports
-	libstratego-lib
     libstratego-gpp
     libstratego-aterm
 	include/SLTC

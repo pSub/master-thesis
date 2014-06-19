@@ -1,6 +1,5 @@
 module generate-constraint-generator
 
-imports libstratego-lib
 imports utils
 imports include/SLTC
 

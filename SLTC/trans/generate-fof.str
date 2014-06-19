@@ -1,6 +1,5 @@
 module generate-fof
 
-imports libstratego-lib
 imports utils
 imports include/SLTC
 
