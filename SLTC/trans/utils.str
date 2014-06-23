@@ -26,4 +26,6 @@ rules
 
     fanout : v -> (v, v)
     
-    tails : xs -> [xs | <if [] then [] else <Tl; tails> xs end> xs] 
+    tails : xs -> [xs | <if [] then [] else <Tl; tails> xs end> xs]
+    
+    singelton : x -> [ x ]

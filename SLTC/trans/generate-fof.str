@@ -95,8 +95,8 @@ signature
     
 
     // Collect free variables
-    free-vars : v@Var__(_) -> [<strip-annos> v]
-    free-vars : v@Var__(_,_) -> [<strip-annos> v]
+    free-vars : v@Var__(_) -> <strip-annos; singelton> v
+    free-vars : v@Var__(_,_) -> <strip-annos; singelton> v
     free-vars : All__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : Exists__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : cons#(xs) -> <map(free-vars); unions> xs
@@ -106,12 +106,13 @@ signature
 	    Formula__(<conc-strings> ("lookup base ", name),
 	              Axiom__(),
 	              All__([NAME|<conc>(inputs, outputs)],
-	                    Pred__(lookup, <conc> (inputs, outputs, [Pred__(bind, <conc> (non-terminals, [NAME]))])))),
+	                    Pred__(lookup, <conc> (inputs, outputs, [Pred__(bind, <conc> (non-terminals,
+	                                                                                  <singelton> NAME))])))),
 	    Formula__(<conc-strings> ("lookup step ", name),
 	              Axiom__(),
 	              All__([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
-	                    Impl__([Pred__(lookup, <concat> [inputs, outputs, [NAME]]) | <zip; map(makeNeq)> (inputs, inputs2)],
-	                           Pred__(lookup, <conc>(inputs, outputs, [Pred__(bind, <conc> (<map(append(|"_"))> non-terminals, [NAME]))])))))
+	                    Impl__([Pred__(lookup, <concat> [inputs, outputs, <singelton> NAME]) | <zip; map(makeNeq)> (inputs, inputs2)],
+	                           Pred__(lookup, <conc>(inputs, outputs, [Pred__(bind, <conc> (<map(append(|"_"))> non-terminals, <singelton> NAME))])))))
 	]
 	   where
 	       // Index non-terminals with new names
@@ -135,7 +136,7 @@ signature
     // Translate all generic construtors into an auxillary data structure
     makeAuxCons : Constructor#(Args) -> AuxCons__(cons, name, Args)
         where
-            [cons, name] := <string-tokenize(|['-'])> Constructor;
+            [cons, name] := <string-tokenize(|<singelton> '-')> Constructor;
             <is-generic> cons
             is-generic = "ContextEmpty" <+
             			 "ContextBind" <+
