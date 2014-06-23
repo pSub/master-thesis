@@ -1,0 +1,25 @@
+module constraint-solving
+
+imports constraint-language
+imports utils
+imports include/SLTC
+
+rules
+    // TODO: rewrite with e.g. alltd to abort on the first match
+    occurs : (x, Var(x)) -> <id>
+    occurs : (x, Term(name, [])) -> <fail>
+    occurs : (x, Term(name, ts)) -> <map(occurs)> ts
+
+    subst(|x, t') : Var(x) -> t'
+    subst(|x, t') : Term(n, []) -> Term(n, [])
+    subst(|x, t') : Term(n, ts) -> <map(subst(|x, t'))> ts
+
+    // Robinson unification
+    unify : [Eq(t, t) | cs] -> <unify> cs
+    unify : [Eq(Term(n, ts), Term(n, ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
+        where <equal>(<length> ts, <length> ts')
+    unify : [Eq(t, Var(x)) | cs] -> <unify> [Eq(Var(x), t) | cs]
+    unify : [Eq(Var(x), t) | cs] -> <if <occurs> (x, t)
+                                     then fail
+                                     else unify (<map(subst(|x, t))> cs)
+                                     end>
