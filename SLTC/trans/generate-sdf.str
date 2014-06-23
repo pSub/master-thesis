@@ -5,7 +5,7 @@ imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
 rules
-	R : Module(_,
+	make-nodes : Module(_,
                _,
 			   Language(t),
                MetaVariables(MetaVariableList(Meta)),
@@ -23,7 +23,7 @@ rules
 		      )
 
 	// Generate syntax of context definitons	
-	R : ContextDefinition(Name, Definition) -> [
+	make-nodes : ContextDefinition(Name, Definition) -> [
 		prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", Name]),
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,
 							   <make-cons'> ["ContextBind-", Name]),
@@ -35,13 +35,13 @@ rules
 			elem := <names; intersperse(|" \":\" "); concat-strings> Definition
 
 	// Generate syntax of meta-variable definitions	
-	R : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
+	make-nodes : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
 						    scope,
 						    <make-cons'> ["MetaVariable-", scope])\)> ids
 
 	// Generate syntax of typing judgments
-	R : Judgment(s1, pos, s2, built-in) 
+	make-nodes : Judgment(s1, pos, s2, built-in) 
 	       -> prod(<names; intersperse(|" "); concat-strings> merged,
 	               "TypingJudgment",
 	               <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
@@ -64,4 +64,4 @@ rules
 	make-attr : str  -> <concat-strings> ["{", str, "}"]
 
 strategies
-	toSdf = innermost(R)
+	toSdf = innermost(make-nodes)
