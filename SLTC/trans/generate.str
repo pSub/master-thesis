@@ -32,7 +32,7 @@ rules
     result := <pp-fof> aterm
     
   pp-fof =
-    ast2abox(|[<parse-pptable-file> "syntax/fof.pp"]);
+    ast2abox(|[<parse-pptable-file> "trans/fof.pp"]);
     box2text-string(|100)
     
   generate-files(|base) =
