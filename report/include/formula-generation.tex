@@ -22,6 +22,10 @@ meta-variables and the section that declares the judgments are not
 used at all. With regard to formula generation they are only used to
 ensure correct syntax.
 
+The following parts of a type system specification are translated into
+first-order formulas as described below: Environments, AST nodes of
+the programming language, meta-variables and typing rules.
+
 \todo[inline]{Implement imports and describe how they are handled.}
 
 Environments declarations are translated in a uniform way. For every
@@ -78,8 +82,12 @@ stored. Variables $x_i$ and $x_i'$ are non-terminals from the
 environment declaration tagged with input, $y_i$ and $y_i'$ are
 non-terminals tagged with output respectively.
 
-The AST nodes of the programming language are translated into
-predicates. To help theorem provers for each of those predicates an
+The AST nodes of the programming language are translated directly into
+predicates. For the translation the following scheme is used. Assume
+an AST node of the following form $Cons(e_1, \dots, e_n)$ is
+translated into a predicate of the form $cons(p_1, \dots, p_n)$, where
+all consituents $e_i$ are translated into predicates $p_i$
+recursively. To help theorem provers for each of those predicates an
 axiom for injectivity and univalence is created. Those hold by
 definition of the AST nodes.
 
@@ -88,8 +96,8 @@ rules. Depending on whether the typing rules has premises either of
 the following schema is used:
 
 \begin{align}
-  &\forall FV(c) &.\,& c \\
-  &\forall FV(p_1,\dots, p_n) &.\,& p_1 \land \dots \land p_n \implies c
+  &\forall FV(c) .& c \\
+  &\forall FV(p_1,\dots, p_n, c) .& p_1 \land \dots \land p_n \implies c
 \end{align}
 
 \todo[inline]{In the following free variables are actually free
