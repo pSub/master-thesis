@@ -1,5 +1,6 @@
 module generate-constraint-generator
 
+imports constraint-language
 imports utils
 imports include/SLTC
 
@@ -9,10 +10,6 @@ signature
        Rule : Pattern * Outputs * Constraints -> Rule
        Pattern : Term -> Pattern
        Outputs : List(String) -> Outputs
-       
-       Term__ : String * List(String) -> Constraint              // Constructor x Parameters
-       Eq__ : Term * Term -> Constraint
-       Constraints : List(Constraint) -> Constraints
        
        ConstraintGenerator : List(Rule)
        

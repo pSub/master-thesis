@@ -1,0 +1,9 @@
+module constraint-language
+
+signature
+    sorts Term Constraint Constraints
+    constructors
+       Var : String -> Term
+       Term : String * List(Term) -> Constraint              // Constructor x Parameters
+       Eq : Term * Term -> Constraint
+       Constraints : List(Constraint) -> Constraints
