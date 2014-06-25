@@ -45,7 +45,7 @@ signature
 			                 Contexts(ContextDefinitions),
 			                 Judgments(j),
 			                 Rules(TypingRules),
-			                 some-conjectures) //Some(Conjectures(Conjectures)))
+			                 some-conjectures)
 			          -> <maybe(\Conjectures(conjectures) ->
 			                      <map(\conjecture -> 
 			                             FOFGoal__(<conc> (aux-formulas,
