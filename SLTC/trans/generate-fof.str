@@ -194,8 +194,8 @@ signature
 	   where <is-string ; map(is-alphanum)> v
 
 	// Wrap all strings that are parameters of Term__ or Pred__ into terms
-	rewriteString : Term__(n, args) -> Term__(n, <map(wrapString <+ id)> args)
-	rewriteString : Pred__(n, args) -> Pred__(n, <map(wrapString <+ id)> args)
+	rewriteString : Term__(n, args) -> Term__(n, <map(try(wrapString))> args)
+	rewriteString : Pred__(n, args) -> Pred__(n, <map(try(wrapString))> args)
 	
 	// Wrap the constructors of the programming language into terms
 	makeTerm : v -> v
