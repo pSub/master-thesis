@@ -1,0 +1,7 @@
+module constraint-solving
+
+language SLTC
+
+setup Common
+
+// FIXME: How to test stratego functions isolated from the main language?
