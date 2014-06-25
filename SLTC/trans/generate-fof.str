@@ -116,7 +116,7 @@ signature
 	]
 	   where
 	       // Index non-terminals with new names
-	       indexed-non-terminals := <zip> (<length; newnames(|"X")> raw-non-terminals, raw-non-terminals);
+	       indexed-non-terminals := <fanout; (length; newnames(|"X"), id); zip> raw-non-terminals;
 		   // extract the list of new names
 	       non-terminals := <map(Fst; \s -> Var__(s)\)> indexed-non-terminals;
 	       // filter out the in- and outputs
