@@ -180,6 +180,7 @@ signature
 	        prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
 	        
 	// Conjectures
+	// FIXME: Doesn't it make sense to quantify over variables in conjectures
 	makeConjecture : TypingRule(RuleName(_, Name), consequence) 
 	                   -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), consequence')
        with consequence' := <rewrite> consequence            
