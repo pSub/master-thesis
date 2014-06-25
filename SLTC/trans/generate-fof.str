@@ -40,10 +40,10 @@ signature
  rules
 	makeConjectures : Module(ModuleDec(_),
 			                 imports,
-			                 Language(l),
-			                 MetaVariables(m),
+			                 Language(_),
+			                 MetaVariables(_),
 			                 Contexts(ContextDefinitions),
-			                 Judgments(j),
+			                 Judgments(_),
 			                 Rules(TypingRules),
 			                 some-conjectures)
 			          -> <maybe(\Conjectures(conjectures) ->
