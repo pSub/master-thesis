@@ -134,10 +134,10 @@ signature
 
 	       
     // Translate all generic construtors into an auxillary data structure
-    makeAuxCons : Constructor#(Args) -> AuxCons__(cons, name, Args)
+    makeAuxCons : cons#(args) -> AuxCons__(constant, generic, args)
         where
-            [cons, name] := <string-tokenize(|<singelton> '-')> Constructor;
-            <is-generic> cons
+            [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
+            <is-generic> constant
             is-generic = "ContextEmpty" <+
             			 "ContextBind" <+
             			 "ContextLookup" <+
