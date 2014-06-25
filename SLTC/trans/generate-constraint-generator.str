@@ -8,8 +8,8 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Pattern : Term -> Pattern
-       Outputs : List(String) -> Outputs
+       Pattern : Term
+       Outputs : List(Term)
        
        ConstraintGenerator : List(Rule)
        
@@ -25,6 +25,15 @@ rules
                Rules(TypingRules),
                _)
         -> []
+        
+    make-term = id    
+    get-inputs = []
+    get-outputs = []
+
+    base : TypingRule(_, conclusion) -> <singelton> Rule(<get-inputs> conclusion,
+                                                         <get-outputs> conclusion,
+                                                         [])
+    step : TypingRule(premisses, _, conclusion) -> <fail>
                       
     // Preparation for constraint generator generation:
     // 1) Rewrite all language constructs into a Term strukture that
