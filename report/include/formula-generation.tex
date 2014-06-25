@@ -172,7 +172,7 @@ are all quantified. By now the constructed formula has the structure
 shown in \ref{formula:typing-rule}.
 
 Now the details of the \texttt{rewrite} strategy are presented. This
-strategy is defined as a sequence of two topdown traversals. The first
+strategy is defined as a sequence of two top down traversals. The first
 traversal is the actual rewrite of the typing judgments and the second
 is a special treatment for strings. The first traversal is organized
 as follows. An attempt to rewrite the current node into an auxiliary
@@ -185,14 +185,29 @@ formulas, to the typing judgments and to the meta-variables. Those
 consist of some constant string plus some user defined
 string. Therefore it is not possible to use normal pattern matching on
 them. The only chance to cope with them is to use the generic
-\texttt{cons\#(args)} pattern, to access the name of the constructor as
-a string. The auxiliary constructor \texttt{AuxCons} is used to
+\texttt{cons\#(args)} pattern, to access the name of the constructor
+as a string. The auxiliary constructor \texttt{AuxCons} is used to
 abstract over this generic pattern. The rule \texttt{makeAuxCons}
 splits the constructor name into the constant string and the user
 defined one and provides the arguments as they are. After this
 transformation it is possible to use normal pattern matching on
 \texttt{AuxCons}. \texttt{makeAuxCons} only succeeds on the
-constructors mentioned before. 
+constructors mentioned before. If a node can be transformed into an
+auxiliary constructor the constructor is rewritten immediately
+afterwards into a constructor of the first-order logic target
+language. These rewritings are trivial mappings from auxiliary
+constructors to constructors of the target language. If a
+transformation into an auxiliary constructor is not possible, the
+current node is wrapped into a \texttt{Term} constructor if it is not
+a constructor of the target language. The constructor \texttt{Term}
+indicates that the wrapped constructor is a constructor of the
+programming language, i.e. no constructor of the specification, nor of
+the target language. This wrapping is needed for controlled pretty
+printing of programming language constructors. In the second top down
+traversal strings in the arguments of predicates (\texttt{Pred}) and
+term (\texttt{Term}) constructors are wrapped into a \texttt{Term}
+constructor to handle constructors without parameters. This wrapping
+is needed later on to provide inequalities of constants symbols.
 
 The rewriting of typing rules and conjectures is very similar,
 therefore only the differences to the rewriting of typing rules are
