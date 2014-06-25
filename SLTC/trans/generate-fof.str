@@ -122,14 +122,14 @@ signature
 	       // filter out the in- and outputs
 	       inputs := <filter(?(_, Hole(_, "I")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
 	       outputs := <filter(?(_, Hole(_, "O")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
-	       // duplicate the in-and outputs by appending underscores
+	       // duplicate the in- and outputs by appending underscores
 	       inputs2 := <map(append(|"_"))> inputs;
 	       outputs2 := <map(append(|"_"))> outputs;
 	       
 	       // Auxiliary definitions
 	       lookup := <conc-strings> ("lookup", name);
 	       bind := <conc-strings> ("bind", name);
-	       NAME := Var__(<upper-case> name)
+	       NAME := Var__(<newname> "X")
            append(|p) = \ Var__(s) -> Var__(<conc-strings> (s, p)) \
 
 	       
