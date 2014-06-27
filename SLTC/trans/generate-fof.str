@@ -168,7 +168,7 @@ signature
 	        // it is illegal in TPTP to quantify over no variables.
 	        prop := <if [] then <id> consequence' else <id> All__(free-vars-in-rule, consequence') end> free-vars-in-rule
 	        
-	rewriteTypingRule : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) 
+	rewriteTypingRule : TypingRule(premises, RuleName(_, Name), consequence) 
 	                       -> Formula__(<option-to-string-newname(|"formula")> Name, Axiom__(), prop)
 	   with // Rewrite consequence and premises and collect all free variables
 	   	    consequence' := <rewrite> consequence;
@@ -184,7 +184,7 @@ signature
 	makeConjecture : TypingRule(RuleName(_, Name), consequence) 
 	                   -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), consequence')
        with consequence' := <rewrite> consequence            
-    makeConjecture : TypingRule(PremiseList(premises), RuleName(_, Name), consequence) 
+    makeConjecture : TypingRule(premises, RuleName(_, Name), consequence) 
                        -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), implication)
        with consequence' := <rewrite> consequence;
             premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
