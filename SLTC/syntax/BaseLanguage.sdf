@@ -43,7 +43,7 @@ exports
     "Not" -> Feature
 
   context-free syntax
-    %%FIXME: How do I avoid this warning
+    %%FIXME: How do I avoid this warning: Non-terminal used as a list separator (use round braces for grouping non-terminals)
 	Separator? {Hole Separator}+ Separator? BuiltIn? "." -> Judgment {cons("Judgment")}
 	"is" Feature-> BuiltIn {cons("BuiltIn")}
 
