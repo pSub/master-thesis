@@ -8,6 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
+       Binding : List(List(Var)) * List(Term) * Rule -> Rule 
        Pattern : Term
        Outputs : List(Term)
        
@@ -24,7 +25,7 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                _)
-        -> <innermost(base(|judgments))> typing-rules
+        -> <innermost(base(|judgments) <+ step(|judgments))> typing-rules
         
     make-term = id
     
@@ -45,8 +46,16 @@ rules
     base(|j) : TypingRule(_, conclusion) -> <singelton> Rule(<get-inputs(|j)> conclusion,
                                                              <get-outputs(|j)> conclusion,
                                                              [])
-    step : TypingRule(premisses, _, conclusion) -> <fail>
-                      
+    step(|j) : TypingRule(premisses, _, conclusion) -> 
+            Binding(<map(Fst)> vars-outputs,
+                    [],
+                    Rule(<get-inputs(|j)> conclusion,
+                         <get-outputs(|j)> conclusion,
+                         <mapconcat(zip(\(a,b) -> Eq(a,b)\))> vars-outputs))
+        where
+            premisses' := <to-list(PremiseBase, PremiseCons)> premisses;
+            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses'
+
     // Preparation for constraint generator generation:
     // 1) Rewrite all language constructs into a Term strukture that
     //    is easily analyzable. Do this in a modular way, as input
