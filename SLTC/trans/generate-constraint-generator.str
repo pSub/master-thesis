@@ -48,7 +48,7 @@ rules
                                                              [])
     step(|j) : TypingRule(premisses, _, conclusion) -> 
             Binding(<map(Fst)> vars-outputs,
-                    [],
+                    <map(get-inputs(|j))> premisses',
                     Rule(<get-inputs(|j)> conclusion,
                          <get-outputs(|j)> conclusion,
                          <mapconcat(zip(\(a,b) -> Eq(a,b)\))> vars-outputs))
