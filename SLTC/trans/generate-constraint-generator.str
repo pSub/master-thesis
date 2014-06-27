@@ -24,7 +24,7 @@ rules
                Contexts(ContextDefinitions),
                Judgments(judgments),
                Rules(typing-rules),
-               _)
+               conjectures)
         -> <innermost(base(|judgments) <+ step(|judgments))> typing-rules
         
     make-term = id
