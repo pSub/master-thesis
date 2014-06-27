@@ -21,18 +21,30 @@ rules
                Language(l),
                MetaVariables(m),
                Contexts(ContextDefinitions),
-               Judgments(j),
-               Rules(TypingRules),
+               Judgments(judgments),
+               Rules(typing-rules),
                _)
-        -> []
+        -> <innermost(base(|judgments))> typing-rules
         
-    make-term = id    
-    get-inputs = []
-    get-outputs = []
+    make-term = id
+    
+    get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
+    get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments)
+            
+    filter-hole-positions(cond|judgments) : node@cons#(args) -> <map(\n -> <index(|<add>(n, 1))> args\)> result
+        where
+            result := <get-hole-positions(|judgments); filter(cond); map(Fst)> node
+    
+    get-hole-positions(|judgments) : cons#(args) -> <fanout; (length; range, id); zip> holes
+        where
+            [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
+            judgment-number := <string-to-int; \n -> (n, 1)\; add> generic; 
+            judgment := <index(|judgment-number)> judgments;
+            holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
 
-    base : TypingRule(_, conclusion) -> <singelton> Rule(<get-inputs> conclusion,
-                                                         <get-outputs> conclusion,
-                                                         [])
+    base(|j) : TypingRule(_, conclusion) -> <singelton> Rule(<get-inputs(|j)> conclusion,
+                                                             <get-outputs(|j)> conclusion,
+                                                             [])
     step : TypingRule(premisses, _, conclusion) -> <fail>
                       
     // Preparation for constraint generator generation:
