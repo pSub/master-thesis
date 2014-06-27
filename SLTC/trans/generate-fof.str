@@ -61,7 +61,7 @@ signature
             // Create the injectivity and univalence formulas
             helper := <collect-all(?Term__(_, _)); nub;
             		   mapconcat(\Term__(name, args) -> [ <makeInjectivity> (name, <length> args)
-            		   			                        ,  <makeUnivalence> (name, <length> args)
+            		   			                        , <makeUnivalence> (name, <length> args)
             		   			                        ]
             		   			 \)> typing-rule-formulas;
             aux-formulas := <conc> (context-formulas, helper)
