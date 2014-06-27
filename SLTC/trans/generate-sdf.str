@@ -5,25 +5,27 @@ imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
 rules
-	make-nodes : Module(_,
+	make-nodes : 
+	    Module(_,
                _,
 			   Language(t),
-               MetaVariables(MetaVariableList(Meta)),
-               Contexts(Ctx),
-               Judgments(Judg),
+               MetaVariables(MetaVariableList(meta-variables)),
+               Contexts(contexts),
+               Judgments(judgments),
                _,
                _)
 		  -> 'module("Generated",
 		             [imports(t), imports("Common")], 
 			         exports(
-				        conc-grammars(context-free-syntax(Meta),
-                        conc-grammars(context-free-syntax(Ctx),
-				        context-free-syntax(Judg)))
+				        conc-grammars(context-free-syntax(<map(make-variable)> meta-variables),
+                        conc-grammars(context-free-syntax(<map(make-context)> contexts),
+				        context-free-syntax(<fanout; (length; range, id);
+				                             zip; map(make-judgment)> judgments)))
 			         )
 		      )
 
 	// Generate syntax of context definitons	
-	make-nodes : ContextDefinition(Name, Definition) -> [
+	make-context : ContextDefinition(Name, Definition) -> [
 		prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", Name]),
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,
 							   <make-cons'> ["ContextBind-", Name]),
@@ -35,17 +37,18 @@ rules
 			elem := <names; intersperse(|" \":\" "); concat-strings> Definition
 
 	// Generate syntax of meta-variable definitions	
-	make-nodes : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
+	make-variable : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
 						    scope,
 						    <make-cons'> ["MetaVariable-", scope])\)> ids
 
 	// Generate syntax of typing judgments
-	make-nodes : Judgment(s1, pos, s2, built-in) 
+	make-judgment : (num, Judgment(s1, pos, s2, built-in))
 	       -> prod(<names; intersperse(|" "); concat-strings> merged,
 	               "TypingJudgment",
 	               <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
-                         | <newname> typing-judgment); make-cons> built-in)
+                         | <conc-strings> (typing-judgment, <int-to-string> num));
+                    make-cons> built-in)
 			where
 				merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
 				typing-judgment := "TypingJudgment-"
@@ -64,4 +67,4 @@ rules
 	make-attr : str  -> <concat-strings> ["{", str, "}"]
 
 strategies
-	toSdf = innermost(make-nodes)
+	toSdf = make-nodes
