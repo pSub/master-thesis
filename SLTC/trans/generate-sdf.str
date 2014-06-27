@@ -9,7 +9,7 @@ rules
 	    Module(_,
                _,
 			   Language(t),
-               MetaVariables(MetaVariableList(meta-variables)),
+               MetaVariables(meta-variables),
                Contexts(contexts),
                Judgments(judgments),
                _,

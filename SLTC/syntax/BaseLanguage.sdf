@@ -6,7 +6,7 @@ exports
     "module" MID                            -> ModuleDec      {cons("ModuleDec")}
     "imports" MID							-> Imports        {cons("Imports")}
     "language" MID							-> Language       {cons("Language")}
-    "meta-variables" MetaVariableList 		-> MetaVariables  {cons("MetaVariables")}
+    "meta-variables" MetaVariableDefinition*-> MetaVariables  {cons("MetaVariables")}
     "contexts" ContextDefinition*		    -> Contexts       {cons("Contexts")}
     "judgments" Judgment*                   -> Judgments      {cons("Judgments")}
     "rules" TypingRule*                     -> Rules          {cons("Rules")}
@@ -30,7 +30,6 @@ exports
   	"{" ID+ "}"-> Scope {cons("Scope")}
 	"\"" PrefixChars "\"" -> Prefix {cons("MetaVariablePrefix")}
   	Name Prefix Scope -> MetaVariableDefinition {cons("MetaVariableDefinition")}
-  	MetaVariableDefinition* -> MetaVariableList {cons("MetaVariableList")}
   	
 %% Contexts
   context-free syntax
