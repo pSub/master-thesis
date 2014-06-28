@@ -75,4 +75,4 @@ rules
     //    2.2) Exploid facts that can be proven easily
     
 strategies
-    to-constraint-generator = id
+    to-constraint-generator(|judgments, typing-rules) = <innermost(base(|judgments) <+ step(|judgments))> typing-rules
