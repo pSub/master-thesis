@@ -7,3 +7,6 @@ signature
        Term : String * List(Term) -> Constraint              // Constructor x Parameters
        Eq : Term * Term -> Constraint
        Constraints : List(Constraint) -> Constraints
+       
+rules
+    makeVar : v -> Var(v)
