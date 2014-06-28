@@ -1,0 +1,50 @@
+module generate-constraints
+
+imports utils
+imports generate-constraint-generator
+imports include/SLTC
+
+signature
+    sorts Constraint
+    constructors
+                
+        ConstraintSet : List(Constraint)
+        
+        
+rules
+    generate-constraints : 
+        Module(ModuleDec(_),
+                 imports,
+                 Language(l),
+                 MetaVariables(m),
+                 Contexts(ContextDefinitions),
+                 Judgments(judgments),
+                 Rules(typing-rules),
+                 Some(Conjectures(conjectures)))
+        -> <map(\TypingRule(_, conjecture) -> <generate(|judgments, templates)> conjecture\)> conjectures
+        where
+            templates := <to-constraint-generator(|judgments, typing-rules)>
+             
+    generate(|judgments, templates) : v -> <find-match(|inputs)> templates
+        where
+             inputs := <get-inputs(|judgments)> v;
+             outputs := <get-outputs(|judgments)> v
+             
+    generate'(|templates) : inputs -> <fail>
+    
+    find-match(|inputs) : [] -> <singelton; error> "No match found!"
+    find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
+                                     then if <zip; fanout; (filter(match-constructors); length,
+                                                            length);equal> (inputs, <get-pattern> t)
+                                           then <id> t
+                                           else <find-match(|inputs)> ts
+                                           end
+                                     else <find-match(|inputs)> ts
+                                     end>
+    
+    match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
+                                     equal(|"MetaVariable", <string-tokenize(|<singelton> '-');Hd> s-cons) <+
+                                     equal(|"MetaVariable", <string-tokenize(|<singelton> '-');Hd> t-cons)>
+        where
+            s-cons := <explode-term; Fst> s;
+            t-cons := <explode-term; Fst> t
