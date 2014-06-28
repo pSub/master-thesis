@@ -21,17 +21,27 @@ rules
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
-        -> <map(\TypingRule(_, conjecture) -> <generate(|judgments, templates)> conjecture\)> conjectures
+        -> <map(\TypingRule(_, conjecture) ->
+                 <get-inputs(|judgments); generate(|judgments, templates)> conjecture
+                \)> conjectures
         where
             templates := <to-constraint-generator(|judgments, typing-rules)>
              
-    generate(|judgments, templates) : v -> <find-match(|inputs)> templates
+    generate(|judgments, templates) : inputs -> <generate'(|judgments, templates)> match
         where
-             inputs := <get-inputs(|judgments)> v;
-             outputs := <get-outputs(|judgments)> v
+             match := <find-match(|inputs)> templates
              
-    generate'(|templates) : inputs -> <fail>
-    
+    generate'(|j, t) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
+    generate'(|j, t) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
+            (outputs, constraints')
+        where
+            outputs-constraints := <map(debug; generate(|j, t))> calls;
+            xs-outputs := <zip> (xs, <map(Fst)> outputs-constraints);
+            constraints' := <map(replace(|constraints))> xs-outputs
+            
+    // TODO: Use the patterns, to extract the subterms
+
+    // FIXME: What if multiple rules match?    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
     find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
                                      then if <zip; fanout; (filter(match-constructors); length,
@@ -43,8 +53,9 @@ rules
                                      end>
     
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
-                                     equal(|"MetaVariable", <string-tokenize(|<singelton> '-');Hd> s-cons) <+
-                                     equal(|"MetaVariable", <string-tokenize(|<singelton> '-');Hd> t-cons)>
+                                     <is-meta-variable> s-cons>
         where
             s-cons := <explode-term; Fst> s;
             t-cons := <explode-term; Fst> t
+            
+    is-meta-variable = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, "MetaVariable") \
