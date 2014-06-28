@@ -46,9 +46,9 @@ rules
             judgment := <index(|judgment-number)> judgments;
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
 
-    base(|j) : TypingRule(_, conclusion) -> <singelton> Rule(<get-inputs(|j)> conclusion,
-                                                             <get-outputs(|j)> conclusion,
-                                                             [])
+    base(|j) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j)> conclusion,
+                                                 <get-outputs(|j)> conclusion,
+                                                 [])
     step(|j) : TypingRule(premisses, _, conclusion) -> 
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j))> premisses',
