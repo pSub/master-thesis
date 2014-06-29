@@ -49,6 +49,7 @@ rules
     base(|j) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j)> conclusion,
                                                  <get-outputs(|j)> conclusion,
                                                  [])
+    // TODO: Use indexed.str or hashtable for contexts
     step(|j) : TypingRule(premisses, _, conclusion) -> 
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j))> premisses',
