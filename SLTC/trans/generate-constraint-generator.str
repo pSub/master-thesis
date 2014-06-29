@@ -32,6 +32,12 @@ rules
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
 
+    get-outputs : Rule(_, outputs, _) -> outputs
+    get-outputs : Binding(_, _, Rule(_, outputs, _)) -> outputs
+
+    get-constraints : Rule(_, _, constraints) -> constraints
+    get-constraints : Binding(_, _, Rule(_, _, constraints)) -> constraints
+
     get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
     get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments)
             
