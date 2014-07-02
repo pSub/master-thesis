@@ -63,3 +63,4 @@
   - This meta-language aims at concise and definitions that are easy to read/edit
   - Meta-language is divided into two languages, one is specifically desinged to describe binding constructs
   - Meta-language is compiled to proof-assistent and latex code
+* Automatic Generation of Object-Oriented Type Checkers
