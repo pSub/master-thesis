@@ -77,7 +77,7 @@ The research problem we are trying to tackle is to create a tool that
 allows to create an efficient type checker from a declarative
 specification and that reduces the gap between formal reasoning about
 type systems and their implementation. This problem splits up in
-several smaller problems.
+smaller problems.
 
 The first problem is the design of a declarative specification
 language that is close to the formalisms used for type systems. This
@@ -98,7 +98,31 @@ be able to cope with non-syntax directed typing rules in an efficient
 manner. As one way to achieve this it should be investigated whether
 facts proven by an automated theorem prover can be exploited.
 \section{Related Work}
-\section{Results}
-\section{Contributions}
+There are early approaches for the generation of type checkers that
+were not particularly designed for that purpose. For example the
+Synthesizer Generator \cite{Reps:1984:SG:800020.808247} which uses
+attributes grammars and the ASF+SDF Meta-Environment
+\cite{vandenBrand:2001:AMC:647477.727788} based on conditional term
+rewriting. Later approaches use similar techniques, for example TCG
+\cite{phd/de/Gast2005} which uses inference rules, but are specialized
+for the generation of type system. Those approaches have a lower
+performance handcrafted implementations, because they implement the
+control-flow implied by the formalism used.
 
+A recent approach (TyC \cite{ortin2014automatic}) has focused on the
+generation of type checkers for object-oriented programming
+languages. It provides a framework to build efficient type checkers
+for object-oriented languages (without polymorphism) and uses for this
+purpose, in most parts, normal program code to specify the type
+system.
+
+Ott \cite{journals/jfp/SewellNOPRSS10} is an other approach that
+generates from a specification language code for proof assistants and
+\LaTeX, it tries to reduce the gap between the hand-written on-paper
+proofs and machine checkable proofs.
+\section{Approach}
+\section{Results and Contributions}
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
 \end{document}
