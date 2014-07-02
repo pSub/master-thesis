@@ -63,7 +63,34 @@ checker generator is to translate specifications into first-order
 formulas which can be fed into automated theorem provers to prove
 propositions. This establishes a direct connection between the
 propositions and the generated type checker.
+
+%% TODO: Mention the application to other kind of type systems?
+
 \section{Research Problem}
+The research problem we are trying to tackle is to create a tool that
+allows to create an efficient type checker from a declarative
+specification and that reduces the gap between formal reasoning about
+type systems and their implementation. This problem splits up in
+several smaller problems.
+
+The first problem is the design of a declarative specification
+language that is close to the formalisms used for type systems. This
+language should make it easy to use existing syntax definition of
+realistic programming languages and the difference between typing
+rules on paper and in the specification language should be small.
+
+The next problem is to investigate a good first-order formula
+representation of specification. This representation should be
+designed such that it suits automated theorem proving and thus fast
+proves. It should also be investigated to which extend theorem provers
+for first order logic can be used for type checking.
+
+The main problem is the generation of an efficient type checker. The
+performance of the resulting type checker should be comparable with
+type checkers that are implemented by hand. The generator should also
+be able to cope with non-syntax directed typing rules in an efficient
+manner. As one way to achieve this it should be investigated whether
+facts proven by an automated theorem prover can be exploited.
 \section{Related Work}
 \section{Results}
 \section{Contributions}
