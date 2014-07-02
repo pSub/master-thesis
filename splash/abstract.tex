@@ -28,7 +28,42 @@ Pascal Wittmann
   type systems.
  \end{abstract}
 
-\section{Introduction}
+\section{Motivation}
+Type systems ensure partial correctness of programs or in other words,
+they try to ensure that programs have meaning in the sense of the
+semantics of the programming language. The type systems we investigate
+are static type systems and can also be thought of as a static
+approximation of the program semantics. Besides ensuring partial
+correctness, type systems are means to establish abstractions and to
+enforce adherence to these abstractions. All in all this can help to
+develop software more efficiently. %% Cite Hanenberg
+
+Type systems are useful tools, if they fit to the programming language
+and their use. To ensure that they fit to the programming language and
+their use it makes sense to adapt and modify existing type system or
+create new specialized type systems. Those specializations can lead to
+better error messages, more expressive type systems and the detection
+of more errors. Currently there are, to our best knowledge, no
+established tools that generate usable type checkers from declarative
+specification languages. Those generators could make the development
+of type checkers faster and less error prone. Those generators would
+fit well into the language development workbench besides the long
+established lexer and parser generators.
+
+The other advantage of generating a type checker from a declarative
+specification language is that the specification is close to the
+formal description of the type system and the generation of the type
+checker can be verified in the absence of a concrete
+specification. Often not only the verification of the implementation
+is a concern, but also that the type system satisfies certain
+properties. As the proofs of propositions about type systems change
+when the type system changes, it is desirable to make most of these
+changes automatically. Therefore an other motivation for a type
+checker generator is to translate specifications into first-order
+formulas which can be fed into automated theorem provers to prove
+propositions. This establishes a direct connection between the
+propositions and the generated type checker.
+\section{Research Problem}
 \section{Related Work}
 \section{Results}
 \section{Contributions}
