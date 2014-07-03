@@ -121,8 +121,92 @@ generates from a specification language code for proof assistants and
 \LaTeX, it tries to reduce the gap between the hand-written on-paper
 proofs and machine checkable proofs.
 \section{Approach}
-\section{Results and Contributions}
+Our approach tries to combine ideas from the related work presented
+above. We design a high level declarative specification language that
+is close to formalizations of type systems and generate first-order
+formulas and efficient type checkers from it.
 
-\bibliography{bibliography}{}
-\bibliographystyle{plain}
+We use the language workbench Spoofax \cite{KatsVisser2010} for the
+implementation of the specification language and the generators. We
+use specifically two parts of Spoofax, the Syntax Definition Formalism
+(SDF) to define new syntax and the transformation language Stratego to
+generate code from specifications. 
+
+When writing a specification, the syntax of the programming language
+must be present in SDF. Specifications are organized in modules and
+contain declarations of meta-variables, contexts, judgments and
+rules. Figure \ref{fig:example-specification} gives and impression of a
+specification.
+
+\begin{figure}
+\begin{verbatim}
+module example
+imports common
+language simply-typed-lambda-calculus
+meta-variables 	Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+contexts Context := ID{I} x Type{O}
+judgments Context{I} "|-" Exp{I} ":" Type{O}.
+rules
+
+%x : ~T in $C
+============== T-Var
+$C |- %x : ~T
+
+(%x : ~T ; $C) |- ~t : ~T
+================================= T-Abs
+$C |- \ %x : ~T . ~t : ~T -> ~T
+
+$C |- ~t1 : ~T11 -> ~T12
+$C |- ~t2 : ~T2
+========================= T-App
+$C |- ~t1 ~t2 : ~S
+\end{verbatim}
+\caption{Specification of the type system for the simply typed lambda
+  calculus.}
+\label{fig:example-specification}
+\end{figure}
+
+A stratego strategy transforms a specification into first-order
+formulas in the TPTP\cite{Sutcliffe04tstpdata-exchange} format. The
+use of the TPTP format allows to use a variaty of different automated
+theorem provers. Typing rules are transformed into roughly into the
+following format, where $p_1 \dots p_n$ are the premisses, $c$ is the
+conclusion and $free$ collects free variables:
+
+\begin{align}
+  \forall v \in free(p_1, \dots, p_n, c) . p_1 \land \dots \land p_n \implies  c 
+\end{align}
+
+In this transformation process measurements are taken to ensure that
+variables are correctly quantified and valid TPTP code is generated.
+
+Stratego strategies generate the type checker as well. The generated
+type checker consists of a constraint generator and a constraint
+solver. We have chosen constraint solving as a basis for the type
+checker, because it allows the generation of fast type checkers and is
+not bound to certain class of type systems. To obtain a fast
+constraint generator the structure of the rules should be analyzed,
+also with the help of the formula generation and automated theorem
+provers. A possible approach for dealing with non-syntax-directed
+rules is for instance to check whether two rules commute.
+\section{Contributions}
+This work has three main contributions. It contributes a declarative
+specification language that allows to specify arbitrary type systems
+close to mathematical notation. A tool that transforms specifications
+into first-order formulas in the TPTP format. Finally a tool that
+generates an efficient type checker that can cope with
+non-syntax-directed rules and uses automated proves to optimize the
+resulting type checker. This reduces the amount of work to implement
+type systems and reduces the gap between theory and practice. The
+approach is also applicable to type systems from other areas, like
+security.
+
+The specification language and the formula generation are nearly
+finished and tested with type systems for languages like PCF and
+SystemF and with a type system for information flow security. The
+generation of the type checker is, by the time of writing, work in
+progress.
+\bibliography{bibliography}{} \bibliographystyle{plain}
 \end{document}
