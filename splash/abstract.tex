@@ -38,23 +38,24 @@ they try to ensure that programs have meaning in the sense of the
 semantics of the programming language. The type systems we investigate
 are static type systems and can also be thought of as a static
 approximation of the program semantics. Besides ensuring partial
-correctness, type systems are means to establish abstractions and to
-enforce adherence to these abstractions. All in all this can help to
-develop software more efficiently
-(cf. \cite{Petersen:2014:ECS:2597008.2597152} and
+correctness, type systems are means to establish abstractions, to
+enforce adherence to these abstractions and they can serve as
+documentation. All in all type systems can help to develop software
+more efficiently (cf. \cite{Petersen:2014:ECS:2597008.2597152} and
 \cite{Mayer:2012:ESI:2384616.2384666}).
 
 Type systems are useful tools, if they fit to the programming language
-and their use. To ensure that they fit to the programming language and
-their use it makes sense to adapt and modify existing type system or
-create new specialized type systems. Those specializations can lead to
-better error messages, more expressive type systems and the detection
-of more errors. Currently there are, to our best knowledge, no
-established tools that generate usable type checkers from declarative
-specification languages. Those generators could make the development
-of type checkers faster and less error prone. Those generators would
-fit well into the language development workbench besides the long
-established lexer and parser generators.
+and the application scenario. To ensure that they fit to the
+programming language and the application scenario it makes sense to
+adapt and modify existing type system or create new specialized type
+systems. Those specializations can lead to better error messages, more
+expressive type systems and the detection of more
+errors, see \cite{Thiemann02programmabletype}. Currently there are, to our
+best knowledge, no established tools that generate usable type
+checkers from declarative specification languages. Those generators
+could make the development of type checkers faster and less error
+prone. Those generators would fit well into the language development
+workbench besides the long established lexer and parser generators.
 
 The other advantage of generating a type checker from a declarative
 specification language is that the specification is close to the
@@ -68,9 +69,7 @@ changes automatically. Therefore an other motivation for a type
 checker generator is to translate specifications into first-order
 formulas which can be fed into automated theorem provers to prove
 propositions. This establishes a direct connection between the
-propositions and the generated type checker.
-
-%% TODO: Mention the application to other kind of type systems?
+specified type system, the proofs  and the generated type checker.
 
 \section{Research Problem}
 The research problem we are trying to tackle is to create a tool that
