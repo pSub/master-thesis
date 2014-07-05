@@ -120,22 +120,23 @@ generates from a specification language code for proof assistants and
 \LaTeX, it tries to reduce the gap between the hand-written on-paper
 proofs and machine checkable proofs.
 \section{Approach}
-Our approach tries to combine ideas from the related work presented
-above. We design a high level declarative specification language that
-is close to formalizations of type systems and generate first-order
-formulas and efficient type checkers from it.
+Our approach combines ideas from the related work presented above. We
+design a high level declarative specification language that is close
+to formalizations of type systems and generate first-order formulas
+and efficient type checkers from it.
 
 We use the language workbench Spoofax \cite{KatsVisser2010} for the
-implementation of the specification language and the generators. We
-use specifically two parts of Spoofax, the Syntax Definition Formalism
-(SDF) to define new syntax and the transformation language Stratego to
-generate code from specifications. 
+implementation of the specification language and the
+generators. Specifically we use two parts of Spoofax, the Syntax
+Definition Formalism (SDF) to define new syntax for the specification
+language and the transformation language Stratego to generate code
+from specifications. 
 
 When writing a specification, the syntax of the programming language
 must be present in SDF. Specifications are organized in modules and
-contain declarations of meta-variables, contexts, judgments and
-rules. Figure \ref{fig:example-specification} gives and impression of a
-specification.
+contain declarations of meta-variables, contexts, judgments, rules and
+test-cases. Figure \ref{fig:example-specification} gives and
+impression of a specification.
 
 \begin{figure}
 \begin{verbatim}
@@ -168,9 +169,9 @@ $C |- ~t1 ~t2 : ~S
 \end{figure}
 
 A stratego strategy transforms a specification into first-order
-formulas in the TPTP\cite{Sutcliffe04tstpdata-exchange} format. The
+formulas in the TPTP \cite{Sutcliffe04tstpdata-exchange} format. The
 use of the TPTP format allows to use a variaty of different automated
-theorem provers. Typing rules are transformed into roughly into the
+theorem provers. Typing rules are transformed roughly into the
 following format, where $p_1 \dots p_n$ are the premisses, $c$ is the
 conclusion and $free$ collects free variables:
 
@@ -179,7 +180,8 @@ conclusion and $free$ collects free variables:
 \end{align}
 
 In this transformation process measurements are taken to ensure that
-variables are correctly quantified and valid TPTP code is generated.
+variables are correctly quantified and valid TPTP formulas are
+generated.
 
 Stratego strategies generate the type checker as well. The generated
 type checker consists of a constraint generator and a constraint
@@ -189,7 +191,8 @@ not bound to certain class of type systems. To obtain a fast
 constraint generator the structure of the rules should be analyzed,
 also with the help of the formula generation and automated theorem
 provers. A possible approach for dealing with non-syntax-directed
-rules is for instance to check whether two rules commute.
+rules is for instance to check whether two rules commute, to delay to
+application of general rules as long as possible.
 \section{Contributions}
 This work has three main contributions. It contributes a declarative
 specification language that allows to specify arbitrary type systems
