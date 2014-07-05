@@ -72,11 +72,10 @@ propositions. This establishes a direct connection between the
 specified type system, the proofs  and the generated type checker.
 
 \section{Research Problem}
-The research problem we are trying to tackle is to create a tool that
-allows to create an efficient type checker from a declarative
-specification and that reduces the gap between formal reasoning about
-type systems and their implementation. This problem splits up in
-smaller problems.
+The research problem we are tackling is to create a tool that allows
+to create an efficient type checker from a declarative specification
+and that reduces the gap between formal reasoning about type systems
+and their implementations. This problem splits up in smaller problems.
 
 The first problem is the design of a declarative specification
 language that is close to the formalisms used for type systems. This
@@ -85,17 +84,18 @@ realistic programming languages and the difference between typing
 rules on paper and in the specification language should be small.
 
 The next problem is to investigate a good first-order formula
-representation of specification. This representation should be
-designed such that it suits automated theorem proving and thus fast
-proves. It should also be investigated to which extend theorem provers
-for first order logic can be used for type checking.
+representation of specifications. This representation should be
+designed such that it suits automated theorem proving and thus support
+a fast prove search. It should also be investigated to which extend
+theorem provers for first order logic can be used for type checking.
 
 The main problem is the generation of an efficient type checker. The
 performance of the resulting type checker should be comparable with
-type checkers that are implemented by hand. The generator should also
-be able to cope with non-syntax directed typing rules in an efficient
-manner. As one way to achieve this it should be investigated whether
-facts proven by an automated theorem prover can be exploited.
+hand-crafted type checkers and the generator should also be able to
+cope with non-syntax directed typing rules in an efficient manner. In
+this context it should be investigated whether facts proven by an
+automated theorem prover can be exploited for the type checker
+generation.
 \section{Related Work}
 There are early approaches for the generation of type checkers that
 were not particularly designed for that purpose. For example the
