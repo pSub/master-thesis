@@ -16,7 +16,7 @@ signature
        
 rules
     
-    makeConstraintGenerator : 
+    make-constraint-generator :
         Module(ModuleDec(_),
                imports,
                Language(l),
