@@ -33,7 +33,7 @@ rules
              
     generate'(|j, t, i) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, t, i) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
-            (outputs, constraints')
+            (outputs, <conc> (<mapconcat(Snd)> outputs-constraints, constraints'))
         where
             positions := <map(find-matching-positions(|pattern))> calls;
             input-terms := <map(extract-terms(|i))> positions;
