@@ -27,19 +27,34 @@ rules
         where
             templates := <to-constraint-generator(|judgments, typing-rules)>
              
-    generate(|judgments, templates) : inputs -> <generate'(|judgments, templates)> match
+    generate(|judgments, templates) : inputs -> <generate'(|judgments, templates, inputs)> match
         where
              match := <find-match(|inputs)> templates
              
-    generate'(|j, t) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
-    generate'(|j, t) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
+    generate'(|j, t, i) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
+    generate'(|j, t, i) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
             (outputs, constraints')
         where
-            outputs-constraints := <map(debug; generate(|j, t))> calls;
+            positions := <map(find-matching-positions(|pattern))> calls;
+            input-terms := <map(extract-terms(|i))> positions;
+            outputs-constraints := <map(generate(|j, t))> input-terms;
             xs-outputs := <zip> (xs, <map(Fst)> outputs-constraints);
             constraints' := <map(replace(|constraints))> xs-outputs
             
-    // TODO: Use the patterns, to extract the subterms
+    extract-terms(|inputs) = map(\pos -> <fetch> (inputs, pos)\)
+    find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
+    get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
+
+    search : (x, pattern) -> <search_> (x, [1], pattern)
+    search_ : (x, is, []) -> <fail>
+    search_ : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
+                                                    then <id> [i|is]
+                                                    else <search_> (x, <add; singelton> (i, 1), pattern)
+                                                    end>
+    search_ : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search_> (x, [1|is], <conc> (args, pattern)) > (x, args)
+
+    fetch : (cons#(args), [p]) -> <index> (p, args)
+    fetch : (cons#(args), [p|path]) -> <index; \ n -> <fetch> (n, path)\> (p, args)
 
     // FIXME: What if multiple rules match?    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
