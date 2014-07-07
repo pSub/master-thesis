@@ -7,14 +7,15 @@ imports include/SLTC
 rules
     // TODO: rewrite with e.g. alltd to abort on the first match
     occurs : (x, Var__(x)) -> <id>
-    occurs : (x, Term(name, [])) -> <fail>
-    occurs : (x, Term(name, ts)) -> <map(occurs)> ts
+    occurs : (x, name#([])) -> <fail>
+    occurs : (x, name#(ts)) -> <map(occurs)> ts
 
     subst(|x, t') : Var__(x) -> t'
-    subst(|x, t') : Term(n, []) -> Term(n, [])
-    subst(|x, t') : Term(n, ts) -> <map(subst(|x, t'))> ts
+    subst(|x, t') : v@n#([]) -> v
+    subst(|x, t') : n#(ts) -> <map(subst(|x, t'))> ts
 
     // Robinson unification
+    unify : [] -> []
     unify : [Eq__(t, t) | cs] -> <unify> cs
     unify : [Eq__(n#(ts), n#(ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
         where <equal>(<length> ts, <length> ts')
