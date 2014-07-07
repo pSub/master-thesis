@@ -6,20 +6,20 @@ imports include/SLTC
 
 rules
     // TODO: rewrite with e.g. alltd to abort on the first match
-    occurs : (x, Var(x)) -> <id>
+    occurs : (x, Var__(x)) -> <id>
     occurs : (x, Term(name, [])) -> <fail>
     occurs : (x, Term(name, ts)) -> <map(occurs)> ts
 
-    subst(|x, t') : Var(x) -> t'
+    subst(|x, t') : Var__(x) -> t'
     subst(|x, t') : Term(n, []) -> Term(n, [])
     subst(|x, t') : Term(n, ts) -> <map(subst(|x, t'))> ts
 
     // Robinson unification
     unify : [Eq__(t, t) | cs] -> <unify> cs
-    unify : [Eq__(Term(n, ts), Term(n, ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
+    unify : [Eq__(n#(ts), n#(ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
         where <equal>(<length> ts, <length> ts')
-    unify : [Eq__(t, Var(x)) | cs] -> <unify> [Eq__(Var(x), t) | cs]
-    unify : [Eq__(Var(x), t) | cs] -> <if <occurs> (x, t)
+    unify : [Eq__(t, Var(x)) | cs] -> <unify> [Eq__(Var__(x), t) | cs]
+    unify : [Eq__(Var__(x), t) | cs] -> <if <occurs> (x, t)
                                      then fail
                                      else unify (<map(subst(|x, t))> cs)
                                      end>
