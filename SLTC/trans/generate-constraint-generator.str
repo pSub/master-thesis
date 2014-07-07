@@ -61,7 +61,7 @@ rules
                     <map(get-inputs(|j))> premisses',
                     Rule(<get-inputs(|j)> conclusion,
                          <get-outputs(|j)> conclusion',
-                         <mapconcat(zip(\(a,b) -> Eq(a,b)\))> vars-outputs'))
+                         <mapconcat(zip(makeEq))> vars-outputs'))
         where
             premisses' := <to-list(PremiseBase, PremiseCons)> premisses;
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses';

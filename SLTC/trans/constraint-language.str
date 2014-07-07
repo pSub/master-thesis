@@ -3,10 +3,11 @@ module constraint-language
 signature
     sorts Term Constraint Constraints
     constructors
-       Var : String -> Term
+       Var__ : String -> Term
        Term : String * List(Term) -> Constraint              // Constructor x Parameters
-       Eq : Term * Term -> Constraint
-       Constraints : List(Constraint) -> Constraints
+       Eq__ : Term * Term -> Constraint
+       Constraints__ : List(Constraint) -> Constraints
        
 rules
-    makeVar : v -> Var(v)
+    makeVar : v -> Var__(v)
+    makeEq : (a,b) -> Eq__(a,b)

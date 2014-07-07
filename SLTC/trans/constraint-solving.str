@@ -15,11 +15,11 @@ rules
     subst(|x, t') : Term(n, ts) -> <map(subst(|x, t'))> ts
 
     // Robinson unification
-    unify : [Eq(t, t) | cs] -> <unify> cs
-    unify : [Eq(Term(n, ts), Term(n, ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
+    unify : [Eq__(t, t) | cs] -> <unify> cs
+    unify : [Eq__(Term(n, ts), Term(n, ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
         where <equal>(<length> ts, <length> ts')
-    unify : [Eq(t, Var(x)) | cs] -> <unify> [Eq(Var(x), t) | cs]
-    unify : [Eq(Var(x), t) | cs] -> <if <occurs> (x, t)
+    unify : [Eq__(t, Var(x)) | cs] -> <unify> [Eq__(Var(x), t) | cs]
+    unify : [Eq__(Var(x), t) | cs] -> <if <occurs> (x, t)
                                      then fail
                                      else unify (<map(subst(|x, t))> cs)
                                      end>
