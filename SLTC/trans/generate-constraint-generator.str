@@ -68,7 +68,7 @@ rules
             (vars-outputs', conclusion') := <replace-meta-variables> (vars-outputs, conclusion)
 
 
-    replace-meta-variables : ast -> <collect-om(fanout; (explode-term; Fst; is-meta-variable, id); Snd);
+    replace-meta-variables : ast -> <collect-om(where(explode-term; Fst; is-meta-variable));
                                      fanout; (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
 
     // Preparation for constraint generator generation:
