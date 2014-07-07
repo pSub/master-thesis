@@ -72,5 +72,3 @@ rules
         where
             s-cons := <explode-term; Fst> s;
             t-cons := <explode-term; Fst> t
-            
-    is-meta-variable = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, "MetaVariable") \
