@@ -8,19 +8,15 @@ rules
     // TODO: rewrite with e.g. alltd to abort on the first match
     occurs : (x, Var__(x)) -> <id>
     occurs : (x, name#([])) -> <fail>
-    occurs : (x, name#(ts)) -> <map(occurs)> ts
-
-    subst(|x, t') : Var__(x) -> t'
-    subst(|x, t') : v@n#([]) -> v
-    subst(|x, t') : n#(ts) -> <map(subst(|x, t'))> ts
+    occurs : (x, name#(ts@[_|_])) -> <map(occurs)> ts
 
     // Robinson unification
     unify : [] -> []
     unify : [Eq__(t, t) | cs] -> <unify> cs
+    unify : [Eq__(t, Var__(x)) | cs] -> <unify> [Eq__(Var__(x), t) | cs]
+    unify : [Eq__(v@Var__(x), t) | cs] -> <if <occurs> (x, t)
+                                     then <error> [x, " occurs in", t]
+                                     else <replace(|cs); unify> (v, t) 
+                                     end>
     unify : [Eq__(n#(ts), n#(ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
         where <equal>(<length> ts, <length> ts')
-    unify : [Eq__(t, Var(x)) | cs] -> <unify> [Eq__(Var__(x), t) | cs]
-    unify : [Eq__(Var__(x), t) | cs] -> <if <occurs> (x, t)
-                                     then fail
-                                     else unify (<map(subst(|x, t))> cs)
-                                     end>
