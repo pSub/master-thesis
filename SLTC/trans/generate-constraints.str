@@ -45,13 +45,13 @@ rules
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
     get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
 
-    search : (x, pattern) -> <search_> (x, [1], pattern)
-    search_ : (x, is, []) -> <fail>
-    search_ : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
+    search : (x, pattern) -> <search'> (x, [1], pattern)
+    search' : (x, is, []) -> <fail>
+    search' : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
                                                     then <id> [i|is]
-                                                    else <search_> (x, <add; singelton> (i, 1), pattern)
+                                                    else <search'> (x, <add; singelton> (i, 1), pattern)
                                                     end>
-    search_ : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search_> (x, [1|is], <conc> (args, pattern)) > (x, args)
+    search' : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search'> (x, [1|is], <conc> (args, pattern)) > (x, args)
 
     fetch : (cons#(args), [p]) -> <index> (p, args)
     fetch : (cons#(args), [p|path]) -> <index; \ n -> <fetch> (n, path)\> (p, args)
