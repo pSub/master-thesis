@@ -1,0 +1,10 @@
+module typecheck
+
+imports generate-constraints
+imports constraint-solving
+imports utils
+imports include/SLTC
+
+strategies
+    
+    typecheck = generate-constraints; map(Fst; unify)

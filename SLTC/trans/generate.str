@@ -8,6 +8,7 @@ imports
 	trans/generate-constraints
 	trans/generate-sdf
 	trans/generate-fof
+	trans/typecheck
 	trans/verification
 
 rules
