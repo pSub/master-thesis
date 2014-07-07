@@ -39,7 +39,7 @@ rules
             input-terms := <map(extract-terms(|i))> positions;
             outputs-constraints := <map(generate(|j, t))> input-terms;
             xs-outputs := <zip; mapconcat(zip)> (xs, <map(Fst)> outputs-constraints);
-            constraints' := <foldl(\(xo, cs) -> <replace(|cs)> xo\)> (xs-outputs, constraints)
+            constraints' := <replace-all(|constraints)> xs-outputs
             
     extract-terms(|inputs) = map(\pos -> <fetch> (inputs, pos)\)
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)

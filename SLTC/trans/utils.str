@@ -24,6 +24,8 @@ rules
 
     replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
     replace(|ast) : (old-node, new-node) -> <innermost(?old-node; !new-node)> ast
+    
+    replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
     fanout : v -> (v, v)
     
