@@ -32,12 +32,6 @@ rules
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
 
-    get-outputs : Rule(_, outputs, _) -> outputs
-    get-outputs : Binding(_, _, Rule(_, outputs, _)) -> outputs
-
-    get-constraints : Rule(_, _, constraints) -> constraints
-    get-constraints : Binding(_, _, Rule(_, _, constraints)) -> constraints
-
     get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
     get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments)
             
@@ -55,6 +49,7 @@ rules
     base(|j) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j)> conclusion,
                                                  <get-outputs(|j)> conclusion,
                                                  [])
+
     // TODO: Use indexed.str or hashtable for contexts
     // FIXME: New variables names should be instantiated
     //        on evaluation of the rule. Otherwise all
@@ -69,7 +64,6 @@ rules
             premisses' := <to-list(PremiseBase, PremiseCons)> premisses;
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses';
             (vars-outputs', conclusion') := <replace-meta-variables> (vars-outputs, conclusion)
-
 
     replace-meta-variables : ast -> <collect-om(where(explode-term; Fst; is-meta-variable));
                                      fanout; (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
