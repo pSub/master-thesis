@@ -56,6 +56,9 @@ rules
                                                  <get-outputs(|j)> conclusion,
                                                  [])
     // TODO: Use indexed.str or hashtable for contexts
+    // FIXME: New variables names should be instantiated
+    //        on evaluation of the rule. Otherwise all
+    //        variables for a rule are the same.
     step(|j) : TypingRule(premisses, _, conclusion) -> 
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j))> premisses',
