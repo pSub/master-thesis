@@ -7,4 +7,4 @@ imports include/SLTC
 
 strategies
     
-    typecheck = generate-constraints; debug; map(Snd; unify)
+    typecheck = generate-constraints; map(Snd; unify)
