@@ -8,7 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(Var)) * List(Term) * Rule -> Rule 
+       Binding : List(List(Var)) * List(List(Term), List(Term)) * Rule -> Rule
        Pattern : Term
        Outputs : List(Term)
        
@@ -56,7 +56,7 @@ rules
     //        variables for a rule are the same.
     step(|j) : TypingRule(premisses, _, conclusion) -> 
             Binding(<map(Fst)> vars-outputs,
-                    <map(get-inputs(|j))> premisses',
+                    <map(get-inputs(|j); partition(not(node-is-ctx-bind), node-is-ctx-bind))> premisses',
                     Rule(<get-inputs(|j)> conclusion,
                          <get-outputs(|j)> conclusion',
                          <mapconcat(zip(makeEq))> vars-outputs'))
