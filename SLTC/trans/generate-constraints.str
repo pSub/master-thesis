@@ -29,7 +29,7 @@ rules
             templates := <to-constraint-generator(|judgments, typing-rules)>;
             empty-contexts := <length; range; map(new-hashtable)> contexts;
             store := <new-iset; iset-addlist(|empty-contexts)>
-             
+
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
@@ -39,7 +39,7 @@ rules
     generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
             (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
-            positions := <map(find-matching-positions(|pattern))> calls;
+            positions := <map(Fst;find-matching-positions(|pattern))> calls;
             input-terms := <map(extract-terms(|i))> positions;
             outputs-constraints := <map(generate(|j, c, t, s))> input-terms;
             // FIXME: Is there a better solution, than renaming?
