@@ -18,27 +18,30 @@ rules
                  imports,
                  Language(l),
                  MetaVariables(m),
-                 Contexts(ContextDefinitions),
+                 Contexts(contexts),
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
         -> <map(\TypingRule(_, conjecture) ->
-                 <get-inputs(|judgments); generate(|judgments, templates)> conjecture
+                 <get-inputs(|judgments); generate(|judgments, contexts, templates, store)> conjecture
                 \)> conjectures
         where
-            templates := <to-constraint-generator(|judgments, typing-rules)>
+            templates := <to-constraint-generator(|judgments, typing-rules)>;
+            empty-contexts := <length; range; map(new-hashtable)> contexts;
+            store := <new-iset; iset-addlist(|empty-contexts)>
              
-    generate(|judgments, templates) : inputs -> <generate'(|judgments, templates, inputs)> match
+    generate(|judgments, contexts, templates, store) : inputs ->
+             <generate'(|judgments, contexts, templates, inputs, store)> match
         where
              match := <find-match(|inputs)> templates
              
-    generate'(|j, t, i) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
-    generate'(|j, t, i) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
+    generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
+    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
             (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
             positions := <map(find-matching-positions(|pattern))> calls;
             input-terms := <map(extract-terms(|i))> positions;
-            outputs-constraints := <map(generate(|j, t))> input-terms;
+            outputs-constraints := <map(generate(|j, c, t, s))> input-terms;
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, constraints);
             (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))> 
