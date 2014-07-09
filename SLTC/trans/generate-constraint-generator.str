@@ -61,12 +61,13 @@ rules
                          <get-outputs(|j)> conclusion',
                          <mapconcat(zip(makeEq))> vars-outputs'))
         where
-            premisses' := <to-list(PremiseBase, PremiseCons)> premisses;
+            premisses'' := <to-list(PremiseBase, PremiseCons)> premisses;
+            (premisses', lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses'';
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses';
             (vars-outputs', conclusion') := <replace-meta-variables> (vars-outputs, conclusion)
 
-    replace-meta-variables : ast -> <collect-om(where(explode-term; Fst; is-meta-variable));
-                                     fanout; (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
+    replace-meta-variables : ast -> <collect-om(node-is-meta-variable); fanout;
+                                    (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
 
     // Preparation for constraint generator generation:
     // 1) Rewrite all language constructs into a Term strukture that

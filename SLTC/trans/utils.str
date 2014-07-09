@@ -33,4 +33,13 @@ rules
     
     singelton : x -> [ x ]
 
-    is-meta-variable = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, "MetaVariable") \
+    is-meta-variable = is-generic(|"MetaVariable")
+    is-ctx-bind = is-generic(|"ContextBind")
+    is-ctx-lookup = is-generic(|"ContextLookup")
+
+    node-is-meta-variable = node-is-generic(|"MetaVariable")
+    node-is-ctx-bind = node-is-generic(|"ContextBind")
+    node-is-ctx-lookup = node-is-generic(|"ContextLookup")
+
+    is-generic(|string) = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, string) \
+    node-is-generic(|string) = where(explode-term; Fst; is-generic(|string))
