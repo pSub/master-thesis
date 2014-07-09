@@ -1,6 +1,7 @@
 module generate-constraints
 
 imports utils
+imports constraint-language
 imports generate-constraint-generator
 imports include/SLTC
 
@@ -33,13 +34,17 @@ rules
              
     generate'(|j, t, i) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, t, i) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
-            (outputs, <conc> (<mapconcat(Snd)> outputs-constraints, constraints'))
+            (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
             positions := <map(find-matching-positions(|pattern))> calls;
             input-terms := <map(extract-terms(|i))> positions;
             outputs-constraints := <map(generate(|j, t))> input-terms;
-            xs-outputs := <zip; mapconcat(zip)> (xs, <map(Fst)> outputs-constraints);
-            constraints' := <replace-all(|constraints)> xs-outputs
+            // FIXME: Is there a better solution, than renaming?
+            vars := <collect-om(?Var__(_))> (xs, constraints);
+            (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))> 
+                                                                    (vars, <length; newnames(|"Y"); map(makeVar)> vars);
+            xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
+            constraints'' := <replace-all(|constraints')> xs-outputs
             
     extract-terms(|inputs) = map(\pos -> <fetch> (inputs, pos)\)
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
