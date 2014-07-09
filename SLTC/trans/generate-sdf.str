@@ -18,20 +18,21 @@ rules
 		             [imports(t), imports("Common")], 
 			         exports(
 				        conc-grammars(context-free-syntax(<map(make-variable)> meta-variables),
-                        conc-grammars(context-free-syntax(<map(make-context)> contexts),
+                        conc-grammars(context-free-syntax(<fanout; (length; range, id);
+                                                           zip; map(make-context)> contexts),
 				        context-free-syntax(<fanout; (length; range, id);
 				                             zip; map(make-judgment)> judgments)))
 			         )
 		      )
 
 	// Generate syntax of context definitons	
-	make-context : ContextDefinition(Name, Definition) -> [
-		prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", Name]),
+	make-context : (num, ContextDefinition(Name, Definition)) -> [
+		prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", <int-to-string> num]),
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,
-							   <make-cons'> ["ContextBind-", Name]),
+							   <make-cons'> ["ContextBind-", <int-to-string> num]),
 		prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <make-attr> "bracket"),
 		prod(<concat-strings> [elem, " \"in\" ", Name], "TypingJudgment", 
-							   <make-cons'> ["ContextLookup-", Name])
+							   <make-cons'> ["ContextLookup-", <int-to-string> num])
 	   ]
 		where
 			elem := <names; intersperse(|" \":\" "); concat-strings> Definition
