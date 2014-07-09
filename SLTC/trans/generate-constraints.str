@@ -40,6 +40,7 @@ rules
             (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
             positions := <map(Fst;find-matching-positions(|pattern))> calls;
+            ctx-inputs-outputs := <map(Snd; map(fanout; (get-inputs(|c), get-outputs(|c))))> calls;
             input-terms := <map(extract-terms(|i))> positions;
             outputs-constraints := <map(generate(|j, c, t, s))> input-terms;
             // FIXME: Is there a better solution, than renaming?
