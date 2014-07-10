@@ -18,14 +18,14 @@
   Type systems are important tools to ensure partial correctness of
   programs, to establish abstractions and to guide the programmer in
   the development process. However, there is currently a lack of
-  established tools supporting the development of type systems, tools
+  established tools supporting the development of type systems. Tools
   like lexer and parser generators. We introduce a declarative
   specification language for type systems, that allows to specify type
   systems in a natural deductive style. We generate two products from
   a specification: A first-order formula representation to facilitate
   the use of automated theorem provers and an efficient type
   checker. Both results aim to make the development cycle for type
-  systems faster.
+  systems faster and to narrow the gap between theory and practice.
  \end{abstract}
 
 \section{Motivation}
@@ -42,7 +42,7 @@ more efficiently (cf. \cite{Petersen:2014:ECS:2597008.2597152} and
 
 Type systems are useful tools if they fit to the programming language
 and the application scenario. To ensure this it makes sense to adapt
-and modify existing type system or create new specialized type
+and modify existing type systems or create new specialized type
 systems. Those specializations can lead to better error messages, more
 expressive type systems and the detection of more errors
 \cite{Thiemann02programmabletype}. Currently there are, to our best
@@ -58,41 +58,40 @@ formal description of type systems in text books. Thus it is possible
 to adapt results from text books to a specification and those will
 apply to the generated type checker as well. Such a comparison is not
 possible with traditional type system implementations. Declarative
-specifications also allow the specification of type systems from other
-areas, like language-based security.
+specifications also allow to specify type systems from other
+areas, like language-based security, close to their formalizations.
 
-% and the generation of the type checker can be verified in the
-% absence of a concrete specification.
-
-To have even more confidence into properties of a type system the
+To have even more confidence into properties of type systems the
 translation of a specification into first-order formulas can be used
-to conduct proofs. As the proofs of propositions about type systems
-change when the type system changes, it is desirable to make most of
-these changes automatically. Automated theorem provers can try to
-conduct those automated proves and if the proof search fails one can
-give hints for proof search. This establishes a direct connection
-between the specified type system, the proofs and the generated type
-checker.
+to conduct proofs of these properties. As the proofs of propositions
+about type systems change when the type system changes, it is
+desirable to make most of these changes automatically. Automated
+theorem provers can try to conduct those proves automatically and if
+the proof search fails one can give hints for proof search. This
+establishes a direct connection between the specified type system, the
+proofs and the generated type checker.
 \section{Research Problem}
 The research problem we are tackling is to create a tool that allows
 to create an efficient type checker from a declarative specification
-and that reduces the gap between formal reasoning about type systems
+and that narrows the gap between formal reasoning about type systems
 and their implementations. This problem splits up in smaller problems.
 
 The first problem is the design of a declarative specification
-language that is close to the formalisms used for type systems. This
-language should make it easy to use existing syntax definition of
-realistic programming languages and the difference between typing
-rules on paper and in the specification language should be small.
+language that is close to the text-book formalisms of type
+systems. This language should make it easy to use existing syntax
+definitions of realistic programming languages and the difference
+between typing rules on paper and in the specification language should
+be small.
 
-The next problem is to investigate a good first-order formula
+The next problem is to create a good first-order formula
 representation of specifications. This representation should be
-designed such that it suits automated theorem proving and thus support
-a fast prove search. It should also be investigated to which extend
-theorem provers for first order logic can be used for type checking.
+designed such that it suits automated theorem proving and thus
+supports a fast prove search. It should also be investigated to which
+extend theorem provers for first order logic can be used for type
+checking.
 
 The main problem is the generation of an efficient type checker. 
-The generated type checker should also be able to cope with non-syntax
+The generated type checker should be able to cope with non-syntax
 directed typing rules in an efficient manner. In this context it
 should be investigated whether facts proven by an automated theorem
 prover can be exploited for the type checker generation.
@@ -101,12 +100,12 @@ Early approaches used to generate type checkers were not particularly
 designed for type checker generation. For example the Synthesizer
 Generator \cite{Reps:1984:SG:800020.808247} which uses attributes
 grammars and the ASF+SDF Meta-Environment
-\cite{vandenBrand:2001:AMC:647477.727788} based on conditional term
+\cite{vandenBrand:2001:AMC:647477.727788} base on conditional term
 rewriting. Later approaches use similar techniques, for example TCG
 \cite{phd/de/Gast2005} which uses inference rules, but are specialized
-for the generation of type system. Those approaches have a lower
-performance handcrafted implementations, because they implement the
-control-flow implied by the used formalism.
+for the generation of type system. Those approaches have a usually
+lower performance than handcrafted implementations, because they
+implement the control-flow implied by the used formalism.
 
 A recent approach (TyC \cite{ortin2014automatic}) has focused on the
 generation of type checkers for object-oriented programming
@@ -114,7 +113,7 @@ languages. It provides a framework to build efficient type checkers
 for object-oriented languages (without polymorphism) and uses for this
 purpose, in most parts, normal program code that implements an
 interface to specify the type system. Thus type systems cannot be
-specified declaratively.
+specified declaratively with this approach.
 
 Ott \cite{journals/jfp/SewellNOPRSS10} is an other approach that
 generates from a specification language code for proof assistants and
@@ -134,7 +133,7 @@ implementation of the specification language and the generators.
 Specifications are organized in modules and contain declarations of
 meta-variables, contexts, judgments, rules and test-cases. Figure
 \ref{fig:example-specification} gives and impression of a
-specification.
+specification for the simply typed lambda calculus.
 
 \begin{figure}
 \begin{verbatim}
@@ -147,7 +146,6 @@ meta-variables 	Term "~" { Type Exp }
 contexts Context := ID{I} x Type{O}
 judgments Context{I} "|-" Exp{I} ":" Type{O}.
 rules
-
 %x : ~T in $C
 ============== T-Var
 $C |- %x : ~T
@@ -181,25 +179,24 @@ In this transformation process measurements are taken to ensure that
 variables are correctly quantified and valid TPTP formulas are
 generated.
 
-We also generate the type checker. The generated type checker consists
-of a constraint generator and a constraint solver. We have chosen
-constraint solving as a basis for the type checker, because it allows
-the generation of fast type checkers and is not bound to certain class
-of type systems. To obtain a fast constraint generator the structure
-of the rules should be analyzed, also with the help of the formula
-generation and automated theorem provers. A possible approach for
-dealing with non-syntax-directed rules is for instance to check
-whether two rules commute, to delay to application of general rules as
-long as possible.
+The generated type checker consists of a constraint generator and a
+constraint solver. We have chosen constraint solving as a basis for
+the type checker, because it allows the generation of fast type
+checkers and is not bound to certain class of type systems. To obtain
+a fast constraint generator the structure of the rules should be
+analyzed, also with the help of the formula generation and automated
+reasoning. A possible approach for dealing with non-syntax-directed
+rules is for instance to check whether two rules commute, to delay to
+application of general rules as long as possible.
 \section{Contributions}
 This work has three main contributions: A declarative specification
 language that allows to specify arbitrary type systems close to
-text-books, a tool that transforms specifications into first-order
-formulas in the TPTP format, and finally a tool that generates an
-efficient type checker that can cope with non-syntax-directed rules
-and uses automated reasoning to optimize the resulting type
-checker. This reduces the amount of work to implement type systems and
-reduces the gap between theory and practice.
+text-book formalizations, a tool that transforms specifications into
+first-order formulas in the TPTP format, and finally a tool that
+generates an efficient type checker that can cope with
+non-syntax-directed rules and uses automated reasoning to optimize the
+resulting type checker. This reduces the amount of work to implement
+type systems and reduces the gap between theory and practice.
 
 We have working prototypes of the specification language and the
 formula generation and tested those with type systems of languages
