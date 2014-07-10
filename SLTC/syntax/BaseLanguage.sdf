@@ -33,7 +33,10 @@ exports
   	
 %% Contexts
   context-free syntax
-	ID ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
+    %% FIXME: To handle the input/output tags uniformly the left-hand side
+    %% of context definitions is a hole. As it is always an input hole, this
+    %% could be made implicit.
+	Hole ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
 	
 %% Judgments
   lexical syntax

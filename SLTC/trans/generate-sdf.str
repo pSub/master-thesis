@@ -26,7 +26,7 @@ rules
 		      )
 
 	// Generate syntax of context definitons	
-	make-context : (num, ContextDefinition(Name, Definition)) -> [
+	make-context : (num, ContextDefinition(Hole(Name, _) , Definition)) -> [
 		prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", <int-to-string> num]),
 		prod(<concat-strings> [elem, " \";\" ", Name], Name,
 							   <make-cons'> ["ContextBind-", <int-to-string> num]),

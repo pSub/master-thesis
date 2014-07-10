@@ -7,7 +7,7 @@ meta-variables	Term "~" { Type Exp }
 				Id "%" { ID }
 				Num "&" { INT }
 
-contexts Context := ID{I} x Type{O}
+contexts Context{I} := ID{I} x Type{O}
 
 judgments Context{I} "|-" Exp{I} ":" Type{O}.
 
