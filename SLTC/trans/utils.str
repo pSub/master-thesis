@@ -40,6 +40,14 @@ rules
     node-is-meta-variable = node-is-generic(|"MetaVariable")
     node-is-ctx-bind = node-is-generic(|"ContextBind")
     node-is-ctx-lookup = node-is-generic(|"ContextLookup")
+    node-is-ctx-empty = node-is-generic(|"ContextEmpty")
+    node-is-ctx-var(|cc) : node -> <elem> (<get-meta-variable-class> node, cc)
+    node-is-ctx(|cc) = node-is-ctx-bind <+
+                  node-is-ctx-lookup <+
+                  node-is-ctx-empty <+
+                  node-is-ctx-var(|cc)
 
     is-generic(|string) = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, string) \
     node-is-generic(|string) = where(explode-term; Fst; is-generic(|string))
+
+    get-meta-variable-class = get-constructor; string-tokenize(|<singelton> '-'); last
