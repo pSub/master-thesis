@@ -27,7 +27,6 @@ rules
                conjectures)
         -> <innermost(base(|judgments) <+ step(|judgments))> typing-rules
         
-    make-term = id
     
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
