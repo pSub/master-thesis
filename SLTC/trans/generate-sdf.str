@@ -38,10 +38,10 @@ rules
 			elem := <names; intersperse(|" \":\" "); concat-strings> Definition
 
 	// Generate syntax of meta-variable definitions	
-	make-variable : MetaVariableDefinition(Name, MetaVariablePrefix(prefix), Scope(ids)) ->
+	make-variable : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
 						    scope,
-						    <make-cons'> ["MetaVariable-", scope])\)> ids
+						    <make-cons'> ["MetaVariable-", name])\)> ids
 
 	// Generate syntax of typing judgments
 	make-judgment : (num, Judgment(s1, pos, s2, built-in))
