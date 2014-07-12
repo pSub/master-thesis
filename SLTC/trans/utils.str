@@ -41,7 +41,7 @@ rules
     node-is-ctx-bind = node-is-generic(|"ContextBind")
     node-is-ctx-lookup = node-is-generic(|"ContextLookup")
     node-is-ctx-empty = node-is-generic(|"ContextEmpty")
-    node-is-ctx-var(|cc) : node -> <elem> (<get-meta-variable-class> node, cc)
+    node-is-ctx-var(|cc) : node -> <where(<elem> (<get-meta-variable-class> node, cc))>
     node-is-ctx(|cc) = node-is-ctx-bind <+
                   node-is-ctx-lookup <+
                   node-is-ctx-empty <+
