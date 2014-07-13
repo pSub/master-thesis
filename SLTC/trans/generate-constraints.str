@@ -83,3 +83,18 @@ rules
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
+
+    // FIXME: Implement
+    update-store(|s, c) : ctx-binds -> <foldl(\(b, s') -> <update-store'(|s', c)> b\)> (ctx-binds, s)
+    update-store'(|s, c) : ctx-bind -> <fail>
+        where
+            <node-is-ctx-bind> ctx-bind;
+            ctx := <get-generic-name; string-to-int; \ i -> <hashtable-get(|i)> s \> ctx-bind
+
+    ctx-bind-to-kv-list(|c) : node -> []
+        where <node-is-ctx-empty> node
+    ctx-bind-to-kv-list(|c) : node -> [(inputs, outputs) | <ctx-bind-to-kv-list(|c)> tail]
+        where <node-is-ctx-bind> node;
+              inputs := <get-inputs(|c)> node;
+              outputs := <get-outputs(|c)> node;
+              tail := <get-arguments; last> node
