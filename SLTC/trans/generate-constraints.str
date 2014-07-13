@@ -81,5 +81,5 @@ rules
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
                                      <is-meta-variable> s-cons>
         where
-            s-cons := <explode-term; Fst> s;
-            t-cons := <explode-term; Fst> t
+            s-cons := <get-constructor> s;
+            t-cons := <get-constructor> t
