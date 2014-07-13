@@ -36,6 +36,7 @@ rules
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
 
+    // TODO: Rename parameter to indicate it works also for contexts
     get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
     get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments)
             
