@@ -26,9 +26,14 @@ rules
                  <get-inputs(|judgments); generate(|judgments, contexts, templates, store)> conjecture
                 \)> conjectures
         where
-            templates := <to-constraint-generator(|judgments, typing-rules)>;
-            empty-contexts := <length; range; map(new-hashtable)> contexts;
-            store := <new-iset; iset-addlist(|empty-contexts)>
+            context-names := <map(proj(ContextDefinition|1))> context-definitions;
+            context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
+                                       <isect; not(equal(|[])); !name> (context-names, scope)\)>
+                                       meta-variables;
+            templates := <to-constraint-generator(|judgments, typing-rules, context-classes)>;
+            empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
+            // FIXME: Set correct initial size
+            store := <new-hashtable; hashtable-putlist(|empty-contexts)>
 
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
