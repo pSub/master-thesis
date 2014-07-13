@@ -8,7 +8,8 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(Var)) * List(List(Term), List(Term)) * Rule -> Rule
+       Binding : List(List(Var)) * List(Call) * Rule -> Rule
+       Call : List(Term) * List(Term) -> Call
        Pattern : Term
        Outputs : List(Term)
        
@@ -20,13 +21,17 @@ rules
         Module(ModuleDec(_),
                imports,
                Language(l),
-               MetaVariables(m),
-               Contexts(ContextDefinitions),
+               MetaVariables(meta-variables),
+               Contexts(context-definitions),
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <innermost(base(|judgments) <+ step(|judgments))> typing-rules
-        
+        -> <innermost(base(|judgments, context-classes) <+ step(|judgments, context-classes))> typing-rules
+        where
+            context-names := <map(proj(ContextDefinition|1))> context-definitions;
+            context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
+                                       <isect; not(equal(|[])); !name> (context-names, scope)\)>
+                                       meta-variables
     
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
@@ -45,40 +50,27 @@ rules
             judgment := <index(|judgment-number)> judgments;
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
 
-    base(|j) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j)> conclusion,
-                                                 <get-outputs(|j)> conclusion,
-                                                 [])
+    base(|j, cc) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+                                                     <get-outputs(|j)> conclusion,
+                                                     [])
 
-    // TODO: Use indexed.str or hashtable for contexts
-    step(|j) : TypingRule(premisses, _, conclusion) -> 
+    // FIXME: Allow checks for empty contexts
+    step(|j, cc) : TypingRule(premisses-struct, _, conclusion) ->
             Binding(<map(Fst)> vars-outputs,
-                    <map(get-inputs(|j); partition(not(node-is-ctx-bind), node-is-ctx-bind))> premisses',
-                    Rule(<get-inputs(|j)> conclusion,
+                    <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)))> premisses',
+                    // FIXME: Allow context-binds in conclusion, too.
+                    Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion',
                          <mapconcat(zip(makeEq))> vars-outputs'))
         where
-            premisses'' := <to-list(PremiseBase, PremiseCons)> premisses;
-            (premisses', lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses'';
+            premisses := <to-list(PremiseBase, PremiseCons)> premisses-struct;
+            (premisses', lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses;
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses';
             (vars-outputs', conclusion') := <replace-meta-variables> (vars-outputs, conclusion)
 
     replace-meta-variables : ast -> <collect-om(node-is-meta-variable); fanout;
                                     (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
 
-    // Preparation for constraint generator generation:
-    // 1) Rewrite all language constructs into a Term strukture that
-    //    is easily analyzable. Do this in a modular way, as input
-    //    programs need to be transformed as well.
-    // 2) Analyize typing rules and create rewrite rules that transform
-    //    typing rules into constraint generation rules.
-    // 3) Adapt the format of the rules if neccessary.
-    
-    // After a prototype works:
-    // 1) Postfix constructors of the specification language with dubble
-    //    underscores to avoid collision.
-    // 2) Search for ways to optimize the constraint generation rules
-    //    2.1) Make not syntax directed rules work
-    //    2.2) Exploid facts that can be proven easily
-    
 strategies
-    to-constraint-generator(|judgments, typing-rules) = <innermost(base(|judgments) <+ step(|judgments))> typing-rules
+    to-constraint-generator(|judgments, typing-rules, context-classes) =
+         <innermost(base(|judgments, context-classes) <+ step(|judgments, context-classes))> typing-rules
