@@ -17,13 +17,14 @@ rules
         Module(ModuleDec(_),
                  imports,
                  Language(l),
-                 MetaVariables(m),
-                 Contexts(contexts),
+                 MetaVariables(meta-variables),
+                 Contexts(context-definitions),
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
         -> <map(\TypingRule(_, conjecture) ->
-                 <get-inputs(|judgments); generate(|judgments, contexts, templates, store)> conjecture
+                 <get-inputs(|judgments); remove-all(node-is-ctx(|context-classes));
+                  generate(|judgments, context-definitions, templates, store)> conjecture
                 \)> conjectures
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
@@ -44,10 +45,9 @@ rules
     generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
             (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
-            positions := <map(Fst;find-matching-positions(|pattern))> calls;
-            ctx-inputs-outputs := <map(Snd; map(fanout; (get-inputs(|c), get-outputs(|c))))> calls;
-            input-terms := <map(extract-terms(|i))> positions;
-            outputs-constraints := <map(generate(|j, c, t, s))> input-terms;
+            positions := <map((find-matching-positions(|pattern), id))> calls;
+            input-terms := <map((extract-terms(|i), id))> positions;
+            outputs-constraints := <map(debug; \(term, b) -> <generate(|j, c, t, <update-store(|s, c)> b)> term\)> input-terms;
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, constraints);
             (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))> 
