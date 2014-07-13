@@ -49,7 +49,7 @@ rules
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
             constraints'' := <replace-all(|constraints')> xs-outputs
-            
+
     extract-terms(|inputs) = map(\pos -> <fetch> (inputs, pos)\)
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
     get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
@@ -77,7 +77,7 @@ rules
                                            end
                                      else <find-match(|inputs)> ts
                                      end>
-    
+
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
                                      <is-meta-variable> s-cons>
         where
