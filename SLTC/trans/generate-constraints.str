@@ -54,6 +54,7 @@ rules
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
     get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
 
+    // FIXME: What if x is not entirely containted in pattern?
     search : (x, pattern) -> <search'> (x, [1], pattern)
     search' : (x, is, []) -> <fail>
     search' : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
@@ -62,6 +63,7 @@ rules
                                                     end>
     search' : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search'> (x, [1|is], <conc> (args, pattern)) > (x, args)
 
+    // FIXME overwrites a library function
     fetch : (cons#(args), [p]) -> <index> (p, args)
     fetch : (cons#(args), [p|path]) -> <index; \ n -> <fetch> (n, path)\> (p, args)
 
