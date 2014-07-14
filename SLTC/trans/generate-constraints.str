@@ -41,7 +41,7 @@ rules
 
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
-            (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints'', <flatten-list> lookedup'))
+            (outputs', <conc> (constraints'', <flatten-list> lookedup', <mapconcat(Snd)> outputs-constraints'))
         where
             pattern := <conc> (inputs, outputs);
             term := <conc> (i, outputs);
