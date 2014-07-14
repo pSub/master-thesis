@@ -28,8 +28,8 @@ rules
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
-                                       <isect; not(equal(|[])); !name> (context-names, scope)\)>
-                                       meta-variables;
+                                       <isect; not(equal(|[])); !name> (context-names, scope)
+                                       \)> meta-variables;
             templates := <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules;
             empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<add> (<length> context-definitions, 1), 100); hashtable-putlist(|empty-contexts)>
@@ -37,7 +37,7 @@ rules
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
-             match := <find-match(|<debug> inputs)> templates
+             match := <find-match(|inputs)> templates
 
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
@@ -51,7 +51,7 @@ rules
             input-terms := <map((extract-terms(|term), map((id, extract-terms(|term), extract-terms(|term)))))> positions; 
             outputs-constraints := <map(\(term, b) -> <generate(|j, c, t, <update-store(|s)> b)> term\)> input-terms;
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(?Var__(_))> (xs, constraints);
+            vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
             (xs', outputs', constraints', outputs-constraints', lookedup') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints, lookedup))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
