@@ -31,7 +31,7 @@ rules
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
                                        <isect; not(equal(|[])); !name> (context-names, scope)\)>
                                        meta-variables;
-            templates := <to-constraint-generator(|judgments, typing-rules, context-classes)>;
+            templates := <to-constraint-generator(|judgments, typing-rules, context-definitions, context-classes)>;
             empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
             // FIXME: Set correct initial size
             store := <new-hashtable; hashtable-putlist(|empty-contexts)>

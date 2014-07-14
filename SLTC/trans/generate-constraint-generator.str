@@ -26,7 +26,7 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <innermost(base(|judgments, context-classes) <+ step(|judgments, context-classes))> typing-rules
+        -> <innermost(base(|judgments, context-definitions, context-classes) <+ step(|judgments, context-definitions, context-classes))> typing-rules
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
@@ -51,14 +51,15 @@ rules
             judgment := <index(|judgment-number)> judgments;
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
 
-    base(|j, cc) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+    base(|j, c, cc) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                                                      <get-outputs(|j)> conclusion,
                                                      [])
 
     // FIXME: Allow checks for empty contexts
-    step(|j, cc) : TypingRule(premisses-struct, _, conclusion) ->
+    step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
             Binding(<map(Fst)> vars-outputs,
-                    <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)))> premisses',
+                    <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
+                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses',
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion',
@@ -72,6 +73,15 @@ rules
     replace-meta-variables : ast -> <collect-om(node-is-meta-variable); fanout;
                                     (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
 
+    ctx-bind-to-kv-list(|c, cc) : node -> []
+        where <node-is-ctx-empty <+ node-is-ctx-var(|cc)> node
+    ctx-bind-to-kv-list(|c, cc) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c, cc)> tail]
+        where <node-is-ctx-bind> node;
+              ctx := <get-generic-name; string-to-int> node;
+              inputs := <get-inputs(|c)> node;
+              outputs := <get-outputs(|c)> node;
+              tail := <get-arguments; last> node
+
 strategies
-    to-constraint-generator(|judgments, typing-rules, context-classes) =
-         <innermost(base(|judgments, context-classes) <+ step(|judgments, context-classes))> typing-rules
+    to-constraint-generator(|judgments, typing-rules, context-definitions, context-classes) =
+         <innermost(base(|judgments, context-definitions, context-classes) <+ step(|judgments, context-definitions, context-classes))> typing-rules
