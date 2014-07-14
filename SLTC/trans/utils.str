@@ -48,6 +48,6 @@ rules
                   node-is-ctx-var(|cc)
 
     is-generic(|string) = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, string) \
-    node-is-generic(|string) = where(explode-term; Fst; is-generic(|string))
+    node-is-generic(|string) = where(get-constructor; is-generic(|string))
 
     get-generic-name = get-constructor; string-tokenize(|<singelton> '-'); last
