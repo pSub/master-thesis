@@ -28,6 +28,7 @@ rules
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
     fanout : v -> (v, v)
+    fanout3 : v -> (v, v, v)
     
     tails : xs -> [xs | <if [] then [] else <Tl; tails> xs end> xs]
     
