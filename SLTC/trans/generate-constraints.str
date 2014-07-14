@@ -40,7 +40,7 @@ rules
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
-             match := <find-match(|<debug>inputs)> templates
+             match := <find-match(|inputs)> templates
 
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
@@ -52,7 +52,7 @@ rules
             lookedup := <map(lookup(|s))> lookups';
             positions := <map((find-matching-positions(|pattern), map((id, find-matching-positions(|pattern), find-matching-positions(|pattern)))))> calls;
             input-terms := <map((extract-terms(|term), map((id, extract-terms(|term), extract-terms(|term)))))> positions;
-            binding-constraints := <(map(Snd; map(\(_,_,n) -> n\)), map(Snd; map(\(_,_,n) -> n\))); (flatten-list, flatten-list); zip; map(makeEq); debug> (calls, input-terms); 
+            binding-constraints := <(map(Snd; map(\(_,_,n) -> n\)), map(Snd; map(\(_,_,n) -> n\))); (flatten-list, flatten-list); zip; map(makeEq)> (calls, input-terms);
             outputs-constraints := <map(\(term, b) -> <generate(|j, c, t, <update-store(|s)> b)> term\)> input-terms;
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
