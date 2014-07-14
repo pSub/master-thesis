@@ -32,8 +32,7 @@ rules
                                        meta-variables;
             templates := <to-constraint-generator(|judgments, typing-rules, context-definitions, context-classes)>;
             empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
-            // FIXME: Set correct initial size
-            store := <new-hashtable; hashtable-putlist(|empty-contexts)>
+            store := <new-hashtable(|<add> (<length> context-definitions, 1), 100); hashtable-putlist(|empty-contexts)>
 
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
