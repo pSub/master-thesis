@@ -13,10 +13,11 @@ rules
     // Robinson unification
     unify : [] -> []
     unify : [Eq__(t, t) | cs] -> <unify> cs
-    unify : [Eq__(t, Var__(x)) | cs] -> <unify> [Eq__(Var__(x), t) | cs]
+    unify : [Eq__(t, Var__(x)) | cs] -> <conc; unify> (cs, <singelton> Eq__(Var__(x), t))
     unify : [Eq__(v@Var__(x), t) | cs] -> <if <occurs> (x, t)
                                      then <error> [x, " occurs in", t]
-                                     else <replace(|cs); unify> (v, t) 
+                                     else <replace(|cs); unify> (v, t)
                                      end>
-    unify : [Eq__(n#(ts), n#(ts')) | cs] -> <unify> (<conc> (ts, ts', cs)) 
-        where <equal>(<length> ts, <length> ts')
+    unify : [Eq__(n#(ts), n#(ts')) | cs] -> <conc; unify> (cs, cs')
+        where <equal>(<length> ts, <length> ts');
+              cs' := <zip; map(makeEq)> (ts, ts')
