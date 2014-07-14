@@ -72,7 +72,8 @@ rules
             (vars-outputs', conclusion', lookup-outputs) := <replace-meta-variables> (vars-outputs, conclusion, <map(get-outputs(|c))> lookups)
 
     replace-meta-variables : ast -> <collect-om(node-is-meta-variable); fanout;
-                                    (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast
+                                    (id, length; newnames(|"X"); map(makeVar));
+                                    zip; replace-all(|ast)> ast
 
     ctx-bind-to-kv-list(|c, cc) : node -> []
         where <node-is-ctx-empty <+ node-is-ctx-var(|cc)> node
@@ -84,5 +85,6 @@ rules
               tail := <get-arguments; last> node
 
 strategies
-    to-constraint-generator(|judgments, typing-rules, context-definitions, context-classes) =
-         <innermost(base(|judgments, context-definitions, context-classes) <+ step(|judgments, context-definitions, context-classes))> typing-rules
+    to-constraint-generator(|judgments, context-definitions, context-classes) =
+         innermost(base(|judgments, context-definitions, context-classes) <+
+                   step(|judgments, context-definitions, context-classes))

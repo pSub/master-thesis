@@ -30,7 +30,7 @@ rules
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
                                        <isect; not(equal(|[])); !name> (context-names, scope)\)>
                                        meta-variables;
-            templates := <to-constraint-generator(|judgments, typing-rules, context-definitions, context-classes)>;
+            templates := <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules;
             empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<add> (<length> context-definitions, 1), 100); hashtable-putlist(|empty-contexts)>
 
