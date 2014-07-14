@@ -55,7 +55,7 @@ rules
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
             constraints'' := <replace-all(|constraints')> xs-outputs
 
-    extract-terms(|inputs) = map(\pos -> <fetch> (inputs, pos)\)
+    extract-terms(|inputs) = map(fetch(|inputs))
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
     get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
 
@@ -69,8 +69,8 @@ rules
     search' : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search'> (x, [1|is], <conc> (args, pattern)) > (x, args)
 
     // FIXME overwrites a library function
-    fetch : (cons#(args), [p]) -> <index> (p, args)
-    fetch : (cons#(args), [p|path]) -> <index; \ n -> <fetch> (n, path)\> (p, args)
+    fetch(|node) : [p] -> <index> (p, <get-arguments> node)
+    fetch(|node) : [p|path] -> <index; \ node -> <fetch(|node)> path\> (p, <get-arguments> node)
 
     // FIXME: What if multiple rules match?    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
