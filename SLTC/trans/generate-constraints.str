@@ -38,20 +38,22 @@ rules
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
-             match := <find-match(|<debug> inputs)> templates
+             match := <find-match(|inputs)> templates
 
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
-            (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
+            (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints'', <flatten-list> lookedup'))
         where
             pattern := <conc> (inputs, outputs);
             term := <conc> (i, outputs);
+            lookups' := <map((id, find-matching-positions(|pattern); extract-terms(|term), id))> lookups;
+            lookedup := <map(lookup(|s))> lookups';
             positions := <map((find-matching-positions(|pattern), map((id, find-matching-positions(|pattern), find-matching-positions(|pattern)))))> calls;
             input-terms := <map((extract-terms(|term), map((id, extract-terms(|term), extract-terms(|term)))))> positions; 
             outputs-constraints := <map(\(term, b) -> <generate(|j, c, t, <update-store(|s)> b)> term\)> input-terms;
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, constraints);
-            (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))> 
+            (xs', outputs', constraints', outputs-constraints', lookedup') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints, lookedup))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
             constraints'' := <replace-all(|constraints')> xs-outputs
@@ -91,3 +93,5 @@ rules
             t-cons := <get-constructor> t
 
     update-store(|s) : ctx-binds -> <foldl(\((ctx, i, o), s') -> <hashtable-put(|ctx, <hashtable-get(|ctx); hashtable-put(|i, o)> s')> s'\)> (ctx-binds, s)
+
+    lookup(|s) : (ctx, key, vars) -> <zip;map(makeEq)> (vars, <hashtable-get(|ctx); hashtable-get(|key)> s)
