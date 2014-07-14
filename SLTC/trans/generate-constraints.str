@@ -11,7 +11,6 @@ signature
                 
         ConstraintSet : List(Constraint)
         
-        
 rules
     generate-constraints : 
         Module(ModuleDec(_),
@@ -39,15 +38,17 @@ rules
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
-             match := <find-match(|inputs)> templates
-             
+             match := <find-match(|<debug> inputs)> templates
+
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
-    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(pattern, outputs, constraints)) ->
+    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(inputs, outputs, constraints)) ->
             (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
-            positions := <map((find-matching-positions(|pattern), id))> calls;
-            input-terms := <map((extract-terms(|i), id))> positions;
-            outputs-constraints := <map(debug; \(term, b) -> <generate(|j, c, t, <update-store(|s, c)> b)> term\)> input-terms;
+            pattern := <conc> (inputs, outputs);
+            term := <conc> (i, outputs);
+            positions := <map((find-matching-positions(|pattern), map((id, find-matching-positions(|pattern), find-matching-positions(|pattern)))))> calls;
+            input-terms := <map((extract-terms(|term), map((id, extract-terms(|term), extract-terms(|term)))))> positions; 
+            outputs-constraints := <map(\(term, b) -> <generate(|j, c, t, <update-store(|s)> b)> term\)> input-terms;
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, constraints);
             (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))> 
@@ -89,17 +90,4 @@ rules
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
 
-    // FIXME: Implement
-    update-store(|s, c) : ctx-binds -> <foldl(\(b, s') -> <update-store'(|s', c)> b\)> (ctx-binds, s)
-    update-store'(|s, c) : ctx-bind -> <fail>
-        where
-            <node-is-ctx-bind> ctx-bind;
-            ctx := <get-generic-name; string-to-int; \ i -> <hashtable-get(|i)> s \> ctx-bind
-
-    ctx-bind-to-kv-list(|c) : node -> []
-        where <node-is-ctx-empty> node
-    ctx-bind-to-kv-list(|c) : node -> [(inputs, outputs) | <ctx-bind-to-kv-list(|c)> tail]
-        where <node-is-ctx-bind> node;
-              inputs := <get-inputs(|c)> node;
-              outputs := <get-outputs(|c)> node;
-              tail := <get-arguments; last> node
+    update-store(|s) : ctx-binds -> <foldl(\((ctx, i, o), s') -> <hashtable-put(|ctx, <hashtable-get(|ctx); hashtable-put(|i, o)> s')> s'\)> (ctx-binds, s)
