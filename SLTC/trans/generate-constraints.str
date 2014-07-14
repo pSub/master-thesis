@@ -25,7 +25,7 @@ rules
                  <get-inputs(|judgments); remove-all(node-is-ctx(|context-classes));
                   generate(|judgments, context-definitions, templates, store);
                   \(outputs, constraints) ->
-                    (outputs, <conc>(<debug; zip> (outputs, <get-outputs(|judgments)> conjecture) ,constraints))
+                    (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs(|judgments);topdown(try(\Output(n) -> n\))> conjecture) ,constraints))
                   \> conjecture
                 \)> conjectures
         where
