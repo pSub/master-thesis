@@ -8,7 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(Var)) * List(Call) * Rule -> Rule
+       Binding : List(List(Var)) * List(Call) * lookups * Rule -> Rule
        Call : List(Term) * List(Term) -> Call
        Pattern : Term
        Outputs : List(Term)
@@ -34,7 +34,7 @@ rules
                                        meta-variables
     
     get-pattern : Rule(pattern, _, _) -> pattern
-    get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
+    get-pattern : Binding(_, _, _, Rule(pattern, _, _)) -> pattern
 
     // TODO: Rename parameter to indicate it works also for contexts
     get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
@@ -60,6 +60,7 @@ rules
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses',
+                    <zip; map(\(l, o) -> (<get-generic-name; string-to-int> l, <get-inputs(|c)> l, o)\)> (lookups, lookup-outputs),
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion',
@@ -68,7 +69,7 @@ rules
             premisses := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             (premisses', lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses;
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses';
-            (vars-outputs', conclusion') := <replace-meta-variables> (vars-outputs, conclusion)
+            (vars-outputs', conclusion', lookup-outputs) := <replace-meta-variables> (vars-outputs, conclusion, <map(get-outputs(|c))> lookups)
 
     replace-meta-variables : ast -> <collect-om(node-is-meta-variable); fanout;
                                     (id, length; newnames(|"X"); map(makeVar)); zip; replace-all(|ast)> ast

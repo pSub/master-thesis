@@ -41,7 +41,7 @@ rules
              match := <find-match(|<debug> inputs)> templates
 
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
-    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(inputs, outputs, constraints)) ->
+    generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
             (outputs', <conc> (<mapconcat(Snd)> outputs-constraints', constraints''))
         where
             pattern := <conc> (inputs, outputs);
