@@ -38,7 +38,7 @@ rules
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
-             match := <find-match(|inputs)> templates
+             match := <find-match(|<debug> inputs)> templates
 
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
@@ -58,7 +58,7 @@ rules
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
             constraints'' := <replace-all(|constraints')> xs-outputs
 
-    extract-terms(|inputs) = map(fetch(|inputs))
+    extract-terms(|inputs) = map(retrieve(|inputs))
     find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
     get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
 
@@ -71,9 +71,8 @@ rules
                                                     end>
     search' : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search'> (x, [1|is], <conc> (args, pattern)) > (x, args)
 
-    // FIXME overwrites a library function
-    fetch(|node) : [p] -> <index> (p, <get-arguments> node)
-    fetch(|node) : [p|path] -> <index; \ node -> <fetch(|node)> path\> (p, <get-arguments> node)
+    retrieve(|node) : [p] -> <index> (p, <get-arguments> node)
+    retrieve(|node) : [p|path] -> <index; \ node -> <retrieve(|node)> path\> (p, <get-arguments> node)
 
     // FIXME: What if multiple rules match?    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
