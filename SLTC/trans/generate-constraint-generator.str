@@ -55,13 +55,14 @@ rules
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
 
     base(|j, c, cc) : TypingRule(_, conclusion) ->
-         Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
-              <get-outputs(|j)> conclusion,
-              [])
+        <topdown(try(\Output(n) -> n\))>
+           Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+                <get-outputs(|j)> conclusion,
+                [])
 
     // FIXME: Allow checks for empty contexts
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
-        <replace-meta-variables; topdown(try(?Output(n);!n))>
+        <replace-meta-variables; topdown(try(\Output(n) -> n\))>
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses,
