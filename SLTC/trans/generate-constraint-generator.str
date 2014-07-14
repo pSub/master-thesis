@@ -12,6 +12,7 @@ signature
        Call : List(Term) * List(Term) -> Call
        Pattern : Term
        Outputs : List(Term)
+       Output : a -> Output
        
        ConstraintGenerator : List(Rule)
        
@@ -36,9 +37,11 @@ rules
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, _, Rule(pattern, _, _)) -> pattern
 
+    mkOutput : n -> Output(n)
+
     // TODO: Rename parameter to indicate it works also for contexts
     get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
-    get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments)
+    get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments); map(mkOutput)
             
     filter-hole-positions(cond|judgments) : node@cons#(args) -> <map(\n -> <index(|<add>(n, 1))> args\)> result
         where
@@ -51,27 +54,28 @@ rules
             judgment := <index(|judgment-number)> judgments;
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
 
-    base(|j, c, cc) : TypingRule(_, conclusion) -> Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
-                                                     <get-outputs(|j)> conclusion,
-                                                     [])
+    base(|j, c, cc) : TypingRule(_, conclusion) ->
+         Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+              <get-outputs(|j)> conclusion,
+              [])
 
     // FIXME: Allow checks for empty contexts
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
+        <replace-meta-variables; topdown(try(?Output(n);!n))>
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
-                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses',
-                    <zip; map(\(l, o) -> (<get-generic-name; string-to-int> l, <get-inputs(|c)> l, o)\)> (lookups, lookup-outputs),
+                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses,
+                    <map(fanout3;(get-generic-name; string-to-int, get-inputs(|c), get-outputs(|c)))> lookups,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
-                         <get-outputs(|j)> conclusion',
-                         <mapconcat(zip(makeEq))> vars-outputs'))
+                         <get-outputs(|j)> conclusion,
+                         <mapconcat(zip(makeEq))> vars-outputs))
         where
-            premisses := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            (premisses', lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses;
-            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses';
-            (vars-outputs', conclusion', lookup-outputs) := <replace-meta-variables> (vars-outputs, conclusion, <map(get-outputs(|c))> lookups)
+            premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
+            (premisses, lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses-list;
+            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
-    replace-meta-variables : ast -> <collect-om(node-is-meta-variable); fanout;
+    replace-meta-variables : ast -> <collect-om(?Output(_); collect-om(node-is-meta-variable)); flatten-list; fanout;
                                     (id, length; newnames(|"X"); map(makeVar));
                                     zip; replace-all(|ast)> ast
 
