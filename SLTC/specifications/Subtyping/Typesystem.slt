@@ -23,7 +23,7 @@ $C |- &i : int
 
 %x : ~T in $C
 ============== T-var
-$C |- ~x : ~T
+$C |- %x : ~T
 
 (%x : ~T1 ; $C) |- ~e : ~T2
 ================================= T-abs
@@ -122,8 +122,8 @@ conjectures
 ===
 () |- (\x : {y : int} . x) {x=1 y=1} : { y : int }
 
-===
-(r : {x : int y : int} ; ()) |- r . x : int
+// ===
+// (r : {x : int y : int} ; ()) |- r . x : int
 
 ===
 () |- (\r : {x : int} . (r.x)) : { x : int } -> int
