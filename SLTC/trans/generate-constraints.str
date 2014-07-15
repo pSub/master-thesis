@@ -49,7 +49,7 @@ rules
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
             // Find the constraint template that matches the inputs of the given term
-            match := <find-match(|inputs)> templates
+            match := <find-match(|<debug> inputs)> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -97,21 +97,14 @@ rules
      *
      * @param pattern - an arbitrary term
      */
-    find-matching-positions(|pattern) = map(get-position(|pattern); reverse)
-    
-    /**
-     * Finds the position of the provided element in `pattern`.
-     *
-     * @param pattern - an arbitrary term
-     */
-    get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
+    find-matching-positions(|pattern) = map(search(|pattern); reverse)
 
     /**
      * Traverses the pattern like a tree and records the path until `x` is
      * found literally in `pattern`. The recorded path contains the positions
      * in the argument list in which was descended.
      */
-    search : (x, pattern) -> <search'> (x, [1], pattern)
+    search(|pattern) : x -> <search'> (x, [1], pattern)
     search' : (x, is, []) -> <fail>
     search' : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
                                                     then <id> [i|is]
