@@ -181,11 +181,15 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    update-store(|s) : ctx-binds -> <foldl(\((ctx, i, o), s') -> <hashtable-put(|ctx, <hashtable-get(|ctx); hashtable-put(|i, o)> s')> s'\)> (ctx-binds, s)
+    update-store(|s) : ctx-binds -> <foldl(\((ctx, i, o), s') -> 
+                                                <hashtable-put(|ctx, <hashtable-get(|ctx);
+                                                                      hashtable-put(|i, o)> s'
+                                                              )> s'
+                                           \)> (ctx-binds, s)
 
     /**
      * Looks up the context `ctx` at `key` and assigns the result to `vars`.
      *
      * @param s - a hashtable containing hashtables
      */
-    lookup(|s) : (ctx, key, vars) -> <zip;map(makeEq)> (vars, <hashtable-get(|ctx); hashtable-get(|key)> s)
+    lookup(|s) : (ctx, key, vars) -> <zip; map(makeEq)> (vars, <hashtable-get(|ctx); hashtable-get(|key)> s)
