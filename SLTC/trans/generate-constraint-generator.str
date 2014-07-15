@@ -55,7 +55,7 @@ rules
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> declaration
 
     base(|j, c, cc) : TypingRule(_, conclusion) ->
-        <topdown(try(\Output(n) -> n\))>
+        <replace-meta-variables; topdown(try(\Output(n) -> n\))>
            Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                 <get-outputs(|j)> conclusion,
                 [])
