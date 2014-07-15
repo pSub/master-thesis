@@ -18,6 +18,7 @@ signature
        
 rules
     
+    // FIXME: The where clause of this rule duplicates code.
     make-constraint-generator :
         Module(ModuleDec(_),
                imports,
@@ -27,26 +28,65 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <innermost(base(|judgments, context-definitions, context-classes) <+ step(|judgments, context-definitions, context-classes))> typing-rules
+        -> <innermost(base(|judgments, context-classes) <+
+                      step(|judgments, context-definitions, context-classes))> typing-rules
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
                                        <isect; not(equal(|[])); !name> (context-names, scope)\)>
                                        meta-variables
     
+    /**
+     * Extracts the pattern from Rule or Binding
+     */
     get-pattern : Rule(pattern, _, _) -> pattern
     get-pattern : Binding(_, _, _, Rule(pattern, _, _)) -> pattern
 
+    /**
+     * Wraps the given term with the constructor Output
+     */
     mkOutput : n -> Output(n)
 
+    /**
+     * Extacts all consituents from the given term that are marked
+     * as inputs in the declaration.
+     *
+     * @param declarations - either a list of context of judgment declarations
+     *                       or something of equivalent structure
+     */
     get-inputs(|declarations) = filter-hole-positions(?(_, "I") | declarations)
+
+    /**
+     * Extacts all consituents from the given term that are marked
+     * as outputs in the declaration and wraps those with Output. The
+     * wrapping is used for identifying output terms in step.
+     *
+     * @param declarations - either a list of context of judgment declarations
+     *                       or something of equivalent structure
+     */
     get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations); map(mkOutput)
-            
-    filter-hole-positions(cond|declarations) : node -> <map(\n -> <index(|<add>(n, 1))> args\)> result
+
+    /**
+     * Extracts all consituents from a given term that satisfy the given
+     * condition `cond`.
+     *
+     * @param cond - an arbitrary strategy
+     * @param declarations - either a list of context of judgment declarations
+     *                       or something of equivalent structure
+     */
+    filter-hole-positions(cond|declarations) : node -> consituents
         where
             args := <get-arguments> node;
-            result := <get-hole-positions(|declarations); filter(cond); map(Fst)> node
-    
+            positions := <get-hole-positions(|declarations); filter(cond); map(Fst)> node;
+            consituents := <map(\n -> <index(|<add>(n, 1))> args\)> positions
+
+    /**
+     * Fetches the declaration for the given node and provides a list of
+     * holes together with their positions.
+     *
+     * @param declarations - either a list of context of judgment declarations
+     *                       or something of equivalent structure
+     */
     get-hole-positions(|declarations) : cons#(args) -> <fanout; (length; range, id); zip> holes
         where
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
@@ -54,19 +94,34 @@ rules
             declaration := <index(|declaration-number)> declarations;
             holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> declaration
 
-    base(|j, c, cc) : TypingRule(_, conclusion) ->
-        <replace-meta-variables; topdown(try(\Output(n) -> n\))>
+    /**
+     * Rule that transforms axioms, i.e. typing rules without premisses into
+     * a constraint template.
+     *
+     * @param j - judgment declarations
+     * @param cc - meta-variable classes that represent contexts
+     */
+    base(|j, cc) : TypingRule(_, conclusion) ->
+        <replace-meta-variables>
            Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                 <get-outputs(|j)> conclusion,
                 [])
 
-    // FIXME: Allow checks for empty contexts
+    /**
+     * Rule that transforms typing rules with premisses into a constraint template.
+     *
+     * FIXME: Allow checks for empty contexts
+     *
+     * @param j - judgment declarations
+     * @param c - context declarartions
+     * @param cc - meta-variable classes that represent contexts
+     */
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
-        <replace-meta-variables; topdown(try(\Output(n) -> n\))>
+        <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
                     <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses,
-                    <map(fanout3;(get-generic-name; string-to-int, get-inputs(|c), get-outputs(|c)))> lookups,
+                    <map(fanout3; (get-context-id, get-inputs(|c), get-outputs(|c)))> lookups,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
@@ -76,10 +131,23 @@ rules
             (premisses, lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses-list;
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
-    replace-meta-variables : ast -> <collect-om(?Output(_); collect-om(node-is-meta-variable)); flatten-list; fanout;
-                                    (id, length; newnames(|"X"); map(makeVar));
-                                    zip; replace-all(|ast)> ast
+    /**
+     * Replaces all meta-variables that occur within Output constructors
+     * with fresh variables of the constraint language. This way the unification
+     * has to deal only with one kind of variables.
+     */
+    replace-meta-variables : ast -> <collect-om(?Output(_); collect-om(node-is-meta-variable));
+                                     flatten-list; fanout; (id, length; newnames(|"X"); map(makeVar));
+                                     zip; replace-all(|ast); topdown(try(\Output(n) -> n\))> ast
 
+    /**
+     * Transforms context bindings as they occur in the specification language into
+     * a key-value list. This list contains triples with the context identifier, the inputs
+     * and the outputs.
+     *
+     * @param c - context declarartions
+     * @param cc - meta-variable classes that represent contexts
+     */
     ctx-bind-to-kv-list(|c, cc) : node -> []
         where <node-is-ctx-empty <+ node-is-ctx-var(|cc)> node
     ctx-bind-to-kv-list(|c, cc) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c, cc)> tail]
@@ -91,5 +159,5 @@ rules
 
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
-         innermost(base(|judgments, context-definitions, context-classes) <+
+         innermost(base(|judgments, context-classes) <+
                    step(|judgments, context-definitions, context-classes))
