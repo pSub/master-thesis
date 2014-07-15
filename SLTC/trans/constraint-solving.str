@@ -5,7 +5,7 @@ imports utils
 imports include/SLTC
 
 rules
-    // TODO: rewrite with e.g. alltd to abort on the first match
+    // Occurs check
     occurs : (x, Var__(x)) -> <id>
     occurs : (x, name#([])) -> <fail>
     occurs : (x, name#(ts@[_|_])) -> <map(occurs)> ts
