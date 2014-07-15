@@ -152,7 +152,7 @@ rules
         where <node-is-ctx-empty <+ node-is-ctx-var(|cc)> node
     ctx-bind-to-kv-list(|c, cc) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c, cc)> tail]
         where <node-is-ctx-bind> node;
-              ctx := <get-generic-name; string-to-int> node;
+              ctx := <get-context-id> node;
               inputs := <get-inputs(|c)> node;
               outputs := <get-outputs(|c)> node;
               tail := <get-arguments; last> node

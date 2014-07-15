@@ -52,3 +52,4 @@ rules
     node-is-generic(|string) = where(get-constructor; is-generic(|string))
 
     get-generic-name = get-constructor; string-tokenize(|<singelton> '-'); last
+    get-context-id = get-generic-name; string-to-int

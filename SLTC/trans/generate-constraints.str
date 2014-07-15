@@ -37,11 +37,32 @@ rules
             empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<add> (<length> context-definitions, 1), 100); hashtable-putlist(|empty-contexts)>
 
+    /**
+     * Generates the set of constraints.
+     *
+     * @param judgments - judgment declarations
+     * @param contexts - context declarations
+     * @param templates - constraint templates
+     * @param store - list of hashtables that store context information
+     */
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
-             match := <find-match(|inputs)> templates
+            // Find the constraint template that matches the inputs of the given term
+            match := <find-match(|inputs)> templates
 
+    /**
+     * Helper rule for constraint generation. It pattern matches against the matching
+     * template found in `generate` and does the actual constraint generation.
+     *
+     * FIXME: This code needs refactoring!
+     *
+     * @param j - judgment declarations
+     * @param c - context declarations
+     * @param t - constraint templates
+     * @param i - input terms
+     * @param s - list of hashtables that store context information
+     */
     generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
             (outputs', <conc> (constraints'', <flatten-list> lookedup', binding-constraints', <mapconcat(Snd)> outputs-constraints'))
@@ -52,7 +73,7 @@ rules
             lookedup := <map(lookup(|s))> lookups';
             positions := <map((find-matching-positions(|pattern), map((id, find-matching-positions(|pattern), find-matching-positions(|pattern)))))> calls;
             input-terms := <map((extract-terms(|term), map((id, extract-terms(|term), extract-terms(|term)))))> positions;
-            binding-constraints := <(map(Snd; map(\(_,_,n) -> n\)), map(Snd; map(\(_,_,n) -> n\))); (flatten-list, flatten-list); zip; map(makeEq)> (calls, input-terms);
+            binding-constraints := <(map(Snd; map(\(_,_,n) -> n\)), map(Snd; map(\(_,_,n) -> n\))); (flatten-list, flatten-list); zip; map(makeEq)> (calls, input-terms); 
             outputs-constraints := <map(\(term, b) -> <generate(|j, c, t, <update-store(|s)> b)> term\)> input-terms;
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
@@ -61,11 +82,35 @@ rules
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
             constraints'' := <replace-all(|constraints')> xs-outputs
 
-    extract-terms(|inputs) = map(retrieve(|inputs))
-    find-matching-positions(|c-pattern) = map(get-position(|c-pattern); reverse)
+    /**
+     * Provided with a list of paths, this strategy returns the
+     * elements in `terms` described by the paths. A path describes
+     * contains the positions in the argument list to which should be
+     * descended to.
+     * 
+     * @param terms - an list of arbitrary terms
+     */
+    extract-terms(|terms) = map(retrieve(|terms))
+    
+    /**
+     * Finds the positions of the provided elements in the `pattern`.
+     *
+     * @param pattern - an arbitrary term
+     */
+    find-matching-positions(|pattern) = map(get-position(|pattern); reverse)
+    
+    /**
+     * Finds the position of the provided element in `pattern`.
+     *
+     * @param pattern - an arbitrary term
+     */
     get-position(|pattern) : x -> <get-index < singelton + search> (x, pattern)
 
-    // FIXME: What if x is not entirely containted in pattern?
+    /**
+     * Traverses the pattern like a tree and records the path until `x` is
+     * found literally in `pattern`. The recorded path contains the positions
+     * in the argument list in which was descended.
+     */
     search : (x, pattern) -> <search'> (x, [1], pattern)
     search' : (x, is, []) -> <fail>
     search' : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
@@ -74,10 +119,20 @@ rules
                                                     end>
     search' : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search'> (x, [1|is], <conc> (args, pattern)) > (x, args)
 
-    retrieve(|node) : [p] -> <index> (p, <get-arguments> node)
-    retrieve(|node) : [p|path] -> <index; \ node -> <retrieve(|node)> path\> (p, <get-arguments> node)
+    /**
+     * Walks along the paths in `term` and returns to element
+     * at the end of the path.
+     */
+    retrieve(|term) : [p] -> <index> (p, <get-arguments> term)
+    retrieve(|term) : [p|path] -> <index; \ node -> <retrieve(|node)> path\> (p, <get-arguments> term)
 
-    // FIXME: What if multiple rules match?    
+    /**
+     * Search for the matching pattern for `inputs` in the constraint templates. 
+     *
+     * FIXME: What if multiple rules match?
+     *
+     * @param inputs - a list of arbitary terms
+     */    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
     find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
                                      then if <zip; fanout; (filter(match-constructors); length,
@@ -87,13 +142,28 @@ rules
                                            end
                                      else <find-match(|inputs)> ts
                                      end>
-
+    
+    /**
+     * Defines when two terms match
+     */
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
                                      <is-meta-variable> s-cons>
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
 
+    /**
+     * Updates the store `s` with the provided context bindings. Context
+     * bindings are a list of triples containing the context id, inputs 
+     * and outputs. 
+     *
+     * @param s - a hashtable containing hashtables
+     */
     update-store(|s) : ctx-binds -> <foldl(\((ctx, i, o), s') -> <hashtable-put(|ctx, <hashtable-get(|ctx); hashtable-put(|i, o)> s')> s'\)> (ctx-binds, s)
 
+    /**
+     * Looks up the context `ctx` at `key` and assigns the result to `vars`.
+     *
+     * @param s - a hashtable containing hashtables
+     */
     lookup(|s) : (ctx, key, vars) -> <zip;map(makeEq)> (vars, <hashtable-get(|ctx); hashtable-get(|key)> s)
