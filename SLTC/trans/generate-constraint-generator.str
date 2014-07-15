@@ -39,20 +39,20 @@ rules
 
     mkOutput : n -> Output(n)
 
-    // TODO: Rename parameter to indicate it works also for contexts
-    get-inputs(|judgments) = filter-hole-positions(?(_, "I") | judgments)        
-    get-outputs(|judgments) = filter-hole-positions(?(_, "O") | judgments); map(mkOutput)
+    get-inputs(|declarations) = filter-hole-positions(?(_, "I") | declarations)
+    get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations); map(mkOutput)
             
-    filter-hole-positions(cond|judgments) : node@cons#(args) -> <map(\n -> <index(|<add>(n, 1))> args\)> result
+    filter-hole-positions(cond|declarations) : node -> <map(\n -> <index(|<add>(n, 1))> args\)> result
         where
-            result := <get-hole-positions(|judgments); filter(cond); map(Fst)> node
+            args := <get-arguments> node;
+            result := <get-hole-positions(|declarations); filter(cond); map(Fst)> node
     
-    get-hole-positions(|judgments) : cons#(args) -> <fanout; (length; range, id); zip> holes
+    get-hole-positions(|declarations) : cons#(args) -> <fanout; (length; range, id); zip> holes
         where
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
-            judgment-number := <string-to-int; \n -> (n, 1)\; add> generic; 
-            judgment := <index(|judgment-number)> judgments;
-            holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> judgment
+            declaration-number := <string-to-int; \n -> (n, 1)\; add> generic;
+            declaration := <index(|declaration-number)> declarations;
+            holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> declaration
 
     base(|j, c, cc) : TypingRule(_, conclusion) ->
         <topdown(try(\Output(n) -> n\))>
