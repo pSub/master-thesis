@@ -8,11 +8,11 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(Var)) * List(Call) * lookups * Rule -> Rule
-       Call : List(Term) * List(Term) -> Call
-       Pattern : Term
-       Outputs : List(Term)
-       Output : a -> Output
+       Binding : List(List(var)) * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
+       Call : List(term) * List(term) -> Call
+       Pattern : term
+       Outputs : List(term)
+       Output : term -> Output
        
        ConstraintGenerator : List(Rule)
        
