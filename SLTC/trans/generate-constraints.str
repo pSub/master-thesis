@@ -22,8 +22,10 @@ rules
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
         -> <map(\TypingRule(_, conjecture) ->
-                 <get-inputs(|judgments); remove-all(node-is-ctx(|context-classes));
-                  generate(|judgments, context-definitions, templates, store);
+                 <get-inputs(|judgments);
+                  \i -> <generate(|judgments, context-definitions,
+                            templates, <filter(node-is-ctx-bind); debug; map(ctx-bind-to-kv-list(|context-definitions, context-classes); update-store(|store))> i)> i\;
+                  remove-all(node-is-ctx(|context-classes));
                   \(outputs, constraints) ->
                     (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs(|judgments);topdown(try(\Output(n) -> n\))> conjecture) ,constraints))
                   \> conjecture
@@ -36,7 +38,7 @@ rules
             templates := <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules;
             empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<add> (<length> context-definitions, 1), 100);
-                      hashtable-putlist(|empty-contexts)>
+                             hashtable-putlist(|empty-contexts)>
 
     /**
      * Generates the set of constraints.
@@ -50,7 +52,7 @@ rules
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
             // Find the constraint template that matches the inputs of the given term
-            match := <find-match(|<debug> inputs)> templates
+            match := <find-match(|inputs)> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -64,7 +66,7 @@ rules
      * @param i - input terms
      * @param s - list of hashtables that store context information
      */
-    generate'(|j, c, t, i, s) : Rule(pattern, outputs , constraints) -> (outputs, constraints)
+    generate'(|j, c, t, i, s) : Rule(pattern, outputs, constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
             (outputs', new-constraints)
         where
@@ -84,7 +86,7 @@ rules
 
             // Make equality constraints between the output variables of the bindings and
             // the instantiated outputs.
-            binding-constraints := <(map(Snd; map(\(_,_,n) -> n\)), map(Snd; map(\(_,_,n) -> n\)));
+            binding-constraints := <(map(Snd; map(\(_, _, n) -> n\)), map(Snd; map(\(_, _, n) -> n\)));
                                     (flatten-list, flatten-list);
                                     zip; map(makeEq)> (calls, inputs-bindings);
 
@@ -107,7 +109,8 @@ rules
             new-constraints := <conc> ( constraints''
                                       , <flatten-list> lookedup'
                                       , binding-constraints'
-                                      , <mapconcat(Snd)> outputs-constraints')
+                                      , <mapconcat(Snd)> outputs-constraints'
+                                      )
 
     instantiate(|pattern, terms) = find-matching-positions(|pattern); extract-terms(|terms)
 
@@ -169,7 +172,8 @@ rules
      * Defines when two terms match
      */
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
-                                     <is-meta-variable> s-cons>
+                                     <is-meta-variable> s-cons <+
+                                     ?Var__(_)>
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
