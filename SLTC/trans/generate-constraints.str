@@ -28,7 +28,7 @@ rules
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
                                     topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i\;
                   \(outputs, constraints) ->
-                    (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs(|judgments); topdown(try(\Output(n) -> n\))> conjecture) ,constraints))
+                    (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs'(|judgments)> conjecture) ,constraints))
                   \> conjecture
                 \)> conjectures
         where

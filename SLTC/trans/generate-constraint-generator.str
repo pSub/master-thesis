@@ -67,6 +67,14 @@ rules
     get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations); map(mkOutput)
 
     /**
+     * Like `get-outputs` but does not wrap everything into Output constructors.
+     *
+     * @param declarations - either a list of context of judgment declarations
+     *                       or something of equivalent structure
+     */
+    get-outputs'(|declarations) = filter-hole-positions(?(_, "O") | declarations)
+
+    /**
      * Extracts all consituents from a given term that satisfy the given
      * condition `cond`.
      *
