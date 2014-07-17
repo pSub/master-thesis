@@ -162,7 +162,7 @@ rules
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
     find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
                                      then if <zip; fanout; (filter(match-constructors); length,
-                                                            length);equal> (inputs, <get-pattern> t)
+                                                            length); equal> (inputs, <get-pattern> t)
                                            then <id> t
                                            else <find-match(|inputs)> ts
                                            end
@@ -173,8 +173,8 @@ rules
      * Defines when two terms match
      */
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
-                                     <is-meta-variable> s-cons <+
-                                     ?Var__(_)>
+                                     <where(is-meta-variable)> s-cons <+
+                                     <?Var__(_)> s>
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
