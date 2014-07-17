@@ -34,6 +34,8 @@ rules
     
     singelton : x -> [ x ]
 
+    enum = fanout; (length; range, id); zip
+
     is-meta-variable = is-generic(|"MetaVariable")
     is-ctx-bind = is-generic(|"ContextBind")
     is-ctx-lookup = is-generic(|"ContextLookup")
