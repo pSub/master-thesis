@@ -130,7 +130,7 @@ rules
      *
      * @param pattern - an arbitrary term
      */
-    find-matching-positions(|pattern) = map(search(|pattern); reverse)
+    find-matching-positions(|pattern) = map(get-index < singelton + search(|pattern); reverse)
 
     /**
      * Traverses the pattern like a tree and records the path until `x` is
