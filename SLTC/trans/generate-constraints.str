@@ -8,9 +8,8 @@ imports include/SLTC
 signature
     sorts Constraint
     constructors
-                
         ConstraintSet : List(Constraint)
-        
+
 rules
     generate-constraints : 
         Module(ModuleDec(_),
@@ -23,11 +22,13 @@ rules
                  Some(Conjectures(conjectures)))
         -> <map(\TypingRule(_, conjecture) ->
                  <get-inputs(|judgments);
-                  \i -> <generate(|judgments, context-definitions,
-                            templates, <filter(node-is-ctx-bind); debug; map(ctx-bind-to-kv-list(|context-definitions, context-classes); update-store(|store))> i)> i\;
-                  remove-all(node-is-ctx(|context-classes));
+                  \i -> <remove-all(node-is-ctx(|context-classes));
+                         generate(|judgments, context-definitions, templates,
+                                   <filter(node-is-ctx-bind);
+                                    mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
+                                    topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i\;
                   \(outputs, constraints) ->
-                    (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs(|judgments);topdown(try(\Output(n) -> n\))> conjecture) ,constraints))
+                    (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs(|judgments); topdown(try(\Output(n) -> n\))> conjecture) ,constraints))
                   \> conjecture
                 \)> conjectures
         where
