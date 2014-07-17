@@ -7,7 +7,7 @@ meta-variables	Term "~" { Type Exp }
 				Id "%" { ID }
 				Num "&" { INT }
 
-contexts Context{I} := ID{I} x Type{O}
+contexts Context := ID{I} x Type{O}
 
 judgments Context{I} "|-" Exp{I} ":" Type{O}.
 
@@ -27,7 +27,7 @@ $C |- ~X : ~T
 %X : ~T in $C
 =============== T-var
 $C |- %X : ~T
- 
+
 (%X : ~T1 ; $C) |- ~E : ~T2
 ===================================== T-abs
 $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
@@ -78,11 +78,14 @@ $C |- ~e1 / ~e2 : int
 conjectures
 
 ============= 
-() |- 1 : int
+() |- 1 + 2 : int
+
+===
+() |- ifz (ifz 1 then 2 else 3) then 3 + 4 else 3 : int
 
 ===============================
 (x0 : int ; ()) |- x0 + 3 : int
-
+ 
 ==================================
 () |- fun x : int (x) : int -> int
 
@@ -107,12 +110,12 @@ conjectures
     )
   )
  in (fac 3) : int
-
+ 
 ===
 () |- fun x : int (fun y : int (y)) : int -> int -> int
 
 ===
 (x : int; y : int ; ()) |- y : int
-
+ 
 ===
 () |- fun f : int -> int (fun x : int (f x)) : (int -> int) -> int -> int
