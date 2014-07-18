@@ -36,6 +36,16 @@ rules
 
     enum = fanout; (length; range, id); zip
 
+    top-sort : graph -> <top-sort'> (graph, <filter(Snd; equal([]))> graph, [])
+    top-sort' : (graph, [], L) -> <singelton; error> "Cyclic dependencies"
+        where <has-edges> graph
+    top-sort' : (graph, [], L) -> L
+    top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
+        where graph' := <map((id, filter(not(?n))))> graph;
+              S' := <filter(Snd; equal([]))> S
+
+    has-edges = all(Snd; equal([]))
+
     is-meta-variable = is-generic(|"MetaVariable")
     is-ctx-bind = is-generic(|"ContextBind")
     is-ctx-lookup = is-generic(|"ContextLookup")
