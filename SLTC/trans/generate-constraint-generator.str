@@ -8,7 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(var)) * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
+       Binding : List(List(var)) * List(dependencies) * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
        Call : List(term) * List(term) -> Call
        Pattern : term
        Outputs : List(term)
@@ -40,7 +40,7 @@ rules
      * Extracts the pattern from Rule or Binding
      */
     get-pattern : Rule(pattern, _, _) -> pattern
-    get-pattern : Binding(_, _, _, Rule(pattern, _, _)) -> pattern
+    get-pattern : Binding(_, _, _, _, Rule(pattern, _, _)) -> pattern
 
     /**
      * Wraps the given term with the constructor Output
@@ -127,6 +127,7 @@ rules
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
+                    <map(get-inputs(|j); compute-dependencies(|<enum> premisses, j))> premisses,
                     <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses,
                     <map(fanout3; (get-context-id, get-inputs(|c), get-outputs(|c)))> lookups,
@@ -164,7 +165,20 @@ rules
               inputs := <get-inputs(|c)> node;
               outputs := <get-outputs(|c)> node;
               tail := <get-arguments; last> node
-
+              
+    /**
+     * Returns the subset of the passed judgments that contain
+     * at least one of the `inputs`.
+     *
+     * @param terms - judgments
+     * @param decls - judgment declarations
+     */
+    compute-dependencies(|terms, decls) : inputs -> 
+        <filter(where(Snd; get-outputs'(|decls); debug;
+               \ os -> <foldl(\ (i, l) -> <collect-om(?i)> os 
+                            \)> (inputs, [])
+               \; not(equal([]))); Fst)> terms
+    
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
          innermost(base(|judgments, context-classes) <+
