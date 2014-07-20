@@ -174,8 +174,8 @@ rules
      * @param decls - judgment declarations
      */
     compute-dependencies(|terms, decls) : inputs -> 
-        <filter(where(Snd; get-outputs'(|decls); debug;
-               \ os -> <foldl(\ (i, l) -> <collect-om(?i)> os 
+        <filter(where(Snd; get-outputs'(|decls);
+               \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
                             \)> (inputs, [])
                \; not(equal([]))); Fst)> terms
     

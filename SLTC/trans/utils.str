@@ -36,6 +36,8 @@ rules
 
     enum = fanout; (length; range, id); zip
 
+    conc(|l) : l' -> <conc> (l, l')
+
     top-sort : graph -> <top-sort'> (graph, <filter(Snd; equal([]))> graph, [])
     top-sort' : (graph, [], L) -> <singelton; error> "Cyclic dependencies"
         where <has-edges> graph
