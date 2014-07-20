@@ -8,7 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(var)) * List(dependencies) * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
+       Binding : List(List(var)) * eval-order * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
        Call : List(term) * List(term) -> Call
        Pattern : term
        Outputs : List(term)
@@ -127,7 +127,7 @@ rules
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
-                    <map(get-inputs(|j); compute-dependencies(|<enum> premisses, j))> premisses,
+                    <top-sort> dependencies,
                     <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses,
                     <map(fanout3; (get-context-id, get-inputs(|c), get-outputs(|c)))> lookups,
@@ -138,7 +138,9 @@ rules
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             (premisses, lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses-list;
-            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
+            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses;
+            enum-premisses := <enum> premisses;
+            dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses
 
     /**
      * Replaces all meta-variables that occur within Output constructors
