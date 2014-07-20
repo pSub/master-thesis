@@ -8,7 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(var)) * eval-order * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
+       Binding : List(List(var)) * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
        Call : List(term) * List(term) -> Call
        Pattern : term
        Outputs : List(term)
@@ -40,7 +40,7 @@ rules
      * Extracts the pattern from Rule or Binding
      */
     get-pattern : Rule(pattern, _, _) -> pattern
-    get-pattern : Binding(_, _, _, _, Rule(pattern, _, _)) -> pattern
+    get-pattern : Binding(_, _, _, Rule(pattern, _, _)) -> pattern
 
     /**
      * Wraps the given term with the constructor Output
@@ -127,9 +127,8 @@ rules
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
-                    <top-sort> dependencies,
-                    <map(get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
-                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc))))> premisses,
+                    <zip; map((get-inputs(|j), id)); partition(not((node-is-ctx(|cc), id)), (node-is-ctx(|cc), id));
+                         (id, mapconcat((ctx-bind-to-kv-list(|c, cc), id)))> (premisses, <map(Snd)> dependencies),
                     <map(fanout3; (get-context-id, get-inputs(|c), get-outputs(|c)))> lookups,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
