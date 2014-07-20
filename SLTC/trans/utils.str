@@ -38,15 +38,15 @@ rules
 
     conc(|l) : l' -> <conc> (l, l')
 
-    top-sort : graph -> <top-sort'> (graph, <filter(Snd; equal([]))> graph, [])
+    top-sort : graph -> <top-sort'; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
     top-sort' : (graph, [], L) -> <singelton; error> "Cyclic dependencies"
         where <has-edges> graph
     top-sort' : (graph, [], L) -> L
     top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
-        where graph' := <map((id, filter(not(?n))))> graph;
-              S' := <filter(Snd; equal([]))> S
+        where graph' := <filter((not(?n), id)); map((id, filter(not(?n))))> graph;
+              S' := <filter(where(Snd; equal([])); Fst)> graph'
 
-    has-edges = all(Snd; equal([]))
+    has-edges = not(all(Snd; equal([])))
 
     is-meta-variable = is-generic(|"MetaVariable")
     is-ctx-bind = is-generic(|"ContextBind")
