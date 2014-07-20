@@ -137,10 +137,12 @@ rules
                          <mapconcat(zip(makeEq))> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            (premisses, lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> premisses-list;
-            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses;
-            enum-premisses := <enum> premisses;
-            dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses
+            enum-premisses := <enum> premisses-list;
+            dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
+            eval-order := <top-sort> dependencies;
+            sorted-premisses := <map(\ i -> <index(|<add> (i, 1))> premisses-list\)> eval-order;
+            (premisses, lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> sorted-premisses;
+            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
     /**
      * Replaces all meta-variables that occur within Output constructors
