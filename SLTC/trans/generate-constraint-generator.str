@@ -127,9 +127,9 @@ rules
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
-                    <zip; map((get-inputs(|j), id)); partition(not((node-is-ctx(|cc), id)), (node-is-ctx(|cc), id));
-                         (id, mapconcat((ctx-bind-to-kv-list(|c, cc), id)))> (premisses, <map(Snd)> dependencies),
-                    <map(fanout3; (get-context-id, get-inputs(|c), get-outputs(|c)))> lookups,
+                    <map((get-inputs(|j), id)); partition(not((node-is-ctx(|cc), id)), (node-is-ctx(|cc), id));
+                         (id, mapconcat((ctx-bind-to-kv-list(|c, cc), id)))> premisses,
+                    <map((fanout3, id); ((get-context-id, get-inputs(|c), get-outputs(|c)), id))> lookups,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
@@ -140,7 +140,8 @@ rules
             dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
             eval-order := <top-sort> dependencies;
             sorted-premisses := <map(\ i -> <index(|<add> (i, 1))> premisses-list\)> eval-order;
-            (premisses, lookups) := <partition(not(node-is-ctx-lookup), node-is-ctx-lookup)> sorted-premisses;
+            dep-premisses := <zip> (sorted-premisses, <map(Snd)> dependencies);
+            (premisses, lookups) := <partition(not((node-is-ctx-lookup, id)), (node-is-ctx-lookup, id))> dep-premisses;
             vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
     /**
