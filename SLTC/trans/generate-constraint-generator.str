@@ -142,7 +142,7 @@ rules
             sorted-premisses := <map(\ i -> <index(|<add> (i, 1))> premisses-list\)> eval-order;
             dep-premisses := <zip> (sorted-premisses, <map(Snd)> dependencies);
             (premisses, lookups) := <partition(not((node-is-ctx-lookup, id)), (node-is-ctx-lookup, id))> dep-premisses;
-            vars-outputs := <map(get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
+            vars-outputs := <map(Fst; get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
     /**
      * Replaces all meta-variables that occur within Output constructors
