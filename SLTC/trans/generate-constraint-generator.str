@@ -8,8 +8,7 @@ signature
     sorts
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(var)) * List(Call) * lookups * List(ctx, inputs, outputs) -> Rule
-       Call : List(term) * List(term) -> Call
+       Binding : List(List(var)) * List(call) * List(ctx, inputs, outputs) -> Rule
        Pattern : term
        Outputs : List(term)
        Output : term -> Output
@@ -40,7 +39,7 @@ rules
      * Extracts the pattern from Rule or Binding
      */
     get-pattern : Rule(pattern, _, _) -> pattern
-    get-pattern : Binding(_, _, _, Rule(pattern, _, _)) -> pattern
+    get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
 
     /**
      * Wraps the given term with the constructor Output
@@ -127,9 +126,12 @@ rules
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
-                    <map((get-inputs(|j), id)); partition(not((node-is-ctx(|cc), id)), (node-is-ctx(|cc), id));
-                         (id, mapconcat((ctx-bind-to-kv-list(|c, cc), id)))> premisses,
-                    <map((fanout3, id); ((get-context-id, get-inputs(|c), get-outputs(|c)), id))> lookups,
+                    <map(if (node-is-ctx-lookup, id)
+                         then (fanout3, id); ((get-context-id, get-inputs(|c), get-outputs(|c)), id)
+                         else (get-inputs(|j), id);
+                              (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
+                              ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))), id)
+                         end)> premisses,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
@@ -140,9 +142,9 @@ rules
             dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
             eval-order := <top-sort> dependencies;
             sorted-premisses := <map(\ i -> <index(|<add> (i, 1))> premisses-list\)> eval-order;
-            dep-premisses := <zip> (sorted-premisses, <map(Snd)> dependencies);
-            (premisses, lookups) := <partition(not((node-is-ctx-lookup, id)), (node-is-ctx-lookup, id))> dep-premisses;
-            vars-outputs := <map(Fst; get-outputs(|j); fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
+            premisses := <zip> (sorted-premisses, <map(Snd)> dependencies);
+            vars-outputs := <map(Fst; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j));
+                                 fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
     /**
      * Replaces all meta-variables that occur within Output constructors
