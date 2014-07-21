@@ -1,43 +1,140 @@
 module utils
 	
 rules
+
+    /**
+     * Inserts between every two elements of the given list `s`.
+     *
+     * @param s - an arbitary term
+     */
     intersperse(|s) : [] -> []
     intersperse(|s) : [x] -> [x]
     intersperse(|s) : [x|y] -> [x,s| <intersperse(|s)> y]
 
+    /**
+     * String representation for Option values. Some(s) is projected
+     * to s and None() is projected to the empty string.
+     */
     option-to-string : Some(s) -> s
     option-to-string : None()  -> ""
-    
+
+    /**
+     * String representation for Option values. Some(s) is projected
+     * to s and None() is projected to a random string prefixed with `l`.
+     * The random string is created with <newname>.
+     *
+     * @param l - prefix for random string
+     */
     option-to-string-newname(|l) : Some(s) -> s
     option-to-string-newname(|l) : None() -> <newname> l
-    
+
+    /**
+     * Takes a rule `f` and a default value `s`. None() is rewritten to
+     * the default value. Some(s') is rewritten to `f` applied to `s'`.
+     *
+     * @param f - some arbitary strategy
+     * @param s - some arbitary term
+     */
     maybe(f|s) : None() -> s
     maybe(f|s) : Some(s') -> <f> s' 
-    
+
+    /**
+     * Creates a list of `n` random strings prefixed with `l`.
+     *
+     * @param l - an arbitary string
+     */
     newnames(|l) : 0 -> []
     newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
 
-    to-list(c1,c2) : c1#([arg1]) -> [arg1]
-    to-list(c1,c2) : c2#([arg1, arg2]) -> [arg1 | <to-list(c1,c2)> arg2]
-    
+    /**
+     * Converts a list like data structure into a list.
+     *
+     * `c1` is the constructor representing `Nil`. It can possibly have
+     * one argument. `c2` is the constructor representing `Cons`. It has
+     * exactly two arguments, the first is arbitary and the second is
+     * either `c1` or `c2`.
+     *
+     * @param c1 - an constructor with zero or one argument
+     * @param c2 - an constructor with exactly two arguments
+     */
+    to-list(c1, c2) : c1#([]) -> []
+    to-list(c1, c2) : c1#([arg1]) -> [arg1]
+    to-list(c1, c2) : c2#([arg1, arg2]) -> [arg1 | <to-list(c1,c2)> arg2]
+
+    /**
+     * Projects the `n`-th argument of constructor `c`.
+     *
+     * @param c - an constructor with at least `n` arguments
+     * @param n - a natural number
+     */
     proj(c|n) : c#(args) -> <index(|n)> args
 
+    /**
+     * Replaces all `old-node` with `new-node` in `ast`.
+     *
+     * @param old-node - an arbitrary term
+     * @param new-node - an arbitrary term
+     * @param ast - an arbitrary term
+     */
     replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
+
+    /**
+     * Replaces all `old-node` with `new-node` in `ast`.
+     *
+     * @param ast - an arbitrary term
+     */
     replace(|ast) : (old-node, new-node) -> <innermost(?old-node; !new-node)> ast
-    
+
+    /**
+     * Wraps around `replace`. Recieves a list of substitution pairs and replaces
+     * those in `ast` from left to right.
+     *
+     * @param ast - an arbitrary term
+     */
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
+    /**
+     * Takes an arbitary term and creates a tuple from it.
+     */
     fanout : v -> (v, v)
+
+    /**
+     * Takes an arbitray term an creates a triple from it.
+     */
     fanout3 : v -> (v, v, v)
-    
+
+    /**
+     * Computes all tails of the given list.
+     */
     tails : xs -> [xs | <if [] then [] else <Tl; tails> xs end> xs]
-    
+
+    /**
+     * Creates a list containing soely the passed term.
+     */
     singelton : x -> [ x ]
 
+    /**
+     * Convenience wrapper around `isect`.
+     */
+    isect(|set1) : set2 -> <isect> (set1, set2)
+
+    /**
+     * Enumerates all elements in a given list.
+     */
     enum = fanout; (length; range, id); zip
 
+    /**
+     * Convenience wrapper around `conc`.
+     */
     conc(|l) : l' -> <conc> (l, l')
 
+    /**
+     * Topological sort of the passed graph.
+     *
+     * The graph is represented as a list of tuples. The first element
+     * is the node and the second is a list of nodes to which out-going
+     * edges exist.
+     */
     top-sort : graph -> <top-sort'; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
     top-sort' : (graph, [], L) -> <singelton; error> "Cyclic dependencies"
         where <has-edges> graph
@@ -45,7 +142,6 @@ rules
     top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
         where graph' := <filter((not(?n), id)); map((id, filter(not(?n))))> graph;
               S' := <filter(where(Snd; equal([])); Fst)> graph'
-
     has-edges = not(all(Snd; equal([])))
 
     is-meta-variable = is-generic(|"MetaVariable")
