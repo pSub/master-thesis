@@ -9,6 +9,12 @@ signature
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
        Binding : List(List(var)) * List(call) * List(ctx, inputs, outputs) -> Rule
+       // FIXME: It might be good to use these constructors. The disadvantage is
+       // that rules and strategies become more complicated if we transition away
+       // from plain tuples.
+       Lookup  : ctx * inputs * outputs -> Lookup
+       Judgment : term * binding -> Judgment
+
        Pattern : term
        Outputs : List(term)
        Output : term -> Output
@@ -45,6 +51,9 @@ rules
      * Wraps the given term with the constructor Output
      */
     mkOutput : n -> Output(n)
+
+    mkJudgment : (n, m) -> Judgment(n, m)
+    mkLookup : (a, b, c) -> Lookup(a, b, c)
 
     /**
      * Extacts all consituents from the given term that are marked
