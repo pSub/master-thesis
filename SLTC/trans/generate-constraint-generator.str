@@ -136,8 +136,8 @@ rules
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
                     <map(if (node-is-ctx-lookup, id)
-                         then (fanout3, id); ((get-context-id, get-inputs(|c), get-outputs(|c)), id)
-                         else (get-inputs(|j), id);
+                         then (fanout3, map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j)))); ((get-context-id, get-inputs(|c), get-outputs(|c)), id)
+                         else (get-inputs(|j), map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))), id)
                          end)> premisses,
@@ -147,11 +147,11 @@ rules
                          <mapconcat(zip(makeEq))> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            enum-premisses := <enum> premisses-list;
+            enum-premisses := <enum'> premisses-list;
             dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
             premisses := <zip> (premisses-list, <map(Snd)> dependencies);
-            sorted-premisses := <map(\ (i, j) -> <index(|<add> (j, 1)); (id, replace(|i, j))> premisses\)> eval-order;
+            sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
             vars-outputs := <map(Fst; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j));
                                  fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
