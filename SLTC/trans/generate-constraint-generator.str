@@ -149,9 +149,9 @@ rules
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             enum-premisses := <enum> premisses-list;
             dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
-            eval-order := <top-sort> dependencies;
-            sorted-premisses := <map(\ i -> <index(|<add> (i, 1))> premisses-list\)> eval-order;
-            premisses := <zip> (sorted-premisses, <map(Snd)> dependencies);
+            eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
+            premisses := <zip> (premisses-list, <map(Snd)> dependencies);
+            sorted-premisses := <map(\ (i, j) -> <index(|<add> (j, 1)); (id, replace(|i, j))> premisses\)> eval-order;
             vars-outputs := <map(Fst; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j));
                                  fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
 
