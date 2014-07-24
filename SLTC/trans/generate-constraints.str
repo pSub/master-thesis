@@ -68,36 +68,34 @@ rules
      * @param s - list of hashtables that store context information
      */
     generate'(|j, c, t, i, s) : Rule(pattern, outputs, constraints) -> (outputs, constraints)
-    generate'(|j, c, t, i, s) : Binding(xs, calls, lookups, Rule(inputs, outputs, constraints)) ->
-            (outputs', new-constraints)
+    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(inputs, outputs, constraints)) ->
+           (outputs', new-constraints) //(outputs', new-constraints)
         where
             // Abbreviations
-            pattern := <conc> (inputs, outputs);
-            term := <conc> (i, outputs);
+            pattern := inputs;
+            term := i;
 
-            // Instantiate the variables in the template with terms and do the lookup
-            // The result is a binding of the output variables of the binding to the
-            // looked up values.
-            lookup-constraints := <map((id, instantiate(|pattern, term), id); lookup(|s))> lookups;
+            // // TODO: Do we actually need this? Skip this when doing the rewrite.
+            // // Make equality constraints between the output variables of the bindings and
+            // // the instantiated outputs.
+            // binding-constraints := <(map(Snd; map(\(_, _, n) -> n\)), map(Snd; map(\(_, _, n) -> n\)));
+            //                         (flatten-list, flatten-list);
+            //                         zip; map(makeEq)> (calls, inputs-bindings);
 
-            // Instantiate the variables in the recursive calls and in the bindings. 
-            inputs-bindings := <map((instantiate(|pattern, term),
-                                     map((id, instantiate(|pattern, term), instantiate(|pattern, term))))
-                                   )> calls;
-
-            // Make equality constraints between the output variables of the bindings and
-            // the instantiated outputs.
-            binding-constraints := <(map(Snd; map(\(_, _, n) -> n\)), map(Snd; map(\(_, _, n) -> n\)));
-                                    (flatten-list, flatten-list);
-                                    zip; map(makeEq)> (calls, inputs-bindings);
-
-            // Generate the constraints for the premisses recursively.            
-            outputs-constraints := <map(\(term, b) -> <generate(|j, c, t, <update-store(|s)> b)> term
-                                        \)> inputs-bindings;
+            outputs-constraints := <foldl(\((call, dep), accu) ->
+                         // FIXME: Type variables are not correctly represented in the bindings
+                         <if <?(_,_,_)> call
+                          then <instantiate-lookup(|pattern, term); lookup(|s); \ o -> (o, [])\> call
+                          else
+                            // FIXME: This won't work because := binds "globally".
+                            //(param, binding) := <instantiate-judgment(|pattern, term)> call
+                            <instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Fst; generate(|j, c, t, <instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Snd; update-store(|s)> call)> call
+                          end; singelton; conc(|accu)>
+                          \)> (calls, []);
 
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
-            (xs', outputs', constraints', outputs-constraints', lookedup', binding-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints, lookup-constraints, binding-constraints))>
+            (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Assoziate the outputs of the recursive calls with the variables of the binding.
@@ -107,13 +105,16 @@ rules
             constraints'' := <replace-all(|constraints')> xs-outputs;
 
             // Merge all constraints.
-            new-constraints := <conc> ( constraints''
-                                      , <flatten-list> lookedup'
-                                      , binding-constraints'
-                                      , <mapconcat(Snd)> outputs-constraints'
-                                      )
+            new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints' )
 
     instantiate(|pattern, terms) = find-matching-positions(|pattern); extract-terms(|terms)
+    instantiate-judgment(|pattern, terms) =
+        (instantiate(|pattern, terms), map((id, instantiate(|pattern, terms),
+                                            instantiate(|pattern, terms))))
+    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), id)
+
+    update-pattern(|pattern) = map(Snd); conc(|pattern)
+    update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\; Fst); conc(|term)
 
     /**
      * Provided with a list of paths, this strategy returns the
@@ -197,4 +198,4 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    lookup(|s) : (ctx, key, vars) -> <zip; map(makeEq)> (vars, <hashtable-get(|ctx); hashtable-get(|key)> s)
+    lookup(|s) : (ctx, key, vars) -> <hashtable-get(|ctx); hashtable-get(|key)> s
