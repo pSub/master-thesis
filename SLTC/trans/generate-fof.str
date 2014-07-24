@@ -116,7 +116,7 @@ signature
 	]
 	   where
 	       // Index non-terminals with new names
-	       indexed-non-terminals := <fanout; (length; newnames(|"X"), id); zip> raw-non-terminals;
+	       indexed-non-terminals := <Dupl; (length; newnames(|"X"), id); zip> raw-non-terminals;
 		   // extract the list of new names
 	       non-terminals := <map(Fst; \s -> Var__(s)\)> indexed-non-terminals;
 	       // filter out the in- and outputs
@@ -224,7 +224,7 @@ strategies
 	// Ensure that all variables are uniquely named and are valid TPTP names. Before that run all Variables are scoped, thus
 	// all scoped variables are collected. After this the AST is folded over the collected variables. In the AST the scoped
 	// variable nodes are replaced with unscoped fresh variables, variable by variable.
-	makeVariablesUnique = (fanout; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)> \) 
+	makeVariablesUnique = (Dupl; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)> \)
 	                                                               + fail
 	                                                               
 	// Dashes in predicate names are not valid in TPTP

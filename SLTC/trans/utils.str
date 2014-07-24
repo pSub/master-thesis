@@ -102,11 +102,6 @@ rules
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
     /**
-     * Takes an arbitary term and creates a tuple from it.
-     */
-    fanout : v -> (v, v)
-
-    /**
      * Takes an arbitray term an creates a triple from it.
      */
     fanout3 : v -> (v, v, v)
@@ -131,12 +126,12 @@ rules
      *
      * FIXME: Remove this strategy in favor of enum'.
      */
-    enum = fanout; (length; range, id); zip
+    enum = Dupl; (length; range, id); zip
 
     /**
      * Enumerates all elements in a given list. [1..n]
      */
-    enum' = fanout; (length; \l -> <add> (l, 1)\; range; Tl, id); zip
+    enum' = Dupl; (length; \l -> <add> (l, 1)\; range; Tl, id); zip
 
     /**
      * Convenience wrapper around `conc`.

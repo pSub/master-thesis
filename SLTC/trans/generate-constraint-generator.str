@@ -134,9 +134,9 @@ rules
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
                     <map(if (node-is-ctx-lookup, id)
-                         then (fanout3, map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                         then (fanout3, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
-                         else (get-inputs(|j), map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                         else (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> premisses,
@@ -152,7 +152,7 @@ rules
             premisses := <zip> (premisses-list, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
             vars-outputs := <map(Fst; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j));
-                                 fanout; (length; newnames(|"X"); map(makeVar), id))> premisses
+                                 Dupl; (length; newnames(|"X"); map(makeVar), id))> premisses
 
     /**
      * Replaces all meta-variables that occur within Output constructors
@@ -160,7 +160,7 @@ rules
      * has to deal only with one kind of variables.
      */
     replace-meta-variables : ast -> <collect-om(?Output(_); collect-om(node-is-meta-variable));
-                                     flatten-list; fanout; (id, length; newnames(|"X"); map(makeVar));
+                                     flatten-list; Dupl; (id, length; newnames(|"X"); map(makeVar));
                                      zip; replace-all(|ast); topdown(try(\Output(n) -> n\))> ast
 
     /**

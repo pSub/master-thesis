@@ -37,7 +37,7 @@ rules
                                        <isect; not(equal(|[])); !name> (context-names, scope)
                                        \)> meta-variables;
             templates := <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules;
-            empty-contexts := <length; range; fanout; (id, map(new-hashtable)); zip> context-definitions;
+            empty-contexts := <length; range; Dupl; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<add> (<length> context-definitions, 1), 100);
                              hashtable-putlist(|empty-contexts)>
 
@@ -162,7 +162,7 @@ rules
      */    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
     find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
-                                     then if <zip; fanout; (filter(match-constructors); length,
+                                     then if <zip; Dupl; (filter(match-constructors); length,
                                                             length); equal> (inputs, <get-pattern> t)
                                            then <id> t
                                            else <find-match(|inputs)> ts
