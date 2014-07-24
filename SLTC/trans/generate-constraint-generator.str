@@ -151,10 +151,10 @@ rules
                               (to-tuple; makeEq, id)
                          case where((get-generic-name; equal(|"Neq"), id)):
                               (to-tuple; makeNeq, id)
-                         otherwise: (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                         otherwise: (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)); debug, id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
-                         end)> premisses,
+                         end)> sorted-premisses,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
