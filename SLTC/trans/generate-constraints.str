@@ -82,21 +82,7 @@ rules
             //                         (flatten-list, flatten-list);
             //                         zip; map(makeEq)> (calls, inputs-bindings);
 
-            outputs-constraints := <foldl(\((call, dep), accu) ->
-                         // FIXME: Type variables are not correctly represented in the bindings
-                         <switch !call
-                          case ?Lookup(_,_,_):
-                              <to-tuple; instantiate-lookup(|pattern, term); lookup(|s); \ o -> (o, [])\> call
-                          case ?Eq__(a, b):
-                              !([], Eq__(a, b))
-                          case ?Neq__(a, b):
-                              !([], Neq__(a, b))
-                          otherwise:
-                            // FIXME: This won't work because := binds "globally".
-                            //(param, binding) := <instantiate-judgment(|pattern, term)> call
-                            <to-tuple; instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Fst; generate(|j, c, t, <to-tuple; instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Snd; update-store(|s)> call)> call
-                          end; singelton; conc(|accu)>
-                          \)> (calls, []);
+            outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term))> (calls, []);
 
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
@@ -120,6 +106,22 @@ rules
 
     update-pattern(|pattern) = map(Snd); conc(|pattern)
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\; Fst); conc(|term)
+
+    execute(|j, c, t, s, pattern, term) : ((call, dep), accu) ->
+                         // FIXME: Type variables are not correctly represented in the bindings
+                         <pattern' := <update-pattern(|pattern)> dep;
+                          term' := <update-term(|term, accu)> dep;
+                          switch !call
+                          case ?Lookup(_,_,_):
+                              <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
+                          case ?Eq__(a, b):
+                              !([], Eq__(a, b))
+                          case ?Neq__(a, b):
+                              !([], Neq__(a, b))
+                          otherwise:
+                            (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
+                            <generate(|j, c, t, <update-store(|s)> binding)> param
+                          end; singelton; conc(|accu)>
 
     /**
      * Provided with a list of paths, this strategy returns the
