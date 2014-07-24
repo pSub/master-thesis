@@ -111,7 +111,7 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-hole-positions(|declarations) : cons#(args) -> <enum> holes
+    get-hole-positions(|declarations) : cons#(args) -> <enum'> holes
         where
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
             declaration-number := <string-to-int; \n -> (n, 1)\; add> generic;
