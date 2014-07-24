@@ -12,6 +12,7 @@ signature
 
        Lookup  : ctx * inputs * outputs -> Lookup
        Judgment : term * binding -> Judgment
+       Neq : term * term -> Neq
 
        Pattern : term
        Outputs : List(term)
@@ -54,13 +55,22 @@ rules
     mkLookup : (a, b, c) -> Lookup(a, b, c)
 
     /**
+     *
+     */
+    eq-inputs = where(get-generic-name; equal(|"Eq")); get-arguments
+    eq-outputs = where(get-generic-name; equal(|"Eq")); ![]
+    neq-inputs = where(get-generic-name; equal(|"Neq")); get-arguments
+    neq-outputs = where(get-generic-name; equal(|"Neq")); ![]
+
+
+    /**
      * Extacts all consituents from the given term that are marked
      * as inputs in the declaration.
      *
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-inputs(|declarations) = filter-hole-positions(?(_, "I") | declarations)
+    get-inputs(|declarations) = eq-inputs <+ neq-inputs <+ filter-hole-positions(?(_, "I") | declarations)
 
     /**
      * Extacts all consituents from the given term that are marked
@@ -70,7 +80,7 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations); map(mkOutput)
+    get-outputs(|declarations) = get-outputs'(|declarations); map(mkOutput)
 
     /**
      * Like `get-outputs` but does not wrap everything into Output constructors.
@@ -78,7 +88,7 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-outputs'(|declarations) = filter-hole-positions(?(_, "O") | declarations)
+    get-outputs'(|declarations) = eq-outputs <+ neq-outputs <+ filter-hole-positions(?(_, "O") | declarations)
 
     /**
      * Extracts all consituents from a given term that satisfy the given
@@ -133,11 +143,16 @@ rules
     step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
-                    <map(if (node-is-ctx-lookup, id)
-                         then (Trpl, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                    <map(switch id
+                         case (node-is-ctx-lookup, id):
+                              (Trpl, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
-                         else (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
-                              (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
+                         case where((get-generic-name; equal(|"Eq"), id)):
+                              (to-tuple; makeEq, id)
+                         case where((get-generic-name; equal(|"Neq"), id)):
+                              (to-tuple; makeNeq, id)
+                         otherwise: (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                              (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)); debug, id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> premisses,
                     // FIXME: Allow context-binds in conclusion, too.
