@@ -18,9 +18,9 @@ rules
 		             [imports(t), imports("Common")], 
 			         exports(
 				        conc-grammars(context-free-syntax(<map(make-variable)> meta-variables),
-                        conc-grammars(context-free-syntax(<fanout; (length; range, id);
+                        conc-grammars(context-free-syntax(<Dupl; (length; range, id);
                                                            zip; map(make-context)> contexts),
-				        context-free-syntax(<fanout; (length; range, id);
+				        context-free-syntax(<Dupl; (length; range, id);
 				                             zip; map(make-judgment)> judgments)))
 			         )
 		      )
