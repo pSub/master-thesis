@@ -134,7 +134,7 @@ rules
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
                     <map(if (node-is-ctx-lookup, id)
-                         then (fanout3, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                         then (Trpl, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
                          else (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);

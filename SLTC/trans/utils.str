@@ -101,10 +101,11 @@ rules
      */
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
-    /**
-     * Takes an arbitray term an creates a triple from it.
-     */
-    fanout3 : v -> (v, v, v)
+    /** Duplicate a term into a three-element tuple
+     *
+     * @type a -> Tuple(a, a, a)
+     */  
+    Trpl : v -> (v, v, v)
 
     /**
      * Computes all tails of the given list.
