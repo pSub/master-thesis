@@ -116,7 +116,7 @@ rules
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
             declaration-number := <string-to-int; \n -> (n, 1)\; add> generic;
             declaration := <index(|declaration-number)> declarations;
-            holes := <collect-all(?Hole(_,_)); map(proj(Hole|2))> declaration
+            holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
 
     /**
      * Rule that transforms axioms, i.e. typing rules without premisses into
