@@ -84,12 +84,12 @@ rules
 
             outputs-constraints := <foldl(\((call, dep), accu) ->
                          // FIXME: Type variables are not correctly represented in the bindings
-                         <if <?(_,_,_)> call
-                          then <instantiate-lookup(|pattern, term); lookup(|s); \ o -> (o, [])\> call
+                         <if <?Lookup(_,_,_)> call
+                          then <to-tuple; instantiate-lookup(|pattern, term); lookup(|s); \ o -> (o, [])\> call
                           else
                             // FIXME: This won't work because := binds "globally".
                             //(param, binding) := <instantiate-judgment(|pattern, term)> call
-                            <instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Fst; generate(|j, c, t, <instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Snd; update-store(|s)> call)> call
+                            <to-tuple; instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Fst; generate(|j, c, t, <to-tuple; instantiate-judgment(|<update-pattern(|pattern)> dep, <update-term(|term, accu)> dep); Snd; update-store(|s)> call)> call
                           end; singelton; conc(|accu)>
                           \)> (calls, []);
 

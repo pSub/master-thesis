@@ -129,6 +129,12 @@ rules
     conc(|l) : l' -> <conc> (l, l')
 
     /**
+     * Forget about the constructor and return the
+     * arguments as a tuple.
+     */
+    to-tuple = get-arguments; ListToTuple
+
+    /**
      * Topological sort of the passed graph.
      *
      * The graph is represented as a list of tuples. The first element

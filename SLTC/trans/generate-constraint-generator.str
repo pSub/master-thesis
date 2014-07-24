@@ -9,9 +9,7 @@ signature
     constructors
        Rule : Pattern * Outputs * Constraints -> Rule
        Binding : List(List(var)) * List(call) * List(ctx, inputs, outputs) -> Rule
-       // FIXME: It might be good to use these constructors. The disadvantage is
-       // that rules and strategies become more complicated if we transition away
-       // from plain tuples.
+
        Lookup  : ctx * inputs * outputs -> Lookup
        Judgment : term * binding -> Judgment
 
@@ -136,10 +134,11 @@ rules
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
                     <map(if (node-is-ctx-lookup, id)
-                         then (fanout3, map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j)))); ((get-context-id, get-inputs(|c), get-outputs(|c)), id)
+                         then (fanout3, map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                              ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
                          else (get-inputs(|j), map(fanout; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
-                              ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))), id)
+                              ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> premisses,
                     // FIXME: Allow context-binds in conclusion, too.
                     Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
