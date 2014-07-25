@@ -77,6 +77,8 @@ $C |- ~e1 / ~e2 : int
 
 conjectures
 
+/** Positive Tests */
+
 ============= 
 () |- 1 + 2 : int
 
@@ -119,3 +121,18 @@ conjectures
  
 ===
 () |- fun f : int -> int (fun x : int (f x)) : (int -> int) -> int -> int
+
+/** Negative Tests */
+
+// ===========================
+// () |- fun x : int (x) : int
+
+// ===
+// () |- let fac : int -> int =
+//   fix f : int -> int (
+//     fun n : int (
+//       ifz n then 1
+//       else n * (n (f - 1))
+//     )
+//   )
+//  in (fac 3) : int
