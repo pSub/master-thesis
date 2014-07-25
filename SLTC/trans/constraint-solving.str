@@ -13,6 +13,8 @@ rules
     // Robinson unification
     unify : [] -> []
     unify : [CEq__(t, t, info) | cs] -> <unify> cs
+    unify : [CNeq__(t, s, info)| cs] -> <unify> cs
+        where <not(equal)> (t, s)
     unify : [CEq__(t, Var__(x), info) | cs] -> <conc; unify> (cs, <singelton> CEq__(Var__(x), t, info))
     unify : [CEq__(v@Var__(x), t, info) | cs] -> <if <occurs> (x, t)
                                      then <error> [x, " occurs in", t]
