@@ -109,8 +109,8 @@ rules
 
     execute(|j, c, t, s, pattern, term) : ((call, dep), accu) ->
                          // FIXME: Type variables are not correctly represented in the bindings
-                         <pattern' := <update-pattern(|pattern); debug> dep;
-                          term' := <update-term(|term, accu); debug> dep;
+                         <pattern' := <update-pattern(|pattern)> dep;
+                          term' := <update-term(|term, accu)> dep;
                           switch !call
                           case ?Lookup(_,_,_):
                               <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
