@@ -1,12 +1,19 @@
 module constraint-language
 
+imports utils
+
 signature
     sorts Constraint Constraints
     constructors
+       Info : Option(String) -> Info
        Var__ : String -> term
-       Eq__ : term * term -> Constraint
+       CEq__ : term * term * Info -> Constraint
+       CNeq__ : term * term * Info -> Constraint
        Constraints__ : List(Constraint) -> Constraints
        
 rules
     makeVar : v -> Var__(v)
-    makeEq : (a,b) -> Eq__(a,b)
+    makeEq(|info) : (a, b) -> CEq__(a, b, info)
+    makeNeq(|info) : (a, b) -> CNeq__(a, b, info)
+    
+    get-info = proj(CEq__|3) <+ proj(CNeq__|3)

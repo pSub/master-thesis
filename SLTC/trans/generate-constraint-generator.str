@@ -7,8 +7,8 @@ imports include/SLTC
 signature
     sorts
     constructors
-       Rule : Pattern * Outputs * Constraints -> Rule
        Binding : List(List(var)) * List(call) * List(ctx, inputs, outputs) -> Rule
+       Rule : Option(String) * Pattern * Outputs * Constraints -> Rule
 
        Lookup  : ctx * inputs * outputs -> Lookup
        Judgment : term * binding -> Judgment
@@ -43,8 +43,8 @@ rules
     /**
      * Extracts the pattern from Rule or Binding
      */
-    get-pattern : Rule(pattern, _, _) -> pattern
-    get-pattern : Binding(_, _, Rule(pattern, _, _)) -> pattern
+    get-pattern : Rule(_, pattern, _, _) -> pattern
+    get-pattern : Binding(_, _, Rule(_, pattern, _, _)) -> pattern
 
     /**
      * Wraps the given term with the constructor Output
@@ -125,9 +125,10 @@ rules
      * @param j - judgment declarations
      * @param cc - meta-variable classes that represent contexts
      */
-    base(|j, cc) : TypingRule(_, conclusion) ->
+    base(|j, cc) : TypingRule(RuleName(_, name), conclusion) ->
         <replace-meta-variables>
-           Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+           Rule(name,
+                <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                 <get-outputs(|j)> conclusion,
                 [])
 
@@ -140,7 +141,7 @@ rules
      * @param c - context declarartions
      * @param cc - meta-variable classes that represent contexts
      */
-    step(|j, c, cc) : TypingRule(premisses-struct, _, conclusion) ->
+    step(|j, c, cc) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
             Binding(<map(Fst)> vars-outputs,
                     <map(switch id
@@ -148,17 +149,18 @@ rules
                               (Trpl, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
                          case where((get-generic-name; equal(|"Eq"), id)):
-                              (to-tuple; makeEq, id)
+                              to-tuple; makeEq(|name)
                          case where((get-generic-name; equal(|"Neq"), id)):
-                              (to-tuple; makeNeq, id)
+                              to-tuple; makeNeq(|name)
                          otherwise: (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-outputs(|j))));
-                              (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)); debug, id);
+                              (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
                     // FIXME: Allow context-binds in conclusion, too.
-                    Rule(<get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+                    Rule(name,
+                         <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
-                         <mapconcat(zip(makeEq))> vars-outputs))
+                         <mapconcat(zip(makeEq(|name)))> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             enum-premisses := <enum'> premisses-list;

@@ -28,7 +28,7 @@ rules
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
                                     topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i\;
                   \(outputs, constraints) ->
-                    (outputs, <conc>(<zip; map(makeEq)> (outputs, <get-outputs'(|judgments)> conjecture) ,constraints))
+                    (outputs, <conc>(<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs'(|judgments)> conjecture), constraints))
                   \> conjecture
                 \)> conjectures
         where
@@ -67,8 +67,8 @@ rules
      * @param i - input terms
      * @param s - list of hashtables that store context information
      */
-    generate'(|j, c, t, i, s) : Rule(pattern, outputs, constraints) -> (outputs, constraints)
-    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(inputs, outputs, constraints)) ->
+    generate'(|j, c, t, i, s) : Rule(name, pattern, outputs, constraints) -> (outputs, constraints)
+    generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(name, inputs, outputs, constraints)) ->
            (outputs', new-constraints) //(outputs', new-constraints)
         where
             // Abbreviations
@@ -109,15 +109,15 @@ rules
 
     execute(|j, c, t, s, pattern, term) : ((call, dep), accu) ->
                          // FIXME: Type variables are not correctly represented in the bindings
-                         <pattern' := <update-pattern(|pattern)> dep;
-                          term' := <update-term(|term, accu)> dep;
+                         <pattern' := <update-pattern(|pattern); debug> dep;
+                          term' := <update-term(|term, accu); debug> dep;
                           switch !call
                           case ?Lookup(_,_,_):
                               <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
-                          case ?Eq__(a, b):
-                              !([], Eq__(a, b))
-                          case ?Neq__(a, b):
-                              !([], Neq__(a, b))
+                          case ?CEq__(a, b, info):
+                              !([], CEq__(a, b, info))
+                          case ?CNeq__(a, b, info):
+                              !([], CNeq__(a, b, info))
                           otherwise:
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
                             <generate(|j, c, t, <update-store(|s)> binding)> param
