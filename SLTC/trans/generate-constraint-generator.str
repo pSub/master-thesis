@@ -102,7 +102,7 @@ rules
         where
             args := <get-arguments> node;
             positions := <get-hole-positions(|declarations); filter(cond); map(Fst)> node;
-            consituents := <map(\n -> <index(|<add>(n, 1))> args\)> positions
+            consituents := <map(\n -> <index(|n)> args\)> positions
 
     /**
      * Fetches the declaration for the given node and provides a list of
