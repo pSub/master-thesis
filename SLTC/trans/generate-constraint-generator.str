@@ -7,8 +7,8 @@ imports include/SLTC
 signature
     sorts
     constructors
-       Binding : List(List(var)) * List(call) * List(ctx, inputs, outputs) -> Rule
        Rule : Option(String) * Pattern * Outputs * Constraints -> Rule
+       Binding : List(List(var)) * List(call) * Rule -> Rule
 
        Lookup  : ctx * inputs * outputs -> Lookup
        Judgment : term * binding -> Judgment
