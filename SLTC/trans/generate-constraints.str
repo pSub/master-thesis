@@ -73,7 +73,7 @@ rules
             pattern := inputs;
             term := i;
 
-            outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term))> (calls, []);
+            outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
 
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
@@ -95,10 +95,13 @@ rules
                                             instantiate(|pattern, terms))))
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), id)
 
+    make-binding-constraints(|info)
+        = (to-tuple; Snd; map(Third), map(Third)); zip; map(makeEq(|info))
+
     update-pattern(|pattern) = map(Snd); conc(|pattern)
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\; Fst); conc(|term)
 
-    execute(|j, c, t, s, pattern, term) : ((call, dep), accu) ->
+    execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
                          // FIXME: Type variables are not correctly represented in the bindings
                          <pattern' := <update-pattern(|pattern)> dep;
                           term' := <update-term(|term, accu)> dep;
@@ -111,7 +114,9 @@ rules
                               !([], CNeq__(a, b, info))
                           otherwise:
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
-                            <generate(|j, c, t, <update-store(|s)> binding)> param
+                            binding-constraints := <make-binding-constraints(|name)> (call, binding);
+                            <generate(|j, c, t, <update-store(|s)> binding)> param;
+                            (id, conc(|binding-constraints))
                           end; singelton; conc(|accu)>
 
     /**
