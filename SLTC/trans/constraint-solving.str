@@ -25,3 +25,10 @@ rules
         where <equal>(<length> ts, <length> ts');
               cs' := <zip; map(makeEq(|info))> (ts, ts')
     unify = get-info; singelton; error
+
+    // Apply mgu
+    apply-mgu(|t) : mgu -> <foldl(\((x, s), t') -> <subst> (x, s, t')\)> (mgu, t)
+    subst : (x, s, x) -> s
+    subst : (x, s, Var(y)) -> Var(y)
+    subst : (x, s, n#(args)) -> <mkterm> (n, args')
+        where args' := <map(\t -> <subst> (x, s, t)\)> args
