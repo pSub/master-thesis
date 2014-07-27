@@ -26,9 +26,7 @@ rules
                          generate(|judgments, context-definitions, templates,
                                    <filter(node-is-ctx-bind);
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
-                                    topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i\;
-                  \(outputs, constraints) ->
-                    (outputs, <conc>(<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs'(|judgments)> conjecture), constraints))
+                                    topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i
                   \> conjecture
                 \)> conjectures
         where
