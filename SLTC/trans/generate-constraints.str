@@ -96,7 +96,7 @@ rules
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), id)
 
     make-binding-constraints(|info)
-        = (to-tuple; Snd; map(Third), map(Third)); zip; map(makeEq(|info))
+        = (to-tuple; Snd; mapconcat(Third), mapconcat(Third)); zip; map(makeEq(|info))
 
     update-pattern(|pattern) = map(Snd); conc(|pattern)
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\; Fst); conc(|term)
