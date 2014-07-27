@@ -75,13 +75,6 @@ rules
             pattern := inputs;
             term := i;
 
-            // // TODO: Do we actually need this? Skip this when doing the rewrite.
-            // // Make equality constraints between the output variables of the bindings and
-            // // the instantiated outputs.
-            // binding-constraints := <(map(Snd; map(\(_, _, n) -> n\)), map(Snd; map(\(_, _, n) -> n\)));
-            //                         (flatten-list, flatten-list);
-            //                         zip; map(makeEq)> (calls, inputs-bindings);
-
             outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term))> (calls, []);
 
             // FIXME: Is there a better solution, than renaming?
