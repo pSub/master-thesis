@@ -28,7 +28,11 @@ rules
     unify' = get-info; singelton; error
 
     // Apply mgu
-    apply-mgu(|t) : mgu -> <foldl(\((x, s), t') -> <subst> (x, s, t')\)> (mgu, t)
+    apply-mgu(|t) : [] -> t
+    apply-mgu(|t) : [(x, s) | mgu] -> <apply-mgu(|t')> mgu'
+        where t' := <subst> (x, s, t)
+        where mgu' := <map(\t -> <subst> (x, s, t)\)> mgu
+
     subst : (x, s, x) -> s
     subst : (x, s, Var(y)) -> Var(y)
     subst : (x, s, n#(args)) -> <mkterm> (n, args')
