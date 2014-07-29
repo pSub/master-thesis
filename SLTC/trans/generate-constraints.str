@@ -2,6 +2,7 @@ module generate-constraints
 
 imports utils
 imports constraint-language
+imports constraint-solving
 imports generate-constraint-generator
 imports include/SLTC
 
@@ -95,11 +96,13 @@ rules
                                             instantiate(|pattern, terms))))
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), id)
 
+    // FIXME: This implementation is very ugly.
     make-binding-constraints(|info)
-        = (to-tuple; Snd; mapconcat(Third), mapconcat(Third)); zip; map(makeEq(|info))
+        = (to-tuple; Snd; mapconcat(Dupl; (Snd, Third); conc), mapconcat(Dupl; (Snd, Third); conc)); zip; filter((?Var__(_), id));  map(makeEq(|info))
 
     update-pattern(|pattern) = map(Snd); conc(|pattern)
-    update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\; Fst); conc(|term)
+    update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
+                                   \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs \); conc(|term)
 
     execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
                          // FIXME: Type variables are not correctly represented in the bindings
