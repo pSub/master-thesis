@@ -67,7 +67,7 @@ rules
      */
     generate'(|j, c, t, i, s) : Rule(name, pattern, outputs, constraints) -> (outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(name, inputs, outputs, constraints)) ->
-           (outputs', new-constraints) //(outputs', new-constraints)
+           (outputs', new-constraints)
         where
             // Abbreviations
             pattern := inputs;
