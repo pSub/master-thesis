@@ -141,13 +141,12 @@ rules
      * found literally in `pattern`. The recorded path contains the positions
      * in the argument list in which was descended.
      */
-    search(|pattern) : x -> <search'> (x, [1], pattern)
+    search(|pattern) : x -> <search'> (x, [], <enum'> pattern)
     search' : (x, is, []) -> <fail>
-    search' : (x, [i|is], [v@c#([]) | pattern]) -> <if <equal> (x, v)
-                                                    then <id> [i|is]
-                                                    else <search'> (x, <add; singelton> (i, 1), pattern)
-                                                    end>
-    search' : (x, is, [c#(args) | pattern]) -> <get-index < \ i -> [i|is] \ + <search'> (x, [1|is], <conc> (args, pattern)) > (x, args)
+    search' : (x, is, pattern) -> [i | is]
+        where i := <get-index> (x, <map(Snd)> pattern)
+    search' : (x, is, [(n, pattern) | rest]) -> <<search'> (x, [n | is], <get-arguments; enum'> pattern) <+
+                                                 <search'> (x, is, rest)>
 
     /**
      * Walks along the paths in `term` and returns to element
