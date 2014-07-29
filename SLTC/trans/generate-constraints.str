@@ -65,7 +65,7 @@ rules
      * @param i - input terms
      * @param s - list of hashtables that store context information
      */
-    generate'(|j, c, t, i, s) : Rule(name, pattern, outputs, constraints) -> (outputs, constraints)
+    generate'(|j, c, t, i, s) : Rule(name, pattern, outputs, constraints) -> (<instantiate(|pattern, i)> outputs, constraints)
     generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(name, inputs, outputs, constraints)) ->
            (outputs', new-constraints)
         where
