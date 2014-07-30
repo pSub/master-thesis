@@ -114,7 +114,7 @@ rules
     get-hole-positions(|declarations) : cons#(args) -> <enum'> holes
         where
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
-            declaration-number := <string-to-int; \n -> (n, 1)\; add> generic;
+            declaration-number := <string-to-int; inc> generic;
             declaration := <index(|declaration-number)> declarations;
             holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
 
