@@ -139,6 +139,13 @@ rules
     to-tuple = get-arguments; ListToTuple
 
     /**
+     * Wraps around equal to provide the result as a string.
+     *
+     * @param t - some arbitrary term
+     */
+    equal-to-string(|t) = equal(|t) < !"Success" + !"Failure"
+
+    /**
      * Topological sort of the passed graph.
      *
      * The graph is represented as a list of tuples. The first element

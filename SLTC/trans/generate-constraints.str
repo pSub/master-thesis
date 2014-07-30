@@ -22,13 +22,13 @@ rules
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
         -> <map(\TypingRule(_, conjecture) ->
-                 <get-inputs(|judgments);
+                 (<get-inputs(|judgments);
                   \i -> <remove-all(node-is-ctx(|context-classes));
                          generate(|judgments, context-definitions, templates,
                                    <filter(node-is-ctx-bind);
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
                                     topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i
-                  \> conjecture
+                  \> conjecture, <get-outputs'(|judgments)> conjecture)
                 \)> conjectures
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
