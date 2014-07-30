@@ -123,16 +123,9 @@ rules
     isect(|set1) : set2 -> <isect> (set1, set2)
 
     /**
-     * Enumerates all elements in a given list. [0..(n-1)]
-     *
-     * FIXME: Remove this strategy in favor of enum'.
-     */
-    enum = Dupl; (length; range, id); zip
-
-    /**
      * Enumerates all elements in a given list. [1..n]
      */
-    enum' = map-with-index((id, id))
+    enum = map-with-index((id, id))
 
     /**
      * Convenience wrapper around `conc`.
