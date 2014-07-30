@@ -69,7 +69,10 @@ rules
      * @param i - input terms
      * @param s - list of hashtables that store context information
      */
-    generate'(|j, c, t, i, s) : Rule(name, pattern, outputs, constraints) -> (<instantiate(|pattern, i)> outputs, constraints)
+    generate'(|j, c, t, i, s) : Rule(name, pattern, outputs, constraints) ->
+            (outputs, <conc> (constraints,
+                              <collect-om(?Var__(_)); filter(where(\v -> <sometd(?v)> pattern\)); Dupl;
+                              (id, instantiate(|pattern, i)); zip; map(makeEq(|Some(name)))> outputs))
     generate'(|j, c, t, i, s) : Binding(xs, calls, Rule(name, inputs, outputs, constraints)) ->
            (outputs', new-constraints)
         where
@@ -79,9 +82,12 @@ rules
 
             outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
 
+            input-output-constraints := <collect-om(?Var__(_)); filter(where(\v -> <sometd(?v)> inputs\)); Dupl;
+                                       (id, instantiate(|inputs, i)); zip; map(makeEq(|Some(name)))> outputs;
+
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints);
-            (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|<debug> (xs, outputs, constraints, outputs-constraints))>
+            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints, input-output-constraints);
+            (xs', outputs', constraints', outputs-constraints', io-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints, input-output-constraints))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Assoziate the outputs of the recursive calls with the variables of the binding.
@@ -91,7 +97,7 @@ rules
             constraints'' := <replace-all(|constraints')> xs-outputs;
 
             // Merge all constraints.
-            new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints' )
+            new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints')
 
     instantiate(|pattern, terms) = find-matching-positions(|pattern); extract-terms(|terms)
     instantiate-judgment(|pattern, terms) =
