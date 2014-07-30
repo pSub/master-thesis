@@ -132,7 +132,7 @@ rules
     /**
      * Enumerates all elements in a given list. [1..n]
      */
-    enum' = Dupl; (length; \l -> <add> (l, 1)\; range; Tl, id); zip
+    enum' = map-with-index((id, id))
 
     /**
      * Convenience wrapper around `conc`.
