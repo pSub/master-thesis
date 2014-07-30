@@ -111,7 +111,6 @@ rules
                                    \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs \); conc(|term)
 
     execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
-                         // FIXME: Type variables are not correctly represented in the bindings
                          <pattern' := <update-pattern(|pattern)> dep;
                           term' := <update-term(|term, accu)> dep;
                           switch !call
