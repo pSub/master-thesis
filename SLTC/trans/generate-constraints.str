@@ -80,8 +80,8 @@ rules
             outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
 
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(?Var__(_))> (xs, outputs, constraints);
-            (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints))>
+            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints);
+            (xs', outputs', constraints', outputs-constraints') := <zip; replace-all(|<debug> (xs, outputs, constraints, outputs-constraints))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Assoziate the outputs of the recursive calls with the variables of the binding.
