@@ -46,6 +46,9 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 
 /* Type substitution */
 
+/**
+ * The following two rules are not syntax-directed.
+ */
 ===================== Subst-Eq
 ~S = [ %x -> ~S ] %x
 
