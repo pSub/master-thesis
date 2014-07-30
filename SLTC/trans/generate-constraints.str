@@ -100,7 +100,7 @@ rules
     instantiate-judgment(|pattern, terms) =
         (instantiate(|pattern, terms), map((id, instantiate(|pattern, terms),
                                             instantiate(|pattern, terms))))
-    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), id)
+    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
 
     // FIXME: This implementation is very ugly.
     make-binding-constraints(|info)
@@ -114,7 +114,7 @@ rules
                          <pattern' := <update-pattern(|pattern)> dep;
                           term' := <update-term(|term, accu)> dep;
                           switch !call
-                          case ?Lookup(_,_,_):
+                          case ?Lookup(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
                           case ?CEq__(a, b, info):
                               !([], CEq__(a, b, info)) // FIXME: Needs instantiation.
@@ -204,8 +204,8 @@ rules
                                            \)> (ctx-binds, s)
 
     /**
-     * Looks up the context `ctx` at `key` and assigns the result to `vars`.
+     * Looks up the context `ctx` at `key`.
      *
      * @param s - a hashtable containing hashtables
      */
-    lookup(|s) : (ctx, key, vars) -> <hashtable-get(|ctx); hashtable-get(|key)> s
+    lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); hashtable-get(|key)> s
