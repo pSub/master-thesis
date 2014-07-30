@@ -29,7 +29,7 @@ rules
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
                                     topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i
                   \> conjecture, <get-outputs'(|judgments)> conjecture)
-                \)> conjectures
+                \; clear-store(|store)); tidy-up(|store)> conjectures
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
@@ -39,6 +39,9 @@ rules
             empty-contexts := <length; range; Dupl; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<length; inc> context-definitions, 100);
                              hashtable-putlist(|empty-contexts)>
+
+    clear-store(|store) = where(<hashtable-getlist; map((id, hashtable-clear))> store)
+    tidy-up(|store) = where(<hashtable-destroy> store)
 
     /**
      * Generates the set of constraints.
