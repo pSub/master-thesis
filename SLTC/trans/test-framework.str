@@ -8,8 +8,7 @@ signature
         Fail : a -> Fail
 
 strategies
-    
     run-test(str | name) = map(switch id
-                               case ?Assert(_,_): to-tuple; (str, id); debug; equal < !"Success" + <conc-strings> (name, "Failed")
+                               case ?Assert(_,_): to-tuple; (str, id) < (debug; equal < !"Success" + <conc-strings> (name, "Failed")) +  <conc-strings> (name, "Failed but shouldn't")
                                case ?Fail(_): get-arguments; Hd; str < <conc-strings> (name, "Did not fail, but should") + !"Success"
                                end)
