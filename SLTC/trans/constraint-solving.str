@@ -17,13 +17,13 @@ rules
     unify' : ([CEq__(t, Var__(x), info) | cs], mgu) ->
          <unify'> (<conc> (cs, <singelton> CEq__(Var__(x), t, info)), mgu)
     unify' : ([CEq__(v@Var__(x), t, info) | cs], mgu) -> <if <occurs> (v, t)
-                                     then <error> [x, " occurs in", t]
+                                     then <error; fail> [x, " occurs in", t]
                                      else <unify'> (<replace(|cs)> (v, t), [(v, t)|mgu])
                                      end>
     unify' : ([CEq__(n#(ts), n#(ts'), info) | cs], mgu) -> <unify'> (<conc> (cs, cs'), mgu)
         where <equal>(<length> ts, <length> ts');
               cs' := <zip; map(makeEq(|info))> (ts, ts')
-    unify' = get-info; singelton; error
+    unify' = get-info; singelton; error; fail
 
     // Apply mgu
     apply-mgu(|t) : [] -> t
