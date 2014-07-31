@@ -1,0 +1,16 @@
+module type-checking
+
+language SLTC
+
+setup Common
+
+test empty-module [[
+  module test
+  imports test
+  language test
+  meta-variables
+  contexts
+  judgments
+  rules
+  conjectures
+]] run typecheck to []
