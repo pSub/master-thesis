@@ -1,0 +1,16 @@
+module tests-constraint-solving
+
+imports test-framework
+imports constraint-solving
+imports constraint-language
+
+rules    
+    occurs-tests = <run-test(occurs | "occurs")>
+        [ Assert((Var__("x"), Var__("x")), Var__("x"))
+        , Fail(("x", CEq__("int", "int", Some("T-add"))))
+        , Fail(("x", CEq__(CEq__("int", "float", Some("test")), "int", Some("test"))))
+        , Assert((Var__("x"), CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test"))),
+                  CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test")))
+        ]
+    
+    tests = occurs-tests
