@@ -70,17 +70,15 @@ rules
      * @param s - list of hashtables that store context information
      */
     generate'(|j, c, t, term, s) : Rule(name, pattern, outputs, constraints) ->
-            (outputs, <conc> (constraints,
-                              <collect-om(?Var__(_)); filter(where(\v -> <sometd(?v)> pattern\)); Dupl;
-                              (id, instantiate(|pattern, term)); zip; map(makeEq(|Some(name)))> outputs))
+            (outputs, <conc> (constraints, <make-io-dependency-constraints(|pattern, term, name)> outputs))
+
 
     generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, pattern, outputs, constraints)) ->
            (outputs', new-constraints)
         where
             outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
 
-            input-output-constraints := <collect-om(?Var__(_)); filter(where(\v -> <sometd(?v)> pattern\)); Dupl;
-                                       (id, instantiate(|pattern, term)); zip; map(makeEq(|Some(name)))> outputs;
+            input-output-constraints := <make-io-dependency-constraints(|pattern, term, name)> outputs;
 
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints, input-output-constraints);
@@ -95,6 +93,18 @@ rules
 
             // Merge all constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints')
+
+    /**
+     * Instantiate variables that occur as an output and as an input and
+     * provide the result as constraints.
+     *
+     * @param pattern - an arbitary term
+     * @param term - an arbitary term
+     * @param name - a string
+     */
+    make-io-dependency-constraints(|pattern, term, name) =
+        collect-om(?Var__(_)); filter(where(\v -> <sometd(?v)> pattern\)); Dupl;
+        (id, instantiate(|pattern, term)); zip; map(makeEq(|Some(name)))
 
     instantiate(|pattern, terms) = find-matching-positions(|pattern); extract-terms(|terms)
     instantiate-judgment(|pattern, terms) =
