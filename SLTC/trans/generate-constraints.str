@@ -12,7 +12,7 @@ signature
         ConstraintSet : List(Constraint)
 
 rules
-    generate-constraints : 
+    generate-constraints :
         Module(ModuleDec(_),
                  imports,
                  Language(l),
@@ -31,16 +31,37 @@ rules
                   \> conjecture, <get-outputs'(|judgments)> conjecture)
                 \; clear-store(|store)); tidy-up(|store)> conjectures
         where
+            // Retrieve all context names
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
+
+            // Obtain a list of meta-variable names, that represent contexts and contexts only
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
                                        <isect; not(equal(|[])); !name> (context-names, scope)
                                        \)> meta-variables;
+
+            // Generate the constraint templates from the type system specification
             templates := <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules;
+            
+            // Initialize the store that contains the contexts
             empty-contexts := <length; range; Dupl; (id, map(new-hashtable)); zip> context-definitions;
             store := <new-hashtable(|<length; inc> context-definitions, 100);
                              hashtable-putlist(|empty-contexts)>
 
+    /**
+     * Clears all contexts in the store.
+     *
+     * @param store - a hashtable containing hashtables
+     */
     clear-store(|store) = where(<hashtable-getlist; map((id, hashtable-clear))> store)
+
+    /**
+     * Cleans up everything that was needed during the constraint
+     * generation. This includes:
+     *
+     *     - destroying the store
+     *
+     * @param store - a hashtable containing hashtables
+     */
     tidy-up(|store) = where(<hashtable-destroy> store)
 
     /**
@@ -66,7 +87,7 @@ rules
      * @param j - judgment declarations
      * @param c - context declarations
      * @param t - constraint templates
-     * @param i - input terms
+     * @param term - input terms
      * @param s - list of hashtables that store context information
      */
     generate'(|j, c, t, term, s) : Rule(name, pattern, outputs, constraints) ->
@@ -76,40 +97,58 @@ rules
     generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, pattern, outputs, constraints)) ->
            (outputs', new-constraints)
         where
+            // Execute the calls of the rule.
             outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
 
+            // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern, term, name)> outputs;
 
+            // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints, input-output-constraints);
             (xs', outputs', constraints', outputs-constraints', io-constraints') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints, input-output-constraints))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
-            // Assoziate the outputs of the recursive calls with the variables of the binding.
+            // Assoziate the outputs of the calls with the variables of the binding.
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
 
-            // Replace all previously bound variables with their values.
+            // Replace all previously bound variables with their values in the constraint set.
             constraints'' := <replace-all(|constraints')> xs-outputs;
 
-            // Merge all constraints.
+            // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints')
 
     /**
      * Instantiate variables that occur as an output and as an input and
      * provide the result as constraints.
      *
-     * @param pattern - an arbitary term
-     * @param term - an arbitary term
+     * @param pattern - an arbitrary list of terms
+     * @param term - an arbitrary list of terms
      * @param name - a string
      */
     make-io-dependency-constraints(|pattern, term, name) =
         collect-om(?Var__(_)); filter(where(\v -> <sometd(?v)> pattern\)); Dupl;
         (id, instantiate(|pattern, term)); zip; map(makeEq(|Some(name)))
 
+    /**
+     * Instantiates the variables in the given input according to their positions in
+     * the `pattern' with the provided `terms'.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param terms - an arbitrary list of terms
+     */
     instantiate(|pattern, terms) = find-matching-positions(|pattern); extract-terms(|terms)
+
+    /**
+     * An version of `instantiate` tailored for judgments.
+     */    
     instantiate-judgment(|pattern, terms) =
         (instantiate(|pattern, terms), map((id, instantiate(|pattern, terms),
                                             instantiate(|pattern, terms))))
+
+    /**
+     * An version of `instantiate` tailored for context lookups.
+     */
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
 
     // FIXME: This implementation is very ugly.
