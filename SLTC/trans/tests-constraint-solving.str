@@ -12,5 +12,20 @@ rules
         , Assert((Var__("x"), CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test"))),
                   CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test")))
         ]
+        
+    unify-tests = <run-test(unify | "unify")>
+        [ Assert([ CEq__("int", "int", Some("T-add")) ], ([], []))
+        , Assert([ CEq__(Var__("Y295"), "int", Some("T-add"))
+                 , CEq__("int", Var__("Y295"), Some("T-var"))
+                 ], ([], [(Var__("Y295"), "int")]))
+        , Assert([ CEq__(Var__("x"), Var__("x"), Some("test")) ], ([], []))
+        , Assert([ CEq__([Var__("x"), "b"], ["a", Var__("y")], Some("test")) ],
+                   ([], [(Var__("y"), "b"), (Var__("x"), "a")]))
+        , Assert([ CNeq__("a", "b", Some("test"))], ([], []))
+        , Fail([ CNeq__("a", "a", Some("test")) ])
+        , Fail([ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
+        ]
     
-    tests = occurs-tests
+    tests = <conc> ( <occurs-tests> 
+                   , <unify-tests>
+                   )
