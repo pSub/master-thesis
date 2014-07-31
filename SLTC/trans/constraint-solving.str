@@ -6,9 +6,7 @@ imports include/SLTC
 
 rules
     // Occurs check
-    occurs : (x, Var__(x)) -> <id>
-    occurs : (x, name#([])) -> <fail>
-    occurs : (x, name#(ts@[_|_])) -> <map(occurs)> ts
+    occurs : (x, t) -> <sometd(?x)> t
 
     // Robinson unification
     unify : cs -> <unify'> (cs, [])
@@ -18,7 +16,7 @@ rules
         where <not(equal)> (t, s)
     unify' : ([CEq__(t, Var__(x), info) | cs], mgu) ->
          <unify'> (<conc> (cs, <singelton> CEq__(Var__(x), t, info)), mgu)
-    unify' : ([CEq__(v@Var__(x), t, info) | cs], mgu) -> <if <occurs> (x, t)
+    unify' : ([CEq__(v@Var__(x), t, info) | cs], mgu) -> <if <occurs> (v, t)
                                      then <error> [x, " occurs in", t]
                                      else <unify'> (<replace(|cs)> (v, t), [(v, t)|mgu])
                                      end>
