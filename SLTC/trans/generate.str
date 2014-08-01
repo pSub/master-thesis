@@ -11,7 +11,7 @@ imports
 	trans/typecheck
 	trans/verification
 
-	trans/tests-constraint-solving
+	trans/tests
 
 rules
 	

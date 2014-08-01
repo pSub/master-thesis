@@ -26,6 +26,9 @@ rules
         , Fail([ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
         ]
     
-    tests = <conc> ( <occurs-tests> 
-                   , <unify-tests>
-                   )
+    tests-constraint-solving =
+         !("constraint-solving",
+          <conc> ( <occurs-tests>
+                 , <unify-tests>
+                 )
+          )
