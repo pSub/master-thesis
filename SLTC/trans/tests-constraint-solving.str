@@ -25,10 +25,18 @@ rules
         , Fail([ CNeq__("a", "a", Some("test")) ])
         , Fail([ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
         ]
+
+    subst-tests = <run-test(subst | "unify")>
+        [ Assert(("x", "a", ["x", "b", "c"]), ["a", "b", "c"])
+        , Assert(("x", "a", []), [])
+        , Assert(("x", "a", "x"), "a")
+        , Assert(("x", [1, 2, 3], ["x", ["a", "x", "b"], "y"]), [[1, 2, 3], ["a", [1, 2, 3], "b"], "y"])
+        ]
     
     tests-constraint-solving =
          !("constraint-solving",
           <conc> ( <occurs-tests>
                  , <unify-tests>
+                 , <subst-tests>
                  )
           )
