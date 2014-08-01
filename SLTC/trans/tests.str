@@ -2,6 +2,7 @@ module tests
 
 imports tests-constraint-solving
 
-rules
-    
-    tests = ![ <tests-constraint-solving> ]
+strategies
+
+    main = tests
+    tests = test-suite-constraint-solving

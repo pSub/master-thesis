@@ -1,42 +1,58 @@
 module tests-constraint-solving
 
-imports test-framework
 imports constraint-solving
 imports constraint-language
 
 rules    
-    occurs-tests = <run-test(occurs | "occurs")>
-        [ Assert((Var__("x"), Var__("x")), Var__("x"))
-        , Fail(("x", CEq__("int", "int", Some("T-add"))))
-        , Fail(("x", CEq__(CEq__("int", "float", Some("test")), "int", Some("test"))))
-        , Assert((Var__("x"), CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test"))),
-                  CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test")))
-        ]
-        
-    unify-tests = <run-test(unify | "unify")>
-        [ Assert([ CEq__("int", "int", Some("T-add")) ], ([], []))
-        , Assert([ CEq__(Var__("Y295"), "int", Some("T-add"))
-                 , CEq__("int", Var__("Y295"), Some("T-var"))
-                 ], ([], [(Var__("Y295"), "int")]))
-        , Assert([ CEq__(Var__("x"), Var__("x"), Some("test")) ], ([], []))
-        , Assert([ CEq__([Var__("x"), "b"], ["a", Var__("y")], Some("test")) ],
-                   ([], [(Var__("y"), "b"), (Var__("x"), "a")]))
-        , Assert([ CNeq__("a", "b", Some("test"))], ([], []))
-        , Fail([ CNeq__("a", "a", Some("test")) ])
-        , Fail([ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
-        ]
+    occurs-tests = apply-test(!"occurs", occurs,
+                              !(Var__("x"), Var__("x")),
+                              !Var__("x"));
+                   apply-test(!"occurs", occurs,
+                              !(Var__("x"), CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test"))),
+                              !CEq__(CEq__("int", Var__("x"), Some("test")), "int", Some("test")));
+                   apply-and-fail(!"occurs", occurs,
+                                  !("x", CEq__("int", "int", Some("T-add"))));
+                   apply-and-fail(!"occurs", occurs,
+                                  !("x", CEq__(CEq__("int", "float", Some("test")), "int", Some("test"))))
 
-    subst-tests = <run-test(subst | "unify")>
-        [ Assert(("x", "a", ["x", "b", "c"]), ["a", "b", "c"])
-        , Assert(("x", "a", []), [])
-        , Assert(("x", "a", "x"), "a")
-        , Assert(("x", [1, 2, 3], ["x", ["a", "x", "b"], "y"]), [[1, 2, 3], ["a", [1, 2, 3], "b"], "y"])
-        ]
+    unify-tests = apply-test(!"unify", unify,
+                             ![ CEq__("int", "int", Some("T-add")) ],
+                             !([], []));
+                  apply-test(!"unify", unify,
+                             ! [ CEq__(Var__("Y295"), "int", Some("T-add"))
+                               , CEq__("int", Var__("Y295"), Some("T-var"))
+                               ],
+                             ! ([], [(Var__("Y295"), "int")]));
+                  apply-test(!"unify", unify,
+                             ![ CEq__(Var__("x"), Var__("x"), Some("test")) ],
+                             !([], []));
+                  apply-test(!"unify", unify,
+                             ![ CEq__([Var__("x"), "b"], ["a", Var__("y")], Some("test")) ],
+                             !([], [(Var__("y"), "b"), (Var__("x"), "a")]));
+                  apply-test(!"unify", unify,
+                             ![ CNeq__("a", "b", Some("test"))],
+                             !([], []));
+                  apply-and-fail(!"unify", unify,
+                                 ![ CNeq__("a", "a", Some("test")) ]);
+                  apply-and-fail(!"unify", unify,
+                                 ![ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
+
+    subst-tests = apply-test(!"subst", subst,
+                             !("x", "a", ["x", "b", "c"]),
+                             !["a", "b", "c"]);
+                  apply-test(!"subst", subst,
+                             !("x", "a", []),
+                             ![]);
+                  apply-test(!"subst", subst,
+                             !("x", "a", "x"),
+                             !"a");
+                  apply-test(!"subst", subst,
+                             !("x", [1, 2, 3], ["x", ["a", "x", "b"], "y"]),
+                             ![[1, 2, 3], ["a", [1, 2, 3], "b"], "y"])
     
-    tests-constraint-solving =
-         !("constraint-solving",
-          <conc> ( <occurs-tests>
-                 , <unify-tests>
-                 , <subst-tests>
-                 )
-          )
+    test-suite-constraint-solving = 
+        test-suite(!"constraint-solving",
+                   occurs-tests;
+                   unify-tests;
+                   subst-tests
+                  )
