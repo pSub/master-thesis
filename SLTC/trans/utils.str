@@ -152,10 +152,11 @@ rules
      * is the node and the second is a list of nodes to which out-going
      * edges exist.
      */
-    top-sort : graph -> <top-sort'; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
-    top-sort' : (graph, [], L) -> <singelton; error> "Cyclic dependencies"
-        where <has-edges> graph
-    top-sort' : (graph, [], L) -> L
+    top-sort : graph -> <top-sort'; debug; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
+    top-sort' : (graph, [], L) -> <if <has-edges> graph
+                                   then <singelton; error; fail> "Cyclic dependencies"
+                                   else !L
+                                   end>
     top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
         where graph' := <filter((not(?n), id)); map((id, filter(not(?n))))> graph;
               S' := <filter(where(Snd; equal([])); Fst)> graph'
