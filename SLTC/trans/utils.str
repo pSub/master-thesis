@@ -101,7 +101,8 @@ rules
      */
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
-    /** Duplicate a term into a three-element tuple
+    /** 
+     * Duplicate a term into a three-element tuple
      *
      * @type a -> Tuple(a, a, a)
      */  
@@ -149,10 +150,14 @@ rules
      * Topological sort of the passed graph.
      *
      * The graph is represented as a list of tuples. The first element
-     * is the node and the second is a list of nodes to which out-going
+     * is the node and the second is a list of nodes to which outgoing
      * edges exist.
+     *
+     * Warning: This is the usual topological sort algorithm, but traverses
+     * the graph in reversed order, since the input graph is defined by
+     * its outgoing edges. Therefore the resulting ordering is reversed.
      */
-    top-sort : graph -> <top-sort'; debug; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
+    top-sort : graph -> <top-sort'; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
     top-sort' : (graph, [], L) -> <if <has-edges> graph
                                    then <singelton; error; fail> "Cyclic dependencies"
                                    else !L
@@ -160,24 +165,84 @@ rules
     top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
         where graph' := <filter((not(?n), id)); map((id, filter(not(?n))))> graph;
               S' := <filter(where(Snd; equal([])); Fst)> graph'
+
+    /**
+     * Checks whether the input graph contains at least one edge.
+     */
     has-edges = some(Snd; not(equal([])))
 
+    /**
+     * Checks whether the given string is a meta-variable constructor name.
+     */
     is-meta-variable = is-generic(|"MetaVariable")
+
+    /**
+     * Checks whether the given string is a context binding constructor name.
+     */
     is-ctx-bind = is-generic(|"ContextBind")
+
+    /**
+     * Checks whether the given string is a context lookup constructor name.
+     */
     is-ctx-lookup = is-generic(|"ContextLookup")
 
+    /**
+     * Checks whether the given term is a meta-variable.
+     */
     node-is-meta-variable = node-is-generic(|"MetaVariable")
+
+    /**
+     * Checks whether the given term is a context binding.
+     */
     node-is-ctx-bind = node-is-generic(|"ContextBind")
+
+    /**
+     * Checks whether the given term is a context lookup.
+     */
     node-is-ctx-lookup = node-is-generic(|"ContextLookup")
+
+    /**
+     * Checks whether the given node is an empty context.
+     */
     node-is-ctx-empty = node-is-generic(|"ContextEmpty")
+
+    /**
+     * Checks whether the given node is a context meta-variable.
+     *
+     * @param cc - context classes
+     */
     node-is-ctx-var(|cc) : node -> <where(<elem> (<get-generic-name> node, cc))>
+
+    /**
+     * Checks whether the given node is some form of context.
+     */
     node-is-ctx(|cc) = node-is-ctx-bind <+
                   node-is-ctx-lookup <+
                   node-is-ctx-empty <+
                   node-is-ctx-var(|cc)
 
-    is-generic(|string) = string-tokenize(|<singelton> '-'); Hd; \ cons -> <equal> (cons, string) \
-    node-is-generic(|string) = where(get-constructor; is-generic(|string))
+    /**
+     * Splits the given string at '-' and compares the first part with `name'.
+     *
+     * @param name - an arbitrary string
+     */
+    is-generic(|name) = string-tokenize(|<singelton> '-'); Hd; equal(|name)
 
+    /**
+     * Applies `is-generic' to the constructor of the node. If is-generic succeeds
+     * it behaves like `id'.
+     *
+     * @param name - an arbitrary string
+     */
+    node-is-generic(|name) = where(get-constructor; is-generic(|name))
+
+    /**
+     * Splits the construtor name of the given node at '-' and returns the last part.
+     */
     get-generic-name = get-constructor; string-tokenize(|<singelton> '-'); last
+
+    /**
+     * The generic name of contexts is a number. This strategy retrieves the
+     * generic name as a real integer.
+     */
     get-context-id = get-generic-name; string-to-int
