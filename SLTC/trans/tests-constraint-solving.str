@@ -63,10 +63,5 @@ rules
                              !("x", [1, 2, 3], ["x", ["a", "x", "b"], "y"]),
                              ![[1, 2, 3], ["a", [1, 2, 3], "b"], "y"])
     
-    test-suite-constraint-solving = 
-        test-suite(!"constraint-solving",
-                   occurs-tests;
-                   unify-tests;
-                   subst-tests;
-                   apply-mgu-tests
-                  )
+    tests-constraint-solving =
+        occurs-tests; unify-tests; subst-tests; apply-mgu-tests

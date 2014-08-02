@@ -1,8 +1,9 @@
 module tests
 
 imports tests-constraint-solving
+imports tests-utils
 
 strategies
 
     main = tests
-    tests = test-suite-constraint-solving
+    tests = test-suite(!"tests", tests-constraint-solving)
