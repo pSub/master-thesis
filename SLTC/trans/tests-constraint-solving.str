@@ -50,18 +50,5 @@ rules
                                  ![("x", [1,2,3]), (2, 42), ("y", "foo")],
                                  ![[1,42,3], ["a", [1,42,3], "b"], "foo"])
 
-    subst-tests = apply-test(!"subst", subst,
-                             !("x", "a", ["x", "b", "c"]),
-                             !["a", "b", "c"]);
-                  apply-test(!"subst", subst,
-                             !("x", "a", []),
-                             ![]);
-                  apply-test(!"subst", subst,
-                             !("x", "a", "x"),
-                             !"a");
-                  apply-test(!"subst", subst,
-                             !("x", [1, 2, 3], ["x", ["a", "x", "b"], "y"]),
-                             ![[1, 2, 3], ["a", [1, 2, 3], "b"], "y"])
-    
     tests-constraint-solving =
-        occurs-tests; unify-tests; subst-tests; apply-mgu-tests
+        occurs-tests; unify-tests; apply-mgu-tests

@@ -5,10 +5,14 @@ imports utils
 imports include/SLTC
 
 rules
-    // Occurs check
+    /**
+     * Occurs check
+     */
     occurs : (x, t) -> <sometd(?x)> t
 
-    // Robinson unification
+    /**
+     * Robinson unification
+     */
     unify : cs -> <unify'> (cs, [])
     unify' : ([], mgu) -> ([], mgu)
     unify' : ([CEq__(t, t, info) | cs], mgu) -> <unify'> (cs, mgu)
@@ -25,13 +29,13 @@ rules
               cs' := <zip; map(makeEq(|info))> (ts, ts')
     unify' = get-info; singelton; error; fail
 
-    // Apply mgu
+    /**
+     * Apply the given mgu to term `t'. The difference to `replace-all'
+     * is, that the substitution is also applied to the mgu itself.
+     *
+     * @param t - term to which the mgu is applied
+     */
     apply-mgu(|t) : [] -> t
     apply-mgu(|t) : [(x, s) | mgu] -> <apply-mgu(|t')> mgu'
-        where t' := <subst> (x, s, t)
-        where mgu' := <map(\t -> <subst> (x, s, t)\)> mgu
-
-    subst : (x, s, x) -> s
-    subst : (x, s, Var(y)) -> Var(y)
-    subst : (x, s, n#(args)) -> <mkterm> (n, args')
-        where args' := <map(\t -> <subst> (x, s, t)\)> args
+        where t' := <replace(|x, s, t)>
+        where mgu' := <map(replace(|x, s))> mgu
