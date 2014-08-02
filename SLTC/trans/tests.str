@@ -6,4 +6,5 @@ imports tests-utils
 strategies
 
     main = tests
-    tests = test-suite(!"tests", tests-constraint-solving)
+    tests = test-suite(!"tests", tests-constraint-solving;
+                                 tests-utils)
