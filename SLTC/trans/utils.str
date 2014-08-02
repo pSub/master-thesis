@@ -84,14 +84,14 @@ rules
      * @param old-node - an arbitrary term
      * @param new-node - an arbitrary term
      */
-    replace(|old-node, new-node) : ast -> <innermost(?old-node; !new-node)> ast
+    replace(|old-node, new-node) : ast -> <replace(|old-node, new-node, ast)>
 
     /**
      * Replaces all `old-node` with `new-node` in `ast`.
      *
      * @param ast - an arbitrary term
      */
-    replace(|ast) : (old-node, new-node) -> <innermost(?old-node; !new-node)> ast
+    replace(|ast) : (old-node, new-node) -> <replace(|old-node, new-node, ast)>
 
     /**
      * Wraps around `replace`. Recieves a list of substitution pairs and replaces
