@@ -160,7 +160,7 @@ rules
     top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
         where graph' := <filter((not(?n), id)); map((id, filter(not(?n))))> graph;
               S' := <filter(where(Snd; equal([])); Fst)> graph'
-    has-edges = not(all(Snd; equal([])))
+    has-edges = some(Snd; not(equal([])))
 
     is-meta-variable = is-generic(|"MetaVariable")
     is-ctx-bind = is-generic(|"ContextBind")
