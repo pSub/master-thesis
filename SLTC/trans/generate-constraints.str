@@ -198,11 +198,11 @@ rules
      * found literally in `pattern`. The recorded path contains the positions
      * in the argument list in which was descended.
      */
-    search(|pattern) : x -> <search'> (x, [], <enum> pattern)
+    search(|pattern) : x -> <search'> (x, [], <add-indices> pattern)
     search' : (x, is, []) -> <fail>
     search' : (x, is, pattern) -> [i | is]
         where i := <get-index> (x, <map(Snd)> pattern)
-    search' : (x, is, [(n, pattern) | rest]) -> <<search'> (x, [n | is], <get-arguments; enum> pattern) <+
+    search' : (x, is, [(n, pattern) | rest]) -> <<search'> (x, [n | is], <get-arguments; add-indices> pattern) <+
                                                  <search'> (x, is, rest)>
 
     /**

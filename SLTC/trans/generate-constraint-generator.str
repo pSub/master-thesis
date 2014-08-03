@@ -111,7 +111,7 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-hole-positions(|declarations) : cons#(args) -> <enum> holes
+    get-hole-positions(|declarations) : cons#(args) -> <add-indices> holes
         where
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
             declaration-number := <string-to-int; inc> generic;
@@ -163,7 +163,7 @@ rules
                          <mapconcat(zip(makeEq(|name)))> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            enum-premisses := <enum> premisses-list;
+            enum-premisses := <add-indices> premisses-list;
             dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
             premisses := <zip> (premisses-list, <map(Snd)> dependencies);
