@@ -167,9 +167,11 @@ rules
     has-edges = some(Snd; not(equal([])))
 
     /**
+     * Computes all indices of occurences of `y' in the list `xs'.
      *
+     * @type (a, List(a)) -> List(Int)
      */
-    get-indices : (y, xs) ->  <filter(where(Snd; equal(|y)); Fst)> xs
+    get-indices : (y, xs) -> <filter(where(Snd; equal(|y)); Fst)> xs
 
     /**
      * Checks whether the given string is a meta-variable constructor name.
