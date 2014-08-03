@@ -34,5 +34,12 @@ rules
                               !["x", ["a", "x", "b"], "y"],
                               ![[1, 2, 3], ["a", [1, 2, 3], "b"], "y"])
 
+    get-indices-tests = apply-test(!"get-indices", get-indices,
+                                   !(1, <add-indices> [1,1,1]),
+                                   ![1,2,3]);
+                        apply-test(!"get-indicies", get-indices,
+                                   !(1, <add-indices> [1,2,3,1,2,3]),
+                                   ![1,4])
+
     tests-utils = 
-        top-sort-tests; replace-tests
+        top-sort-tests; replace-tests; get-indices-tests

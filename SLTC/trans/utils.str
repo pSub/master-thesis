@@ -167,6 +167,11 @@ rules
     has-edges = some(Snd; not(equal([])))
 
     /**
+     *
+     */
+    get-indices : (y, xs) ->  <filter(where(Snd; equal(|y)); Fst)> xs
+
+    /**
      * Checks whether the given string is a meta-variable constructor name.
      */
     is-meta-variable = is-generic(|"MetaVariable")
