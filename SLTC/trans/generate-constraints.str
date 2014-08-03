@@ -131,14 +131,16 @@ rules
      * @param name - a string
      */
     make-io-dependency-constraints(|pattern, term, name) =
-        collect-om(?Var__(_), conc); filter(where(\v -> <sometd(?v)> pattern\)); Dupl;
-        (id, instantiate(|pattern, term)); zip; map(makeEq(|Some(name)))
+        make-implicit-equality-constraints(where(\v -> <sometd(?v)> pattern\) | pattern, term, name)
 
     /**
      * Creates implicit equalities.
      */
     make-implicit-equality-constraints(|pattern, term, name) =
-        collect-om(?Var__(_), conc); Dupl; (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
+        make-implicit-equality-constraints(id | pattern, term, name)
+    make-implicit-equality-constraints(select | pattern, term, name) =
+        collect-om(?Var__(_), conc); filter(select); Dupl;
+        (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
 
     /**
      * Instantiates the variables in the given input according to their positions in
