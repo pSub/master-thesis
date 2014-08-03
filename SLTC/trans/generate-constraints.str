@@ -27,8 +27,8 @@ rules
                          generate(|judgments, context-definitions, templates,
                                    <filter(node-is-ctx-bind);
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
-                                    topdown(try(\Output(n) -> n\)); update-store(|store)> i)> i
-                  \> conjecture, <get-outputs'(|judgments)> conjecture)
+                                    update-store(|store)> i)> i
+                  \> conjecture, <get-outputs(|judgments)> conjecture)
                 \; clear-store(|store)); tidy-up(|store)> conjectures
         where
             // Retrieve all context names
