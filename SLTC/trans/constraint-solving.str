@@ -5,13 +5,21 @@ imports utils
 imports include/SLTC
 
 rules
+
     /**
-     * Occurs check
+     * Occurs check. Succeeds if x is contained in t and
+     * fails otherwise.
+     *
+     * @type (a, b) -> a
      */
     occurs : (x, t) -> <sometd(?x)> t
 
     /**
-     * Robinson unification
+     * Robinson unification. For details see:
+     *   ROBINSON, J.A. Computational logic: The unification computation.
+     *   ROBINSON, J.A. A machine-oriented logicbased on the resolution principle
+     *
+     * @type List(Constraint) -> (List(Constraint), (Var, a))
      */
     unify : cs -> <unify'> (cs, [])
     unify' : ([], mgu) -> ([], mgu)
@@ -34,6 +42,7 @@ rules
      * is, that the substitution is also applied to the mgu itself.
      *
      * @param t - term to which the mgu is applied
+     * @type List(a, b) -> c
      */
     apply-mgu(|t) : [] -> t
     apply-mgu(|t) : [(x, s) | mgu] -> <apply-mgu(|t')> mgu'
