@@ -111,9 +111,9 @@ rules
                               (Dupl, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c)); mkLookup, id)
                          case where((get-generic-name; equal(|"Eq"), id)):
-                              to-tuple; makeEq(|name)
+                              (to-tuple; makeEq(|name), id)
                          case where((get-generic-name; equal(|"Neq"), id)):
-                              to-tuple; makeNeq(|name)
+                              (to-tuple; makeNeq(|name), id)
                          otherwise: (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
