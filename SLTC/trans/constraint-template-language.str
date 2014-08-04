@@ -3,8 +3,12 @@ module constraint-template-language
 signature
     sorts Rule Lookup Judgment Neq
     constructors
+       /** Base Language */
        Rule : Option(String) * Pattern * Outputs * Constraints -> Rule
        Binding : List(List(var)) * List(call) * Rule -> Rule
+
+       /** Extended Language */
+       Fork : List(Rule) -> Rule
 
        Lookup  : ctx * inputs -> Lookup
        Judgment : term * binding -> Judgment
@@ -19,6 +23,7 @@ rules
      */
     get-pattern : Rule(_, pattern, _, _) -> pattern
     get-pattern : Binding(_, _, Rule(_, pattern, _, _)) -> pattern
+    get-pattern : Fork([rule | _]) -> <get-pattern> rule
 
     /**
      * Transforms a tuple into a judgment node
@@ -33,3 +38,10 @@ rules
      * @type (a, b) -> Lookup(a, b)
      */
     mkLookup : (a, b) -> Lookup(a, b)
+
+    /**
+     * Transforms a tuple into a fork node
+     *
+     * @type List(Rule) -> Fork(List(Rule))
+     */
+    mkFork : xs -> Fork(xs)

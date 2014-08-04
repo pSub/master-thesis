@@ -5,6 +5,7 @@ imports constraint-language
 imports constraint-template-language
 imports constraint-solving
 imports constraint-utils
+imports optimize-constraint-templates
 imports generate-constraint-generator
 imports include/SLTC
 
@@ -42,7 +43,8 @@ rules
                                        \)> meta-variables;
 
             // Generate the constraint templates from the type system specification
-            templates := <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules;
+            templates := <to-constraint-generator(|judgments, context-definitions, context-classes);
+                          solve-which-ambiguities> typing-rules;
             
             // Initialize the store that contains the contexts
             empty-contexts := <length; range; Dupl; (id, map(new-hashtable)); zip> context-definitions;
@@ -106,6 +108,8 @@ rules
 
             // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
+
+    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s);\(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\)> rulez, [])
 
     /**
      *

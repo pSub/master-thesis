@@ -206,6 +206,16 @@ rules
     get-indices : (y, xs) -> <filter(where(Snd; equal(|y)); Fst)> xs
 
     /**
+     * Applys strategy `s' to the elements of the list until it succeeds
+     * and returns the result. Fails otherwise
+     *
+     * @param s - an arbitary startegy
+     * @type List(a) -> b
+     */
+    until(s) : [] -> <fail>
+    until(s) : [x | xs] -> <<s> x < id + <until(s)> xs>
+
+    /**
      * Checks whether the given string is a meta-variable constructor name.
      *
      * @type String -> String
