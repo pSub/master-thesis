@@ -69,8 +69,6 @@ rules
      * Helper rule for constraint generation. It pattern matches against the matching
      * template found in `generate` and does the actual constraint generation.
      *
-     * FIXME: This code needs refactoring!
-     *
      * @param j - judgment declarations
      * @param c - context declarations
      * @param t - constraint templates
@@ -80,7 +78,6 @@ rules
     generate'(|j, c, t, term, s) : Rule(name, pattern, outputs, constraints) ->
             (outputs, <conc> (constraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
                               <make-implicit-equality-constraints(|pattern, term, name)> pattern))
-
 
     generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, pattern, outputs, constraints)) ->
            (outputs', new-constraints)
@@ -112,7 +109,16 @@ rules
     generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\)> rulez, [])
 
     /**
+     * Executes the calls specified in the rules.
      *
+     * @param j - judgment declarations
+     * @param c - context declarations
+     * @param t - constraint templates
+     * @param s - hashtable containing hashtables that store context information
+     * @param pattern - the pattern of the conclusion
+     * @param term - input terms
+     * @param name - the name of the rule
+     * @type ((call, dependencies), accumulator) -> (outputs, constraints)
      */
     execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
                          <pattern' := <update-pattern(|pattern)> dep;
@@ -132,15 +138,24 @@ rules
                           end; singelton; conc(|accu)>
 
     /**
+     * Extracts the patterns out of the dependencies and appends those
+     * to the pattern of the conclusion.
      *
+     * @param pattern - the pattern of the conclusion
+     * @type dependencies -> List(pattern) 
      */
     update-pattern(|pattern) = map(Snd); conc(|pattern)
 
     /**
+     * Extracts the already computed outputs and constraints and unify those
+     * that are listed in the given dependencies.
      *
+     * @param term - an arbitary term
+     * @param accu - the accumulator of `execute'
+     * @type dependencies -> a
      */
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
-                                   \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs \); conc(|term)                    
+                                   \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\); conc(|term)                    
 
     /**
      * Updates the store `s` with the provided context bindings. Context
