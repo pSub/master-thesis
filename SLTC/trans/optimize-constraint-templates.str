@@ -2,6 +2,9 @@ module optimize-constraint-templates
 
 imports constraint-language
 imports constraint-template-language
+imports constraint-utils
+
+// FIXME: This is only a temporary import for testing
 imports generate-constraint-generator
 
 signature

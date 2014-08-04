@@ -1,0 +1,121 @@
+module constraint-utils
+
+imports utils
+imports constraint-language
+imports constraint-template-language
+
+rules
+        
+    /**
+     * Instantiates the variables in the given input according to their positions in
+     * the `pattern' with the provided `terms'.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param terms - an arbitrary list of terms
+     */
+    instantiate(|pattern, terms) : input -> <foldl(\((x, t), i) -> <oncetd(?x; !t)> i\)> (instantiations, input)
+        where instantiations := <make-set; find-matching-positions(|pattern); extract-terms(|terms)> input
+
+    /**
+     * An version of `instantiate` tailored for judgments.
+     */    
+    instantiate-judgment(|pattern, terms) =
+        (instantiate(|pattern, terms), map((id, instantiate(|pattern, terms),
+                                            instantiate(|pattern, terms))))
+
+    /**
+     * An version of `instantiate` tailored for context lookups.
+     */
+    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
+    
+    /**
+     * Instantiate variables that occur as an output and as an input and
+     * provide the result as constraints.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param term - an arbitrary list of terms
+     * @param name - a string
+     */
+    make-io-dependency-constraints(|pattern, term, name) =
+        make-implicit-equality-constraints(where(\v -> <sometd(?v)> pattern\) | pattern, term, name)
+
+    /**
+     * Creates implicit equalities.
+     */
+    make-implicit-equality-constraints(|pattern, term, name) =
+        make-implicit-equality-constraints(id | pattern, term, name)
+    make-implicit-equality-constraints(select | pattern, term, name) =
+        collect-om(?Var__(_), conc); filter(select); Dupl;
+        (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
+    
+    /**    
+     * FIXME: This implementation is very ugly.
+     */
+    make-binding-constraints(|info)
+        = (to-tuple; Snd; mapconcat(Dupl; (Snd, Third); conc), mapconcat(Dupl; (Snd, Third); conc)); zip; filter((?Var__(_), id));  map(makeEq(|info))
+        
+    /**
+     * Provided with a list of paths, this strategy returns the
+     * elements in `terms` described by the paths. A path describes
+     * contains the positions in the argument list to which should be
+     * descended to.
+     * 
+     * @param terms - an list of arbitrary terms
+     */
+    extract-terms(|terms) = map((id, retrieve(|terms)))
+    
+    /**
+     * Finds the positions of the provided elements in the `pattern`.
+     *
+     * @param pattern - an arbitrary term
+     */
+    find-matching-positions(|pattern) = mapconcat(search(|pattern))
+
+    /**
+     * Traverses the pattern like a tree and records the path until `x` is
+     * found literally in `pattern`. The recorded path contains the positions
+     * in the argument list in which was descended.
+     */
+    search(|pattern) : x -> <search'> (x, [], <add-indices> pattern)
+    search' : (x, is, []) -> <fail>
+    search' : (x, is, pattern) ->
+        <conc> (<map(\i -> (x, [i | is])\; (id, reverse))> indices,
+                <mapconcat(\(n, p) -> <search'> (x, [n | is], <get-arguments; add-indices> p)
+                           \)> pattern)
+        where indices := <get-indices> (x, pattern)
+    search' : (x, is, pattern) ->
+        <mapconcat(\(n, p) -> <search'> (x, [n | is], <get-arguments; add-indices> p)\)> pattern
+
+    /**
+     * Walks along the paths in `term` and returns to element
+     * at the end of the path.
+     */
+    retrieve(|term) : [p] -> <index> (p, <get-arguments> term)
+    retrieve(|term) : [p|path] -> <index; \ node -> <retrieve(|node)> path\> (p, <get-arguments> term)
+
+    /**
+     * Search for the matching pattern for `inputs` in the constraint templates. 
+     *
+     * FIXME: What if multiple rules match?
+     *
+     * @param inputs - a list of arbitary terms
+     */    
+    find-match(|inputs) : [] -> <singelton; error> "No match found!"
+    find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
+                                     then if <zip; Dupl; (filter(match-constructors); length,
+                                                            length); equal> (inputs, <get-pattern> t)
+                                           then <id> t
+                                           else <find-match(|inputs)> ts
+                                           end
+                                     else <find-match(|inputs)> ts
+                                     end>
+    
+    /**
+     * Defines when two terms match
+     */
+    match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
+                                     <where(is-meta-variable)> s-cons <+
+                                     <?Var__(_)> s>
+        where
+            s-cons := <get-constructor> s;
+            t-cons := <get-constructor> t
