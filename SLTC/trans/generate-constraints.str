@@ -109,7 +109,7 @@ rules
             // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
 
-    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s);\(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\)> rulez, [])
+    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\)> rulez, [])
 
     /**
      *
@@ -121,9 +121,9 @@ rules
                           case ?Lookup(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
                           case ?CEq__(a, b, info):
-                              !([], [CEq__(a, b, info)]) // FIXME: Needs instantiation.
+                              !([], <instantiate(|pattern', term')> [CEq__(a, b, info)])
                           case ?CNeq__(a, b, info):
-                              !([], [CNeq__(a, b, info)]) // FIXME: Needs instantiation.
+                              !([], <instantiate(|pattern', term')> [CNeq__(a, b, info)])
                           otherwise:
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
                             binding-constraints := <make-binding-constraints(|name)> (call, binding);
