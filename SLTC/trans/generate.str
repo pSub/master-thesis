@@ -8,6 +8,7 @@ imports
 	trans/generate-constraints
 	trans/generate-sdf
 	trans/generate-fof
+	trans/optimize-constraint-templates
 	trans/typecheck
 	trans/verification
 

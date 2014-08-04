@@ -1,0 +1,46 @@
+module optimize-constraint-templates
+
+imports constraint-language
+imports constraint-template-language
+imports generate-constraint-generator
+
+signature
+    sorts DummyVar
+    constructors
+        DummyVar : DummyVar
+
+rules
+    
+    solve-which-ambiguities = group-by-conclusion
+    
+    /**
+     * Collects all rules that have an equal pattern (modulo variable names).
+     *
+     * @type List(Rule) -> List(List(Rule))
+     */
+    group-by-conclusion : [] -> []
+    group-by-conclusion : [r | rs] -> <if <equal(|[])> equality-class
+                                       then <group-by-conclusion> rs
+                                       else <conc> ([r | equality-class], <group-by-conclusion> rs)
+                                       end>
+        where equality-class := <filter(where(equal-mod-var(|r)))> rs
+    
+    /**
+     * Extracts the pattern from the rules and compares the results modulo
+     * variable names.
+     *
+     * @param a - Rule
+     * @type Rule -> Rule
+     */
+    equal-mod-var(|a) = get-pattern; make-dummy-vars; equal(|<get-pattern; make-dummy-vars> a)
+    
+    /**
+     * Replaces all occurences of Var(_) with DummyVar(). This strategy
+     * is used to implement equal-mod-var.
+     * 
+     * @internal
+     * @type a -> a
+     */
+    make-dummy-vars = innermost(?Var__(_); !DummyVar()) 
+    
+    optimize-templates = make-constraint-generator; solve-which-ambiguities
