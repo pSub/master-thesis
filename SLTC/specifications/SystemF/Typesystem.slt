@@ -83,6 +83,12 @@ conjectures
 /* Positive conjectures */
 
 ===
+y = [ x -> int ] y
+
+===
+int = [ x -> int ] x
+
+===
 () | () |- \ x . \ y : x . y : all x . (x -> x)
 
 ===
