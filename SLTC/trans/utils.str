@@ -6,6 +6,7 @@ rules
      * Inserts between every two elements of the given list `s`.
      *
      * @param s - an arbitary term
+     * @type List(a) -> List(a)
      */
     intersperse(|s) : [] -> []
     intersperse(|s) : [x] -> [x]
@@ -14,6 +15,8 @@ rules
     /**
      * String representation for Option values. Some(s) is projected
      * to s and None() is projected to the empty string.
+     *
+     * @type Option(a) -> a | String
      */
     option-to-string : Some(s) -> s
     option-to-string : None()  -> ""
@@ -24,6 +27,7 @@ rules
      * The random string is created with <newname>.
      *
      * @param l - prefix for random string
+     * @type Option(a) -> a | String
      */
     option-to-string-newname(|l) : Some(s) -> s
     option-to-string-newname(|l) : None() -> <newname> l
@@ -34,6 +38,7 @@ rules
      *
      * @param f - some arbitary strategy
      * @param s - some arbitary term
+     * @type Option(a) -> b
      */
     maybe(f|s) : None() -> s
     maybe(f|s) : Some(s') -> <f> s' 
@@ -42,6 +47,7 @@ rules
      * Creates a list of `n` random strings prefixed with `l`.
      *
      * @param l - an arbitary string
+     * @type Int -> [String]
      */
     newnames(|l) : 0 -> []
     newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
@@ -56,6 +62,7 @@ rules
      *
      * @param c1 - an constructor with zero or one argument
      * @param c2 - an constructor with exactly two arguments
+     * @type a -> [b]
      */
     to-list(c1, c2) : c1#([]) -> []
     to-list(c1, c2) : c1#([arg1]) -> [arg1]
@@ -66,6 +73,7 @@ rules
      *
      * @param c - an constructor with at least `n` arguments
      * @param n - a natural number
+     * @type a -> b
      */
     proj(c|n) : c#(args) -> <index(|n)> args
 
@@ -75,6 +83,7 @@ rules
      * @param old-node - an arbitrary term
      * @param new-node - an arbitrary term
      * @param ast - an arbitrary term
+     * @type a
      */
     replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
 
@@ -83,6 +92,7 @@ rules
      *
      * @param old-node - an arbitrary term
      * @param new-node - an arbitrary term
+     * @type a -> b
      */
     replace(|old-node, new-node) : ast -> <replace(|old-node, new-node, ast)>
 
@@ -90,6 +100,7 @@ rules
      * Replaces all `old-node` with `new-node` in `ast`.
      *
      * @param ast - an arbitrary term
+     * @type (a, b) -> c
      */
     replace(|ast) : (old-node, new-node) -> <replace(|old-node, new-node, ast)>
 
@@ -98,6 +109,7 @@ rules
      * those in `ast` from left to right.
      *
      * @param ast - an arbitrary term
+     * @type List((a, b)) -> c
      */
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
@@ -110,27 +122,40 @@ rules
 
     /**
      * Computes all tails of the given list.
+     *
+     * @type List(a) -> List(List(a))
      */
     tails : xs -> [xs | <if [] then [] else <Tl; tails> xs end> xs]
 
     /**
-     * Creates a list containing soely the passed term.
+     * Creates a list containing soely the passed term. Same as `MkSingelton'
+     * which is declared internal.
+     *
+     * @type a -> List(a)
      */
     singelton : x -> [ x ]
 
     /**
      * Convenience wrapper around `isect`.
+     *
+     * @param set1 - some arbitary list
+     * @type List(a) -> List(a)
      */
     isect(|set1) : set2 -> <isect> (set1, set2)
 
     /**
      * Convenience wrapper around `conc`.
+     *
+     * @param l - some arbitary list
+     * @type List(a) -> List(a)
      */
     conc(|l) : l' -> <conc> (l, l')
 
     /**
      * Forget about the constructor and return the
      * arguments as a tuple.
+     *
+     * @type a -> (a, b, ...)
      */
     to-tuple = get-arguments; ListToTuple
 
@@ -138,6 +163,7 @@ rules
      * Wraps around equal to provide the result as a string.
      *
      * @param t - some arbitrary term
+     * @type a -> String
      */
     equal-to-string(|t) = equal(|t) < !"Success" + !"Failure"
 
@@ -151,8 +177,12 @@ rules
      * Warning: This is the usual topological sort algorithm, but traverses
      * the graph in reversed order, since the input graph is defined by
      * its outgoing edges. Therefore the resulting ordering is reversed.
+     *
+     * @type List(a, List(a)) -> List(a)
      */
     top-sort : graph -> <top-sort'; reverse> (graph, <filter(where(Snd; equal([])); Fst)> graph, [])
+
+    /** @internal */
     top-sort' : (graph, [], L) -> <if <has-edges> graph
                                    then <singelton; error; fail> "Cyclic dependencies"
                                    else !L
@@ -163,6 +193,8 @@ rules
 
     /**
      * Checks whether the input graph contains at least one edge.
+     *
+     * @type a -> a
      */
     has-edges = some(Snd; not(equal([])))
 
@@ -175,36 +207,50 @@ rules
 
     /**
      * Checks whether the given string is a meta-variable constructor name.
+     *
+     * @type String -> String
      */
     is-meta-variable = is-generic(|"MetaVariable")
 
     /**
      * Checks whether the given string is a context binding constructor name.
+     *
+     * @type String -> String
      */
     is-ctx-bind = is-generic(|"ContextBind")
 
     /**
      * Checks whether the given string is a context lookup constructor name.
+     *
+     * @type String -> String
      */
     is-ctx-lookup = is-generic(|"ContextLookup")
 
     /**
      * Checks whether the given term is a meta-variable.
+     *
+     * @type a -> a
      */
     node-is-meta-variable = node-is-generic(|"MetaVariable")
 
     /**
      * Checks whether the given term is a context binding.
+     *
+     * @type a -> a
      */
     node-is-ctx-bind = node-is-generic(|"ContextBind")
 
     /**
      * Checks whether the given term is a context lookup.
+     *
+     * @type a -> a
      */
     node-is-ctx-lookup = node-is-generic(|"ContextLookup")
 
     /**
      * Checks whether the given node is an empty context.
+     *
+     * @type a -> a
      */
     node-is-ctx-empty = node-is-generic(|"ContextEmpty")
 
@@ -212,11 +258,15 @@ rules
      * Checks whether the given node is a context meta-variable.
      *
      * @param cc - context classes
+     * @type a -> a
      */
     node-is-ctx-var(|cc) : node -> <where(<elem> (<get-generic-name> node, cc))>
 
     /**
      * Checks whether the given node is some form of context.
+     *
+     * @param cc - context classes (hast type List(String))
+     * @type a -> a
      */
     node-is-ctx(|cc) = node-is-ctx-bind <+
                   node-is-ctx-lookup <+
@@ -227,6 +277,7 @@ rules
      * Splits the given string at '-' and compares the first part with `name'.
      *
      * @param name - an arbitrary string
+     * @type String -> String
      */
     is-generic(|name) = string-tokenize(|<singelton> '-'); Hd; equal(|name)
 
@@ -235,16 +286,21 @@ rules
      * it behaves like `id'.
      *
      * @param name - an arbitrary string
+     * @type a -> a
      */
     node-is-generic(|name) = where(get-constructor; is-generic(|name))
 
     /**
      * Splits the construtor name of the given node at '-' and returns the last part.
+     *
+     * @type a -> String
      */
     get-generic-name = get-constructor; string-tokenize(|<singelton> '-'); last
 
     /**
      * The generic name of contexts is a number. This strategy retrieves the
      * generic name as a real integer.
+     *
+     * @type a -> Int
      */
     get-context-id = get-generic-name; string-to-int
