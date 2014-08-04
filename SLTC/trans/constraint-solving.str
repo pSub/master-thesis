@@ -27,7 +27,7 @@ rules
     unify' : ([CEq__(n#(ts), n#(ts'), info) | cs], mgu) -> <unify'> (<conc> (cs, cs'), mgu)
         where <equal>(<length> ts, <length> ts');
               cs' := <zip; map(makeEq(|info))> (ts, ts')
-    unify' = get-info; singelton; error; fail
+    unify' = Fst; Hd; Dupl; (id, get-info); singelton; error; fail
 
     /**
      * Apply the given mgu to term `t'. The difference to `replace-all'

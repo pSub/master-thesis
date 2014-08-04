@@ -43,7 +43,7 @@ rules
      * Creates implicit equalities.
      */
     make-implicit-equality-constraints(|pattern, term, name) =
-        make-implicit-equality-constraints(\ vars -> <foldl(\(x, xs) -> <delete> (x, xs)\)> (<make-set> vars,vars) \| pattern, term, name)
+        make-implicit-equality-constraints(\ vars -> <foldl(\(x, xs) -> <delete> (x, xs)\); isect(|vars)> (<make-set> vars,vars)\| pattern, term, name)
     make-implicit-equality-constraints(select | pattern, term, name) =
         collect-om(?Var__(_), conc); select; Dupl;
         (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
