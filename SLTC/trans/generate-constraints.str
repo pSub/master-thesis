@@ -63,7 +63,7 @@ rules
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
             // Find the constraint template that matches the inputs of the given term
-            match := <find-match(|<debug> inputs)> templates
+            match := <find-match(|inputs)> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching

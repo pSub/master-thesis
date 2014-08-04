@@ -216,6 +216,15 @@ rules
     until(s) : [x | xs] -> <<s> x < id + <until(s)> xs>
 
     /**
+     * Deletes at most one occurence of the element in the list.
+     *
+     * @type (a, List(a)) -> List(a)
+     */
+    delete : (y, []) -> []
+    delete : (y, [y | xs]) -> xs
+    delete : (y, [x | xs]) -> [x | <delete> (y, xs)]
+
+    /**
      * Checks whether the given string is a meta-variable constructor name.
      *
      * @type String -> String
