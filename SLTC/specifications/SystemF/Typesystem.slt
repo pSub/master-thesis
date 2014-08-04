@@ -116,13 +116,12 @@ conjectures
 () | () |- (\ x . \ y . \ z : x . z) [ int ] [ int -> int ] : (int -> int)
 
 ===
-() | () |- (\ y . \ x . \ z : x . z) [ int ] [ int -> int ] : (int -> int)
+() | () |- (\ y . \ x . \ z : x . z) [ int -> int ] [ int ] : (int -> int)
 
-/* Negative Conjectures */
+// /* Negative Conjectures */
 
 ===
 () | () |- \ x . \ y : x . y : all x . x
 
-// FIXME: This test fails. Should be ill-typed as y is unbound as a type variable.
 ===
 () | () |- (\ x . \ y : y . y) [ int ] : int -> int
