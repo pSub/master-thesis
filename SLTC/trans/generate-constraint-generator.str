@@ -13,11 +13,6 @@ signature
        Lookup  : ctx * inputs -> Lookup
        Judgment : term * binding -> Judgment
        Neq : term * term -> Neq
-
-       Pattern : term
-       Outputs : List(term)
-       
-       ConstraintGenerator : List(Rule)
        
 rules
     
