@@ -2,6 +2,7 @@ module generate-constraints
 
 imports utils
 imports constraint-language
+imports constraint-template-language
 imports constraint-solving
 imports generate-constraint-generator
 imports include/SLTC

@@ -1,0 +1,35 @@
+module constraint-template-language
+
+signature
+    sorts Rule Lookup Judgment Neq
+    constructors
+       Rule : Option(String) * Pattern * Outputs * Constraints -> Rule
+       Binding : List(List(var)) * List(call) * Rule -> Rule
+
+       Lookup  : ctx * inputs -> Lookup
+       Judgment : term * binding -> Judgment
+       Neq : term * term -> Neq
+
+rules  
+
+    /**
+     * Extracts the pattern from Rule or Binding
+     *
+     * @type Rule -> List(a)
+     */
+    get-pattern : Rule(_, pattern, _, _) -> pattern
+    get-pattern : Binding(_, _, Rule(_, pattern, _, _)) -> pattern
+
+    /**
+     * Transforms a tuple into a judgment node
+     *
+     * @type (a, b) -> Judgment(a, b)
+     */
+    mkJudgment : (a, b) -> Judgment(a, b)
+
+    /**
+     * Transforms a tuple into a lookup node
+     *
+     * @type (a, b) -> Lookup(a, b)
+     */
+    mkLookup : (a, b) -> Lookup(a, b)
