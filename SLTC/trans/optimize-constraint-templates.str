@@ -14,7 +14,9 @@ signature
 
 rules
     
-    solve-which-ambiguities = group-by-conclusion
+    // FIXME: Currently there is no distinction between which and when ambiguities!
+    solve-which-ambiguities : templates -> <conc>(<map(mkFork)> equality-classes, <diff(eq)> (templates, <flatten-list> equality-classes))
+        where equality-classes :=  <group-by-conclusion> templates
     
     /**
      * Collects all rules that have an equal pattern (modulo variable names).
