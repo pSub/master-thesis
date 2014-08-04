@@ -117,9 +117,9 @@ rules
                           case ?Lookup(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
                           case ?CEq__(a, b, info):
-                              !([], CEq__(a, b, info)) // FIXME: Needs instantiation.
+                              !([], [CEq__(a, b, info)]) // FIXME: Needs instantiation.
                           case ?CNeq__(a, b, info):
-                              !([], CNeq__(a, b, info)) // FIXME: Needs instantiation.
+                              !([], [CNeq__(a, b, info)]) // FIXME: Needs instantiation.
                           otherwise:
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
                             binding-constraints := <make-binding-constraints(|name)> (call, binding);
