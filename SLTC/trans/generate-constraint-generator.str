@@ -137,7 +137,7 @@ rules
                     Rule(name,
                          <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
-                         <mapconcat(zip(makeEq(|name)))> vars-outputs))
+                         <mapconcat(\(var-out, err) -> <zip(makeEq(|err))> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             enum-premisses := <add-indices> premisses-list;
@@ -145,8 +145,8 @@ rules
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
             premisses := <zip> (premisses-list, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
-            vars-outputs := <map(Fst; get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j));
-                                 Dupl; (length; newnames(|"X"); map(makeVar), id))> sorted-premisses
+            vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
+                                 ((length; newnames(|"X"); map(makeVar), id), get-error-message))> sorted-premisses
 
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
