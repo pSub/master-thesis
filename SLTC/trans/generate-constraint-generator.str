@@ -108,7 +108,7 @@ rules
             Binding(<map(Fst)> vars-outputs,
                     <map(switch id
                          case (node-is-ctx-lookup, id):
-                              (Dupl, map(Dupl; (id, \i -> <index(|i)> premisses\; Fst; get-outputs(|j))));
+                              (Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c)); mkLookup, id)
                          case where((get-generic-name; equal(|"Eq"), id)):
                               (to-tuple; makeEq(|name), id)
