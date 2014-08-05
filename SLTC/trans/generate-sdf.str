@@ -39,9 +39,14 @@ rules
 
 	// Generate syntax of meta-variable definitions	
 	make-variable : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
-		<map(\scope -> prod(<concat-strings>["\"", prefix, "\" MetaVariable"],
-						    scope,
-						    <make-cons'> ["MetaVariable-", name])\)> ids
+		<mapconcat(\scope -> [ prod(<concat-strings>["\"", prefix, "\" MetaVariableName"],
+						            scope,
+						            <make-cons'> ["MetaVariable-", name]),
+						       prod(<concat-strings>["\"", prefix, "\" MetaVariableName"],
+                                    "MetaVariable",
+                                    <make-cons'> ["MetaVariable-", name])
+						     ]
+		           \)> ids
 
 	// Generate syntax of typing judgments
 	make-judgment : (num, Judgment(s1, pos, s2, built-in))

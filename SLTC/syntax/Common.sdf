@@ -1,16 +1,16 @@
 module Common
 exports
   lexical syntax
-    [a-zA-Z] [a-zA-Z0-9]*              -> ID 
+    [a-zA-Z] [a-zA-Z0-9]*              -> ID
     [a-zA-Z0-9\-]+					   -> Name
-    [a-zA-Z0-9\~\$\%\&\?]+                -> PrefixChars    
+    [a-zA-Z0-9\~\$\%\&\?]+             -> PrefixChars
     [a-zA-Z0-9]                        -> MetaVariableChars
-    MetaVariableChars+                 -> MetaVariable 
-    {ID "."}+                          -> MID          
-    [\ \t\n\r]                         -> LAYOUT       
-    [\*]                               -> CommentChar  
-    "/*" ( ~[\*] | CommentChar )* "*/" -> LAYOUT       
-    "//" ~[\n\r]* [\n\r] | EOF         -> LAYOUT       
+    MetaVariableChars+                 -> MetaVariableName
+    {ID "."}+                          -> MID
+    [\ \t\n\r]                         -> LAYOUT
+    [\*]                               -> CommentChar
+    "/*" ( ~[\*] | CommentChar )* "*/" -> LAYOUT  
+    "//" ~[\n\r]* [\n\r] | EOF         -> LAYOUT
                                        -> EOF
 
     "module"                           -> ReservedWord
@@ -25,7 +25,7 @@ exports
 
   lexical restrictions
     CommentChar -/- [\/]
-    MetaVariable -/- [a-zA-Z0-9]
+    MetaVariableName -/- [a-zA-Z0-9]
     ID -/- [a-zA-Z0-9\_\-]
     MID -/- [\.]
     EOF -/- ~[]
