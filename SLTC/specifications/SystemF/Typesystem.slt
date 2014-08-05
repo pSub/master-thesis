@@ -28,8 +28,8 @@ $C1 | $C2 |- %x : ~T
 ==================================== T-Abs
 $C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
 
-$C1 | $C2 |- ~t1 : ~T11 -> ~T12
-$C1 | $C2 |- ~t2 : ~T11
+$C1 | $C2 |- ~t1 : ~T11 -> ~T12     @error ~t1 "should have type" ~T11 "->" ~T12 "but has type" INFTYPE
+$C1 | $C2 |- ~t2 : ~T11             @error ~t2 "should have type" ~T11 "but has type" INFTYPE
 ================================ T-App
 $C1 | $C2 |- ~t1 ~t2 : ~T12
 
