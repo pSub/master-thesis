@@ -4,6 +4,8 @@ imports utils
 imports constraint-language
 imports constraint-template-language
 
+imports include/SLTC
+
 rules
         
     /**
@@ -27,6 +29,16 @@ rules
      * An version of `instantiate` tailored for context lookups.
      */
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
+
+    /**
+     * An version of `instantiate` tailored for error messages.
+     */
+    instantiate-error(|pattern, terms) : constraint ->
+        <put-info(|<get-info; maybe(\ Error(e) ->
+                                        Error(<instantiate(|pattern, terms)> e)
+                                    \ | None())
+                   > constraint
+                  )> constraint
     
     /**
      * Instantiate variables that occur as an output and as an input and
