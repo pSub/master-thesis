@@ -15,7 +15,8 @@ rules
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
      */
-    instantiate(|pattern, terms) : input -> <foldl(\((x, t), i) -> <oncetd(?x; !t)> i\)> (instantiations, input)
+    instantiate(|pattern, terms) : input -> <memo(instantiate')> (input, pattern, terms)
+    instantiate' : (input, pattern, terms) -> <foldl(\((x, t), i) -> <oncetd(?x; !t)> i\)> (instantiations, input)
         where instantiations := <make-set; find-matching-positions(|pattern); extract-terms(|terms)> input
 
     /**
