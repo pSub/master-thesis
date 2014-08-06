@@ -9,7 +9,9 @@ strategies
     
     typecheck = generate-constraints; map(\((t, cs), conjecture) ->
                                             <unify; \(cs, mgu, err) ->
-                                                     <Dupl; (apply-mgu(|t); Dupl; (id, equal-to-string(|conjecture)),
-                                                             apply-mgu(|err))> mgu
+                                                     <if <equal(|[])> err
+                                                      then <apply-mgu(|t)> mgu
+                                                      else <apply-mgu(|err)> mgu
+                                                      end>
                                                     \> cs
                                           \)

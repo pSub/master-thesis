@@ -31,6 +31,9 @@ rules
                                    <filter(node-is-ctx-bind);
                                     mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
                                     update-store(|store)> i)> i
+                  \;
+                  \(outputs, constraints) ->
+                    (outputs, <conc>(<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs(|judgments)> conjecture), constraints))
                   \> conjecture, <get-outputs(|judgments)> conjecture)
                 \; clear-store(|store)); tidy-up(|store)> conjectures
         where
