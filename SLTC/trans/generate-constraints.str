@@ -110,7 +110,7 @@ rules
             // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
 
-    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\)> rulez, [])
+    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\)> rulez, [])
 
     /**
      * Executes the calls specified in the rules.
@@ -159,7 +159,7 @@ rules
      * @type dependencies -> a
      */
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
-                                   \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\); conc(|term)                    
+                                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\); conc(|term)
 
     /**
      * Updates the store `s` with the provided context bindings. Context

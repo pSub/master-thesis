@@ -22,6 +22,7 @@ rules
      * @type List(Constraint) -> (List(Constraint), (Var, a))
      */
     unify : cs -> <unify'> (cs, [], [])
+    unify-internal : cs -> <unify'; where(Third; equal(|[])) < Snd + fail> (cs, [], [])
     unify' : ([], mgu, err) -> ([], mgu, err)
     unify' : ([CEq__(t, t, info) | cs], mgu, err) -> <unify'> (cs, mgu, err)
     unify' : ([CNeq__(t, s, info)| cs], mgu, err) -> <unify'> (cs, mgu, err)
