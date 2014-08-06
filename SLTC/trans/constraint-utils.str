@@ -127,7 +127,6 @@ rules
      * Defines when two terms match
      */
     match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
-                                     <where(is-meta-variable)> s-cons <+
                                      <?Var__(_)> s>
         where
             s-cons := <get-constructor> s;

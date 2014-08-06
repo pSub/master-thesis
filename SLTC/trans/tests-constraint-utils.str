@@ -12,5 +12,14 @@ rules
                               !"x",
                               ![("x", [2]), ("x", [4, 1])])
 
+    instantiate-tests = apply-test(!"instantiate", instantiate(|[], []),
+                                   !["x"], !["x"]);
+                        apply-test(!"instantiate", instantiate(|["x"], ["t"]),
+                                   !["x"], !["t"]);
+                        apply-test(!"instantiate", instantiate(|["x", ["a", "b"], "y"], ["s", ["u", "v"], "t"]),
+                                   !["a", "y"], ["u", "t"]);
+                        apply-test(!"instantiate", instantiate(|["x", "y", "x"], ["s", "u", "t"]),
+                                   !["x", "x"], ["s", "t"])
+
     tests-constraint-utils =
-        search-tests                              
+        search-tests; instantiate-tests
