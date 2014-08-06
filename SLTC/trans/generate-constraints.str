@@ -76,8 +76,10 @@ rules
      * @param s - hashtable containing hashtables that store context information
      */
     generate'(|j, c, t, term, s) : Rule(name, pattern, outputs, constraints) ->
-            (outputs, <conc> (constraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
+            (outputs, <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
                               <make-implicit-equality-constraints(|pattern, term, name)> pattern))
+        where
+            iconstraints := <map(instantiate-error(|pattern, term))> constraints
 
     generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, pattern, outputs, constraints)) ->
            (outputs', new-constraints)
@@ -91,10 +93,12 @@ rules
             // Make implicit equalities
             implicit-equalities := <make-implicit-equality-constraints(|pattern, term, name)> pattern;
 
+            iconstraints := <map(instantiate-error(|pattern, term))> constraints;
+
             // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?
             vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints, input-output-constraints);
-            (xs', outputs', constraints', outputs-constraints', io-constraints', implicit-equalities') := <zip; replace-all(|(xs, outputs, constraints, outputs-constraints, input-output-constraints, implicit-equalities))>
+            (xs', outputs', constraints', outputs-constraints', io-constraints', implicit-equalities') := <zip; replace-all(|(xs, outputs, iconstraints, outputs-constraints, input-output-constraints, implicit-equalities))>
                                                                     (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Assoziate the outputs of the calls with the variables of the binding.
@@ -106,7 +110,7 @@ rules
             // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
 
-    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\)> rulez, [])
+    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\)> rulez, [])
 
     /**
      * Executes the calls specified in the rules.
@@ -155,7 +159,7 @@ rules
      * @type dependencies -> a
      */
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
-                                   \(o, cs) -> <unify; Snd; apply-mgu(|o)> cs\); conc(|term)                    
+                                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\); conc(|term)
 
     /**
      * Updates the store `s` with the provided context bindings. Context

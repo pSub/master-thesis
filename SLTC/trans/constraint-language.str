@@ -17,3 +17,5 @@ rules
     makeNeq(|info) : (a, b) -> CNeq__(a, b, info)
     
     get-info = proj(CEq__|3) <+ proj(CNeq__|3)
+    put-info(|info) : CEq__(a, b, _) -> CEq__(a, b, info)
+    put-info(|info) : CNeq__(a, b, _) -> CNeq__(a, b, info)
