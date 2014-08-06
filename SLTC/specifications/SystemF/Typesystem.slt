@@ -128,7 +128,13 @@ int = [ x -> int ] x
 ===
 () | () |- (\ y . \ x . \ z : x . z) [ int -> int ] [ int ] : (int -> int)
 
-// /* Negative Conjectures */
+/* Negative Conjectures */
+
+======
+f : int ; () | () |- f 1 : int
+
+======
+f : (int -> int); () | () |- f f : int
 
 ===
 () | () |- \ x . \ y : x . y : all x . x
