@@ -122,13 +122,10 @@ int = [ x -> int ] x
 ===
 () | () |- (\ x . \ y . \ z : x . z) [ int ] : all y . (int -> int) 
 
-===
-() | () |- (\ x . \ y . \ z : x . z) [ int ] [ int -> int ] : (int -> int)
-
-===
-() | () |- (\ y . \ x . \ z : x . z) [ int -> int ] [ int ] : (int -> int)
-
 /* Negative Conjectures */
+
+===
+() | () |- 1 1 : int
 
 ======
 f : int ; () | () |- f 1 : int
