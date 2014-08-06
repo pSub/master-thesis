@@ -5,6 +5,7 @@ language SystemF
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { TermBinding TypeBinding }
 				Id "%" { ID }
+                Num "&" { Int }
 
 contexts
 TermBinding := ID{I} x Type{O}
@@ -20,16 +21,19 @@ rules
 
 /* Typing rules */
 
-%x : ~T in $C1
+%x : ~T in $C1        @error %x "should have type" ~T
 =============== T-Var
 $C1 | $C2 |- %x : ~T
+
+============== T-int
+$C1 | $C2 |- &i : int
 
 (%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
 ==================================== T-Abs
 $C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
 
-$C1 | $C2 |- ~t1 : ~T11 -> ~T12
-$C1 | $C2 |- ~t2 : ~T11
+$C1 | $C2 |- ~t1 : ~T11 -> ~T12     @error ~t1 "should have type" ~T11 "->" ~T12 "but has type" INFTYPE
+$C1 | $C2 |- ~t2 : ~T11             @error ~t2 "should have type" ~T11 "but has type" INFTYPE
 ================================ T-App
 $C1 | $C2 |- ~t1 ~t2 : ~T12
 
@@ -118,13 +122,16 @@ int = [ x -> int ] x
 ===
 () | () |- (\ x . \ y . \ z : x . z) [ int ] : all y . (int -> int) 
 
-===
-() | () |- (\ x . \ y . \ z : x . z) [ int ] [ int -> int ] : (int -> int)
+/* Negative Conjectures */
 
 ===
-() | () |- (\ y . \ x . \ z : x . z) [ int -> int ] [ int ] : (int -> int)
+() | () |- 1 1 : int
 
-// /* Negative Conjectures */
+======
+f : int ; () | () |- f 1 : int
+
+======
+f : (int -> int); () | () |- f f : int
 
 ===
 () | () |- \ x . \ y : x . y : all x . x

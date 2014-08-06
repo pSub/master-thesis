@@ -26,6 +26,20 @@ rules
                                        meta-variables
 
     /**
+     * Extracts the typing judgment.
+     *
+     * @type ErrorTypingJudgment -> TypingJudgment
+     */
+    get-typing-judgment = proj(ErrorTypingJudgment|1)
+
+    /**
+     * Extracts the error message.
+     *
+     * @type ErrorTypingJudgment -> List(MessagePart)
+     */
+    get-error-message = proj(ErrorTypingJudgment|2)
+
+    /**
      *
      */
     eq-inputs = where(get-generic-name; equal(|"Eq")); get-arguments
@@ -98,6 +112,7 @@ rules
      * Rule that transforms typing rules with premisses into a constraint template.
      *
      * FIXME: Allow checks for empty contexts
+     * FIXME: This code needs refactoring
      *
      * @param j - judgment declarations
      * @param c - context declarartions
@@ -105,16 +120,16 @@ rules
      */
     step(|j, c, cc) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
-            Binding(<map(Fst)> vars-outputs,
-                    <map(switch id
+            Binding(<map(Fst; Fst)> vars-outputs,
+                    <map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
-                              (Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-outputs(|j))));
+                              (get-typing-judgment; Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c)); mkLookup, id)
                          case where((get-generic-name; equal(|"Eq"), id)):
-                              (to-tuple; makeEq(|name), id)
+                              (get-typing-judgment; to-tuple; makeEq(|name), id)
                          case where((get-generic-name; equal(|"Neq"), id)):
-                              (to-tuple; makeNeq(|name), id)
-                         otherwise: (get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-outputs(|j))));
+                              (get-typing-judgment; to-tuple; makeNeq(|name), id)
+                         otherwise: (get-typing-judgment; get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
@@ -122,16 +137,16 @@ rules
                     Rule(name,
                          <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
-                         <mapconcat(zip(makeEq(|name)))> vars-outputs))
+                         <mapconcat(\(var-out, err) -> <zip(makeEq(|err))> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             enum-premisses := <add-indices> premisses-list;
-            dependencies := <map((id, get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
+            dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
             premisses := <zip> (premisses-list, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
-            vars-outputs := <map(Fst; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j));
-                                 Dupl; (length; newnames(|"X"); map(makeVar), id))> sorted-premisses
+            vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
+                                 ((length; newnames(|"X"); map(makeVar), id), get-error-message))> sorted-premisses
 
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
@@ -166,7 +181,7 @@ rules
      * @param decls - judgment declarations
      */
     compute-dependencies(|terms, decls) : inputs -> 
-        <filter(where(Snd; get-outputs(|decls);
+        <filter(where(Snd; get-typing-judgment; get-outputs(|decls);
                \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
                             \)> (inputs, [])
                \; not(equal([]))); Fst)> terms
