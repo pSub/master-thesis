@@ -15,26 +15,26 @@ rules
                    apply-and-fail(!"occurs", occurs,
                                   !("x", CEq__(CEq__("int", "float", Some("test")), "int", Some("test"))))
 
-    unify-tests = apply-test(!"unify", unify,
+    unify-internal-tests = apply-test(!"unify-internal", unify-internal,
                              ![ CEq__("int", "int", Some("T-add")) ],
-                             !([], []));
-                  apply-test(!"unify", unify,
+                             ![]);
+                  apply-test(!"unify-internal", unify-internal,
                              ! [ CEq__(Var__("Y295"), "int", Some("T-add"))
                                , CEq__("int", Var__("Y295"), Some("T-var"))
                                ],
-                             ! ([], [(Var__("Y295"), "int")]));
-                  apply-test(!"unify", unify,
+                             ! [(Var__("Y295"), "int")]);
+                  apply-test(!"unify-internal", unify-internal,
                              ![ CEq__(Var__("x"), Var__("x"), Some("test")) ],
-                             !([], []));
-                  apply-test(!"unify", unify,
+                             ![]);
+                  apply-test(!"unify-internal", unify-internal,
                              ![ CEq__([Var__("x"), "b"], ["a", Var__("y")], Some("test")) ],
-                             !([], [(Var__("y"), "b"), (Var__("x"), "a")]));
-                  apply-test(!"unify", unify,
+                             ![(Var__("y"), "b"), (Var__("x"), "a")]);
+                  apply-test(!"unify-internal", unify-internal,
                              ![ CNeq__("a", "b", Some("test"))],
-                             !([], []));
-                  apply-and-fail(!"unify", unify,
+                             ![]);
+                  apply-and-fail(!"unify-internal", unify-internal,
                                  ![ CNeq__("a", "a", Some("test")) ]);
-                  apply-and-fail(!"unify", unify,
+                  apply-and-fail(!"unify-internal", unify-internal,
                                  ![ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
                                  
     apply-mgu-tests = apply-test(!"apply-mgu", apply-mgu(|[]),
@@ -51,4 +51,4 @@ rules
                                  ![[1,42,3], ["a", [1,42,3], "b"], "foo"])
 
     tests-constraint-solving =
-        occurs-tests; unify-tests; apply-mgu-tests
+        occurs-tests; unify-internal-tests; apply-mgu-tests
