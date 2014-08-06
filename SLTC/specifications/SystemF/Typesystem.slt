@@ -5,6 +5,7 @@ language SystemF
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { TermBinding TypeBinding }
 				Id "%" { ID }
+                Num "&" { Int }
 
 contexts
 TermBinding := ID{I} x Type{O}
@@ -23,6 +24,9 @@ rules
 %x : ~T in $C1
 =============== T-Var
 $C1 | $C2 |- %x : ~T
+
+============== T-int
+$C1 | $C2 |- &i : int
 
 (%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
 ==================================== T-Abs
