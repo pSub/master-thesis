@@ -5,6 +5,8 @@ exports
     [a-zA-Z0-9\-]+					   -> Name
     [a-zA-Z0-9\~\$\%\&\?]+             -> PrefixChars
     [a-zA-Z0-9]                        -> MetaVariableChars
+    "..."                              -> Dots
+    "..._" [0-9]+                      -> Dots
     MetaVariableChars+                 -> MetaVariableName
     {ID "."}+                          -> MID
     [\ \t\n\r]                         -> LAYOUT
@@ -21,6 +23,7 @@ exports
     "judgments"                        -> ReservedWord
     "rules"                            -> ReservedWord
     "conjectures"                      -> ReservedWord
+    "..."                              -> ReservedWord
     ReservedWord                       -> ID           {reject}
 
   lexical restrictions
