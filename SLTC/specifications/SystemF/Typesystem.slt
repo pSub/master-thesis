@@ -21,7 +21,7 @@ rules
 
 /* Typing rules */
 
-%x : ~T in $C1
+%x : ~T in $C1        @error %x "should have type" ~T
 =============== T-Var
 $C1 | $C2 |- %x : ~T
 
