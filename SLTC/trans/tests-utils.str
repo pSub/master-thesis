@@ -41,5 +41,21 @@ rules
                                    !(1, <add-indices> [1,2,3,1,2,3]),
                                    ![1,4])
 
+    until-tests = apply-and-fail(!"until", until(id),
+                             ![]);
+                  apply-test(!"until", until(id),
+                             ![1,2,3], 1);
+                  apply-and-fail(!"until", until(fail),
+                             ![1,2,3]);
+                  apply-test(!"until", until(?2),
+                             ![1,2,3], 2)
+
+    delete-tests = apply-test(!"delete", delete,
+                              !(1, []), ![]);
+                   apply-test(!"delete", delete,
+                              !(1, [1,2,3]), ![2,3]);
+                   apply-test(!"delete", delete,
+                              !(1, [1,2,1]), ![2, 1])   
+
     tests-utils = 
-        top-sort-tests; replace-tests; get-indices-tests
+        top-sort-tests; replace-tests; get-indices-tests; until-tests; delete-tests
