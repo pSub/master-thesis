@@ -24,20 +24,20 @@ rules
     unify : cs -> <unify'> (cs, [], [])
     unify-internal : cs -> <unify'; where(Third; equal(|[])) < Snd + fail> (cs, [], [])
     unify' : ([], mgu, err) -> ([], mgu, err)
+    unify' : ([CFail(info) | cs], mgu, err) -> <unify'> (cs, mgu, [info | err])
     unify' : ([CEq__(t, t, info) | cs], mgu, err) -> <unify'> (cs, mgu, err)
     unify' : ([CNeq__(t, s, info)| cs], mgu, err) -> <unify'> (cs, mgu, err)
         where <not(equal)> (t, s)
     unify' : ([CEq__(t, Var__(x), info) | cs], mgu, err) ->
          <unify'> (<conc> (cs, <singelton> CEq__(Var__(x), t, info)), mgu, err)
     unify' : ([CEq__(v@Var__(x), t, info) | cs], mgu, err) -> <if <occurs> (v, t)
-                                     then <error; fail> [x, " occurs in", t] // FIMXE: What to do here?
+                                     then <unify'> (cs, mgu, [info | err])
                                      else <unify'> (<replace(|cs)> (v, t), [(v, t)|mgu], err)
                                      end>
     unify' : ([CEq__(n#(ts), n#(ts'), info) | cs], mgu, err) -> <unify'> (<conc> (cs, cs'), mgu, err)
         where <equal>(<length> ts, <length> ts');
               cs' := <zip; map(makeEq(|info))> (ts, ts')
     unify' : ([c | cs], mgu, err) -> <unify'> (cs, mgu, [<get-info> c | err])
-    // unify' = Fst; Hd; Dupl; (id, get-info); singelton; error; fail
 
     /**
      * Apply the given mgu to term `t'. The difference to `replace-all'

@@ -137,6 +137,9 @@ f : int ; () | () |- f 1 : int
 f : (int -> int); () | () |- f f : int
 
 ===
+() | () |- x : int
+
+===
 () | () |- \ x . \ y : x . y : all x . x
 
 ===
