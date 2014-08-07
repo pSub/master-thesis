@@ -137,7 +137,7 @@ rules
                     Rule(name,
                          <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
                          <get-outputs(|j)> conclusion,
-                         <mapconcat(\(var-out, err) -> <zip(makeEq(|err))> var-out\)> vars-outputs))
+                         <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             enum-premisses := <add-indices> premisses-list;
