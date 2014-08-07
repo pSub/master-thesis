@@ -14,6 +14,7 @@ rules
      *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
+     * @type List(a) -> List(a)
      */
     instantiate(|pattern, terms) : input -> <memo(instantiate')> (input, pattern, terms)
     instantiate' : (input, pattern, terms) -> <foldl(\((x, t), i) -> <oncetd(?x; !t)> i\)> (instantiations, input)
@@ -21,6 +22,10 @@ rules
 
     /**
      * An version of `instantiate` tailored for judgments.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param terms - an arbitrary list of terms
+     * @type (List(a), List(a, List(a), List(a)) -> List(a)
      */    
     instantiate-judgment(|pattern, terms) =
         (instantiate(|pattern, terms), map((id, instantiate(|pattern, terms),
@@ -28,11 +33,19 @@ rules
 
     /**
      * An version of `instantiate` tailored for context lookups.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param terms - an arbitrary list of terms
+     * @type (List(a), List(a)) -> List(a)
      */
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
 
     /**
      * An version of `instantiate` tailored for error messages.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param terms - an arbitrary list of terms
+     * @type Constraint -> List(a)
      */
     instantiate-error(|pattern, terms) : constraint ->
         <put-info(|<get-info; maybe(\ Error(e) ->
@@ -48,15 +61,33 @@ rules
      * @param pattern - an arbitrary list of terms
      * @param term - an arbitrary list of terms
      * @param name - a string
+     * @type List(a) -> List(Constraint)
      */
     make-io-dependency-constraints(|pattern, term, name) =
         make-implicit-equality-constraints(filter(where(\v -> <sometd(?v)> pattern\)) | pattern, term, name)
 
     /**
-     * Creates implicit equalities.
+     * Creates implicit equalities for variables that occur more than once.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param term - an arbitrary list of terms
+     * @param name - a string
+     * @type List(a) -> List(Constraint)
      */
     make-implicit-equality-constraints(|pattern, term, name) =
-        make-implicit-equality-constraints(\ vars -> <foldl(\(x, xs) -> <delete> (x, xs)\); isect(|vars)> (<make-set> vars,vars)\| pattern, term, name)
+        make-implicit-equality-constraints(\ vars -> <foldl(\(x, xs) -> 
+                                                                <delete> (x, xs)
+                                                            \); isect(|vars)> (<make-set> vars,vars)
+                                           \ | pattern, term, name)
+
+    /**
+     * Creates implicit equalities for those variables selected by `select'.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param term - an arbitrary list of terms
+     * @param name - a string
+     * @type List(a) -> List(Constraint)
+     */
     make-implicit-equality-constraints(select | pattern, term, name) =
         collect-om(?Var__(_), conc); select; Dupl;
         (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
@@ -74,6 +105,7 @@ rules
      * descended to.
      * 
      * @param terms - an list of arbitrary terms
+     * @type List(List(Int)) -> List(a)
      */
     extract-terms(|terms) = map((id, retrieve(|terms)))
     
@@ -81,6 +113,7 @@ rules
      * Finds the positions of the provided elements in the `pattern`.
      *
      * @param pattern - an arbitrary term
+     * @type List(a) -> List((a, List(Int)))
      */
     find-matching-positions(|pattern) = mapconcat(search(|pattern))
 
@@ -88,6 +121,9 @@ rules
      * Traverses the pattern like a tree and records the path until `x` is
      * found literally in `pattern`. The recorded path contains the positions
      * in the argument list in which was descended.
+     *
+     * @param pattern - an arbitrary term
+     * @type a -> (a, List(Int))
      */
     search(|pattern) : x -> <search'> (x, [], <add-indices> pattern)
     search' : (x, is, []) -> <fail>
@@ -102,6 +138,9 @@ rules
     /**
      * Walks along the paths in `term` and returns to element
      * at the end of the path.
+     *
+     * @param pattern - an arbitrary term
+     * @type List(Int) -> List(a)
      */
     retrieve(|term) : [p] -> <index> (p, <get-arguments> term)
     retrieve(|term) : [p|path] -> <index; \ node -> <retrieve(|node)> path\> (p, <get-arguments> term)
@@ -112,22 +151,23 @@ rules
      * FIXME: What if multiple rules match?
      *
      * @param inputs - a list of arbitary terms
+     * @type List(Rule) -> Rule
      */    
     find-match(|inputs) : [] -> <singelton; error> "No match found!"
     find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
                                      then if <zip; Dupl; (filter(match-constructors); length,
-                                                            length); equal> (inputs, <get-pattern> t)
-                                           then <id> t
+                                                          length); equal> (inputs, <get-pattern> t)
+                                           then !t
                                            else <find-match(|inputs)> ts
                                            end
                                      else <find-match(|inputs)> ts
                                      end>
     
     /**
-     * Defines when two terms match
+     * Defines when two terms match. Succeeds if terms match
+     * fails otherwise.
      */
-    match-constructors : (t, s) -> < equal(|t-cons, s-cons) <+
-                                     <?Var__(_)> s>
+    match-constructors : (t, s) -> <equal(|t-cons, s-cons) <+ <?Var__(_)> s>
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
