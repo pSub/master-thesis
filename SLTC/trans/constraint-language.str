@@ -10,12 +10,44 @@ signature
        CEq__ : term * term * Info -> Constraint
        CNeq__ : term * term * Info -> Constraint
        Constraints__ : List(Constraint) -> Constraints
-       
+
 rules
+
+    /**
+     * Helper rule to create Var__ nodes.
+     *
+     * @type a -> Var__(a)
+     */
     makeVar : v -> Var__(v)
+
+    /**
+     * Helper rule to creae CEq__ nodes.
+     *
+     * @param info - informations about the constraint (type Info)
+     * @type (a, b) -> CEq__(a, b, info)
+     */
     makeEq(|info) : (a, b) -> CEq__(a, b, info)
+
+    /**
+     * Helper rule to creae CNeq__ nodes.
+     *
+     * @param info - informations about the constraint (type Info)
+     * @type (a, b) -> CNeq__(a, b, info)
+     */
     makeNeq(|info) : (a, b) -> CNeq__(a, b, info)
     
+    /**
+     * Extracts information about a constraint.
+     *
+     * @type Constraint -> Info
+     */
     get-info = proj(CEq__|3) <+ proj(CNeq__|3)
+    
+    /**
+     * Replaces the information of a constraint with new information.
+     *
+     * @param info - informations about the constraints (type Info)
+     * @type Constraint -> Constraint
+     */
     put-info(|info) : CEq__(a, b, _) -> CEq__(a, b, info)
     put-info(|info) : CNeq__(a, b, _) -> CNeq__(a, b, info)
