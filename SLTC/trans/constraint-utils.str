@@ -93,10 +93,16 @@ rules
         (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
     
     /**    
-     * FIXME: This implementation is very ugly.
+     * Creates equality constraints for every variable and its
+     * corresponding term in a constraint binding.
+     *
+     * @param info - constraint information (type Info)
+     * @type (call, binding) -> List(Constraint)
      */
     make-binding-constraints(|info)
-        = (to-tuple; Snd; mapconcat(Dupl; (Snd, Third); conc), mapconcat(Dupl; (Snd, Third); conc)); zip; filter((?Var__(_), id));  map(makeEq(|info))
+        = (to-tuple; Snd; mapconcat(Dupl; (Snd, Third); conc),
+                          mapconcat(Dupl; (Snd, Third); conc));
+          zip; filter((?Var__(_), id));  map(makeEq(|info))
         
     /**
      * Provided with a list of paths, this strategy returns the
