@@ -183,8 +183,9 @@ rules
     compute-dependencies(|terms, decls) : inputs -> 
         <filter(where(Snd; get-typing-judgment; get-outputs(|decls);
                \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
-                            \)> (inputs, [])
+                              \)> (input-meta-variables, [])
                \; not(equal([]))); Fst)> terms
+        where input-meta-variables := <collect-om(node-is-meta-variable)> inputs
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
