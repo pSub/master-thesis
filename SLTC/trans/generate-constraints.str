@@ -28,12 +28,10 @@ rules
                  (<get-inputs(|judgments);
                   \i -> <remove-all(node-is-ctx(|context-classes));
                          generate(|judgments, context-definitions, templates,
-                                   <filter(node-is-ctx-bind);
-                                    mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
-                                    update-store(|store)> i)> i
+                                   <initialize-store(|store, context-definitions, context-classes)> i)> i
                   \;
                   \(outputs, constraints) ->
-                    (outputs, <conc>(<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs(|judgments)> conjecture), constraints))
+                    (outputs, <conc> (<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs(|judgments)> conjecture), constraints))
                   \> conjecture, <get-outputs(|judgments)> conjecture)
                 \; clear-store(|store)); tidy-up(|store)> conjectures
         where
@@ -163,6 +161,17 @@ rules
      */
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
                                    \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\); conc(|term)
+
+    /**
+     * Initialized the given store with the context bindings.
+     *
+     * @param store - a store
+     * @type List(term) -> store
+     */
+    initialize-store(|store, context-definitions, context-classes) =
+                               filter(node-is-ctx-bind);
+                               mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
+                               update-store(|store)
 
     /**
      * Updates the store `s` with the provided context bindings. Context
