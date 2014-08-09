@@ -20,7 +20,6 @@ rules
   	   (selected, position, ast, path, project-path) -> (filename, result)
   with
     filename := "syntax/Generated.sdf";
-    //result := <toSdf> selected
     aterm := <toSdf> selected;
     result := <pp-sdf> aterm
     
@@ -33,7 +32,6 @@ rules
 	   (selected, position, ast, path, project-path) -> (filename, result)
   with
     filename := <guarantee-extension(|"fof")> path;
-    //result := <toFOF> selected
     aterm := <toFOF> selected;
     result := <pp-fof> aterm
     
