@@ -225,6 +225,14 @@ rules
     delete : (y, [x | xs]) -> [x | <delete> (y, xs)]
 
     /**
+     * A version of `hashtable-copy' that can deal with hashtables that
+     * contain hashtables.
+     *
+     * @type HashTable(K, V) -> HashTable(K,V)
+     */
+    hashtable-deep-copy = hashtable-getlist; map(?(_, Hashtable(_)) < (id, hashtable-deep-copy) + id); hashtable-init
+
+    /**
      * Checks whether the given string is a meta-variable constructor name.
      *
      * @type String -> String

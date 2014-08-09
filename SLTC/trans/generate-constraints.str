@@ -88,8 +88,7 @@ rules
            (outputs', new-constraints)
         where
             // Execute the calls of the rule.
-            // FIXME: Restore the store after each call.
-            outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
+            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern, term, name))> (calls, []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern, term, name)> outputs;
@@ -115,7 +114,7 @@ rules
             // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
 
-    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s);
+    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
                                                           \(o, cs) ->
                                                              <unify-internal; apply-mgu(|o)> cs
                                                           \)> rulez,
@@ -148,7 +147,7 @@ rules
                             binding-constraints := <make-binding-constraints(|name)> (call, binding);
                             <generate(|j, c, t, <update-store(|s)> binding)> param;
                             (id, conc(|binding-constraints))
-                          end; singelton; conc(|accu)>
+                          end; singelton; conc(|accu); destroy-store(|s)>
 
     /**
      * Extracts the patterns out of the dependencies and appends those
@@ -207,6 +206,13 @@ rules
      * @param store - a hashtable containing hashtables
      */
     clear-store(|store) = where(<hashtable-getlist; map((id, hashtable-clear))> store)
+
+    /**
+     * Destroys the store and all containing Hashtables for contexts.
+     *
+     * @param store - a hashtable containing hashtables
+     */
+    destroy-store(|store) = where(<hashtable-getlist; map((id, hashtable-destroy))> store; <hashtable-destroy> store)
 
     /**
      * Cleans up everything that was needed during the constraint
