@@ -25,6 +25,7 @@ rules
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
         -> <map(\TypingRule(_, conjecture) ->
+                 // FIXME: Refactor/rewrite this initialization
                  (<get-inputs(|judgments);
                   \i -> <remove-all(node-is-ctx(|context-classes));
                          generate(|judgments, context-definitions, templates,
@@ -64,6 +65,7 @@ rules
              <generate'(|judgments, contexts, templates, inputs, store)> match
         where
             // Find the constraint template that matches the inputs of the given term
+            // FIXME: Better error messages if no match is found.
             match := <find-match(|inputs)> templates
 
     /**
@@ -86,6 +88,7 @@ rules
            (outputs', new-constraints)
         where
             // Execute the calls of the rule.
+            // FIXME: Restore the store after each call.
             outputs-constraints := <foldl(execute(|j, c, t, s, pattern, term, name))> (calls, []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
@@ -94,6 +97,7 @@ rules
             // Make implicit equalities
             implicit-equalities := <make-implicit-equality-constraints(|pattern, term, name)> pattern;
 
+            // The constraint set with instantiated errors.
             iconstraints := <map(instantiate-error(|pattern, term))> constraints;
 
             // Use fresh variable names to instantiate the rule.
@@ -111,7 +115,11 @@ rules
             // Merge all generated constraints.
             new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
 
-    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s); \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\)> rulez, [])
+    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, s);
+                                                          \(o, cs) ->
+                                                             <unify-internal; apply-mgu(|o)> cs
+                                                          \)> rulez,
+                                                   [])
 
     /**
      * Executes the calls specified in the rules.
