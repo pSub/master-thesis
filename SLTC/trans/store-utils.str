@@ -1,0 +1,41 @@
+module store-utils
+
+imports utils
+imports constraint-template-language
+
+rules
+
+    /**
+     * Updates the store `s` with the provided context bindings. Context
+     * bindings are a list of triples containing the context id, inputs 
+     * and outputs. 
+     *
+     * @param s - a hashtable containing hashtables
+     */
+    update-store(|s) = foldr(!s, \((ctx, i, o), s') ->
+                                    <hashtable-put(|ctx, <hashtable-get(|ctx); hashtable-put(|i, o)> s')> s'
+                                 \ <+
+                                 \(Reset(ctx), s') ->
+                                    <where(hashtable-get(|ctx); hashtable-clear)> s'
+                                 \)
+
+    /**
+     * Looks up the context `ctx` at `key`.
+     *
+     * @param s - a hashtable containing hashtables
+     */
+    lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); hashtable-get(|key)> s
+
+    /**
+     * Clears all contexts in the store.
+     *
+     * @param store - a hashtable containing hashtables
+     */
+    clear-store(|store) = where(<hashtable-getlist; map((id, hashtable-clear))> store)
+
+    /**
+     * Destroys the store and all containing Hashtables for contexts.
+     *
+     * @param store - a hashtable containing hashtables
+     */
+    destroy-store(|store) = where(<hashtable-getlist; map((id, hashtable-destroy))> store; <hashtable-destroy> store)
