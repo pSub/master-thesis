@@ -11,6 +11,7 @@ signature
        Fork : List(Rule) -> Rule
 
        Lookup  : ctx * inputs -> Lookup
+       Reset : ctx -> Reset
        Judgment : term * binding -> Judgment
        Neq : term * term -> Neq
 

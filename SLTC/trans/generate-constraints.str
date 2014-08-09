@@ -187,11 +187,12 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    update-store(|s) : ctx-binds -> <foldl(\((ctx, i, o), s') -> 
-                                                <hashtable-put(|ctx, <hashtable-get(|ctx);
-                                                                      hashtable-put(|i, o)> s'
-                                                              )> s'
-                                           \)> (ctx-binds, s)
+    update-store(|s) = foldr(!s, \((ctx, i, o), s') ->
+                                    <hashtable-put(|ctx, <hashtable-get(|ctx); hashtable-put(|i, o)> s')> s'
+                                 \ <+
+                                 \(Reset(ctx), s') ->
+                                    <where(hashtable-get(|ctx); hashtable-clear)> s'
+                                 \)
 
     /**
      * Looks up the context `ctx` at `key`.
