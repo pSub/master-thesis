@@ -28,8 +28,16 @@ rules
      * @type (List(a), List(a, List(a), List(a)) -> List(a)
      */    
     instantiate-judgment(|pattern, terms) =
-        (instantiate(|pattern, terms), map((id, instantiate(|pattern, terms),
-                                            instantiate(|pattern, terms))))
+        (instantiate(|pattern, terms), instantiate-ctx-binding(|pattern, terms))
+
+    /**
+     * An version of `instantiate' tailored for conext bindings.
+     *
+     * @param pattern - an arbitrary list of terms
+     * @param terms - an arbitrary list of terms
+     */
+    instantiate-ctx-binding(|pattern, terms) = map((id, instantiate(|pattern, terms),
+                                                    instantiate(|pattern, terms)))
 
     /**
      * An version of `instantiate` tailored for context lookups.
