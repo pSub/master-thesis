@@ -90,7 +90,7 @@ rules
     get-hole-positions(|declarations) : cons#(args) -> <add-indices> holes
         where
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
-            declaration-number := <string-to-int; inc> generic;
+            declaration-number := <string-to-int> generic;
             declaration := <index(|declaration-number)> declarations;
             holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
 

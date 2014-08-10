@@ -50,7 +50,7 @@ rules
                           solve-which-ambiguities> typing-rules;
             
             // Initialize the store that contains the contexts
-            empty-contexts := <length; range; Dupl; (id, map(new-hashtable)); zip> context-definitions;
+            empty-contexts := <map-with-index((id, new-hashtable))> context-definitions;
             store := <new-hashtable(|<length; inc> context-definitions, 100);
                              hashtable-putlist(|empty-contexts)>
 
