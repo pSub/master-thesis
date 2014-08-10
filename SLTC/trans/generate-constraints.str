@@ -145,9 +145,15 @@ rules
                           case ?Lookup(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
                           case ?CEq__(a, b, info):
-                              !([], <instantiate(|pattern', term')> [CEq__(a, b, info)])
+                              !([], [<instantiate-error(|pattern', term')>
+                                        CEq__(<instantiate(|pattern', term')> [a],
+                                              <instantiate(|pattern', term')> [b],
+                                              info) ])
                           case ?CNeq__(a, b, info):
-                              !([], <instantiate(|pattern', term')> [CNeq__(a, b, info)])
+                              !([], [ <instantiate-error(|pattern', term')>
+                                        CNeq__(<instantiate(|pattern', term')> [a],
+                                               <instantiate(|pattern', term')> [b],
+                                               info) ])
                           otherwise:
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Snd> call, binding);
