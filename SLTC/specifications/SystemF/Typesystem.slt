@@ -87,6 +87,9 @@ conjectures
 /* Positive conjectures */
 
 ===
+x fresh in (a; b; c; ())
+
+===
 y = [ x -> int ] y
 
 ===
@@ -124,8 +127,9 @@ int = [ x -> int ] x
 
 /* Negative Conjectures */
 
+
 ===
-() | () |- (\x : int . x) x : int
+x fresh in (y; x; ())
 
 ===
 () | () |- 1 1 : int
@@ -141,3 +145,6 @@ f : (int -> int); () | () |- f f : int
 
 ===
 () | () |- (\ x . \ y : y . y) [ int ] : int -> int
+
+===
+() | () |- (\ x . \ y . \ x . \ a : y . a) : all x . all y . all z . (y -> y)
