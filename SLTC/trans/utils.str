@@ -144,6 +144,11 @@ rules
     isect(|set1) : set2 -> <isect> (set1, set2)
 
     /**
+     *
+     */
+    diff(|set2) : set1 -> <diff> (set1, set2)
+
+    /**
      * Convenience wrapper around `conc`.
      *
      * @param l - some arbitary list

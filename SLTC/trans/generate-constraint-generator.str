@@ -142,7 +142,7 @@ rules
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             enum-premisses := <add-indices> premisses-list;
-            dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, j)))> enum-premisses;
+            dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion, j)))> enum-premisses;
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
             premisses := <zip> (premisses-list, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
@@ -184,12 +184,13 @@ rules
      * @param terms - judgments
      * @param decls - judgment declarations
      */
-    compute-dependencies(|terms, decls) : inputs -> 
+    compute-dependencies(|terms, conclusion, decls) : inputs ->
         <filter(where(Snd; get-typing-judgment; get-outputs(|decls);
                \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
                               \)> (input-meta-variables, [])
-               \; not(equal([]))); Fst)> terms
-        where input-meta-variables := <collect-om(node-is-meta-variable)> inputs
+               \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
+        where input-meta-variables := <collect-om(node-is-meta-variable)> inputs;
+              conclusion-meta-variables := <get-inputs(|decls); collect-om(node-is-meta-variable)> conclusion
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
