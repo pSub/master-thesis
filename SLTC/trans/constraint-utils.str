@@ -199,9 +199,9 @@ rules
      * Defines when a context pattern matches an the contexts in the store.
      */
     match-contexts(|store) =
-                    where(contexts := <hashtable-getlist; map((id, hashtable-getlist)); debug> store);
+                    where(contexts := <hashtable-getlist; map((id, (id, hashtable-getlist)))> store);
                     map(\(ctx, i, o) ->
-                            <<zip; map(match-constructors)> (<lookup'; Hd; Fst> (ctx, contexts), i);
+                            <<zip; map(match-constructors)> (<lookup'; Hd; Fst; Snd> (ctx, contexts), i);
                             <innermost(?(ctx, _); !(ctx, <lookup; Tl> (ctx, contexts)))> contexts>
                         \ <+
                         \Reset(ctx) ->  <equal> (<index> (ctx, contexts), [])
