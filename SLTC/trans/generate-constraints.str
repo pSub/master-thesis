@@ -85,20 +85,25 @@ rules
         where
             iconstraints := <map(instantiate-error(|pattern, term))> constraints
 
-    generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, (pattern, _), outputs, constraints)) ->
+    generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, (pattern, ctx), outputs, constraints)) ->
            (outputs', new-constraints)
         where
+            ctx' := <map(\(ctx, i, _) -> <pop(|s)> ctx \)> ctx;
+
+            pattern' := <conc> (pattern, <map(\(_, i, o) -> (i, o)\)> ctx);
+            term' := <conc> (term, ctx');
+
             // Execute the calls of the rule.
-            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern, term, name))> (calls, []);
+            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls, []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
-            input-output-constraints := <make-io-dependency-constraints(|pattern, term, name)> outputs;
+            input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs;
 
             // Make implicit equalities
-            implicit-equalities := <make-implicit-equality-constraints(|pattern, term, name)> pattern;
+            implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern;
 
             // The constraint set with instantiated errors.
-            iconstraints := <map(instantiate-error(|pattern, term))> constraints;
+            iconstraints := <map(instantiate-error(|pattern', term'))> constraints;
 
             // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?

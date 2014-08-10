@@ -29,6 +29,15 @@ rules
     lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); Snd; hashtable-get(|key)> s
 
     /**
+     * Removes and returns the first element from the hashmap.
+     */
+    pop(|s) : ctx -> <hashtable-get(|ctx);
+                     \ ([x | xs], context) ->
+                        <!(x, <lookup(|s)> (ctx, x));
+                        where(<hashtable-put(|ctx, (xs, <hashtable-remove(|x)> context))> s) >
+                     \> s
+
+    /**
      * Clears all contexts in the store.
      *
      * @param store - a hashtable containing hashtables
