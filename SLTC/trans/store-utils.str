@@ -42,7 +42,10 @@ rules
      *
      * @param store - a hashtable containing hashtables
      */
-    clear-store(|store) = where(<hashtable-values; map((id, hashtable-clear))> store)
+    clear-store(|store) = where(<hashtable-getlist; map(\(k, (s, c)) ->
+                                                            <<hashtable-clear> c;
+                                                            <hashtable-put(|k, ([], c))> store>
+                                                        \)> store)
 
     /**
      * Destroys the store and all containing Hashtables for contexts.
