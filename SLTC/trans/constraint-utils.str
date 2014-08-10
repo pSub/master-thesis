@@ -57,9 +57,9 @@ rules
      * @type Constraint -> List(a)
      */
     instantiate-error(|pattern, terms) : constraint ->
-        <put-info(|<get-info; maybe(\ Error(e) ->
+        <put-info(|<get-info; maybe(try(\ Error(e) ->
                                         Error(<instantiate(|pattern, terms)> e)
-                                    \ | None())
+                                    \) | None())
                    > constraint
                   )> constraint
     
