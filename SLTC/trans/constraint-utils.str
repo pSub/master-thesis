@@ -106,12 +106,11 @@ rules
      * corresponding term in a constraint binding.
      *
      * @param info - constraint information (type Info)
-     * @type (call, binding) -> List(Constraint)
+     * @type (binding, binding) -> List(Constraint)
      */
     make-binding-constraints(|info)
-        = (to-tuple; Snd; mapconcat(Dupl; (Snd, Third); conc),
-                          mapconcat(Dupl; (Snd, Third); conc));
-          zip; filter((?Var__(_), id));  map(makeEq(|info))
+        = (mapconcat(Dupl; (Snd, Third); conc), mapconcat(Dupl; (Snd, Third); conc));
+           zip; filter((?Var__(_), id));  map(makeEq(|info))
         
     /**
      * Provided with a list of paths, this strategy returns the

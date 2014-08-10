@@ -145,7 +145,7 @@ rules
                               !([], <instantiate(|pattern', term')> [CNeq__(a, b, info)])
                           otherwise:
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
-                            binding-constraints := <make-binding-constraints(|name)> (call, binding);
+                            binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Snd> call, binding);
                             <generate(|j, c, t, <update-store(|s)> binding)> param;
                             (id, conc(|binding-constraints))
                           end; singelton; conc(|accu); destroy-store(|s)>
