@@ -25,6 +25,11 @@ rules
     unify-internal : cs -> <unify'; where(Third; equal(|[])) < Snd + fail> (cs, [], [])
     unify' : ([], mgu, err) -> ([], mgu, err)
     unify' : ([CEq__(t, t, info) | cs], mgu, err) -> <unify'> (cs, mgu, err)
+    // FIXME: Fail if only inequalities are left in cs
+    unify' : ([CNeq__(t, Var__(x), info) | cs], mgu, err) ->
+         <unify'> (<conc> (cs, <singelton> CNeq__(t, Var__(x), info)), mgu, err)
+    unify' : ([CNeq__(Var__(x), t, info) | cs], mgu, err) ->
+         <unify'> (<conc> (cs, <singelton> CNeq__(Var__(x), t, info)), mgu, err)
     unify' : ([CNeq__(t, s, info)| cs], mgu, err) -> <unify'> (cs, mgu, err)
         where <not(equal)> (t, s)
     unify' : ([CEq__(t, Var__(x), info) | cs], mgu, err) ->
