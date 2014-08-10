@@ -199,6 +199,11 @@ rules
     has-edges = some(Snd; not(equal([])))
 
     /**
+     * A version of `set-index' that is 1-indexed.
+     */
+    set-index' : (i, x, xs) -> <set-index> (<dec> i, x, xs)
+
+    /**
      * Computes all indices of occurences of `y' in the list `xs'.
      *
      * @type (a, List(a)) -> List(Int)

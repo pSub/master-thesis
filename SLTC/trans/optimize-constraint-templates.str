@@ -37,7 +37,8 @@ rules
      * @param a - Rule
      * @type Rule -> Rule
      */
-    equal-mod-var(|a) = where(get-pattern; make-dummy-vars; equal(|<get-pattern; make-dummy-vars> a))
+    equal-mod-var(|a) = where(Dupl; (get-pattern, get-ctx-pattern); make-dummy-vars;
+                              equal(|<Dupl; (get-pattern, get-ctx-pattern); make-dummy-vars> a))
     
     /**
      * Replaces all occurences of Var(_) with DummyVar(). This strategy

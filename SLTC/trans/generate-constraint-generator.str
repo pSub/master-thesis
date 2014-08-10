@@ -17,7 +17,7 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <innermost(base(|judgments, context-classes) <+
+        -> <innermost(base(|judgments, context-definitions, context-classes) <+
                       step(|judgments, context-definitions, context-classes))> typing-rules
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
@@ -101,10 +101,11 @@ rules
      * @param j - judgment declarations
      * @param cc - meta-variable classes that represent contexts
      */
-    base(|j, cc) : TypingRule(RuleName(_, name), conclusion) ->
+    base(|j, c, cc) : TypingRule(RuleName(_, name), conclusion) ->
         <replace-meta-variables>
            Rule(name,
-                <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+                <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
+                 (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
                 <get-outputs(|j)> conclusion,
                 [])
 
@@ -133,9 +134,9 @@ rules
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
-                    // FIXME: Allow context-binds in conclusion, too.
                     Rule(name,
-                         <get-inputs(|j); remove-all(node-is-ctx(|cc))> conclusion,
+                         <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
+                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
                          <get-outputs(|j)> conclusion,
                          <mapconcat(\(var-out, err) -> <zip(makeEq(|err))> var-out\)> vars-outputs))
         where
@@ -192,5 +193,5 @@ rules
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
-         innermost(base(|judgments, context-classes) <+
+         innermost(base(|judgments, context-definitions, context-classes) <+
                    step(|judgments, context-definitions, context-classes))

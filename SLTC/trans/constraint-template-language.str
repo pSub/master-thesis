@@ -18,13 +18,22 @@ signature
 rules  
 
     /**
-     * Extracts the pattern from Rule or Binding
+     * Extracts the pattern from Rule, Binding or Fork
      *
      * @type Rule -> List(a)
      */
-    get-pattern : Rule(_, pattern, _, _) -> pattern
-    get-pattern : Binding(_, _, Rule(_, pattern, _, _)) -> pattern
+    get-pattern : Rule(_, (pattern, _), _, _) -> pattern
+    get-pattern : Binding(_, _, rule) -> <get-pattern> rule
     get-pattern : Fork([rule | _]) -> <get-pattern> rule
+
+    /**
+     * Extracts the context pattern from Rule, Binding or Fork
+     *
+     * @type Rule -> List(a)
+     */
+    get-ctx-pattern : Rule(_, (_, ctx), _, _) -> ctx
+    get-ctx-pattern : Binding(_, _, rule) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Fork([rule | _]) -> <get-ctx-pattern> rule
 
     /**
      * Transforms a tuple into a judgment node

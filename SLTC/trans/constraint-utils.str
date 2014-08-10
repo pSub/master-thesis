@@ -3,6 +3,7 @@ module constraint-utils
 imports utils
 imports constraint-language
 imports constraint-template-language
+imports store-utils
 
 imports include/SLTC
 
@@ -36,8 +37,8 @@ rules
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
      */
-    instantiate-ctx-binding(|pattern, terms) = map((id, instantiate(|pattern, terms),
-                                                    instantiate(|pattern, terms)))
+    instantiate-ctx-binding(|pattern, terms) = map(try((id, instantiate(|pattern, terms),
+                                                        instantiate(|pattern, terms))))
 
     /**
      * An version of `instantiate` tailored for context lookups.
@@ -165,18 +166,26 @@ rules
      * FIXME: What if multiple rules match?
      *
      * @param inputs - a list of arbitary terms
+     * @param store - a hashmap containing hashmaps
      * @type List(Rule) -> Rule
      */    
-    find-match(|inputs) : [] -> <singelton; error> "No match found!"
-    find-match(|inputs) : [t|ts] -> <if equal(|<length> inputs, <get-pattern; length> t)
-                                     then if <zip; Dupl; (filter(match-constructors); length,
-                                                          length); equal> (inputs, <get-pattern> t)
-                                           then !t
-                                           else <find-match(|inputs)> ts
-                                           end
-                                     else <find-match(|inputs)> ts
-                                     end>
-    
+    find-match(|inputs, store) : [] -> <singelton; error> "No match found!"
+    find-match(|inputs, store) : [t|ts] ->
+        <let check-constructors = zip; Dupl; (filter(match-constructors); length, length); equal
+             check-contexts(|store) : (i, t) -> <get-ctx-pattern;
+                                                 instantiate-ctx-binding(|<get-pattern> t, i);
+                                                 match-contexts(|store)> t
+         in
+            if equal(|<length> inputs, <get-pattern; length> t)
+            then if <check-constructors> (inputs, <get-pattern> t);
+                    <check-contexts(|store)> (inputs, t)
+                 then !t
+                 else <find-match(|inputs, store)> ts
+                 end
+            else <find-match(|inputs, store)> ts
+            end
+         end>
+
     /**
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
@@ -185,3 +194,15 @@ rules
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t
+
+    /**
+     * Defines when a context pattern matches an the contexts in the store.
+     */
+    match-contexts(|store) =
+                    where(contexts := <hashtable-getlist; map((id, hashtable-getlist)); debug> store);
+                    map(\(ctx, i, o) ->
+                            <<zip; map(match-constructors)> (<lookup'; Hd; Fst> (ctx, contexts), i);
+                            <innermost(?(ctx, _); !(ctx, <lookup; Tl> (ctx, contexts)))> contexts>
+                        \ <+
+                        \Reset(ctx) ->  <equal> (<index> (ctx, contexts), [])
+                        \)

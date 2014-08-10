@@ -67,7 +67,7 @@ rules
         where
             // Find the constraint template that matches the inputs of the given term
             // FIXME: Better error messages if no match is found.
-            match := <find-match(|inputs)> templates
+            match := <find-match(|inputs, store)> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -79,13 +79,13 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|j, c, t, term, s) : Rule(name, pattern, outputs, constraints) ->
+    generate'(|j, c, t, term, s) : Rule(name, (pattern, _), outputs, constraints) ->
             (outputs, <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
                               <make-implicit-equality-constraints(|pattern, term, name)> pattern))
         where
             iconstraints := <map(instantiate-error(|pattern, term))> constraints
 
-    generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, pattern, outputs, constraints)) ->
+    generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, (pattern, _), outputs, constraints)) ->
            (outputs', new-constraints)
         where
             // Execute the calls of the rule.
