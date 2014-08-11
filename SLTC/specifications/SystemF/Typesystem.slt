@@ -21,14 +21,14 @@ rules
 
 /* Typing rules */
 
-%x : ~T in $C1        @error %x "should have type" ~T
+%x : ~T in $C1        @error %x "should have type" ~T "but has type" INFTYPE
 =============== T-Var
 $C1 | $C2 |- %x : ~T
 
 ============== T-int
 $C1 | $C2 |- &i : int
 
-(%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
+(%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2     @error ~t2 "should have type" ~T2 "but has type" INFTYPE
 ==================================== T-Abs
 $C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
 
@@ -37,13 +37,13 @@ $C1 | $C2 |- ~t2 : ~T11             @error ~t2 "should have type" ~T11 "but has 
 ================================ T-App
 $C1 | $C2 |- ~t1 ~t2 : ~T12
 
-$C1 | (%x ; $C2) |- ~t2 : ~T2
+$C1 | (%x ; $C2) |- ~t2 : ~T2           @error ~t2 "should have type" ~T2 "but has type" INFTYPE
 %x fresh in $C2
 ======================================= T-Tabs
 $C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
 
-~U = [ %x -> ~S ] ~T
-$C1 | $C2 |- ~e : all %x . ~T
+~U = [ %x -> ~S ] ~T            @error ~U "is not" ~T "where" %x "is replaced by" ~S
+$C1 | $C2 |- ~e : all %x . ~T   @error ~e "should have type all" %x "." ~T "but has type" INFTYPE
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
 
@@ -142,6 +142,9 @@ f : int ; () | () |- f 1 : int
 
 ======
 f : (int -> int); () | () |- f f : int
+
+===
+() | () |- x : int
 
 ===
 () | () |- \ x . \ y : x . y : all x . x

@@ -167,8 +167,8 @@ rules
      * @param inputs - a list of arbitary terms
      * @param store - a hashmap containing hashmaps
      * @type List(Rule) -> Rule
-     */    
-    find-match(|inputs, store) : [] -> <singelton; error> "No match found!"
+     */
+    find-match(|inputs, store) : [] -> <singelton; error; fail> "No match found!"
     find-match(|inputs, store) : [t|ts] ->
         <let check-constructors = zip; Dupl; (filter(match-constructors); length, length); equal
              check-contexts(|store) : (i, t) -> <get-ctx-pattern;

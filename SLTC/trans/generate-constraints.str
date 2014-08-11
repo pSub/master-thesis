@@ -64,7 +64,7 @@ rules
      */
     generate(|judgments, contexts, templates, store) : inputs ->
              <generate'(|judgments, contexts, templates, inputs, store)> match
-        where
+        with
             // Find the constraint template that matches the inputs of the given term
             // FIXME: Better error messages if no match is found.
             match := <find-match(|inputs, store)> templates
@@ -142,7 +142,10 @@ rules
                           term' := <update-term(|term, accu)> dep;
                           switch !call
                           case ?Lookup(_,_):
-                              <to-tuple; instantiate-lookup(|pattern', term'); lookup(|s); \ o -> (o, [])\> call
+                              <to-tuple; instantiate-lookup(|pattern', term');
+                               // FIXME: Wrap the output into Option
+                               (lookup(|s) < \ o -> (o, [])\ +
+                                             \ (_, o) -> (o, [CFail(Error([o, " not found in context"]))])\)> call
                           case ?CEq__(a, b, info):
                               !([], [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],

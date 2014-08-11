@@ -7,6 +7,7 @@ signature
     constructors
        Info : Option(String) -> Info
        Var__ : String -> term
+       CFail : info -> Constraint
        CEq__ : term * term * Info -> Constraint
        CNeq__ : term * term * Info -> Constraint
        Constraints__ : List(Constraint) -> Constraints
@@ -35,13 +36,13 @@ rules
      * @type (a, b) -> CNeq__(a, b, info)
      */
     makeNeq(|info) : (a, b) -> CNeq__(a, b, info)
-    
+
     /**
      * Extracts information about a constraint.
      *
      * @type Constraint -> Info
      */
-    get-info = proj(CEq__|3) <+ proj(CNeq__|3)
+    get-info = proj(CEq__|3) <+ proj(CNeq__|3) <+ proj(CFail|1)
     
     /**
      * Replaces the information of a constraint with new information.
@@ -51,3 +52,4 @@ rules
      */
     put-info(|info) : CEq__(a, b, _) -> CEq__(a, b, info)
     put-info(|info) : CNeq__(a, b, _) -> CNeq__(a, b, info)
+    put-info(|info) : CFail(_) -> CFail(info)
