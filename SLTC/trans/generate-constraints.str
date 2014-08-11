@@ -90,35 +90,34 @@ rules
         where
             ctx' := <map(\(ctx, i, _) -> <pop(|s)> ctx \)> ctx;
 
-            pattern' := <conc> (pattern, <map(\(_, i, o) -> (i, o)\)> ctx);
-            term' := <conc> (term, ctx');
-
-            // Execute the calls of the rule.
-            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls, []);
-
-            // Make constraints for input-output dependencies in the conclusion of the rule.
-            input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs;
-
-            // Make implicit equalities
-            implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern;
-
-            // The constraint set with instantiated errors.
-            iconstraints := <map(instantiate-error(|pattern', term'))> constraints;
+            pattern'' := <conc> (pattern, <map(\(_, i, o) -> (i, o)\)> ctx);
+            term'' := <conc> (term, ctx');
 
             // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v \)> (xs, outputs, constraints, outputs-constraints, input-output-constraints);
-            (xs', outputs', constraints', outputs-constraints', io-constraints', implicit-equalities') := <zip; replace-all(|(xs, outputs, iconstraints, outputs-constraints, input-output-constraints, implicit-equalities))>
-                                                                    (vars, <length; newnames(|"Y"); map(makeVar)> vars);
+            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v\)> (xs, pattern'', term'', calls, constraints);
+            (xs', pattern', term', calls', constraints', outputs') := <zip; replace-all(|(xs , pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
+
+            // Execute the calls of the rule.
+            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
+
+            // Make constraints for input-output dependencies in the conclusion of the rule.
+            input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
+
+            // Make implicit equalities
+            implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern';
+
+            // The constraint set with instantiated errors.
+            iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
             // Assoziate the outputs of the calls with the variables of the binding.
-            xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints');
+            xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
 
             // Replace all previously bound variables with their values in the constraint set.
-            constraints'' := <replace-all(|constraints')> xs-outputs;
+            constraints'' := <replace-all(|iconstraints)> xs-outputs;
 
             // Merge all generated constraints.
-            new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints', io-constraints', implicit-equalities')
+            new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints, input-output-constraints, implicit-equalities)
 
     generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
                                                           \(o, cs) ->
