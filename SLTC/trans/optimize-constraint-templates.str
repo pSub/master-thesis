@@ -10,7 +10,7 @@ imports generate-constraint-generator
 signature
     sorts DummyVar
     constructors
-        DummyVar : DummyVar
+        DummyVar__ : DummyVar
 
 rules
     
@@ -47,6 +47,6 @@ rules
      * @internal
      * @type a -> a
      */
-    make-dummy-vars = innermost(?Var__(_); !DummyVar()) 
+    make-dummy-vars = innermost(?Var__(_); !DummyVar__()) 
     
     optimize-templates = make-constraint-generator; solve-which-ambiguities

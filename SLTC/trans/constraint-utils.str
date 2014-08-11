@@ -205,5 +205,5 @@ rules
                             <<zip; map(match-constructors)> (<lookup'; Hd> (ctx, contexts), i);
                              <alltd(?(ctx, _); !(ctx, <lookup; Tl> (ctx, contexts)))> contexts>
                         \ <+
-                        \Reset(ctx) ->  <equal> (<lookup> (ctx, contexts), [])
+                        \Reset__(ctx) ->  <equal> (<lookup> (ctx, contexts), [])
                         \)

@@ -24,7 +24,7 @@ rules
     unify : cs -> <unify'> (cs, [], [])
     unify-internal : cs -> <unify'; where(Third; equal(|[])) < Snd + fail> (cs, [], [])
     unify' : ([], mgu, err) -> ([], mgu, err)
-    unify' : ([CFail(info) | cs], mgu, err) -> <unify'> (cs, mgu, [info | err])
+    unify' : ([CFail__(info) | cs], mgu, err) -> <unify'> (cs, mgu, [info | err])
     unify' : ([CEq__(t, t, info) | cs], mgu, err) -> <unify'> (cs, mgu, err)
     // FIXME: Fail if only inequalities are left in cs
     unify' : ([CNeq__(t, Var__(x), info) | cs], mgu, err) ->

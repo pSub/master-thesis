@@ -4,16 +4,16 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
-       Rule : Option(String) * Pattern * Outputs * Constraints -> Rule
-       Binding : List(List(var)) * List(call) * Rule -> Rule
+       Rule__ : Option(String) * Pattern * Outputs * Constraints -> Rule
+       Binding__ : List(List(var)) * List(call) * Rule -> Rule
 
        /** Extended Language */
-       Fork : List(Rule) -> Rule
+       Fork__ : List(Rule) -> Rule
 
-       Lookup  : ctx * inputs -> Lookup
-       Reset : ctx -> Reset
-       Judgment : term * binding -> Judgment
-       Neq : term * term -> Neq
+       Lookup__  : ctx * inputs -> Lookup
+       Reset__ : ctx -> Reset
+       Judgment__ : term * binding -> Judgment
+       Neq__ : term * term -> Neq
 
 rules  
 
@@ -22,36 +22,36 @@ rules
      *
      * @type Rule -> List(a)
      */
-    get-pattern : Rule(_, (pattern, _), _, _) -> pattern
-    get-pattern : Binding(_, _, rule) -> <get-pattern> rule
-    get-pattern : Fork([rule | _]) -> <get-pattern> rule
+    get-pattern : Rule__(_, (pattern, _), _, _) -> pattern
+    get-pattern : Binding__(_, _, rule) -> <get-pattern> rule
+    get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
      * Extracts the context pattern from Rule, Binding or Fork
      *
      * @type Rule -> List(a)
      */
-    get-ctx-pattern : Rule(_, (_, ctx), _, _) -> ctx
-    get-ctx-pattern : Binding(_, _, rule) -> <get-ctx-pattern> rule
-    get-ctx-pattern : Fork([rule | _]) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Rule__(_, (_, ctx), _, _) -> ctx
+    get-ctx-pattern : Binding__(_, _, rule) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
      * Transforms a tuple into a judgment node
      *
      * @type (a, b) -> Judgment(a, b)
      */
-    mkJudgment : (a, b) -> Judgment(a, b)
+    mkJudgment : (a, b) -> Judgment__(a, b)
 
     /**
      * Transforms a tuple into a lookup node
      *
      * @type (a, b) -> Lookup(a, b)
      */
-    mkLookup : (a, b) -> Lookup(a, b)
+    mkLookup : (a, b) -> Lookup__(a, b)
 
     /**
      * Transforms a tuple into a fork node
      *
      * @type List(Rule) -> Fork(List(Rule))
      */
-    mkFork : xs -> Fork(xs)
+    mkFork : xs -> Fork__(xs)

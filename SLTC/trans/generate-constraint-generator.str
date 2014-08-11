@@ -17,8 +17,7 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <innermost(base(|judgments, context-definitions, context-classes) <+
-                      step(|judgments, context-definitions, context-classes))> typing-rules
+        -> <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules
         where
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
             context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
@@ -103,7 +102,7 @@ rules
      */
     base(|j, c, cc) : TypingRule(RuleName(_, name), conclusion) ->
         <replace-meta-variables>
-           Rule(name,
+           Rule__(name,
                 <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                  (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
                 <get-outputs(|j)> conclusion,
@@ -121,7 +120,7 @@ rules
      */
     step(|j, c, cc) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
-            Binding(<map(Fst; Fst)> vars-outputs,
+          Binding__(<map(Fst; Fst)> vars-outputs,
                     <map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
                               (get-typing-judgment; Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
@@ -134,7 +133,7 @@ rules
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
-                    Rule(name,
+                  Rule__(name,
                          <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
                          <get-outputs(|j)> conclusion,
@@ -167,7 +166,7 @@ rules
      */
     ctx-bind-to-kv-list(|c, cc) : node -> []
         where <node-is-ctx-var(|cc)> node
-    ctx-bind-to-kv-list(|c, cc) : node -> [Reset(ctx)]
+    ctx-bind-to-kv-list(|c, cc) : node -> [Reset__(ctx)]
         where <node-is-ctx-empty> node;
               ctx := <get-context-id> node
     ctx-bind-to-kv-list(|c, cc) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c, cc)> tail]

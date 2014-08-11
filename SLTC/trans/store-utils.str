@@ -17,7 +17,7 @@ rules
                                                     <hashtable-get(|ctx);
                                                     (\xs -> [i|xs]\, hashtable-put(|i, o))> s')> s'
                                  \ <+
-                                 \(Reset(ctx), s') ->
+                                 \(Reset__(ctx), s') ->
                                     <where(hashtable-get(|ctx); (![], hashtable-clear))> s'
                                  \)
 

@@ -80,14 +80,14 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|j, c, t, term, s) : Rule(name, (pattern, _), outputs, constraints) ->
+    generate'(|j, c, t, term, s) : Rule__(name, (pattern, _), outputs, constraints) ->
             (outputs, <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
                               <make-implicit-equality-constraints(|pattern, term, name)> pattern))
         where
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern, term))> constraints
 
-    generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, (pattern, ctx), outputs, constraints)) ->
+    generate'(|j, c, t, term, s) : Binding__(xs, calls, Rule__(name, (pattern, ctx), outputs, constraints)) ->
            (outputs', new-constraints)
         where
             // Retrieve and remove elements from the context according to the context pattern.
@@ -125,7 +125,7 @@ rules
             // Merge all generated constraints.
             new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints, input-output-constraints, implicit-equalities)
 
-    generate'(|j, c, t, term, s) : Fork(rulez) ->
+    generate'(|j, c, t, term, s) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output. The constraint
            // set is empty, because all produced constraints are already solved.
@@ -151,11 +151,11 @@ rules
                  <finally(pattern' := <update-pattern(|pattern)> dep;
                           term' := <update-term(|term, accu)> dep;
                           switch !call
-                          case ?Lookup(_,_):
+                          case ?Lookup__(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term');
                                // FIXME: Wrap the output into Option
                                (lookup(|s) < \ o -> (o, [])\ +
-                                             \ (_, o) -> (o, [CFail(Error([o, " not found in context"]))])\)> call
+                                             \ (_, o) -> (o, [CFail__(Error([o, " not found in context"]))])\)> call
                           case ?CEq__(a, b, info):
                               !([], [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
