@@ -19,7 +19,7 @@ rules
      */
     instantiate(|pattern, terms) : input -> <memo(instantiate')> (input, pattern, terms)
     instantiate' : (input, pattern, terms) -> <foldl(\((x, t), i) -> <oncetd(?x; !t)> i\)> (instantiations, input)
-        where instantiations := <make-set; find-matching-positions(|pattern); extract-terms(|terms)> input
+        where instantiations := <collect-om(?Var__(_)); make-set; find-matching-positions(|pattern); extract-terms(|terms)> input
 
     /**
      * An version of `instantiate` tailored for judgments.
