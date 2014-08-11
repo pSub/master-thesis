@@ -33,6 +33,7 @@ rules
                                    <initialize-store(|store, context-definitions, context-classes)> i)> i
                   \;
                   \(outputs, constraints) ->
+                    // FIMXE: Improve error messages in these constraints.
                     (outputs, <conc> (<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs(|judgments)> conjecture), constraints))
                   \> conjecture, <get-outputs(|judgments)> conjecture)
                 \, clear-store(|store))), tidy-up(|store))> conjectures
