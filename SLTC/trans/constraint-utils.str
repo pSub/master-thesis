@@ -189,10 +189,12 @@ rules
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
      */
-    match-constructors : (t, s) -> <equal(|t-cons, s-cons) <+ <?Var__(_)> s>
+    match-constructors : (t, s) -> <<?Var__(_)> s <+ equal(|t-cons, s-cons); <zip> (t-args, s-args); map(match-constructors)>
         where
             s-cons := <get-constructor> s;
-            t-cons := <get-constructor> t
+            t-cons := <get-constructor> t;
+            s-args := <get-arguments> s;
+            t-args := <get-arguments> t
 
     /**
      * Defines when a context pattern matches an the contexts in the store.
