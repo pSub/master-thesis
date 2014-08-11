@@ -84,14 +84,19 @@ rules
             (outputs, <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
                               <make-implicit-equality-constraints(|pattern, term, name)> pattern))
         where
+            // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern, term))> constraints
 
     generate'(|j, c, t, term, s) : Binding(xs, calls, Rule(name, (pattern, ctx), outputs, constraints)) ->
            (outputs', new-constraints)
         where
+            // Retrieve and remove elements from the context according to the context pattern.
             ctx' := <map(\(ctx, i, _) -> <pop(|s)> ctx \)> ctx;
 
+            // Append the context pattern to the input pattern.
             pattern'' := <conc> (pattern, <map(\(_, i, o) -> (i, o)\)> ctx);
+
+            // Append the instantiated context pattern to the input term.
             term'' := <conc> (term, ctx');
 
             // Use fresh variable names to instantiate the rule.
@@ -105,26 +110,28 @@ rules
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
 
-            // Make implicit equalities
+            // Make constraints for implicit equalities in the conclusion.
             implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern';
 
-            // The constraint set with instantiated errors.
+            // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
-            // Assoziate the outputs of the calls with the variables of the binding.
+            // Associate the outputs of the calls with the variables of the binding.
             xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
 
             // Replace all previously bound variables with their values in the constraint set.
             constraints'' := <replace-all(|iconstraints)> xs-outputs;
 
             // Merge all generated constraints.
-            new-constraints := <conc> ( constraints'', <mapconcat(Snd)> outputs-constraints, input-output-constraints, implicit-equalities)
+            new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints, input-output-constraints, implicit-equalities)
 
-    generate'(|j, c, t, term, s) : Fork(rulez) -> (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
-                                                          \(o, cs) ->
-                                                             <unify-internal; apply-mgu(|o)> cs
-                                                          \)> rulez,
-                                                   [])
+    generate'(|j, c, t, term, s) : Fork(rulez) ->
+           // Apply all rules until the first one produces a solvable constraint set
+           // apply the resulting mgu and return the term as an output. The constraint
+           // set is empty, because all produced constraints are already solved.
+           (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
+                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\)> rulez,
+           [])
 
     /**
      * Executes the calls specified in the rules.
@@ -139,7 +146,9 @@ rules
      * @type ((call, dependencies), accumulator) -> (outputs, constraints)
      */
     execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
-                         <pattern' := <update-pattern(|pattern)> dep;
+                          // Update the pattern and the term according to
+                          // the dependencies.
+                 <finally(pattern' := <update-pattern(|pattern)> dep;
                           term' := <update-term(|term, accu)> dep;
                           switch !call
                           case ?Lookup(_,_):
@@ -158,11 +167,21 @@ rules
                                                <instantiate(|pattern', term')> [b],
                                                info) ])
                           otherwise:
+                            // Instantiate the judgment that shall be called.
                             (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
+
+                            // Create constraints for the variables in the context bindings.
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Snd> call, binding);
+
+                            // Call generate for the instantiated judgment and the updated store.
                             <generate(|j, c, t, <update-store(|s)> binding)> param;
+
+                            // Pass the outputs untouched and add the binding constraints to
+                            // the resulting constraints.
                             (id, conc(|binding-constraints))
-                          end; singelton; conc(|accu); destroy-store(|s)>
+                          end;
+                          singelton; conc(|accu), // Book keeping.
+                          destroy-store(|s))>
 
     /**
      * Extracts the patterns out of the dependencies and appends those
