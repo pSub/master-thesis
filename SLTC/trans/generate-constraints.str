@@ -25,7 +25,7 @@ rules
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
-        -> <map(\TypingRule(_, conjecture) ->
+        -> <finally(map(finally(\TypingRule(_, conjecture) ->
                  // FIXME: Refactor/rewrite this initialization
                  (<get-inputs(|judgments);
                   \i -> <remove-all(node-is-ctx(|context-classes));
@@ -35,7 +35,7 @@ rules
                   \(outputs, constraints) ->
                     (outputs, <conc> (<zip; map(makeEq(|Some("[Conjecture]")))> (outputs, <get-outputs(|judgments)> conjecture), constraints))
                   \> conjecture, <get-outputs(|judgments)> conjecture)
-                \; clear-store(|store)); tidy-up(|store)> conjectures
+                \, clear-store(|store))), tidy-up(|store))> conjectures
         where
             // Retrieve all context names
             context-names := <map(proj(ContextDefinition|1))> context-definitions;
