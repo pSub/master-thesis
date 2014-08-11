@@ -111,7 +111,6 @@ rules
     /**
      * Rule that transforms typing rules with premisses into a constraint template.
      *
-     * FIXME: Allow checks for empty contexts
      * FIXME: This code needs refactoring
      *
      * @param j - judgment declarations
