@@ -1,9 +1,0 @@
-bin,
-.cache
-include/
-editor/java/trans
-editor/STLC-*.generated.esv
-syntax/STLC.generated.pp
-.settings/org.eclipse.jdt.core.prefs
-lib/*.generated.str
-lib-refactoring/*.generated.str
