@@ -105,9 +105,7 @@ rules
             (xs', pattern', term', calls', constraints', outputs') := <zip; replace-all(|(xs , pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
-            outputs-constraints := <foldl(finally(s' := <hashtable-deep-copy> s;
-                                                  execute(|j, c, t, s', pattern', term', name),
-                                                  destroy-store(|s')))> (calls', []);
+            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
@@ -150,7 +148,7 @@ rules
     execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
                           // Update the pattern and the term according to
                           // the dependencies.
-                         <pattern' := <update-pattern(|pattern)> dep;
+                 <finally(pattern' := <update-pattern(|pattern)> dep;
                           term' := <update-term(|term, accu)> dep;
                           switch !call
                           case ?Lookup__(_,_):
@@ -182,7 +180,8 @@ rules
                             // the resulting constraints.
                             (id, conc(|binding-constraints))
                           end;
-                          singelton; conc(|accu)> // Book keeping.
+                          singelton; conc(|accu), // Book keeping.
+                          destroy-store(|s))>
 
     /**
      * Extracts the patterns out of the dependencies and appends those
