@@ -64,11 +64,10 @@ rules
      * @param store - list of hashtables that store context information
      */
     generate(|judgments, contexts, templates, store) : inputs ->
-             <generate'(|judgments, contexts, templates, inputs, store)> match
-        with
-            // Find the constraint template that matches the inputs of the given term
-            // FIXME: Better error messages if no match is found.
-            match := <find-match(|inputs, store)> templates
+             // Find the constraint template that matches the inputs of the given term
+             // if a matching rule could be found evaluate that, otherwise return an error.
+             <find-match(|inputs, store) <generate'(|judgments, contexts, templates, inputs, store)
+                                         + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -108,7 +107,7 @@ rules
             outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
-            input-output-constraints := <filter(\Some(s) -> s\); make-io-dependency-constraints(|pattern', term', name)> outputs';
+            input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
 
             // Make constraints for implicit equalities in the conclusion.
             implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern';
@@ -130,7 +129,7 @@ rules
            // apply the resulting mgu and return the term as an output. The constraint
            // set is empty, because all produced constraints are already solved.
            (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
-                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\) < id + !None()> rulez,
+                   \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\) < id + !None()> rulez,
            [])
 
     /**
@@ -148,12 +147,11 @@ rules
     execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
                           // Update the pattern and the term according to
                           // the dependencies.
-                 <finally(pattern' := <update-pattern(|pattern)> dep;
-                          term' := <update-term(|term, accu)> dep;
+                <finally((term', pattern') := <update(|pattern, term, accu)> dep;
+
                           switch !call
                           case ?Lookup__(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term');
-                               // FIXME: Wrap the output into Option
                                (lookup(|s) < \ o -> (Some(o), [])\ +
                                              \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
                           case ?CEq__(a, b, info):
@@ -182,26 +180,20 @@ rules
                           end;
                           singelton; conc(|accu), // Book keeping.
                           destroy-store(|s))>
-
     /**
      * Extracts the patterns out of the dependencies and appends those
      * to the pattern of the conclusion.
-     *
-     * @param pattern - the pattern of the conclusion
-     * @type dependencies -> List(pattern) 
-     */
-    update-pattern(|pattern) = map(Snd); conc(|pattern)
-
-    /**
      * Extracts the already computed outputs and constraints and unify those
      * that are listed in the given dependencies.
      *
+     * @param pattern - the pattern of the conclusion
      * @param term - an arbitary term
      * @param accu - the accumulator of `execute'
-     * @type dependencies -> a
-     */
-    update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
-                                   \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\); conc(|term)
+     * @type dependencies -> List(pattern) 
+     */                      
+    update(|pattern, term, accu) = filter(Dupl;(Fst; \i -> <index(|i)> accu\;
+                                           \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\,
+                                           Snd)); unzip; (conc(|term), conc(|pattern))
 
     /**
      * Initialized the given store with the context bindings.
