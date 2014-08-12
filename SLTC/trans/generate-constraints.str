@@ -32,9 +32,10 @@ rules
                          generate(|judgments, context-definitions, templates,
                                    <initialize-store(|store, context-definitions, context-classes)> i)> i
                   \;
-                  \(outputs, constraints) ->
+                  try(\(Some(outputs), constraints) ->
                     (outputs, <conc> (<zip; map(\(a, b) -> <makeEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture), constraints))
-                  \> conjecture, <get-outputs(|judgments)> conjecture)
+                  \)
+                  > conjecture, <get-outputs(|judgments)> conjecture)
                 \, clear-store(|store))), tidy-up(|store))> conjectures
         where
             // Retrieve all context names
@@ -80,14 +81,14 @@ rules
      * @param s - hashtable containing hashtables that store context information
      */
     generate'(|j, c, t, term, s) : Rule__(name, (pattern, _), outputs, constraints) ->
-            (outputs, <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
+            (Some(outputs), <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
                               <make-implicit-equality-constraints(|pattern, term, name)> pattern))
         where
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern, term))> constraints
 
     generate'(|j, c, t, term, s) : Binding__(xs, calls, Rule__(name, (pattern, ctx), outputs, constraints)) ->
-           (outputs', new-constraints)
+           (Some(outputs'), new-constraints)
         where
             // Retrieve and remove elements from the context according to the context pattern.
             ctx' := <map(\(ctx, i, _) -> <pop(|s)> ctx \)> ctx;
@@ -107,7 +108,7 @@ rules
             outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
-            input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
+            input-output-constraints := <filter(\Some(s) -> s\); make-io-dependency-constraints(|pattern', term', name)> outputs';
 
             // Make constraints for implicit equalities in the conclusion.
             implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern';
@@ -116,7 +117,7 @@ rules
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
             // Associate the outputs of the calls with the variables of the binding.
-            xs-outputs := <zip; mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
+            xs-outputs := <zip; filter(\(xs, Some(s)) -> (xs, s)\); mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
 
             // Replace all previously bound variables with their values in the constraint set.
             constraints'' := <replace-all(|iconstraints)> xs-outputs;
@@ -129,7 +130,7 @@ rules
            // apply the resulting mgu and return the term as an output. The constraint
            // set is empty, because all produced constraints are already solved.
            (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
-                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\)> rulez,
+                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\) < id + !None()> rulez,
            [])
 
     /**
@@ -153,15 +154,15 @@ rules
                           case ?Lookup__(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term');
                                // FIXME: Wrap the output into Option
-                               (lookup(|s) < \ o -> (o, [])\ +
-                                             \ (_, o) -> (o, [CFail__(Error([o, " not found in context"]))])\)> call
+                               (lookup(|s) < \ o -> (Some(o), [])\ +
+                                             \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
                           case ?CEq__(a, b, info):
-                              !([], [<instantiate-error(|pattern', term')>
+                              !(Some([]), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
                                               <instantiate(|pattern', term')> [b],
                                               info) ])
                           case ?CNeq__(a, b, info):
-                              !([], [ <instantiate-error(|pattern', term')>
+                              !(Some([]), [ <instantiate-error(|pattern', term')>
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
                                                info) ])
@@ -200,7 +201,7 @@ rules
      * @type dependencies -> a
      */
     update-term(|term, accu) = map(Fst; \i -> <index(|i)> accu\;
-                                   \(o, cs) -> <unify-internal; apply-mgu(|o)> cs\); conc(|term)
+                                   \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\); conc(|term)
 
     /**
      * Initialized the given store with the context bindings.
