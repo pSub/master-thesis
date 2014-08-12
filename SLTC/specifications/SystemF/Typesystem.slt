@@ -132,6 +132,9 @@ int = [ x -> int ] x
 x fresh in (y; x; ())
 
 ===
+() | () |- \ x : int . x : int
+
+===
 () | () |- (\x : int . x) x : int
 
 ===
