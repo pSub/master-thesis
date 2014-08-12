@@ -64,3 +64,11 @@
   - Meta-language is divided into two languages, one is specifically desinged to describe binding constructs
   - Meta-language is compiled to proof-assistent and latex code
 * Automatic Generation of Object-Oriented Type Checkers
+* [#C] Strict Bidirectional Type Checking
+  - Does not seem that helpfule.
+  - Look into it if I have time left, or no other ideas.
+* [#A] Checking Algorithms for Pure Type Systems
+  - This can be interesting!
+  - They do not do this automatically, but the reasoning might be interessting.
+* [#A] Automatic Type Inference via Partial Evaluation
+  - Very interesting and closely related to my work
