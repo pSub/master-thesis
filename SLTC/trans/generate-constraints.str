@@ -10,11 +10,6 @@ imports generate-constraint-generator
 imports store-utils
 imports include/SLTC
 
-signature
-    sorts Constraint
-    constructors
-        ConstraintSet : List(Constraint)
-
 rules
     generate-constraints :
         Module(ModuleDec(_),
