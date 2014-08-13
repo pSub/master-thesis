@@ -51,12 +51,12 @@ signature
 			                             FOFGoal__(<conc> (aux-formulas,
 			                                               <makeConjecture; makeInequalities> conjecture),
 			                                        typing-rule-formulas,
-			                                        <makeConjecture> conjecture)
+			                                        <cleanup; makeConjecture> conjecture)
 			                           \)> conjectures
 			                   \ | [FOFGoal__(aux-formulas, typing-rule-formulas)])> some-conjectures
         where
             context-formulas := <map-with-index(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas := <map(innermost(cleanup); rewriteTypingRule)> TypingRules;
+            typing-rule-formulas := <map(cleanup; rewriteTypingRule)> TypingRules;
             
             // Create the injectivity and univalence formulas
             helper := <collect-all(?Term__(_, _)); nub;
@@ -69,7 +69,8 @@ signature
     /**
      * Remove nodes that are not relevant for first-order formular generation.
      */
-    cleanup : ErrorTypingJudgment(j, e) -> j
+    cleanup = innermost(cleanup')
+    cleanup' : ErrorTypingJudgment(j, e) -> j
 
     // Auxilary function that allows 'pointfree' notation. 
     makeNeq : (x,y) -> Neq__(x,y)
