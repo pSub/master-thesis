@@ -163,37 +163,32 @@ signature
 	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
 	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
 	rewriteTypingJudgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
-			
-	// Typing rules
-	rewriteTypingRule : TypingRule(RuleName(_, Name), consequence) -> Formula__(<option-to-string-newname(|"formula")> Name, Axiom__(), prop)
-	   with // Rewrite consequence and collect all free variables
-	   	    consequence' := <rewrite> consequence;
-	        free-vars-in-rule := <free-vars> consequence';
-	        // if there are non free variables omit quantification as
-	        // it is illegal in TPTP to quantify over no variables.
-	        prop := <if [] then <id> consequence' else <id> All__(free-vars-in-rule, consequence') end> free-vars-in-rule
-	        
-	rewriteTypingRule : TypingRule(premises, RuleName(_, Name), consequence) 
-	                       -> Formula__(<option-to-string-newname(|"formula")> Name, Axiom__(), prop)
-	   with // Rewrite consequence and premises and collect all free variables
-	   	    consequence' := <rewrite> consequence;
+
+	rewriteTypingRule = makeFormula(|Axiom__())
+	makeConjecture = makeFormula(|Conjecture__())
+
+    type-to-string : Axiom__() -> "formula"
+    type-to-string : Conjecture__() -> "goal"
+
+    makeFormula(|type) : TypingRule(RuleName(_, name), consequence)
+                     -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
+       with // Rewrite consequence and collect all free variables
+            consequence' := <rewrite> consequence;
+            free-vars-in-rule := <free-vars> consequence';
+            // if there are non free variables omit quantification as
+            // it is illegal in TPTP to quantify over no variables.
+            prop := <if [] then <id> consequence' else <id> All__(free-vars-in-rule, consequence') end> free-vars-in-rule
+
+    makeFormula(|type) : TypingRule(premises, RuleName(_, name), consequence)
+                           -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
+       with // Rewrite consequence and premises and collect all free variables
+            consequence' := <rewrite> consequence;
             premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
-	        free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
-	        implication := Impl__(premises', consequence');
-			// if there are non free variables omit quantification as
-	        // it is illegal in TPTP to quantify over no variables.
-	        prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
-	        
-	// Conjectures
-	// FIXME: Doesn't it make sense to quantify over variables in conjectures
-	makeConjecture : TypingRule(RuleName(_, Name), consequence) 
-	                   -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), consequence')
-       with consequence' := <rewrite> consequence
-    makeConjecture : TypingRule(premises, RuleName(_, Name), consequence) 
-                       -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), implication)
-       with consequence' := <rewrite> consequence;
-            premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
-            implication := Impl__(premises', consequence')
+            free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');
+            implication := Impl__(premises', consequence');
+            // if there are non free variables omit quantification as
+            // it is illegal in TPTP to quantify over no variables.
+            prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
 
     // Wrap strings into terms
 	wrapString : v -> Term__(v)
