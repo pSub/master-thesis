@@ -25,7 +25,7 @@ rules
                  \TypingRule(_, conjecture) ->
                     // Prepare the input and initialize the store.
                     <prepare-generation(|judgments, context-definitions, context-classes, store);
-                    \(input, store) ->
+                    \input ->
                         // Generate the constraints.
                         <generate(|judgments, context-definitions, templates, store)> input
                     \;
@@ -57,9 +57,8 @@ rules
      * Pepares the inputs for the constraint generation and initializes the store.
      */
     prepare-generation(|judgments, context-definitions, context-classes, store) =
-        get-inputs(|judgments); remove-all(node-is-ctx(|context-classes));
-        Dupl; (id, initialize-store(|store, context-definitions, context-classes))
-
+        get-inputs(|judgments); where(initialize-store(|store, context-definitions, context-classes));
+        remove-all(node-is-ctx(|context-classes))
     /**
      * Generates the set of constraints.
      *
