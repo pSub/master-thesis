@@ -151,7 +151,7 @@ rules
      * Replaces all meta-variables with fresh variables of the constraint language.
      * This way the unification has to deal only with one kind of variables.
      */
-    replace-meta-variables : ast -> <collect-om(node-is-meta-variable); flatten-list; Dupl;
+    replace-meta-variables : ast -> <collect-om(node-is-meta-variable); Dupl;
                                      (id, length; newnames(|"X"); map(makeVar));
                                      zip; replace-all(|ast)> ast
 
