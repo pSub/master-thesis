@@ -55,7 +55,7 @@ signature
 			                           \)> conjectures
 			                   \ | [FOFGoal__(aux-formulas, typing-rule-formulas)])> some-conjectures
         where
-            context-formulas := <map(makeContexts); flatten-list> ContextDefinitions;
+            context-formulas := <map-with-index(makeContexts); flatten-list> ContextDefinitions;
             typing-rule-formulas := <map(innermost(cleanup); rewriteTypingRule)> TypingRules;
             
             // Create the injectivity and univalence formulas
@@ -106,7 +106,7 @@ signature
     free-vars : cons#(xs) -> <map(free-vars); unions> xs
 	
 	// Generate context definitions
-	makeContexts : ContextDefinition(name, raw-non-terminals) -> [
+	makeContexts : (i, ContextDefinition(name, raw-non-terminals)) -> [
 	    Formula__(<conc-strings> ("lookup base ", name),
 	              Axiom__(),
 	              All__([NAME|<conc>(inputs, outputs)],
@@ -131,8 +131,8 @@ signature
 	       outputs2 := <map(append(|"_"))> outputs;
 	       
 	       // Auxiliary definitions
-	       lookup := <conc-strings> ("lookup", name);
-	       bind := <conc-strings> ("bind", name);
+	       lookup := <conc-strings> ("lookup", <int-to-string> i);
+	       bind := <conc-strings> ("bind", <int-to-string> i);
 	       NAME := Var__(<newname> "X")
            append(|p) = \ Var__(s) -> Var__(<conc-strings> (s, p)) \
 
