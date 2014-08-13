@@ -7,7 +7,7 @@ imports include/SLTC
 
 strategies
     
-    typecheck = generate-constraints; map(\((t, cs), conjecture) ->
+    typecheck = generate-constraints; map(\(t, cs) ->
                                             <unify; \(cs, mgu, err) ->
                                                      <if <equal(|[])> err
                                                       then <apply-mgu(|t)> mgu
