@@ -187,7 +187,7 @@ signature
 	// FIXME: Doesn't it make sense to quantify over variables in conjectures
 	makeConjecture : TypingRule(RuleName(_, Name), consequence) 
 	                   -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), consequence')
-       with consequence' := <rewrite> consequence            
+       with consequence' := <rewrite> consequence
     makeConjecture : TypingRule(premises, RuleName(_, Name), consequence) 
                        -> Formula__(<option-to-string-newname(|"goal")> Name, Conjecture__(), implication)
        with consequence' := <rewrite> consequence;
@@ -196,7 +196,7 @@ signature
 
     // Wrap strings into terms
 	wrapString : v -> Term__(v)
-	   where <is-string ; map(is-alphanum)> v
+	   where <is-string ; string-as-chars(map(is-alphanum))> v
 
 	// Wrap all strings that are parameters of Term__ or Pred__ into terms
 	rewriteString : Term__(n, args) -> Term__(n, <map(try(wrapString))> args)
