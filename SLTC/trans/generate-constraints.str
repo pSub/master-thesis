@@ -116,6 +116,9 @@ rules
             // Make constraints for implicit equalities in the conclusion.
             implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern';
 
+            // Make constraints for implicit equalities in the premisses.
+            implicit-equalities-premisses := <mapconcat(Fst; make-implicit-equality-constraints(|pattern', term', name))> calls;
+
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
@@ -126,7 +129,9 @@ rules
             constraints'' := <replace-all(|iconstraints)> xs-outputs;
 
             // Merge all generated constraints.
-            new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints, input-output-constraints, implicit-equalities)
+            new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints,
+                                       input-output-constraints, implicit-equalities,
+                                       implicit-equalities-premisses)
 
     generate'(|j, c, t, term, s) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
