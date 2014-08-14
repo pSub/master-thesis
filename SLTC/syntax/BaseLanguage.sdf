@@ -54,7 +54,9 @@ exports
     Separator -> MessagePart
     MetaVariable -> MessagePart
     "@error" ErrorNumber? MessagePart+ "." -> Error {cons("Error")}
-    TypingJudgment Error? -> ErrorTypingJudgment {cons("ErrorTypingJudgment")}
+    %% FIXME: Why is `(Error+)?' not directly possible?
+    Error+ -> ErrorList
+    TypingJudgment ErrorList? -> ErrorTypingJudgment {cons("ErrorTypingJudgment")}
 
 %% Typing Rules
   lexical syntax
