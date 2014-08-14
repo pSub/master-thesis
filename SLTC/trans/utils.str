@@ -13,6 +13,17 @@ rules
     intersperse(|s) : [x|y] -> [x,s| <intersperse(|s)> y]
 
     /**
+     * Group
+     */
+    group(s) = foldr(![], \(x, bag) -> <bag-insert> ((x, 1), bag)\);
+               filter(\(x, n) -> <where(s); range; map(!x)> n \)
+
+    /**
+     *
+     */
+   gt(|y) : x -> <gt> (x, y)
+
+    /**
      * String representation for Option values. Some(s) is projected
      * to s and None() is projected to the empty string.
      *
@@ -112,6 +123,11 @@ rules
      * @type List((a, b)) -> c
      */
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
+
+    /**
+     *
+     */
+    replace-once(|ast) : substitutions -> <foldl(\((x, t), i) -> <try(oncetd(?x; !t))> i\)> (substitutions, ast)
 
     /** 
      * Duplicate a term into a three-element tuple

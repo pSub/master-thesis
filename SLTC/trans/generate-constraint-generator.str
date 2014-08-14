@@ -134,15 +134,19 @@ rules
                          end)> sorted-premisses,
                   Rule__(name,
                          <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
-                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
-                         <get-outputs(|j)> conclusion,
+                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion',
+                         <get-outputs(|j)> conclusion',
                          <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            enum-premisses := <add-indices> premisses-list;
-            dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion, j)))> enum-premisses;
+            (substitutions, equalities) := <get-inputs(|j); make-implicit-equalities-explicit> conclusion;
+            premisses-list' := <replace-once(|premisses-list)> substitutions;
+            conclusion' := <replace-once(|conclusion)> substitutions;
+            premisses-with-equalities := <conc> (premisses-list', equalities);
+            enum-premisses := <add-indices> premisses-with-equalities;
+            dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
-            premisses := <zip> (premisses-list, <map(Snd)> dependencies);
+            premisses := <zip> (premisses-with-equalities, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
             vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
                                  ((length; newnames(|"X"); map(makeVar), id), get-error-message))> sorted-premisses
@@ -189,6 +193,27 @@ rules
                \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
         where input-meta-variables := <collect-om(node-is-meta-variable)> inputs;
               conclusion-meta-variables := <get-inputs(|decls); collect-om(node-is-meta-variable)> conclusion
+
+    /**
+     * Generates from implicit equalities equality premisses.
+     */
+    make-implicit-equalities-explicit = collect-om(node-is-meta-variable, conc);
+                                        group(gt(|1)); Dupl; (id, map(map(make-new-meta-variable)));
+                                        zip; Dupl; (mapconcat(zip), mapconcat(Snd; make-eq-judgments))
+
+    /**
+     * Creates a new meta-variable of the same class.
+     */
+    make-new-meta-variable : meta-variable -> <mkterm> (<get-constructor> meta-variable,
+                                                        <newname; singelton> "X")
+
+    /**
+     * Creates from a given list of meta-variables a list of equality judgments.
+     */
+    make-eq-judgments : [] -> []
+    make-eq-judgments : [x] -> []
+    make-eq-judgments : [x, y | xs] -> [eq-judgment | <make-eq-judgments> [y | xs]]
+        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Error("Implicit Equalitiy mismatch"))
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =

@@ -84,8 +84,7 @@ rules
      * @param s - hashtable containing hashtables that store context information
      */
     generate'(|j, c, t, term, s) : Rule__(name, (pattern, _), outputs, constraints) ->
-            (Some(outputs), <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs,
-                              <make-implicit-equality-constraints(|pattern, term, name)> pattern))
+            (Some(outputs), <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs))
         where
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern, term))> constraints
@@ -113,12 +112,6 @@ rules
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
 
-            // Make constraints for implicit equalities in the conclusion.
-            implicit-equalities := <make-implicit-equality-constraints(|pattern', term', name)> pattern';
-
-            // Make constraints for implicit equalities in the premisses.
-            implicit-equalities-premisses := <mapconcat(Fst; make-implicit-equality-constraints(|pattern', term', name))> calls;
-
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
@@ -130,8 +123,7 @@ rules
 
             // Merge all generated constraints.
             new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints,
-                                       input-output-constraints, implicit-equalities,
-                                       implicit-equalities-premisses)
+                                       input-output-constraints)
 
     generate'(|j, c, t, term, s) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set

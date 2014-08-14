@@ -76,20 +76,6 @@ rules
         make-implicit-equality-constraints(filter(where(\v -> <sometd(?v)> pattern\)) | pattern, term, name)
 
     /**
-     * Creates implicit equalities for variables that occur more than once.
-     *
-     * @param pattern - an arbitrary list of terms
-     * @param term - an arbitrary list of terms
-     * @param name - a string
-     * @type List(a) -> List(Constraint)
-     */
-    make-implicit-equality-constraints(|pattern, term, name) =
-        make-implicit-equality-constraints(\ vars -> <foldl(\(x, xs) -> 
-                                                                <delete> (x, xs)
-                                                            \); isect(|vars)> (<make-set> vars,vars)
-                                           \ | pattern, term, name)
-
-    /**
      * Creates implicit equalities for those variables selected by `select'.
      *
      * @param pattern - an arbitrary list of terms
