@@ -23,6 +23,7 @@ exports
     "rules"                            -> ReservedWord
     "conjectures"                      -> ReservedWord
     "@error"                           -> ReservedWord
+    "@implicit"                        -> ReservedWord
     ReservedWord                       -> ID           {reject}
 
   lexical restrictions

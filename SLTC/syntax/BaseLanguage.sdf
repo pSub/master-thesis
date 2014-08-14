@@ -53,7 +53,8 @@ exports
   context-free syntax
     Separator -> MessagePart
     MetaVariable -> MessagePart
-    "@error" ErrorNumber? MessagePart+ "." -> Error {cons("Error")}
+    "@error" MessagePart+ "." -> Error {cons("Error")}
+    "@implicit" MessagePart + "." -> Error {cons("Implicit")}
     %% FIXME: Why is `(Error+)?' not directly possible?
     Error+ -> ErrorList
     TypingJudgment ErrorList? -> ErrorTypingJudgment {cons("ErrorTypingJudgment")}
