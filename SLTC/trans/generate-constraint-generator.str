@@ -125,9 +125,9 @@ rules
                               (get-typing-judgment; Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c)); mkLookup, id)
                          case where((get-generic-name; equal(|"Eq"), id)):
-                              (get-typing-judgment; to-tuple; makeEq(|name), id)
+                              \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message> j)> j, dep) \
                          case where((get-generic-name; equal(|"Neq"), id)):
-                              (get-typing-judgment; to-tuple; makeNeq(|name), id)
+                              \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
                          otherwise: (get-typing-judgment; get-inputs(|j), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               (partition(not(node-is-ctx(|cc)), node-is-ctx(|cc)), id);
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
@@ -213,7 +213,7 @@ rules
     make-eq-judgments : [] -> []
     make-eq-judgments : [x] -> []
     make-eq-judgments : [x, y | xs] -> [eq-judgment | <make-eq-judgments> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Error("Implicit Equalitiy mismatch"))
+        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Some(Error("Implicit Equalitiy mismatch")))
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
