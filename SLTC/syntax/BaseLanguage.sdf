@@ -69,7 +69,7 @@ exports
     RuleSep Name?                                                     -> RuleSepName                {cons("RuleName"), layout("1.first.line == 2.last.line")}
     ErrorTypingRulePremiseList RuleSepName ErrorTypingRuleConsequence -> ErrorTypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col && 2.first.col == 3.first.col")}
     RuleSepName ErrorTypingRuleConsequence                            -> ErrorTypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col")}
-    TypingJudgment                                               -> ErrorTypingRuleConsequence
+    ErrorTypingJudgment                                               -> ErrorTypingRuleConsequence
     ErrorTypingJudgment                                               -> ErrorTypingRulePremiseList {cons("PremiseBase")}
     ErrorTypingJudgment ErrorTypingRulePremiseList                    -> ErrorTypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}
 

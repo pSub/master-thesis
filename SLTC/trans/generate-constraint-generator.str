@@ -103,9 +103,9 @@ rules
     base(|j, c, cc) : TypingRule(RuleName(_, name), conclusion) ->
         <replace-meta-variables>
            Rule__(name,
-                <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
+                <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                  (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
-                <get-outputs(|j)> conclusion,
+                <get-typing-judgment; get-outputs(|j)> conclusion,
                 [])
 
     /**
@@ -133,13 +133,13 @@ rules
                               ((id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
                   Rule__(name,
-                         <get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
+                         <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion',
-                         <get-outputs(|j)> conclusion',
+                         <get-typing-judgment; get-outputs(|j)> conclusion',
                          <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            (substitutions, equalities) := <get-inputs(|j); make-implicit-equalities-explicit> conclusion;
+            (substitutions, equalities) := <get-typing-judgment; get-inputs(|j); make-implicit-equalities-explicit> conclusion;
             premisses-list' := <replace-once(|premisses-list)> substitutions;
             conclusion' := <replace-once(|conclusion)> substitutions;
             premisses-with-equalities := <conc> (premisses-list', equalities);
@@ -192,7 +192,7 @@ rules
                               \)> (input-meta-variables, [])
                \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
         where input-meta-variables := <collect-om(node-is-meta-variable)> inputs;
-              conclusion-meta-variables := <get-inputs(|decls); collect-om(node-is-meta-variable)> conclusion
+              conclusion-meta-variables := <get-typing-judgment; get-inputs(|decls); collect-om(node-is-meta-variable)> conclusion
 
     /**
      * Generates from implicit equalities equality premisses.
