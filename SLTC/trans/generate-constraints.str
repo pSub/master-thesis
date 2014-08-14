@@ -31,7 +31,7 @@ rules
                     \;
                     // Append a constraint for the ouputs in the conjecture.
                     try(\(Some(outputs), constraints) ->
-                      (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
+                      (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeEq(|Some(Error(None(), ["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
                     \)> conjecture
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
@@ -71,7 +71,7 @@ rules
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
              <find-match(|inputs, store) < generate'(|judgments, contexts, templates, inputs, store)
-                                         + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+                                         + !(None(), [CFail__(Error(None(), ["No rule found that matches", inputs]))])> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -153,7 +153,7 @@ rules
                           case ?Lookup__(_,_):
                               <to-tuple; instantiate-lookup(|pattern', term');
                                (lookup(|s) < \ o -> (Some(o), [])\ +
-                                             \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
+                                             \ (_, o) -> (None(), [CFail__(Error(None(), [o, " not found in context"]))])\)> call
                           case ?CEq__(a, b, info):
                               !(Some([]), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],

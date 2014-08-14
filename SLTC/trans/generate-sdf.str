@@ -37,10 +37,10 @@ rules
 
 	// Generate syntax of meta-variable definitions	
 	make-variable : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
-		<mapconcat(\scope -> [ prod(<concat-strings>["\"", prefix, "\" MetaVariableName"],
+		<mapconcat(\scope -> [ prod(<concat-strings>["\"", prefix, "\" MetaVariableName (\"@\" ErrorNumber)?"],
 						            scope,
 						            <make-cons'> ["MetaVariable-", name]),
-						       prod(<concat-strings>["\"", prefix, "\" MetaVariableName"],
+						       prod(<concat-strings>["\"", prefix, "\" MetaVariableName (\"@\" ErrorNumber)?"],
                                     "MetaVariable",
                                     <make-cons'> ["MetaVariable-", name])
 						     ]

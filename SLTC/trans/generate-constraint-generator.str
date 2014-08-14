@@ -213,7 +213,7 @@ rules
     make-eq-judgments : [] -> []
     make-eq-judgments : [x] -> []
     make-eq-judgments : [x, y | xs] -> [eq-judgment | <make-eq-judgments> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Some(Error("Implicit Equalitiy mismatch")))
+        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Some(Error(None(), "Implicit Equalitiy mismatch")))
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =

@@ -53,7 +53,7 @@ exports
   context-free syntax
     Separator -> MessagePart
     MetaVariable -> MessagePart
-    "@error" MessagePart+ -> Error {cons("Error")}
+    "@error" ErrorNumber? MessagePart+ "." -> Error {cons("Error")}
     TypingJudgment Error? -> ErrorTypingJudgment {cons("ErrorTypingJudgment")}
 
 %% Typing Rules
