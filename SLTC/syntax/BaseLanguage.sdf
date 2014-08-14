@@ -9,7 +9,7 @@ exports
     "meta-variables" MetaVariableDefinition*-> MetaVariables  {cons("MetaVariables")}
     "contexts" ContextDefinition*		    -> Contexts       {cons("Contexts")}
     "judgments" Judgment*                   -> Judgments      {cons("Judgments")}
-    "rules" TypingRule*                     -> Rules          {cons("Rules")}
+    "rules" ErrorTypingRule*                -> Rules          {cons("Rules")}
     "conjectures" TypingRule*               -> Conjectures    {cons("Conjectures")}
     
     %%TODO: When introducing imports it might make sense to treat most
@@ -66,9 +66,15 @@ exports
     RuleSep -/- [\=]
 
   context-free syntax
-    RuleSep Name?                                             -> RuleSepName           {cons("RuleName"), layout("1.first.line == 2.last.line")}
+    RuleSep Name?                                                     -> RuleSepName                {cons("RuleName"), layout("1.first.line == 2.last.line")}
+    ErrorTypingRulePremiseList RuleSepName ErrorTypingRuleConsequence -> ErrorTypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col && 2.first.col == 3.first.col")}
+    RuleSepName ErrorTypingRuleConsequence                            -> ErrorTypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col")}
+    TypingJudgment                                               -> ErrorTypingRuleConsequence
+    ErrorTypingJudgment                                               -> ErrorTypingRulePremiseList {cons("PremiseBase")}
+    ErrorTypingJudgment ErrorTypingRulePremiseList                    -> ErrorTypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}
+
     TypingRulePremiseList RuleSepName TypingRuleConsequence   -> TypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col && 2.first.col == 3.first.col")}
     RuleSepName TypingRuleConsequence                         -> TypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col")}
-    TypingJudgment                                            -> TypingRuleConsequence
-    ErrorTypingJudgment                                       -> TypingRulePremiseList {cons("PremiseBase")}
-    ErrorTypingJudgment TypingRulePremiseList                 -> TypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}
+    TypingJudgment                                       -> TypingRuleConsequence
+    TypingJudgment                                       -> TypingRulePremiseList {cons("PremiseBase")}
+    TypingJudgment TypingRulePremiseList                 -> TypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}
