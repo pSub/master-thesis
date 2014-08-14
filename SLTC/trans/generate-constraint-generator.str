@@ -149,7 +149,7 @@ rules
             premisses := <zip> (premisses-with-equalities, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
             vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
-                                 ((length; newnames(|"X"); map(makeVar), id), get-error-message))> sorted-premisses
+                                 ((length; newnames(|"X"); map(makeVar), id), get-error-message; option(filter(where(?Error(None(), _))))))> sorted-premisses
 
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
