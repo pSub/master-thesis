@@ -1,5 +1,6 @@
 module optimize-constraint-templates
 
+imports utils
 imports constraint-language
 imports constraint-template-language
 imports constraint-utils
@@ -15,7 +16,9 @@ signature
 rules
     
     // FIXME: Currently there is no distinction between which and when ambiguities!
-    solve-which-ambiguities : templates -> <conc>(<map(mkFork)> equality-classes, <diff(eq)> (templates, <flatten-list> equality-classes))
+    solve-which-ambiguities : templates -> <conc>(<map(mkFork; optimize-fork)> equality-classes,
+                                                  <diff(eq)> (templates,
+                                                              <flatten-list> equality-classes))
         where equality-classes :=  <group-by-conclusion> templates
     
     /**
@@ -34,6 +37,8 @@ rules
      * Extracts the pattern from the rules and compares the results modulo
      * variable names.
      *
+     * FIXME: Extend for context patterns.
+     *
      * @param a - Rule
      * @type Rule -> Rule
      */
@@ -47,6 +52,14 @@ rules
      * @internal
      * @type a -> a
      */
-    make-dummy-vars = innermost(?Var__(_); !DummyVar__()) 
+    make-dummy-vars = innermost(?Var__(_); !DummyVar__())
+
+    /**
+     * Stub for checking whether a rule within a Fork is redundant.
+     */
+    optimize-fork : Fork__(rulez) -> Fork__(rulez')
+        where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
+              // Make the conclusions of the rules equal.
+              rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez]
     
     optimize-templates = make-constraint-generator; solve-which-ambiguities
