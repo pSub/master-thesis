@@ -161,10 +161,10 @@ rules
                                                info) ])
                           otherwise:
                             // Instantiate the judgment that shall be called.
-                            (param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
+                            (judg, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
 
                             // Create constraints for the variables in the context bindings.
-                            binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Snd> call, binding);
+                            binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
                             <generate(|j, c, t, <update-store(|s)> binding)> param;

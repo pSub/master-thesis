@@ -12,7 +12,7 @@ signature
 
        Lookup__  : ctx * inputs -> Lookup
        Reset__ : ctx -> Reset
-       Judgment__ : term * binding -> Judgment
+       Judgment__ : name * term * binding -> Judgment
        Neq__ : term * term -> Neq
 
 rules  
@@ -36,11 +36,11 @@ rules
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
-     * Transforms a tuple into a judgment node
+     * Transforms a triple into a judgment node
      *
-     * @type (a, b) -> Judgment(a, b)
+     * @type (name, a, b) -> Judgment(name, a, b)
      */
-    mkJudgment : (a, b) -> Judgment__(a, b)
+    mkJudgment : (name, a, b) -> Judgment__(name, a, b)
 
     /**
      * Transforms a tuple into a lookup node

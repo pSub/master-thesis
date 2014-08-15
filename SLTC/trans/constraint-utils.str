@@ -28,7 +28,7 @@ rules
      * @type (List(a), List(a, List(a), List(a)) -> List(a)
      */    
     instantiate-judgment(|pattern, terms) =
-        (instantiate(|pattern, terms), instantiate-ctx-binding(|pattern, terms))
+        (id, instantiate(|pattern, terms), instantiate-ctx-binding(|pattern, terms))
 
     /**
      * An version of `instantiate' tailored for conext bindings.
