@@ -86,13 +86,12 @@ rules
     generate'(|j, c, t, term, s) : Binding__(xs, calls, Rule__(name, (pattern, ctx), outputs, constraints)) ->
            (Some(outputs'), new-constraints)
         where
-            // FIXME: Filter Reset from ctx and pattern
             // Retrieve and remove elements from the context according to the context pattern.
-            ctx' := <map(\(ctx, i, _) -> <pop(|s)> ctx \ <+
-                         where(\Reset__(ctx) -> <clear-context(|s, ctx)> \))> ctx;
+            ctx' := <filter(\(ctx, i, _) -> <pop(|s)> ctx \ <+
+                            where(\Reset__(ctx) -> <clear-context(|s, ctx)> \); skip)> ctx;
 
             // Append the context pattern to the input pattern.
-            pattern'' := <conc> (pattern, <map(try(\(_, i, o) -> (i, o)\))> ctx);
+            pattern'' := <conc> (pattern, <filter(\(_, i, o) -> (i, o)\)> ctx);
 
             // Append the instantiated context pattern to the input term.
             term'' := <conc> (term, ctx');

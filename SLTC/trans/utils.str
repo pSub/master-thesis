@@ -1,6 +1,8 @@
 module utils
 	
 rules
+    
+    skip = fail
 
     /**
      * Inserts between every two elements of the given list `s`.
@@ -21,7 +23,7 @@ rules
     /**
      *
      */
-   gt(|y) : x -> <gt> (x, y)
+    gt(|y) : x -> <gt> (x, y)
 
     /**
      * String representation for Option values. Some(s) is projected
