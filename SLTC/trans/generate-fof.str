@@ -150,7 +150,7 @@ signature
             			 "MetaVariable"
     
     // Meta-variables
-    rewriteMetaVariable : AuxCons__("MetaVariable", scope, name) -> Var__(<concat-strings> name, scope)
+    rewriteMetaVariable : AuxCons__("MetaVariable", scope, [name, _]) -> Var__(<concat-strings> name, scope)
 	
 	// Contexts in typing rules
 	rewriteContextEmpty : AuxCons__("ContextEmpty", name, []) -> Pred__(<concat-strings> ["empty", name])
