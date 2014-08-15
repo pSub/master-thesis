@@ -172,7 +172,7 @@ signature
 
     makeFormula(|type) : TypingRule(PremiseBase(), RuleName(_, name), consequence)
                      -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
-       with // Rewrite consequence and collect all free variables
+       where // Rewrite consequence and collect all free variables
             consequence' := <rewrite> consequence;
             free-vars-in-rule := <free-vars> consequence';
             // if there are non free variables omit quantification as
@@ -181,7 +181,7 @@ signature
 
     makeFormula(|type) : TypingRule(premises, RuleName(_, name), consequence)
                            -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
-       with // Rewrite consequence and premises and collect all free variables
+       where // Rewrite consequence and premises and collect all free variables
             consequence' := <rewrite> consequence;
             premises' := <to-list(PremiseBase, PremiseCons); rewrite> premises;
             free-vars-in-rule := <union> (<free-vars> premises', <free-vars> consequence');

@@ -137,7 +137,6 @@ rules
 	    outfiles := <generate-files(|filename)> strings;
 	    <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles) < 
     	<queue-analysis> path + <debug> "No conjectures, vampire is not called"
-	
 
 	// call-and-handle = call < debug(!"Command succeeded: ") + debug(!"Command failed: ")
 

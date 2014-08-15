@@ -30,7 +30,7 @@ rules
 
   generate-fof :
 	   (selected, position, ast, path, project-path) -> (filename, result)
-  with
+  where
     filename := <guarantee-extension(|"fof")> path;
     aterm := <toFOF> selected;
     result := <pp-fof> aterm
