@@ -37,8 +37,6 @@ rules
      * Extracts the pattern from the rules and compares the results modulo
      * variable names.
      *
-     * FIXME: Extend for context patterns.
-     *
      * @param a - Rule
      * @type Rule -> Rule
      */
