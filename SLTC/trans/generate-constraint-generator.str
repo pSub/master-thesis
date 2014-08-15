@@ -126,8 +126,11 @@ rules
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             (substitutions, equalities) := <get-typing-judgment; get-inputs(|j);
                                             make-implicit-equalities-explicit(|<get-error-message> conclusion)> conclusion;
-            premisses-list' := <replace-once(|premisses-list)> substitutions;
-            conclusion' := <replace-once(|conclusion)> substitutions;
+            // Replace each occurence with the corresponding new meta-variable.
+            conclusion' := <concat; replace-once(|conclusion)> substitutions;
+
+            // Replace every occurence with only one representative of the new meta-variables. 
+            premisses-list' := <map(Hd); replace-all(meta-variable-equal|premisses-list)> substitutions;
             premisses-with-equalities := <conc> (premisses-list', equalities);
             enum-premisses := <add-indices> premisses-with-equalities;
             dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
@@ -187,7 +190,7 @@ rules
         collect-om(node-is-meta-variable, conc);
         group(meta-variable-equal); filter(where(length; gt(|1)));
         Dupl;(id, map(map(make-new-meta-variable))); zip;
-        Dupl; (mapconcat(zip), mapconcat(make-eq-judgments(|errors)))
+        Dupl; (map(zip), mapconcat(make-eq-judgments(|errors)))
 
     /**
      * Creates a new meta-variable of the same class.
