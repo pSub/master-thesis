@@ -151,6 +151,8 @@ rules
      * @param store - a hashmap containing hashmaps
      * @type List(Rule) -> Rule
      */
+    find-match(|inputs, judg-number, store) = filter(where(get-judgment-number; equal(|judg-number)));
+                                              find-match(|inputs, store)
     find-match(|inputs, store) : [] -> <fail>
     find-match(|inputs, store) : [t|ts] ->
         <let check-constructors = zip; Dupl; (filter(match-constructors); length, length); equal

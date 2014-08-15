@@ -4,7 +4,7 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
-       Rule__ : judg-name * Option(String) * Pattern * Outputs * Constraints -> Rule
+       Rule__ : judg-number * Option(String) * Pattern * Outputs * Constraints -> Rule
        Binding__ : List(List(var)) * List(call) * Rule -> Rule
 
        /** Extended Language */
@@ -12,7 +12,7 @@ signature
 
        Lookup__  : ctx * inputs -> Lookup
        Reset__ : ctx -> Reset
-       Judgment__ : name * term * binding -> Judgment
+       Judgment__ : number * term * binding -> Judgment
        Neq__ : term * term -> Neq
 
 rules  
@@ -34,6 +34,15 @@ rules
     get-ctx-pattern : Rule__(_, _, (_, ctx), _, _) -> ctx
     get-ctx-pattern : Binding__(_, _, rule) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
+
+    /**
+     * Extracts the judgment number from the conclusion.
+     *
+     * @type Rule -> Int
+     */
+    get-judgment-number : Rule__(judg-number, _, _, _, _) -> judg-number
+    get-judgment-number : Binding__(_, _, rule) -> <get-judgment-number> rule
+    get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
      * Transforms a triple into a judgment node

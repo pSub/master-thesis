@@ -27,7 +27,7 @@ rules
                     <prepare-generation(|judgments, context-definitions, context-classes, store);
                     \input ->
                         // Generate the constraints.
-                        <generate(|judgments, context-definitions, templates, store)> input
+                        <generate(|judgments, context-definitions, templates, store)> (<get-generic-name; string-to-int> conjecture, input)
                     \;
                     // Append a constraint for the ouputs in the conjecture.
                     try(\(Some(outputs), constraints) ->
@@ -67,10 +67,10 @@ rules
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
      */
-    generate(|judgments, contexts, templates, store) : inputs ->
+    generate(|judgments, contexts, templates, store) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, store) < generate'(|judgments, contexts, templates, inputs, store)
+             <find-match(|inputs, judg-number, store) < generate'(|judgments, contexts, templates, inputs, store)
                                          + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
     /**
@@ -161,13 +161,13 @@ rules
                                                info) ])
                           otherwise:
                             // Instantiate the judgment that shall be called.
-                            (judg, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
+                            (judg-number, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
 
                             // Create constraints for the variables in the context bindings.
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
-                            <generate(|j, c, t, <update-store(|s)> binding)> param;
+                            <generate(|j, c, t, <update-store(|s)> binding)> (judg-number, param);
 
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
