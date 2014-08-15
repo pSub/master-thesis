@@ -25,7 +25,7 @@ rules
 	where
 		msg := $[Verification result outdated or not started yet, use verification menu to re-verify.];
 		consistency-msg := $[Consistency check outdated or not started yet, use verification menu to re-check.];
-		rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_)) <+ ?TypingRule(_,RuleName(_,<id>),_)>)); concat> body;
+		rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
 		results := <map(get-verification-result-info <+ !())> outfiles;
 		filtered-results := <zip; filter(?(_,()))> (rulez, results);
@@ -36,7 +36,7 @@ rules
 	constraint-note :
 		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
 	where
-		rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_) <+ ?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
+		rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
 		results := <map(get-verification-result-info <+ !())> outfiles;
 		filtered-results := <zip; filter(?(_,VerificationSuccess(_)))> (rulez, results);
@@ -57,7 +57,7 @@ rules
 	constraint-error : 
 		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
 	where
-		rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_) <+ ?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
+		rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
 		results := <map(get-verification-result-info <+ !())> outfiles;
 		filtered-results := <zip; filter(?(_,VerificationFailure(_)))> (rulez, results);
@@ -79,7 +79,7 @@ rules
 		index-setup(|<language>, project-path);
 		task-setup(|project-path);
 	    filename := <guarantee-extension(|"fof")> path;
-	    rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_) <+ ?TypingRule(_,RuleName(_,<id>),_) )>)); concat> ast;
+	    rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_) )>)); concat> ast;
 	    outfiles := <generate-file-names(|filename)> rulez;
 	    <map(clean-proof)> outfiles;
 	    <consistency-filename; clean-proof> path;
@@ -108,7 +108,7 @@ rules
 		index-setup(|<language>, project-path);
 		task-setup(|project-path);
 	    filename := <consistency-filename> path;
-	    false-goal := Conjectures([TypingRule(RuleName("", "FALSE"), False__())]);
+	    false-goal := Conjectures([TypingRule(PremiseBase(), RuleName("", "FALSE"), False__())]);
 	    ast-with-false := <Module(id, id,id, id, id, id, filter(?Conjectures(_)), id); append(|[false-goal])> ast;
 	    
 	    [goal] := <toFOF <+ error(!"fof-trans failed: ")> ast-with-false;
@@ -131,7 +131,7 @@ rules
 		index-setup(|<language>, project-path);
 		task-setup(|project-path);
 	    filename := <guarantee-extension(|"fof")> path;
-	    rulez := <collect-all(?Conjectures(<filter(?TypingRule(RuleName(_,<id>),_) <+ ?TypingRule(_,RuleName(_,<id>),_))>)); concat> ast;
+	    rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_))>)); concat> ast;
 	    goals := <toFOF <+ error(!"fof-trans failed: ")> ast;
 	    strings := <map(pp-fof <+ pp-debug(pp-fof))> goals;
 	    outfiles := <generate-files(|filename)> strings;

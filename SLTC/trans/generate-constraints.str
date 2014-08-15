@@ -22,7 +22,7 @@ rules
                  Some(Conjectures(conjectures)))
         -> <finally(
               map(finally(
-                 \TypingRule(_, conjecture) ->
+                 \TypingRule(PremiseBase(), _, conjecture) ->
                     // Prepare the input and initialize the store.
                     <prepare-generation(|judgments, context-definitions, context-classes, store);
                     \input ->
@@ -83,12 +83,6 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|j, c, t, term, s) : Rule__(name, (pattern, _), outputs, constraints) ->
-            (Some(outputs), <conc> (iconstraints, <make-io-dependency-constraints(|pattern, term, name)> outputs))
-        where
-            // Instantiate the variables in the error messages.
-            iconstraints := <map(instantiate-error(|pattern, term))> constraints
-
     generate'(|j, c, t, term, s) : Binding__(xs, calls, Rule__(name, (pattern, ctx), outputs, constraints)) ->
            (Some(outputs'), new-constraints)
         where

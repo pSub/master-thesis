@@ -170,7 +170,7 @@ signature
     type-to-string : Axiom__() -> "formula"
     type-to-string : Conjecture__() -> "goal"
 
-    makeFormula(|type) : TypingRule(RuleName(_, name), consequence)
+    makeFormula(|type) : TypingRule(PremiseBase(), RuleName(_, name), consequence)
                      -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
        with // Rewrite consequence and collect all free variables
             consequence' := <rewrite> consequence;

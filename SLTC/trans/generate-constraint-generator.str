@@ -94,21 +94,6 @@ rules
             holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
 
     /**
-     * Rule that transforms axioms, i.e. typing rules without premisses into
-     * a constraint template.
-     *
-     * @param j - judgment declarations
-     * @param cc - meta-variable classes that represent contexts
-     */
-    base(|j, c, cc) : TypingRule(RuleName(_, name), conclusion) ->
-        <replace-meta-variables>
-           Rule__(name,
-                <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
-                 (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion,
-                <get-typing-judgment; get-outputs(|j)> conclusion,
-                [])
-
-    /**
      * Rule that transforms typing rules with premisses into a constraint template.
      *
      * FIXME: This code needs refactoring
@@ -217,5 +202,4 @@ rules
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
-         innermost(base(|judgments, context-definitions, context-classes) <+
-                   step(|judgments, context-definitions, context-classes))
+         innermost(step(|judgments, context-definitions, context-classes))
