@@ -125,7 +125,7 @@ rules
            // apply the resulting mgu and return the term as an output. The constraint
            // set is empty, because all produced constraints are already solved.
            (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
-                   \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\) < id + !None()> rulez,
+                   \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\) < \x -> Some(x)\ + !None()> rulez,
            [])
 
     /**
