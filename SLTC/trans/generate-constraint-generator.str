@@ -190,7 +190,7 @@ rules
      * Creates a new meta-variable of the same class.
      */
     make-new-meta-variable : meta-variable -> <mkterm> (<get-constructor> meta-variable,
-                                                        <newname; singelton> "X")
+                                                        [<newname> "X", None()])
 
     /**
      * Creates from a given list of meta-variables a list of equality judgments.
@@ -198,7 +198,7 @@ rules
     make-eq-judgments : [] -> []
     make-eq-judgments : [x] -> []
     make-eq-judgments : [x, y | xs] -> [eq-judgment | <make-eq-judgments> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Some(Implicit("Implicit Equalitiy mismatch")))
+        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Some([Error("Implicit Equalitiy mismatch")]))
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
