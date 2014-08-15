@@ -18,8 +18,8 @@ rules
      * @type List(a) -> List(a)
      */
     instantiate(|pattern, terms) : input -> <memo(instantiate')> (input, pattern, terms)
-    instantiate' : (input, pattern, terms) -> <foldl(\((x, t), i) -> <oncetd(?x; !t)> i\)> (instantiations, input)
-        where instantiations := <collect-om(?Var__(_)); make-set; find-matching-positions(|pattern); extract-terms(|terms)> input
+    instantiate' : (input, pattern, terms) -> <foldl(\((x, t), i) -> <replace(|x, t)> i\)> (instantiations, input)
+        where instantiations := <collect-om(?Var__(_)); find-matching-positions(|pattern); extract-terms(|terms)> input
 
     /**
      * An version of `instantiate` tailored for judgments.
@@ -57,9 +57,9 @@ rules
      * @type Constraint -> List(a)
      */
     instantiate-error(|pattern, terms) : constraint ->
-        <put-info(|<get-info; maybe(try(\ Error(e) ->
+        <put-info(|<get-info; option(map(try(\ Error(e) ->
                                         Error(<instantiate(|pattern, terms)> e)
-                                    \) | None())
+                                    \)))
                    > constraint
                   )> constraint
     
@@ -115,7 +115,7 @@ rules
      * @param pattern - an arbitrary term
      * @type List(a) -> List((a, List(Int)))
      */
-    find-matching-positions(|pattern) = mapconcat(search(|pattern))
+    find-matching-positions(|pattern) = filter(search(|pattern))
 
     /**
      * Traverses the pattern like a tree and records the path until `x` is
@@ -123,17 +123,15 @@ rules
      * in the argument list in which was descended.
      *
      * @param pattern - an arbitrary term
-     * @type a -> (a, List(Int))
+     * @type a -> List(Int)
      */
     search(|pattern) : x -> <search'> (x, [], <add-indices> pattern)
     search' : (x, is, []) -> <fail>
-    search' : (x, is, pattern) ->
-        <conc> (<map(\i -> (x, [i | is])\; (id, reverse))> indices,
-                <mapconcat(\(n, p) -> <search'> (x, [n | is], <get-arguments; add-indices> p)
-                           \)> pattern)
-        where indices := <get-indices> (x, pattern)
-    search' : (x, is, pattern) ->
-        <mapconcat(\(n, p) -> <search'> (x, [n | is], <get-arguments; add-indices> p)\)> pattern
+    search' : (x, is, pattern) -> (x, <reverse> [index | is])
+        where index := <get-index> (x, <map(Snd)> pattern)
+    search' : (x, is, [(n, p) | pattern]) ->
+        <<search'> (x, [n | is], <get-arguments; add-indices> p) <+
+         <search'> (x, is, pattern)>
 
     /**
      * Walks along the paths in `term` and returns to element
