@@ -18,7 +18,7 @@ rules
                                                     (\xs -> [i|xs]\, hashtable-put(|i, o))> s')> s'
                                  \ <+
                                  \(Reset__(ctx), s') ->
-                                    <where(hashtable-get(|ctx); (![], hashtable-clear))> s'
+                                    <clear-context(|s', ctx)>
                                  \)
 
     /**
@@ -46,6 +46,15 @@ rules
                                                             <<hashtable-clear> c;
                                                             <hashtable-put(|k, ([], c))> store>
                                                         \)> store)
+
+    /**
+     * Removes all elements from the given context in the `store'.
+     */
+    clear-context(|store, ctx) = where(<hashtable-get(|ctx)> store;
+                                       \(s, c) ->
+                                            <<hashtable-clear> c;
+                                             <hashtable-put(|ctx, ([], c))> store>
+                                       \)
 
     /**
      * Destroys the store and all containing Hashtables for contexts.
