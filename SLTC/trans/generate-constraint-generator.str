@@ -131,7 +131,12 @@ rules
 
             // Replace every occurence with only one representative of the new meta-variables. 
             premisses-list' := <map(Hd); replace-all(meta-variable-equal|premisses-list)> substitutions;
-            premisses-with-equalities := <conc> (premisses-list', equalities);
+
+            premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
+                                      make-implicit-equalities-explicit(|<get-error-message> premise)> premise\)> premisses-list';
+            premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
+
+            premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd)> premisses-impl-eq);
             enum-premisses := <add-indices> premisses-with-equalities;
             dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
