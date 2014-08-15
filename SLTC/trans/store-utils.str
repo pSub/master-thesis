@@ -18,7 +18,7 @@ rules
                                                     (\xs -> [i|xs]\, hashtable-put(|i, o))> s')> s'
                                  \ <+
                                  \(Reset__(ctx), s') ->
-                                    <clear-context(|s', ctx)>
+                                    <clear-context(|s', ctx)> s'
                                  \)
 
     /**
