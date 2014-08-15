@@ -17,9 +17,10 @@ rules
     /**
      * Group
      */
-    group(s) = foldr(![], \(x, bag) -> <bag-insert> ((x, 1), bag)\);
-               filter(\(x, n) -> <where(s); range; map(!x)> n \)
-
+    group(eq) : [] -> []
+    group(eq) : [x | xs] -> [[x|matching] | <group(eq)> xs']
+        where matching := <filter(where(\y -> <eq> (x, y)\))> xs;
+              xs' := <diff> (xs, matching)
     /**
      *
      */
@@ -259,6 +260,13 @@ rules
      * @type HashTable(K, V) -> HashTable(K,V)
      */
     hashtable-deep-copy = hashtable-getlist; map(alltd(?Hashtable(_); hashtable-deep-copy)); hashtable-init
+
+    /**
+     *
+     */
+    meta-variable-equal : (cons1#([name1, _]), cons2#([name2, _])) ->
+        <where(<equal> (cons1, cons2);
+               <equal> (name1, name2))>
 
     /**
      * Checks whether the given string is a meta-variable constructor name.

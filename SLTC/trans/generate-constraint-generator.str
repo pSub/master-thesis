@@ -124,7 +124,8 @@ rules
                          <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
-            (substitutions, equalities) := <get-typing-judgment; get-inputs(|j); make-implicit-equalities-explicit> conclusion;
+            (substitutions, equalities) := <get-typing-judgment; get-inputs(|j);
+                                            make-implicit-equalities-explicit(|<get-error-message> conclusion)> conclusion;
             premisses-list' := <replace-once(|premisses-list)> substitutions;
             conclusion' := <replace-once(|conclusion)> substitutions;
             premisses-with-equalities := <conc> (premisses-list', equalities);
@@ -182,9 +183,11 @@ rules
     /**
      * Generates from implicit equalities equality premisses.
      */
-    make-implicit-equalities-explicit = collect-om(node-is-meta-variable, conc);
-                                        group(gt(|1)); Dupl; (id, map(map(make-new-meta-variable)));
-                                        zip; Dupl; (mapconcat(zip), mapconcat(Snd; make-eq-judgments))
+    make-implicit-equalities-explicit(|errors) =
+        collect-om(node-is-meta-variable, conc);
+        group(meta-variable-equal); filter(where(length; gt(|1)));
+        Dupl;(id, map(map(make-new-meta-variable))); zip;
+        Dupl; (mapconcat(zip), mapconcat(make-eq-judgments(|errors)))
 
     /**
      * Creates a new meta-variable of the same class.
@@ -195,10 +198,18 @@ rules
     /**
      * Creates from a given list of meta-variables a list of equality judgments.
      */
-    make-eq-judgments : [] -> []
-    make-eq-judgments : [x] -> []
-    make-eq-judgments : [x, y | xs] -> [eq-judgment | <make-eq-judgments> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), Some([Error("Implicit Equalitiy mismatch")]))
+    make-eq-judgments(|errors) : (old, new) -> <make-eq-judgments'(|relevant-errors)> new
+        where relevant-errors := <option(filter(where(\error ->
+                                                        <subseteq> (<collect-om(node-is-meta-variable)> error,
+                                                                  old)
+                                                      \);
+                                                \Implicit(error) ->
+                                                  Error(<zip; replace-all(|error)> (old, new))
+                                                \))> errors
+    make-eq-judgments'(|errors) : [] -> []
+    make-eq-judgments'(|errors) : [x] -> []
+    make-eq-judgments'(|errors) : [x, y | xs] -> [eq-judgment | <make-eq-judgments'(|errors)> [y | xs]]
+        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), errors)
     
 strategies
     to-constraint-generator(|judgments, context-definitions, context-classes) =
