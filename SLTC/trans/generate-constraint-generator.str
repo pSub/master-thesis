@@ -115,7 +115,7 @@ rules
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
                          otherwise: (get-typing-judgment; Trpl; (id, get-inputs(|j), get-inputs(|j)), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               ((id, filter(not(node-is-ctx(|cc))), filter(node-is-ctx(|cc))), id);
-                              ((get-generic-name, id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
+                              ((get-generic-name; string-to-int, id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
                   Rule__(name,
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
