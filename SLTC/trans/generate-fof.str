@@ -159,6 +159,7 @@ signature
 	rewriteContext = rewriteContextEmpty <+ rewriteContextBind <+ rewriteContextLookup
 
 	// Typing judgments
+	rewriteTypingJudgment : AuxCons__("TypingJudgment", "False", []) -> False__()
 	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Neq", [arg1, arg2]) -> Neq__(arg1, arg2)
 	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
 	rewriteTypingJudgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
