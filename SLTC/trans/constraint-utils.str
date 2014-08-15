@@ -17,8 +17,7 @@ rules
      * @param terms - an arbitrary list of terms
      * @type List(a) -> List(a)
      */
-    instantiate(|pattern, terms) : input -> <memo(instantiate')> (input, pattern, terms)
-    instantiate' : (input, pattern, terms) -> <foldl(\((x, t), i) -> <replace(|x, t)> i\)> (instantiations, input)
+    instantiate(|pattern, terms) : input -> <foldl(\((x, t), i) -> <replace(|x, t)> i\)> (instantiations, input)
         where instantiations := <collect-om(?Var__(_)); find-matching-positions(|pattern); extract-terms(|terms)> input
 
     /**
@@ -125,7 +124,7 @@ rules
      * @param pattern - an arbitrary term
      * @type a -> List(Int)
      */
-    search(|pattern) : x -> <search'> (x, [], <add-indices> pattern)
+    search(|pattern) : x -> <memo(search')> (x, [], <add-indices> pattern)
     search' : (x, is, []) -> <fail>
     search' : (x, is, pattern) -> (x, <reverse> [index | is])
         where index := <get-index> (x, <map(Snd)> pattern)
