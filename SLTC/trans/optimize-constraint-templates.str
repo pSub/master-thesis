@@ -16,7 +16,7 @@ signature
 rules
     
     // FIXME: Currently there is no distinction between which and when ambiguities!
-    solve-which-ambiguities : templates -> <conc>(<map(mkFork)> equality-classes,
+    solve-which-ambiguities : templates -> <conc>(<map(mkFork; optimize-fork)> equality-classes,
                                                   <diff(eq)> (templates,
                                                               <flatten-list> equality-classes))
         where equality-classes :=  <group-by-conclusion> templates
