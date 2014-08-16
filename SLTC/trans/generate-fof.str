@@ -225,9 +225,10 @@ strategies
 	// Ensure that all variables are uniquely named and are valid TPTP names. Before that run all Variables are scoped, thus
 	// all scoped variables are collected. After this the AST is folded over the collected variables. In the AST the scoped
 	// variable nodes are replaced with unscoped fresh variables, variable by variable.
-	makeVariablesUnique = (Dupl; (collect-all(?Var__(_,_)), id)) < foldl(\(v, f) -> <replace(|v, Var__(<newname> "X"), f)> \)
-	                                                               + fail
-	                                                               
+	makeVariablesUnique : ast -> <collect-all(?Var__(_,_)); Dupl;
+                                  (id, length; newnames(|"X"); map(\x -> Var__(x)\));
+                                  zip; replace-all(|ast)> ast
+                                  
 	// Dashes in predicate names are not valid in TPTP
 	// FIXME: It would be nice, if it is guaranteed, that the renaming creates no collisions
 	// FIXME: Try to rename other invalid characters
