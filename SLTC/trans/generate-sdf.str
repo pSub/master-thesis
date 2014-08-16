@@ -33,7 +33,7 @@ rules
 							   <make-cons'> ["ContextLookup-", <int-to-string> num])
 	   ]
 		where
-			elem := <names; intersperse(|" \":\" "); concat-strings> Definition
+			elem := <names; separate-by(|" \":\" "); concat-strings> Definition
 
 	// Generate syntax of meta-variable definitions	
 	make-variable : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
@@ -48,7 +48,7 @@ rules
 
 	// Generate syntax of typing judgments
 	make-judgment : (num, Judgment(s1, pos, s2, built-in))
-	       -> prod(<names; intersperse(|" "); concat-strings> merged,
+	       -> prod(<names; separate-by(|" "); concat-strings> merged,
 	               "TypingJudgment",
 	               <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
                          | <conc-strings> (typing-judgment, <int-to-string> num));

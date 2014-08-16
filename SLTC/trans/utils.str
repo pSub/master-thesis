@@ -5,16 +5,6 @@ rules
     skip = fail
 
     /**
-     * Inserts between every two elements of the given list `s`.
-     *
-     * @param s - an arbitary term
-     * @type List(a) -> List(a)
-     */
-    intersperse(|s) : [] -> []
-    intersperse(|s) : [x] -> [x]
-    intersperse(|s) : [x|y] -> [x,s| <intersperse(|s)> y]
-
-    /**
      * Group
      */
     group(eq) : [] -> []
