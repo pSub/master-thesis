@@ -21,7 +21,7 @@ rules
 	CurrentFileFOF = CurrentFile; guarantee-extension(|"fof")
 	
 	constraint-warning :
-		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
+		Module(m,_,_,_,_,_,_,Some(body)) -> <conc> (consistency-msgs, goal-msgs)
 	where
 		msg := $[Verification result outdated or not started yet, use verification menu to re-verify.];
 		consistency-msg := $[Consistency check outdated or not started yet, use verification menu to re-check.];
@@ -34,7 +34,7 @@ rules
 		consistency-msgs := <filter(\() -> (m, consistency-msg)\)> consistency-results
 	
 	constraint-note :
-		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
+		Module(m,_,_,_,_,_,_,Some(body)) -> <conc> (consistency-msgs, goal-msgs)
 	where
 		rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
@@ -55,7 +55,7 @@ rules
 	
 	
 	constraint-error : 
-		Module(m,_,_,_,_,_,body,_) -> <conc> (consistency-msgs, goal-msgs)
+		Module(m,_,_,_,_,_,_, Some(body)) -> <conc> (consistency-msgs, goal-msgs)
 	where
 		rulez := <collect-all(?Conjectures(<filter(?TypingRule(_,RuleName(_,<id>),_))>)); concat> body;
 		outfiles := <generate-file-names(|<CurrentFileFOF>)> rulez;
