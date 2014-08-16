@@ -222,7 +222,7 @@ rules
 
     /** @internal */
     top-sort' : (graph, [], L) -> <if <has-edges> graph
-                                   then <singelton; error; fail> "Cyclic dependencies"
+                                   then fail
                                    else !L
                                    end>
     top-sort' : (graph, [n|S], L) -> <top-sort'> (graph', S', [n|L])
@@ -381,3 +381,8 @@ rules
      * @type a -> Int
      */
     get-context-id = get-generic-name; string-to-int
+
+    /**
+     *
+     */
+    exit-with-error(|error-msg, error-number) = <debug> error-msg; <exit> error-number

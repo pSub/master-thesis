@@ -140,7 +140,7 @@ rules
             premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd)> premisses-impl-eq);
             enum-premisses := <add-indices> premisses-with-equalities;
             dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
-            eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort> dependencies);
+            eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort <+ exit-with-error(|<conc-strings> ("Cyclic dependencies in rule ", <option-to-string> name), 1)> dependencies);
             premisses := <zip> (premisses-with-equalities, <map(Snd)> dependencies);
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
             vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
