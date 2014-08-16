@@ -1,14 +1,25 @@
 \chapter{Formula Generation}
 \label{ch:formula-generation}
-When developing type systems it is desirable to be able to prove
-propositions about those type systems. Those help to understand the
-type system better and help to prevent errors. Those propositions are
-often proven by hand, but those proves are error prone, hard to extend
-and time expensive. Prove assistants help to gain extensibility and
-eliminate error. Using automated prove assistants can reduce the time
-effort for suitable propositions. This chapter describes how
-first-order formulas are generated from type system specifications and
-that these formulas can be used to type check programs.
+Type systems in programming languages can be treated as black boxes
+from a programmers point of view. The programmer interacts with the
+type system for example via type annotations and receives feedback
+from the type system in form of error messages. Errors in the type
+system are hard to detect for the programmer, because he cannot be
+sure if it is an error in his program or in the type system (or its
+implementation). In addition he can only debug his program, because of
+the black box view on the type system. Therefore it is desirable to
+ensure that the type system has the intended semantics.
+
+Mathematical proofs are used to ensure that a type system has the
+intended semantics. A basic property of type systems is safety, which
+roughly says ``a well-typed term can never reach a stuck state during
+evaluation''\todo{Cite Pierce}. Those properties can be proven by
+hand or with the help of proof assistants. Both methods require
+substantial manual effort. In accordance to the goal of the automated
+generation of type checkers, we explore how well automated theorem
+provers can solve simple propositions and how this can be exploited in
+the type checker generation. We generate formulas from type system
+specifications to interface with automated theorem provers.
  
 \section{Goals}
 \section{Why First-Order Logic?}
