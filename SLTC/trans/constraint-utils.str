@@ -174,7 +174,7 @@ rules
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
      */
-    match-constructors : (t, s) -> <<?Var__(_)> s <+ equal(|t-cons, s-cons); <zip> (t-args, s-args); map(match-constructors)>
+    match-constructors : (t, s) -> <(<?Var__(_)> s <+ equal(|t-cons, s-cons); <zip> (t-args, s-args); map(match-constructors)); !"match">
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t;
