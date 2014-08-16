@@ -42,29 +42,36 @@ signature
 			                 imports,
 			                 Language(_),
 			                 MetaVariables(_),
-			                 Contexts(ContextDefinitions),
+			                 Contexts(context-definitions),
 			                 Judgments(_),
-			                 Rules(TypingRules),
+			                 Rules(typing-rules),
 			                 some-conjectures)
-			          -> <maybe(\Conjectures(conjectures) ->
-			                      <map(\conjecture -> 
-			                             FOFGoal__(<conc> (aux-formulas,
-			                                               <makeConjecture; makeInequalities> conjecture),
-			                                        typing-rule-formulas,
-			                                        <cleanup; makeConjecture> conjecture)
-			                           \)> conjectures
-			                   \ | [FOFGoal__(aux-formulas, typing-rule-formulas)])> some-conjectures
-        where
-            context-formulas := <map-with-index(makeContexts); flatten-list> ContextDefinitions;
-            typing-rule-formulas := <map(cleanup; rewriteTypingRule)> TypingRules;
+			          -> <fof-from-specification(|context-definitions, typing-rules)> some-conjectures
             
-            // Create the injectivity and univalence formulas
-            helper := <collect-all(?Term__(_, _)); nub;
-            		   mapconcat(\Term__(name, args) -> [ <makeInjectivity> (name, <length> args)
-            		   			                        , <makeUnivalence> (name, <length> args)
-            		   			                        ]
-            		   			 \)> typing-rule-formulas;
-            aux-formulas := context-formulas //<conc> (context-formulas, helper)
+            // FIXME: Check if we need this at all
+            // where
+            // // Create the injectivity and univalence formulas
+            // helper := <collect-all(?Term__(_, _)); nub;
+            // 		   mapconcat(\Term__(name, args) -> [ <makeInjectivity> (name, <length> args)
+            // 		   			                        , <makeUnivalence> (name, <length> args)
+            // 		   			                        ]
+            // 		   			 \)> typing-rule-formulas;
+            
+    fof-from-specification(|context-definitions, typing-rules) : conjectures ->
+        <maybe(\Conjectures(conjectures) ->
+            <map(\conjecture -> 
+                FOFGoal__(<conc> (context-formulas,
+                                  <cleanup; makeConjecture; makeInequalities> conjecture),
+                                  typing-rule-formulas,
+                                  <cleanup; makeConjecture> conjecture)
+                 \)> conjectures
+               \ | [FOFGoal__(context-formulas, typing-rule-formulas)])> conjectures
+        where context-formulas := <make-context-formulas> context-definitions;
+              typing-rule-formulas := <map(cleanup; rewriteTypingRule)> typing-rules
+
+    fof-from-template = id
+    
+    make-context-formulas = map-with-index(makeContexts); flatten-list
 
     /**
      * Remove nodes that are not relevant for first-order formular generation.
