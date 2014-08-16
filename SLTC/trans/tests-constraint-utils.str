@@ -15,12 +15,12 @@ rules
 
     instantiate-tests = apply-test(!"instantiate", instantiate(|[], []),
                                    !["x"], !["x"]);
-                        apply-test(!"instantiate", instantiate(|["x"], ["t"]),
-                                   !["x"], !["t"]);
-                        apply-test(!"instantiate", instantiate(|["x", ["a", "b"], "y"], ["s", ["u", "v"], "t"]),
-                                   !["a", "y"], ["u", "t"]);
-                        apply-test(!"instantiate", instantiate(|["x", "y", "x"], ["s", "u", "t"]),
-                                   !["x", "x"], ["s", "t"])
+                        apply-test(!"instantiate", instantiate(|[Var__("x")], ["t"]),
+                                   ![Var__("x")], !["t"]);
+                        apply-test(!"instantiate", instantiate(|[Var__("x"), [Var__("a"), Var__("b")], Var__("y")], ["s", ["u", "v"], "t"]),
+                                   ![Var__("a"), Var__("y")], ["u", "t"]);
+                        apply-test(!"instantiate", instantiate(|[Var__("x"), Var__("y"), Var__("x")], ["s", "u", "t"]),
+                                   ![Var__("x"), Var__("x")], ["s", "s"])
 
     match-constructors-tests = apply-and-fail(!"match-constructors", match-constructors,
                                               !(1, 2));
