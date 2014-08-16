@@ -5,13 +5,13 @@ imports constraint-language
 
 rules     
     
-    search-tests = apply-test(!"search", search(|[]),
-                              !"x", ![]);
+    search-tests = apply-and-fail(!"search", search(|[]),
+                              !"x");
                    apply-test(!"search", search(|["x"]),
-                              !"x",  ![("x", [1])]);
+                              !"x",  !("x", [1]));
                    apply-test(!"search", search(|["a", "x", "b", ["x", "y", "z"]]),
                               !"x",
-                              ![("x", [2]), ("x", [4, 1])])
+                              !("x", [2]))
 
     instantiate-tests = apply-test(!"instantiate", instantiate(|[], []),
                                    !["x"], !["x"]);
