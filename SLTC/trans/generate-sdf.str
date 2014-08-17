@@ -17,11 +17,12 @@ rules
 		  -> 'module("Generated",
 		             [imports(t), imports("Common")], 
 			         exports(
-				        conc-grammars(context-free-syntax(<map(make-variable)> meta-variables),
-                        conc-grammars(context-free-syntax(<add-indices; map(make-context)> contexts),
+				        conc-grammars(context-free-syntax(<map(make-variable(|indexed-contexts))> meta-variables),
+                        conc-grammars(context-free-syntax(<map(make-context)> indexed-contexts),
 				        context-free-syntax(<add-indices; map(make-judgment)> judgments)))
 			         )
 		      )
+        where indexed-contexts := <add-indices> contexts
 
 	// Generate syntax of context definitons	
 	make-context : (num, ContextDefinition(Name, Definition)) -> [
@@ -36,15 +37,18 @@ rules
 			elem := <names; separate-by(|" \":\" "); concat-strings> Definition
 
 	// Generate syntax of meta-variable definitions	
-	make-variable : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
+	make-variable(|indexed-contexts) : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
 		<mapconcat(\scope -> [ prod(<concat-strings>["\"", prefix, "\" MetaVariableName (\"@\" ErrorNumber)?"],
 						            scope,
-						            <make-cons'> ["MetaVariable-", name]),
+						            <make-cons'> ["MetaVariable-", <extract-ctx-id <+ !name> (scope, indexed-contexts)]),
 						       prod(<concat-strings>["\"", prefix, "\" MetaVariableName (\"@\" ErrorNumber)?"],
                                     "MetaVariable",
-                                    <make-cons'> ["MetaVariable-", name])
+                                    <make-cons'> ["MetaVariable-", <extract-ctx-id <+ !name> (scope, indexed-contexts)])
 						     ]
 		           \)> ids
+
+    extract-ctx-id : (name, [(n, ContextDefinition(name, _)) | _] ) -> <int-to-string> n
+    extract-ctx-id : (name, [_ | contexts]) -> <extract-ctx-id> (name, contexts)
 
 	// Generate syntax of typing judgments
 	make-judgment : (num, Judgment(s1, pos, s2, built-in))
