@@ -54,7 +54,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
  * The following two rules are not syntax-directed.
  */
 ===================== Subst-Eq
-~S = [ %x -> ~S ] %x
+~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
 
 %y != %x
 ==================== Subst-Neq
