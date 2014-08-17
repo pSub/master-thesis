@@ -94,7 +94,7 @@ rules
      * @type (binding, binding) -> List(Constraint)
      */
     make-binding-constraints(|info)
-        = (mapconcat(Dupl; (Snd, Third); conc), mapconcat(Dupl; (Snd, Third); conc));
+        = (filter(Dupl; (Snd, Third); conc); concat, filter(Dupl; (Snd, Third); conc); concat);
            zip; filter((?Var__(_), id));  map(makeEq(|info))
         
     /**
@@ -191,4 +191,4 @@ rules
                              <alltd(?(ctx, _); !(ctx, <lookup; Tl> (ctx, contexts)))> contexts>
                         \ <+
                         \Reset__(ctx) ->  <equal> (<lookup> (ctx, contexts), [])
-                        \)
+                        \ <+ id)

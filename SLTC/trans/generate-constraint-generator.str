@@ -162,8 +162,9 @@ rules
      * @param c - context declarartions
      * @param cc - meta-variable classes that represent contexts
      */
-    ctx-bind-to-kv-list(|c, cc) : node -> []
-        where <node-is-ctx-var(|cc)> node
+    ctx-bind-to-kv-list(|c, cc) : node -> [Ctx__(ctx)]
+        where <node-is-ctx-var(|cc)> node;
+              ctx := <get-context-id> node
     ctx-bind-to-kv-list(|c, cc) : node -> [Reset__(ctx)]
         where <node-is-ctx-empty> node;
               ctx := <get-context-id> node

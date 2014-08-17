@@ -19,7 +19,7 @@ rules
                                  \ <+
                                  \(Reset__(ctx), s') ->
                                     <clear-context(|s', ctx)> s'
-                                 \)
+                                 \ <+ Snd)
 
     /**
      * Looks up the context `ctx` at `key`.

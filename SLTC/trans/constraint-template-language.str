@@ -12,6 +12,7 @@ signature
 
        Lookup__  : ctx * inputs -> Lookup
        Reset__ : ctx -> Reset
+       Ctx__ : ctx -> Ctx
        Judgment__ : number * term * binding -> Judgment
        Neq__ : term * term -> Neq
 
