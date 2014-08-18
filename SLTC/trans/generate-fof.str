@@ -1,6 +1,7 @@
 module generate-fof
 
 imports utils
+imports constraint-language
 imports constraint-template-language
 
 imports include/SLTC
@@ -206,30 +207,37 @@ signature
             // it is illegal in TPTP to quantify over no variables.
             prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
 
-    makeFormula(|type) : Binding__(_, calls, Rule__(judg-number, name, (pattern, ctx), outputs, _))
+    makeFormula(|type) : Binding__(xs, calls, Rule__(judg-number, name, (pattern, ctx), outputs, xs-outputs))
                             -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
         where
             conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
-                                , <concat> [<rewrite-pattern> pattern, <rewrite-ctx> ctx, <rewrite-outputs> outputs]);
-            premisses := <map(rewrite-call)> calls;
+                                , <concat> [<rewrite-pattern> pattern, <rewrite-ctx> ctx, <rewrite-pattern> outputs]);
+            premisses := <add-indices; map(\(i, c) -> <rewrite-call(|i, xs, xs-outputs)> c\)> calls;
             formula := <if <[]> calls then !conclusion else !Impl__(premisses, conclusion) end>;
             free-vars-in-rule := <free-vars> formula;
             prop := <if <[]> free-vars-in-rule then !formula else !All__(free-vars-in-rule, formula) end>
 
     rewrite-pattern = topdown(try(makeTerm)); topdown(try(rewriteString))
-    rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\); debug;
+    rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\);
                   map(reverse; \l -> <foldl(\((ctx, i, o), b) -> Pred__(<concat-strings> ["bind", <int-to-string> ctx], <conc> (i, o, [b])) \)> (<Tl> l, <Hd; convert-ctx> l)\)
     
     get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ Fst
     convert-ctx : Reset__(ctx) -> Pred__(<concat-strings> ["empty", <int-to-string> ctx])
     convert-ctx : Ctx__(ctx) -> Var__(<concat-strings> ["C", <int-to-string> ctx])
     
-    rewrite-outputs = rewrite-pattern
-    // How to obtain the outputs of the lookup and judgment
-    rewrite-call : (Lookup__(ctx, _), _) -> Pred__(<concat-strings> ["lookup", <int-to-string> ctx], [])
-    rewrite-call : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
-    rewrite-call : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
-    rewrite-call : (Judgment__(n, t, binding),_) -> Pred__(<conc-strings>("'tcheck", <int-to-string> n, "'"), [])
+    rewrite-call(|i, vars, vars-outputs) : (Lookup__(ctx, inputs), _) ->
+        Pred__(<concat-strings> ["lookup", <int-to-string> ctx],
+               <conc> (<rewrite-pattern> inputs, <retrieve-outputs(|vars, vars-outputs); rewrite-pattern> i))
+    rewrite-call(|i, vars, vars-outputs) : (Judgment__(n, t, binding), _) ->
+        Pred__(<conc-strings>("'tcheck", <int-to-string> n, "'"),
+               <conc> (<rewrite-pattern> t, <rewrite-ctx> binding, <retrieve-outputs(|vars, vars-outputs); rewrite-pattern> i))
+    rewrite-call(|i, vars, vars-outputs) : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call(|i, vars, vars-outputs) : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
+
+    retrieve-outputs(|vars, vars-outputs) : i -> <<index(|i)> vars;
+                                                  filter(\var ->
+                                                                <fetch-elem(?CEq__(var, _, _); proj(CEq__|2))> vars-outputs
+                                                            \)>
 
     // Wrap strings into terms
 	wrapString : v -> Term__(v)
