@@ -213,12 +213,13 @@ signature
 	   where <not([])> cons
     makeTerm : cons#(args) -> Term__(<lower-case> cons, args)
        where <not([])> cons;
-             not(<conc-strings; (prop-constructor, "__")> cons)
-       prop-constructor = "All" <+ "Not" <+ "And" <+ "Or"   <+ "Impl" <+ "BiImpl" <+ "Formula" <+
-                          "Eq"  <+ "Neq" <+ "Var" <+ "Pred" <+ "Term" <+ "All"    <+ "Exists"
+             prop-constructors := ["All", "Not", "And", "Or", "Impl", "BiImpl", "Formula",
+                                   "Eq", "Neq", "Var", "Pred", "Term", "All", "Exists"];
+             <not(fetch-elem(\prop-cons ->  <equal(|<conc-strings> (prop-cons, "__"), cons)> \))> prop-constructors
+
 
 strategies
-    // Main strategy that apply all transformations to create valid TPT formulas
+    // Main strategy that apply all transformations to create valid TPTP formulas
 	toFOF = makeConjectures; makeVariablesUnique; removeDashes
 
     // Try to apply all rules that rewrite auxilary constructors
