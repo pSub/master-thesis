@@ -35,7 +35,13 @@ rules
                   apply-and-fail(!"unify-internal", unify-internal,
                                  ![ CNeq__("a", "a", Some("test")) ]);
                   apply-and-fail(!"unify-internal", unify-internal,
-                                 ![ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ])
+                                 ![ CEq__(Var__("x"), [Var__("x"), "a"], Some("test")) ]);
+                  apply-and-fail(!"unify-internal", unify-internal,
+                                 ![ CNeq__(Var__("x"), Var__("y"), Some("test")) ]);
+                  apply-and-fail(!"unify-internal", unify-internal,
+                                 ![ CNeq__(Var__("x"), Var__("y"), Some("test")), CNeq__(Var__("a"), Var__("b"), Some("test")) ]);
+                  apply-and-fail(!"unify-internal", unify-internal,
+                                 ![ CNeq__(Var__("x"), Var__("y"), Some("test")), CNeq__(Var__("a"), Var__("a"), Some("test")) ])
                                  
     apply-mgu-tests = apply-test(!"apply-mgu", apply-mgu(|[]),
                                  ![("x", "a")],
