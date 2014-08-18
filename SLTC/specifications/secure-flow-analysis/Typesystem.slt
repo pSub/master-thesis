@@ -1,0 +1,16 @@
+module Typesystem
+
+language Language
+
+meta-variables 	Exp "~" { Phrase Type }			
+				Dom "$" { LocationTyping VariableTyping }
+				Id "%" { Var }
+				Num "&" { Int }
+
+contexts LocationTyping := Loc{I} x Type{O}
+         VariableTyping := Var{I} x Type{O}
+
+judgments
+LocationTyping{I} ";" VariableTyping{I} "|-" Phrase{I} ":" PhraseType{O}.
+
+rules

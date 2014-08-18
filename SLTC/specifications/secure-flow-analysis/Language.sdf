@@ -1,0 +1,52 @@
+module STWL
+exports
+	
+  context-free start-symbols
+    Phrase
+    
+  lexical syntax
+  	%% This definition creates ambiguties
+  	%%[a-z]+ -> ID
+  	[a-zA-Z][a-zA-Z0-9]* -> ID
+  	[0-9]+ -> Int
+  	
+  	"if" -> ID {reject}
+  	"then" -> ID {reject}
+  	"else" -> ID {reject}
+  	"while" -> ID {reject}
+  	"do" -> ID {reject}
+  	"letvar" -> ID {reject}
+    
+  context-free syntax
+  	Exp "+" Exp -> Exp {cons("Plus")}
+  	Exp "-" Exp -> Exp {cons("Minus")}
+  	Exp "=" Exp -> Exp {cons("Equal")}
+  	Exp "<" Exp -> Exp {cons("Less-than")}
+  	
+  	ID -> Var {cons("Var")}
+  	Var -> Exp
+  	Int -> Num {cons("Num")}
+  	Num -> Exp
+  	Int -> Loc {cons("Loc")}
+  	Loc -> Exp
+  	
+  	"(" Exp ")" -> Exp {bracket}
+  	
+  	Exp ":=" AExp -> Cmd {cons("Ass")}
+  	Cmd ";" Cmd -> Cmd {cons("Comp")}
+  	"if" Exp "then" Cmd "else" Cmd -> Cmd {cons("Cond")}
+  	"while" Exp "do" Cmd "od" -> Cmd {cons("While")}
+  	"letvar" Var ":=" Exp "in" Cmd -> Cmd {cons("Letvar")}
+  	
+  	Exp -> Phrase
+  	Cmd -> Phrase
+  	
+  context-free syntax
+    %% Those security classes are chosen arbitarily, check
+    %% which ones are chosen in the paper.
+  	"low" -> DataType {cons("Tlow")}
+  	"high" -> DataType {cons("Thigh")}
+  	
+  	DataType -> PhraseType
+  	DataType Var -> PhraseType {cons("TVar")}
+  	DataType Cmd -> PhraseType {cons("TCmd")}
