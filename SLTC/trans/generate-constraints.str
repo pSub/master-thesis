@@ -46,7 +46,7 @@ rules
 
             // Generate the constraint templates from the type system specification
             templates := <to-constraint-generator(|judgments, context-definitions, context-classes);
-                          solve-which-ambiguities> typing-rules;
+                          optimize-templates(|context-definitions)> typing-rules;
             
             // Initialize the store that contains the contexts
             empty-contexts := <map-with-index((id, !([], <new-hashtable>)))> context-definitions;

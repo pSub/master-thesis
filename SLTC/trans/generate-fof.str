@@ -1,6 +1,8 @@
 module generate-fof
 
 imports utils
+imports constraint-template-language
+
 imports include/SLTC
 
 signature
@@ -62,14 +64,20 @@ signature
             <map(\conjecture -> 
                 FOFGoal__(<conc> (context-formulas,
                                   <cleanup; makeConjecture; makeInequalities> conjecture),
-                                  typing-rule-formulas,
-                                  <cleanup; makeConjecture> conjecture)
+                          typing-rule-formulas,
+                          <cleanup; makeConjecture> conjecture)
                  \)> conjectures
                \ | [FOFGoal__(context-formulas, typing-rule-formulas)])> conjectures
         where context-formulas := <make-context-formulas> context-definitions;
               typing-rule-formulas := <map(cleanup; rewriteTypingRule)> typing-rules
 
-    fof-from-template = id
+    fof-from-templates(|context-definitions, typing-rules) : conjecture ->
+        // FOFGoal__(<conc> (<make-context-formulas> context-definitions,
+        //                   <makeConjecture; makeInequalities> conjecture),
+        //           <map(rewriteTypingRule)> typing-rules,
+        //           <makeConjecture> conjecture)
+                FOFGoal__(<make-context-formulas> context-definitions,
+                  <map(rewriteTypingRule)> typing-rules)
     
     make-context-formulas = map-with-index(makeContexts); flatten-list
 
@@ -198,9 +206,34 @@ signature
             // it is illegal in TPTP to quantify over no variables.
             prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
 
+    makeFormula(|type) : Binding__(_, calls, Rule__(judg-number, name, (pattern, ctx), outputs, _))
+                            -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
+        where
+            conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
+                                , <concat> [<rewrite-pattern> pattern, <rewrite-ctx> ctx, <rewrite-outputs> outputs]);
+            premisses := <map(rewrite-call)> calls;
+            formula := <if <[]> calls then !conclusion else !Impl__(premisses, conclusion) end>;
+            free-vars-in-rule := <free-vars> formula;
+            prop := <if <[]> free-vars-in-rule then !formula else !All__(free-vars-in-rule, formula) end>
+
+    rewrite-pattern = topdown(try(makeTerm)); topdown(try(rewriteString))
+    rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\); debug;
+                  map(reverse; \l -> <foldl(\((ctx, i, o), b) -> Pred__(<concat-strings> ["bind", <int-to-string> ctx], <conc> (i, o, [b])) \)> (<Tl> l, <Hd; convert-ctx> l)\)
+    
+    get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ Fst
+    convert-ctx : Reset__(ctx) -> Pred__(<concat-strings> ["empty", <int-to-string> ctx])
+    convert-ctx : Ctx__(ctx) -> Var__(<concat-strings> ["C", <int-to-string> ctx])
+    
+    rewrite-outputs = rewrite-pattern
+    // How to obtain the outputs of the lookup and judgment
+    rewrite-call : (Lookup__(ctx, _), _) -> Pred__(<concat-strings> ["lookup", <int-to-string> ctx], [])
+    rewrite-call : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call : (Judgment__(n, t, binding),_) -> Pred__(<conc-strings>("'tcheck", <int-to-string> n, "'"), [])
+
     // Wrap strings into terms
 	wrapString : v -> Term__(v)
-	   where <is-string ; string-as-chars(map(is-alphanum))> v
+	   where <is-string; string-as-chars(map(is-alphanum))> v
 
 	// Wrap all strings that are parameters of Term__ or Pred__ into terms
 	rewriteString : Term__(n, args) -> Term__(n, <map(try(wrapString))> args)
