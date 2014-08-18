@@ -41,7 +41,7 @@ rules
                                      end>
     unify' : ([CEq__(n#(ts), n#(ts'), info) | cs], mgu, err) -> <unify'> (<conc> (cs, cs'), mgu, err)
         where <equal>(<length> ts, <length> ts');
-              cs' := <zip; map(makeEq(|info))> (ts, ts')
+              cs' := <zip; map(makeCEq(|info))> (ts, ts')
     unify' : ([c | cs], mgu, err) -> <unify'> (cs, mgu, [<get-info> c | err])
 
     /**

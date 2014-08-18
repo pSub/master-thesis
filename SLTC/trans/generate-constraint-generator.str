@@ -122,7 +122,7 @@ rules
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion',
                          <get-typing-judgment; get-outputs(|j)> conclusion',
-                         <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs))
+                         <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeCEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs))
         where
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
             (substitutions, equalities) := <get-typing-judgment; get-inputs(|j);

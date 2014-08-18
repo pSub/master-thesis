@@ -84,7 +84,7 @@ rules
      */
     make-implicit-equality-constraints(select | pattern, term, name) =
         collect-om(?Var__(_), conc); select; Dupl;
-        (id, instantiate(|pattern, term)); zip; map(makeEq(|name))
+        (id, instantiate(|pattern, term)); zip; map(makeCEq(|name))
     
     /**    
      * Creates equality constraints for every variable and its
@@ -95,7 +95,7 @@ rules
      */
     make-binding-constraints(|info)
         = (filter(Dupl; (Snd, Third); conc); concat, filter(Dupl; (Snd, Third); conc); concat);
-           zip; filter((?Var__(_), id));  map(makeEq(|info))
+           zip; filter((?Var__(_), id));  map(makeCEq(|info))
         
     /**
      * Provided with a list of paths, this strategy returns the

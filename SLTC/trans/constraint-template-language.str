@@ -14,7 +14,8 @@ signature
        Reset__ : ctx -> Reset
        Ctx__ : ctx -> Ctx
        Judgment__ : number * term * binding -> Judgment
-       Neq__ : term * term -> Neq
+       Eq__ : term * term * info -> Eq
+       Neq__ : term * term * info -> Neq
 
 rules  
 
@@ -65,3 +66,6 @@ rules
      * @type List(Rule) -> Fork(List(Rule))
      */
     mkFork : xs -> Fork__(xs)
+
+    makeEq(|info) : (a, b) -> Eq__(a, b, info)
+    makeNeq(|info) : (a, b) -> Neq__(a, b, info)

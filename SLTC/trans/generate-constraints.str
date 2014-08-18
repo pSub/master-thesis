@@ -31,7 +31,7 @@ rules
                     \;
                     // Append a constraint for the ouputs in the conjecture.
                     try(\(Some(outputs), constraints) ->
-                      (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
+                      (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeCEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
                     \)> conjecture
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
@@ -149,12 +149,12 @@ rules
                               <to-tuple; instantiate-lookup(|pattern', term');
                                (lookup(|s) < \ o -> (Some(o), [])\ +
                                              \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
-                          case ?CEq__(a, b, info):
+                          case ?Eq__(a, b, info):
                               !(Some([]), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
                                               <instantiate(|pattern', term')> [b],
                                               info) ])
-                          case ?CNeq__(a, b, info):
+                          case ?Neq__(a, b, info):
                               !(Some([]), [ <instantiate-error(|pattern', term')>
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],

@@ -26,7 +26,7 @@ rules
      * @param info - informations about the constraint (type Info)
      * @type (a, b) -> CEq__(a, b, info)
      */
-    makeEq(|info) : (a, b) -> CEq__(a, b, info)
+    makeCEq(|info) : (a, b) -> CEq__(a, b, info)
 
     /**
      * Helper rule to creae CNeq__ nodes.
@@ -34,7 +34,7 @@ rules
      * @param info - informations about the constraint (type Info)
      * @type (a, b) -> CNeq__(a, b, info)
      */
-    makeNeq(|info) : (a, b) -> CNeq__(a, b, info)
+    makeCNeq(|info) : (a, b) -> CNeq__(a, b, info)
 
     /**
      * Extracts information about a constraint.
