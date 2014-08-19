@@ -47,6 +47,14 @@ rules
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
+     * Extracts the name from the conclusion.
+     *
+     * @type Rule -> Int
+     */
+    get-rule-name : Rule__(_, name, _, _, _) -> name
+    get-rule-name : Binding__(_, _, rule) -> <get-rule-name> rule
+
+    /**
      * Transforms a triple into a judgment node
      *
      * @type (name, a, b) -> Judgment(name, a, b)
