@@ -27,7 +27,7 @@ rules
     unify' : ([CFail__(info) | cs], mgu, err) -> <unify'> (cs, mgu, [info | err])
     unify' : ([CEq__(t, t, info) | cs], mgu, err) -> <unify'> (cs, mgu, err)
     unify' : ([CNeq__(t, s, info)| cs], mgu, err) ->
-        <if and(or(<?Var__(_)> t, <?Var(_)> s), <all(?CNeq__(_, _ ,_))> cs)
+        <if and(or(<?Var__(_)> t, <?Var__(_)> s), <all(?CNeq__(_, _ ,_))> cs)
          then !(cs, mgu, [CFail__("Only inequalities left.") | err])
          else if <not(equal)> (t, s)
               then <unify'> (cs, mgu, err)
