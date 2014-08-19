@@ -1,5 +1,26 @@
 \chapter{Type Checker Generation}
+\todo[inline]{Terminology: Type Checker vs. Type Inference}
 \section{Goals}
+This section briefly describes and motivates the design goals of the
+type check generator.
+
+The first goal is to produce fast type checkers, even if the type
+system specification is not geared towards performance. Mainly this
+means to try to deal with non-syntax directed typing rules without
+backtracking. The motivation for this is, that non-syntax directed
+typing rules are often more readable and changes have mainly local
+effects.
+
+The second goal is to design a modular type checker generator. A type
+checker generator that can be easily adapted and that facilitates the
+exchange of components. This modularity is desirable because it
+increases the reusability and makes it possible to combine projects.
+
+The third goal is to generate type checkers emit readable error
+messages if a program is not well-typed. This is essential to make the
+type checker usable in any way.
+\section{Architecture}
+
 \section{Implementation}
 \subsection{Constraint Templates}
 \subsection{Constraint Template Optimization}
