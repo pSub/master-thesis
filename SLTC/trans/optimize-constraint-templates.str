@@ -66,7 +66,7 @@ rules
         where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
               // Make the conclusions of the rules equal.
               rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez];
-              formulas := <fof-from-templates(|context-definitions, templates); pp-fof ; debug> []
+              formulas := <fof-from-templates(|context-definitions, templates); pp-fof ; debug> Formula__("test", True__())
               
                   
   pp-fof =

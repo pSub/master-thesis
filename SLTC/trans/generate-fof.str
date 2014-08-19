@@ -64,12 +64,10 @@ signature
               typing-rule-formulas := <map(cleanup; rewriteTypingRule)> typing-rules
 
     fof-from-templates(|context-definitions, typing-rules) : conjecture ->
-        // FOFGoal__(<conc> (<make-context-formulas> context-definitions,
-        //                   <makeConjecture; makeInequalities> conjecture),
-        //           <map(rewriteTypingRule)> typing-rules,
-        //           <makeConjecture> conjecture)
-                FOFGoal__(<make-context-formulas> context-definitions,
-                  <map(rewriteTypingRule)> typing-rules)
+        FOFGoal__(<conc> (<make-context-formulas> context-definitions,
+                          <makeConjecture; makeInequalities> conjecture),
+                  <map(rewriteTypingRule)> typing-rules,
+                  <makeConjecture> conjecture)
     
     make-context-formulas = map-with-index(makeContexts); flatten-list
 
@@ -207,6 +205,8 @@ signature
             formula := <if <[]> calls then !conclusion else !Impl__(premisses, conclusion) end>;
             free-vars-in-rule := <free-vars> formula;
             prop := <if <[]> free-vars-in-rule then !formula else !All__(free-vars-in-rule, formula) end>
+
+    makeFormula(|type) : Formula__(name, prop) -> Formula__(name, type, <rewrite-pattern> prop)
 
     rewrite-pattern = topdown(try(makeTerm)); topdown(try(rewriteString))
     rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\);
