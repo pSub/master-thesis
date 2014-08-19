@@ -203,12 +203,19 @@ signature
         where
             conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
                                 , <concat> [<rewrite-pattern> pattern, <rewrite-ctx> ctx, <rewrite-pattern> outputs]);
-            premisses := <add-indices; map(\(i, c) -> <rewrite-call(|i, xs, xs-outputs)> c\)> calls;
+            premisses := <premisses-to-props(|xs, xs-outputs)> calls;
             formula := <if <[]> calls then !conclusion else !Impl__(premisses, conclusion) end>;
             free-vars-in-rule := <free-vars> formula;
             prop := <if <[]> free-vars-in-rule then !formula else !All__(free-vars-in-rule, formula) end>
 
-    makeFormula(|type) : Formula__(name, prop) -> Formula__(name, type, <rewrite-pattern> prop)
+    makeFormula(|type) : Formula__(name, prop) -> Formula__(name, type, prop'')
+        where
+            prop' := <rewrite-pattern> prop;
+            free-vars-in-rule := <free-vars> prop';
+            prop'' := <if <[]> free-vars-in-rule then !prop' else !All__(free-vars-in-rule, prop') end>
+
+    premisses-to-props : Binding__(xs, calls, Rule__(_, _, _, _, xs-outputs)) -> <premisses-to-props(|xs, xs-outputs)> calls
+    premisses-to-props(|xs, xs-outputs) = add-indices; map(\(i, c) -> <rewrite-call(|i, xs, xs-outputs)> c\)
 
     rewrite-pattern = topdown(try(makeTerm)); topdown(try(rewriteString))
     rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\);
