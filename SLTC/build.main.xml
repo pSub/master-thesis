@@ -40,6 +40,12 @@
     <!-- used for building inside of Eclipse -->
     <import file="build.generated.xml"/>   
 
+	<!-- Copy a dummy file if no sdf file was generated
+	     or if the dummy file is newer than the generated file -->
+	<target name="check-generated">
+	       <copyfile src="res/Generated.sdf" dest="syntax/Generated.sdf"/>
+	</target>
+	
     <!-- Main target -->
-    <target name="all" depends="spoofaximp.default.ctree"/>
+    <target name="all" depends="check-generated, spoofaximp.default.ctree"/>
 </project>

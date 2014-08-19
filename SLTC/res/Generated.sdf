@@ -1,0 +1,8 @@
+module Generated
+
+imports Common
+
+exports
+    context-free syntax 
+        -> TypingJudgment {cons("DummyTypingJudgment")}
+        -> MetaVariable {cons("DummyMetaVariable")}
