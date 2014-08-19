@@ -19,7 +19,7 @@ rules
     
     // FIXME: Currently there is no distinction between which and when ambiguities!
     solve-which-ambiguities(|context-definitions) : templates -> 
-        <conc>(<map(mkFork; optimize-fork(|context-definitions, templates))> equality-classes,
+        <conc> (<map(mkFork; optimize-fork(|context-definitions, templates))> equality-classes,
                <diff(eq)> (templates,
                            <flatten-list> equality-classes))
         where equality-classes :=  <group-by-conclusion> templates
@@ -58,7 +58,11 @@ rules
     /**
      * Stub for checking whether a rule within a Fork is redundant.
      */
-    optimize-fork(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
+    optimize-fork(|context-definitions, templates) : Fork__(rulez) ->
+        <if <equal> (<length> rulez'', 1)
+         then <Hd> rulez''
+         else !Fork__(rulez'')
+         end>
         where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
               // Make the conclusions of the rules equal.
               rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez];
