@@ -242,7 +242,9 @@ signature
 	makeTerm : v -> v
 	   where <is-string> v
 	makeTerm : cons#([]) -> Term__(<lower-case> cons)
-	   where <not([])> cons
+	   where <not([])> cons;
+	   prop-constructors := ["True", "False"];
+             <not(fetch-elem(\prop-cons ->  <equal(|<conc-strings> (prop-cons, "__"), cons)> \))> prop-constructors
     makeTerm : cons#(args) -> Term__(<lower-case> cons, args)
        where <not([])> cons;
              prop-constructors := ["All", "Not", "And", "Or", "Impl", "BiImpl", "Formula",
