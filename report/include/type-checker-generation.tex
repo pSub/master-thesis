@@ -20,13 +20,47 @@ The third goal is to generate type checkers emit readable error
 messages if a program is not well-typed. This is essential to make the
 type checker usable in any way.
 \section{Architecture}
+The type checker generator has two phases: Template generation and
+template optimization. In the template generation phase the type
+system specification is transformed with minor modifications into
+templates. A template is different representation for a typing rule,
+which is better suited for type checking. Templates will be introduced
+in detail in Section~\ref{sec:constraint-templates}. In the template
+optimization phase, those templates are optimized. Those optimizations
+aim to reduce the amount of non-determinism in the type system and
+therefore reduce the amount of backtracking in the type checker. The
+end product after those two phases, is a file that contains the
+optimized templates.
 
+The templates are the input for the next two phases, which are located
+in the type checker. Instead of generating the type checker directly
+from the specification, a generic type checker is that takes the
+templates as input. The generic type checker has two phases:
+Constraint generation and constraint solving. The constraint
+generation phase has the templates and the program expression that shall be type
+checked as inputs. To generate the constraints the program expression
+is traversed according to the templates and the emitted constraints
+are collected. Those constraints are then solved in the constraint
+solving phase.
+
+The four phases correspond to modules. Each phase has a well-defined
+interface, therefore the implementation can be exchanged freely. This
+makes it possible to use different constraint solvers, constraint
+generators or template optimizers.
+
+\todo[inline]{Maybe draw a little picture of the phases pipeline}
 \section{Implementation}
+\label{sec:implementation}
 \subsection{Constraint Templates}
+\label{sec:constraint-templates}
 \subsection{Constraint Template Optimization}
+\label{sec:constr-templ-optim}
 \subsection{Constraint Generation}
+\label{sec:constr-gener}
 \subsection{Constraint Solving}
+\label{sec:constraint-solving}
 \section{Performance}
+\label{sec:performance}
 
 %%% Local Variables: 
 %%% mode: latex
