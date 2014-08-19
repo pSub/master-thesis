@@ -41,6 +41,9 @@ signature
 		AuxCons__ : String * String * List(Prop) -> Prop
 
  rules
+    /**
+     * Top-level rule to convert specifications to first-order formulas.
+     */
 	makeConjectures : Module(ModuleDec(_),
 			                 imports,
 			                 Language(_),
@@ -50,7 +53,14 @@ signature
 			                 Rules(typing-rules),
 			                 some-conjectures)
 			          -> <fof-from-specification(|context-definitions, typing-rules)> some-conjectures
-            
+
+    /**
+     * Rule to convert specifications to first-order formulas
+     *
+     * @param context-definitions - the plain definitions from the specification
+     * @param typing-rules - the plain typing rumes from the specification
+     * @type Conjectures -> FOFGoal
+     */
     fof-from-specification(|context-definitions, typing-rules) : conjectures ->
         <maybe(\Conjectures(conjectures) ->
             <map(\conjecture -> 
