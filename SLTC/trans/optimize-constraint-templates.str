@@ -22,9 +22,7 @@ rules
     
     // FIXME: Currently there is no distinction between which and when ambiguities!
     solve-which-ambiguities(|context-definitions) : templates -> 
-        <conc>(<map(mkFork
-          ;optimize-fork(|context-definitions, templates)
-         )> equality-classes,
+        <conc>(<map(mkFork; optimize-fork(|context-definitions, templates))> equality-classes,
                <diff(eq)> (templates,
                            <flatten-list> equality-classes))
         where equality-classes :=  <group-by-conclusion> templates
@@ -67,7 +65,6 @@ rules
         where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
               // Make the conclusions of the rules equal.
               rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez];
-              // formulas := <fof-from-templates(|context-definitions, templates); verify-vampire ; debug> Formula__("test", True__());
               rulez-premisses := <zip> (rulez', <map(\r -> <filter(not(?r); premisses-to-props)> rulez'\)> rulez');
               rulez'' := <remove-all(\(rule, premisses) ->
                                     <fetch-elem(
@@ -81,9 +78,5 @@ rules
                                           \); equal(|[])> rule
                                      \)> premisses
                                  \); map(Fst)> rulez-premisses
-                  
-  pp-fof =
-    ast2abox(|[<parse-pptable-file> "trans/fof.pp"]);
-    box2text-string(|100)
-    
+
     optimize-templates(|context-definitions) = solve-which-ambiguities(|context-definitions)
