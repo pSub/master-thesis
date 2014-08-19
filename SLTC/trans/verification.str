@@ -138,10 +138,10 @@ rules
 	    <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles) < 
     	<queue-analysis> path + <debug> "No conjectures, vampire is not called"
 
-    verify-vampire(|time) : ast -> <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles)
+    verify-vampire(|time, name) : ast -> <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles)
         where
             // FIXME: Place those files into the project folder.
-            filename := <guarantee-extension(|"fof")> "/tmp/test";
+            filename := <conc-strings; guarantee-extension(|"fof")> ("/tmp/proofs/", name);
             rulez := <collect-all(?Formula__(_,Conjecture__(),_))> ast;
             strings := <map(pp-fof <+ pp-debug(pp-fof))> ast;
             outfiles := <generate-files(|filename)> strings

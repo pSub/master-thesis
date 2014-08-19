@@ -63,11 +63,24 @@ rules
     /**
      * Stub for checking whether a rule within a Fork is redundant.
      */
-    optimize-fork(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez')
+    optimize-fork(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
         where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
               // Make the conclusions of the rules equal.
               rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez];
-              formulas := <fof-from-templates(|context-definitions, templates); verify-vampire ; debug> Formula__("test", True__())
+              // formulas := <fof-from-templates(|context-definitions, templates); verify-vampire ; debug> Formula__("test", True__());
+              rulez-premisses := <zip> (rulez', <map(\r -> <filter(not(?r); premisses-to-props)> rulez'\)> rulez');
+              rulez'' := <remove-all(\(rule, premisses) ->
+                                    <fetch-elem(
+                                      \ps -> <premisses-to-props;
+                                         remove-all(
+                                          \p' ->
+                                             <map(\p ->
+                                                     Formula__(<get-rule-name; option-to-string-newname(|"Goal")> rule, Impl__(p', p))
+                                                  \);
+                                              fof-from-templates(|context-definitions, templates); verify-vampire(|"2", <get-rule-name; option-to-string-newname(|"Goal")> rule); some(?VerificationSuccess(_))> ps
+                                          \); equal(|[])> rule
+                                     \)> premisses
+                                 \); map(Fst)> rulez-premisses
                   
   pp-fof =
     ast2abox(|[<parse-pptable-file> "trans/fof.pp"]);
