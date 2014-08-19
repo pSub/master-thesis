@@ -39,6 +39,21 @@ rules
     ast2abox(|[<parse-pptable-file> "trans/fof.pp"]);
     box2text-string(|100)
     
+  typecheck :
+    (selected, position, ast, path, project-path) -> (filename, <typecheck> ast)
+  where
+    filename := <guarantee-extension(|"check")> path
+
+  generate-constraints :
+    (selected, position, ast, path, project-path) -> (filename, <generate-constraints> ast)
+  where
+    filename := <guarantee-extension(|"constraints")> path
+
+  generate-templates :
+    (selected, position, ast, path, project-path) -> (filename, <make-constraint-generator> ast)
+  where
+    filename := <guarantee-extension(|"templates")> path
+
   generate-files(|base) =
     ?files;
     names := <generate-file-names(|base)> files;

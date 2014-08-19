@@ -39,6 +39,12 @@ menus
     action: "Generate SDF"         = generate-sdf (openeditor) (realtime)
     action: "Generate FOF"         = generate-fof (openeditor) (realtime)
     
+  menu: "Typecheck"
+    
+    action: "Generate Templates"   = generate-templates (openeditor) (realtime)
+    action: "Generate Constraint"  = generate-constraints (openeditor) (realtime)
+    action: "Typecheck"            = typecheck (openeditor) (realtime)
+    
   menu: "Verification"
     
     action: "Verify with Vampire" = verify-vampire
