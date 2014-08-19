@@ -246,7 +246,8 @@ signature
     makeTerm : cons#(args) -> Term__(<lower-case> cons, args)
        where <not([])> cons;
              prop-constructors := ["All", "Not", "And", "Or", "Impl", "BiImpl", "Formula",
-                                   "Eq", "Neq", "Var", "Pred", "Term", "All", "Exists"];
+                                   "Eq", "Neq", "Var", "Pred", "Term", "All", "Exists",
+                                   "True", "False"];
              <not(fetch-elem(\prop-cons ->  <equal(|<conc-strings> (prop-cons, "__"), cons)> \))> prop-constructors
 
 
