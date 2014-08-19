@@ -10,9 +10,6 @@ imports constraint-utils
 imports generate-fof
 imports verification
 
-// FIXME: This is only a temporary import for testing
-imports generate-constraint-generator
-
 signature
     sorts DummyVar
     constructors
