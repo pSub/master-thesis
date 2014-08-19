@@ -113,7 +113,7 @@ rules
 	    
 	    [goal] := <toFOF <+ error(!"fof-trans failed: ")> ast-with-false;
 	    string := <pp-fof <+ pp-debug(pp-fof)> goal;
-	    <debug;write-file> (filename, string);
+	    <write-file> (filename, string);
 	    <try(call-vampire(|"FALSE",time))> filename;
     	<queue-analysis> path
     	
@@ -138,6 +138,14 @@ rules
 	    <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles) < 
     	<queue-analysis> path + <debug> "No conjectures, vampire is not called"
 
+    verify-vampire(|time) : ast -> <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles)
+        where
+            // FIXME: Place those files into the project folder.
+            filename := <guarantee-extension(|"fof")> "/tmp/test";
+            rulez := <collect-all(?Formula__(_,Conjecture__(),_))> ast;
+            strings := <pp-fof <+ pp-debug(pp-fof)> ast;
+            outfiles := <generate-files(|filename)> [strings]
+
 	// call-and-handle = call < debug(!"Command succeeded: ") + debug(!"Command failed: ")
 
 	call-vampire(|rule,time) = 
@@ -150,9 +158,9 @@ rules
     		 Stream(err) := <stderr-stream>;
 			 finally(
 				<call> (<vampire-command>, <conc>(<vampire-options(|time)>, [file]), ins, out, err),
-				<fclose> out;
-				<extract-vampire-info(|rule)> proof-file
-				)
+				<fclose> out
+				);
+		        <extract-vampire-info(|rule)> proof-file
 		else <extract-vampire-info(|rule)> proof-file
 		end
 	
@@ -180,7 +188,8 @@ rules
 		result := <is-substring(!"Success") <
 			        !VerificationSuccess(lemmas) + 
 			        !VerificationFailure(butlast)> last;
-		<write-file> (info-file, <write-to-string> result)
+		<write-file> (info-file, <write-to-string> result);
+		!result
 	
 	get-verification-result-info =
 		?file;

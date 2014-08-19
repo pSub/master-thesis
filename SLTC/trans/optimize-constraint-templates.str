@@ -8,6 +8,7 @@ imports constraint-language
 imports constraint-template-language
 imports constraint-utils
 imports generate-fof
+imports verification
 
 // FIXME: This is only a temporary import for testing
 imports generate-constraint-generator
@@ -66,8 +67,7 @@ rules
         where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
               // Make the conclusions of the rules equal.
               rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez];
-              formulas := <fof-from-templates(|context-definitions, templates); pp-fof ; debug> Formula__("test", True__())
-              
+              formulas := <fof-from-templates(|context-definitions, templates); verify-vampire ; debug> Formula__("test", True__())
                   
   pp-fof =
     ast2abox(|[<parse-pptable-file> "trans/fof.pp"]);
