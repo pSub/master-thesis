@@ -4,8 +4,8 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
-       Conjecture__ : judg-number * Option(String) * Pattern * Outputs * Constraints -> Conjecture
-       Template__ : List(List(var)) * List(call) * Conjecture -> Template
+       Conjecture__ : judg-number * Option(String) * Pattern * Outputs -> Conjecture
+       Template__ : List(List(var)) * List(premisse) * Conjecture * Constraint -> Template
 
        /** Extended Language */
        Fork__ : List(Rule) -> Rule
@@ -24,8 +24,8 @@ rules
      *
      * @type Rule -> List(a)
      */
-    get-pattern : Conjecture__(_, _, (pattern, _), _, _) -> pattern
-    get-pattern : Template__(_, _, rule) -> <get-pattern> rule
+    get-pattern : Conjecture__(_, _, (pattern, _), _) -> pattern
+    get-pattern : Template__(_, _, rule, _) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
@@ -33,8 +33,8 @@ rules
      *
      * @type Rule -> List(a)
      */
-    get-ctx-pattern : Conjecture__(_, _, (_, ctx), _, _) -> ctx
-    get-ctx-pattern : Template__(_, _, rule) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Conjecture__(_, _, (_, ctx), _) -> ctx
+    get-ctx-pattern : Template__(_, _, rule, _) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
@@ -42,8 +42,8 @@ rules
      *
      * @type Rule -> Int
      */
-    get-judgment-number : Conjecture__(judg-number, _, _, _, _) -> judg-number
-    get-judgment-number : Template__(_, _, rule) -> <get-judgment-number> rule
+    get-judgment-number : Conjecture__(judg-number, _, _, _) -> judg-number
+    get-judgment-number : Template__(_, _, rule, _) -> <get-judgment-number> rule
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
@@ -51,8 +51,8 @@ rules
      *
      * @type Rule -> Int
      */
-    get-rule-name : Conjecture__(_, name, _, _, _) -> name
-    get-rule-name : Template__(_, _, rule) -> <get-rule-name> rule
+    get-rule-name : Conjecture__(_, name, _, _) -> name
+    get-rule-name : Template__(_, _, rule, _) -> <get-rule-name> rule
 
     /**
      * Transforms a triple into a judgment node
