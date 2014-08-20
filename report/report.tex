@@ -51,6 +51,14 @@
 \label{#1}}
 \newcommand{\refcallout}[1]{%
 {\setlength\fboxsep{1pt}\fbox{\footnotesize\bf\ref{#1}}}}
+
+%% Allow latex commands within verbatim with !cmd`param'
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\let\oldv\@verbatim
+\def\@verbatim{\oldv\catcode`\!=0 \catcode`\`=1 \catcode`\'=2 }
+\makeatother
+
 \input{include/macros}
 \input{include/glossary}
 
