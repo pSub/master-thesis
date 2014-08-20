@@ -107,23 +107,26 @@ lookups, equalities and inequalities.
 
 \begin{description}
 \item[Judgments] are the user defined judgments form the
-  specification. They consist of the judgment number, the positions of
-  the judgment that are marked as inputs and a description of context
-  modifications. Example:
+  specification. They consist of the judgment
+  number \refcallout{judgment:number}, the positions of the judgment
+  that are marked as inputs \refcallout{judgment:inputs} and a description of context
+  modifications \refcallout{judgment:context}. There are three types of context modifications.
+  Example:
 \begin{verbatim}
 Judgment__(
-          1
-        , [Var__("X219")]
+          1 !callout`judgment:number'
+        , [Var__("X219")] !callout`judgment:inputs'
         , [ (1, [Var__("X217")], [Var__("X218")])
           , Ctx__(1)
           , Ctx__(2)
-          ]
+          ] !callout`judgment:context'
         )
 \end{verbatim}
-\item[Context lookups] consist of the context number and of the input
-  positions of the context lookup. Example:
+\item[Context lookups] consist of the context number
+  \refcallout{lookup:ctx} and of the input positions of the context
+  lookup \refcallout{lookup:inputs}. Example:
 \begin{verbatim}
-Lookup__(1, [Var__("X213")])
+Lookup__(1 !callout`lookup:ctx', [Var__("X213")] !callout`lookup:inputs')
 \end{verbatim}
 \item[(In)equalities] are predefined judgments and therefore treated
   separately. As they have no outputs the error messages are stored
