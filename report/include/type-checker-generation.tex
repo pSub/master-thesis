@@ -20,6 +20,7 @@ The third goal is to generate type checkers emit readable error
 messages if a program is not well-typed. This is essential to make the
 type checker usable in any way.
 \section{Architecture}
+\todo[inline]{Describe more explicitly that we use constraint solving}
 The type checker generator has two phases: Template generation and
 template optimization. In the template generation phase the type
 system specification is transformed with minor modifications into
@@ -67,8 +68,38 @@ generators or template optimizers.
 \end{figure}
 \section{Implementation}
 \label{sec:implementation}
+The following sections describe the implementation of the type checker
+generator, one section per phase.
+
 \subsection{Constraint Templates}
 \label{sec:constraint-templates}
+In the first phase type system specifications are translated into
+templates. A template is a intermediate representation of a typing
+rule that is more suitable for the constraint generation process and
+defined as following.
+
+\begin{definition}{Template}
+  \todo[inline]{Complete this grammar and synchronize it with the
+    stratego source code}
+  \begin{grammar}
+    <Template> ::= `Template__' <Vars> <Premisses> <Conjecture>
+    <Conjecture> ::= `Conjecture__' <Int> <Name> <Pattern> <Outputs> <Constraints>
+
+    <Name> ::= `Some' <String> | `None'
+  \end{grammar}
+\end{definition}
+
+Before describing the structure of templates in depth, we want to
+highlight the conceptual differences between templates and typing
+rules. First templates take advantage of the input/output tags of
+typing judgments an second they already carry a set of constraints.
+
+The structure of a template is close to the structure of a typing
+rule, there are premisses and a conjecture. In addition to those there
+is a list of variables for ever premise. Those variables correspond to
+the output positions of the premisses in the typing rule, for each
+output position there exists one variable. 
+
 \subsection{Constraint Template Optimization}
 \label{sec:constr-templ-optim}
 \subsection{Constraint Generation}
