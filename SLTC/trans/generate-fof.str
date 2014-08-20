@@ -7,7 +7,6 @@ imports constraint-template-language
 imports include/SLTC
 
 signature
-	//FIXME: What is the advantage of defining the sorts explicitly
 	sorts Prop Type FOF File
 	constructors
 	    // Constructors are postfixed with two underscores to
