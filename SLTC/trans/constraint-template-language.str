@@ -5,7 +5,7 @@ signature
     constructors
        /** Base Language */
        Conjecture__ : judg-number * Option(String) * Pattern * Outputs * Constraints -> Conjecture
-       Binding__ : List(List(var)) * List(call) * Conjecture -> Rule
+       Template__ : List(List(var)) * List(call) * Conjecture -> Template
 
        /** Extended Language */
        Fork__ : List(Rule) -> Rule
@@ -25,7 +25,7 @@ rules
      * @type Rule -> List(a)
      */
     get-pattern : Conjecture__(_, _, (pattern, _), _, _) -> pattern
-    get-pattern : Binding__(_, _, rule) -> <get-pattern> rule
+    get-pattern : Template__(_, _, rule) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
@@ -34,7 +34,7 @@ rules
      * @type Rule -> List(a)
      */
     get-ctx-pattern : Conjecture__(_, _, (_, ctx), _, _) -> ctx
-    get-ctx-pattern : Binding__(_, _, rule) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Template__(_, _, rule) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
@@ -43,7 +43,7 @@ rules
      * @type Rule -> Int
      */
     get-judgment-number : Conjecture__(judg-number, _, _, _, _) -> judg-number
-    get-judgment-number : Binding__(_, _, rule) -> <get-judgment-number> rule
+    get-judgment-number : Template__(_, _, rule) -> <get-judgment-number> rule
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
@@ -52,7 +52,7 @@ rules
      * @type Rule -> Int
      */
     get-rule-name : Conjecture__(_, name, _, _, _) -> name
-    get-rule-name : Binding__(_, _, rule) -> <get-rule-name> rule
+    get-rule-name : Template__(_, _, rule) -> <get-rule-name> rule
 
     /**
      * Transforms a triple into a judgment node

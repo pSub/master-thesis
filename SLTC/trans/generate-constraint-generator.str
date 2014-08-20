@@ -104,7 +104,7 @@ rules
      */
     step(|j, c, cc) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
-          Binding__(<map(Fst; Fst)> vars-outputs,
+          Template__(<map(Fst; Fst)> vars-outputs,
                     <map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
                               (get-typing-judgment; Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
