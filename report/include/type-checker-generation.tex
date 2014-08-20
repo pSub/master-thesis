@@ -83,6 +83,7 @@ defined as following.
     stratego source code}
   \begin{grammar}
     <Template> ::= `Template__' <Vars> <Premisses> <Conjecture>
+
     <Conjecture> ::= `Conjecture__' <Int> <Name> <Pattern> <Outputs> <Constraints>
 
     <Name> ::= `Some' <String> | `None'
@@ -98,8 +99,77 @@ The structure of a template is close to the structure of a typing
 rule, there are premisses and a conjecture. In addition to those there
 is a list of variables for ever premise. Those variables correspond to
 the output positions of the premisses in the typing rule, for each
-output position there exists one variable. 
+output position there exists one variable. They are used to bind the
+output of evaluating the premisses to the expected output.
 
+Premisses in templates have multiple shapes: Judgments, context
+lookups, equalities and inequalities.
+
+\begin{description}
+\item[Judgments] are the user defined judgments form the
+  specification. They consist of the judgment number, the positions of
+  the judgment that are marked as inputs and a description of context
+  modifications. Example:
+\begin{verbatim}
+Judgment__(
+          1
+        , [Var__("X219")]
+        , [ (1, [Var__("X217")], [Var__("X218")])
+          , Ctx__(1)
+          , Ctx__(2)
+          ]
+        )
+\end{verbatim}
+\item[Context lookups] consist of the context number and of the input
+  positions of the context lookup. Example:
+\begin{verbatim}
+Lookup__(1, [Var__("X213")])
+\end{verbatim}
+\item[(In)equalities] are predefined judgments and therefore treated
+  separately. As they have no outputs the error messages are stored
+  directly in the premise. Apart from that they behave like normal
+  judgments. Example:
+\begin{verbatim}
+Neq__(Var__("X241"), Var__("X240"), None())
+\end{verbatim}
+\end{description}
+
+\begin{figure}
+  \centering
+  \begin{minipage}{.45\linewidth}
+\begin{verbatim}
+%x : ~T in $C1
+=============== T-Var
+$C1 | $C2 |- %x : ~T
+\end{verbatim}
+  \end{minipage}
+  \begin{minipage}{.45\linewidth}
+\begin{verbatim}
+Template__(
+    [[Var__("X212")]]
+  , [(Lookup__(
+        1,
+       [Var__("X213")]),
+       [])]
+  , Conjecture__(
+      1
+    , Some("T-Var")
+    , ([Var(Var__("X213"))],
+       [Ctx__(1), Ctx__(2)])
+    , [Var__("X214")]
+    , [ CEq__(
+          Var__("X212")
+        , Var__("X214")
+        , None
+        )
+      ]
+    )
+  )
+\end{verbatim}
+  \end{minipage}
+  \caption{Typing rule and template of T-Var}
+  \label{fig:template-example}
+\end{figure}
 \subsection{Constraint Template Optimization}
 \label{sec:constr-templ-optim}
 \subsection{Constraint Generation}
