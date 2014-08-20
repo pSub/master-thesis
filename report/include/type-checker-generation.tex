@@ -127,6 +127,7 @@ lookups, equalities and inequalities.
   executed from right to left. A detail explanation of the semantics
   will follow in Section~\ref{sec:constr-gener}.
 
+\begin{example}{~}
 \begin{verbatim}
 Judgment__(
           1 !callout`judgment:number'
@@ -137,8 +138,10 @@ Judgment__(
           ] !callout`judgment:context'
         )
 \end{verbatim}
+\label{ex:judgment}
+\end{example}
 
-  In the above example we have judgment one that has only one input
+  In example~\ref{ex:judgment} we have judgment one that has only one input
   position and that leaves context as it is, resets context one and
   adds then the input/output pair \verb|Var__("X217")| and
   \verb|Verb__("X218")| to context one.
@@ -147,24 +150,67 @@ Judgment__(
   \refcallout{lookup:ctx} and of the input positions of the context
   lookup \refcallout{lookup:inputs}.
 
+\begin{example}
 \begin{verbatim}
 Lookup__(1 !callout`lookup:ctx', [Var__("X213")] !callout`lookup:inputs')
 \end{verbatim}
+\label{ex:lookup}
+\end{example}
 
-  In the above example we look up \verb|Var__("X213")| from context
-  one.
+  In example~\ref{ex:lookup} we look up \verb|Var__("X213")| from
+  context one.
 
 \item[(In)equalities] are predefined judgments and therefore treated
   separately. As they have no outputs the error messages are stored
   directly in the premise. Apart from that they behave like normal
   judgments.
+
+\begin{example}
 \begin{verbatim}
 Neq__(Var__("X241"), Var__("X240"), None())
 \end{verbatim}
+\label{ex:neq}
+\end{example}
 
-  In the above example we compare \verb|Var__("X241")| and
+  In example~\ref{ex:neq} we compare \verb|Var__("X241")| and
   \verb|Var__("X240")| for inequality and provide no error message.
 \end{description}
+
+There are cases, in which it is relevant in which order the premisses
+are evaluated. Therefore every premise has a list of premisses on
+which it depends. Essentially this list contains the position of the
+dependency and its output positions. The following example will
+illustrate why such dependencies occur and how this is solved in the
+template language.
+
+\begin{example}{~}
+\begin{verbatim}
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+
+rules
+~U = [ %x -> ~S ] ~T
+$C1 | $C2 |- ~e : all %x . ~T 
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
+\end{verbatim}
+\label{ex:premise-dependencies}
+\end{example}
+
+Example~\ref{ex:premise-dependencies} shows the type application rule
+of SystemF \todo{Citation} together with the judgment
+declarations. One can easily see, that the first premise has an input
+positions, namely \verb|%x|, that is part of the output position of
+the second premise. Therefore the second premise needs to be evaluated
+first to provide the output for the first premise. In the template
+generation process the premisses are sorted topologically and are
+annotated with the indices and outputs of their dependencies. The
+output positions are to know which terms are actually provided by the
+dependency. For the first premise the dependency would look like
+\verb|(1, [TAll(Var__("X150"), Var__("X149"))])|, where \verb|1|
+refers to the second premise in example~\ref{ex:premise-dependencies}
+because of the topological sort.
 
 \begin{figure}
   \centering
