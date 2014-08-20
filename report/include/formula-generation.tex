@@ -80,7 +80,6 @@ required elements are directly given in the bind predicate.
 
 \todo[inline]{Format look-up step formula nicely.}
 \begin{figure}
-\label{formula:environment-step}
 \begin{multline}
   \forall e, x_1, \dots, x_n, x_1', \dots, x_n', y_1, \dots, y_m,
   y_1', \dots,
@@ -89,6 +88,7 @@ required elements are directly given in the bind predicate.
   \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup(x_1, \dots, x_n,
   y_1, \dots, y_m, bind(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \end{multline}
+\label{formula:environment-step}
 \end{figure}
 
 Formula \ref{formula:environment-step} models the step case of
@@ -167,7 +167,7 @@ environment definition separately and are added to the axioms. The
 non-terminals of an environment definition are indexed with fresh
 names. Those fresh names will be used as variables in the first-order
 formulas. The structure of the formulas, as it is defined in
-\ref{formula:environment-base} and \ref{formula-environment-step}, is
+\ref{formula:environment-base} and \ref{formula:environment-step}, is
 hard-coded in the internal representation for first-order formulas. To
 adhere to this structure the variables representing the non-terminals
 are split up by their input/output attribute. The counter parts for
