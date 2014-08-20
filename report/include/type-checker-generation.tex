@@ -71,7 +71,7 @@ generators or template optimizers.
 The following sections describe the implementation of the type checker
 generator, one section per phase.
 
-\subsection{Constraint Templates}
+\subsection{Template Generation}
 \label{sec:constraint-templates}
 In the first phase type system specifications are translated into
 templates. A template is a intermediate representation of a typing
@@ -90,51 +90,80 @@ defined as following.
   \end{grammar}
 \end{definition}
 
-Before describing the structure of templates in depth, we want to
-highlight the conceptual differences between templates and typing
-rules. First templates take advantage of the input/output tags of
-typing judgments an second they already carry a set of constraints.
+Before describing the structure of templates in depth, the conceptual
+differences between templates and typing rules are highlighted.
+Templates take advantage of the input/output tags of typing judgments
+by splitting everything up into an input and output part. This will
+become handy in the constraint generation phase. An other difference
+is that they already carry some constraints and that the dependencies
+between the premisses are resolved.
 
 The structure of a template is close to the structure of a typing
 rule, there are premisses and a conjecture. In addition to those there
 is a list of variables for ever premise. Those variables correspond to
 the output positions of the premisses in the typing rule, for each
-output position there exists one variable. They are used to bind the
-output of evaluating the premisses to the expected output.
+output position there is one variable. Further there is a set of
+constraints. This set contains equalities that bind the variables of
+the premisses to the expected outputs.
+
+Attached to premisses Context operations are transformed slightly. Context binds are
+transformed in a tuple that consists of the context identifier
 
 Premisses in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities.
 
 \begin{description}
 \item[Judgments] are the user defined judgments form the
-  specification. They consist of the judgment
-  number \refcallout{judgment:number}, the positions of the judgment
-  that are marked as inputs \refcallout{judgment:inputs} and a description of context
-  modifications \refcallout{judgment:context}. There are three types of context modifications.
-  Example:
+  specification. They consist of the judgment number
+  \refcallout{judgment:number}, the positions of the judgment that are
+  marked as inputs \refcallout{judgment:inputs} and context
+  modifications \refcallout{judgment:context}. A context modification
+  can either be a addition to a context \refcallout{judgment:bind}
+  which is a triple of a context identifier a list of inputs and a
+  list of outputs, a context identity \refcallout{judgment:identity}
+  which corresponds to the context meta-variables in the specification
+  and a reset operation \refcallout{judgment:reset} which resets the given context and corresponds
+  to the empty context. Those context modifications are meant to be
+  executed from right to left. A detail explanation of the semantics
+  will follow in Section~\ref{sec:constr-gener}.
+
 \begin{verbatim}
 Judgment__(
           1 !callout`judgment:number'
         , [Var__("X219")] !callout`judgment:inputs'
-        , [ (1, [Var__("X217")], [Var__("X218")])
-          , Ctx__(1)
-          , Ctx__(2)
+        , [ (1, [Var__("X217")], [Var__("X218")]) !callout`judgment:bind'
+          , Reset__(1) !callout`judgment:reset'
+          , Ctx__(2) !callout`judgment:identity'
           ] !callout`judgment:context'
         )
 \end{verbatim}
+
+  In the above example we have judgment one that has only one input
+  position and that leaves context as it is, resets context one and
+  adds then the input/output pair \verb|Var__("X217")| and
+  \verb|Verb__("X218")| to context one.
+
 \item[Context lookups] consist of the context number
   \refcallout{lookup:ctx} and of the input positions of the context
-  lookup \refcallout{lookup:inputs}. Example:
+  lookup \refcallout{lookup:inputs}.
+
 \begin{verbatim}
 Lookup__(1 !callout`lookup:ctx', [Var__("X213")] !callout`lookup:inputs')
 \end{verbatim}
+
+  In the above example we look up \verb|Var__("X213")| from context
+  one.
+
 \item[(In)equalities] are predefined judgments and therefore treated
   separately. As they have no outputs the error messages are stored
   directly in the premise. Apart from that they behave like normal
-  judgments. Example:
+  judgments.
 \begin{verbatim}
 Neq__(Var__("X241"), Var__("X240"), None())
 \end{verbatim}
+
+  In the above example we compare \verb|Var__("X241")| and
+  \verb|Var__("X240")| for inequality and provide no error message.
 \end{description}
 
 \begin{figure}
