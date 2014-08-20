@@ -48,7 +48,23 @@ interface, therefore the implementation can be exchanged freely. This
 makes it possible to use different constraint solvers, constraint
 generators or template optimizers.
 
-\todo[inline]{Maybe draw a little picture of the phases pipeline}
+\begin{figure}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
+  thick,main node/.style={rectangle,fill=blue!20,draw,font=\small\bfseries}]
+
+  \node[main node] (1) {Template Generation};
+  \node[main node] (2) [right=3cm of 1] {Template Optimization};
+  \node[main node] (3) [below of=2] {Constraint Generation};
+  \node[main node] (4) [below of=1] {Constraint Solving};
+
+  \path[every node/.style={font=\small}]
+    (1) edge node [right, below] {Templates} (2)
+    (2) edge node [right] {Extended Templates} (3)
+    (3) edge node [right, below] {Constraints} (4);
+\end{tikzpicture}
+\caption{Phases of the type checker generator}
+\label{fig:phases}
+\end{figure}
 \section{Implementation}
 \label{sec:implementation}
 \subsection{Constraint Templates}
