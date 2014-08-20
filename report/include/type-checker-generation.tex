@@ -106,9 +106,7 @@ output position there is one variable. Further there is a set of
 constraints. This set contains equalities that bind the variables of
 the premisses to the expected outputs.
 
-Attached to premisses Context operations are transformed slightly. Context binds are
-transformed in a tuple that consists of the context identifier
-
+\subsubsection*{Premisses}
 Premisses in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities.
 
@@ -211,6 +209,8 @@ dependency. For the first premise the dependency would look like
 \verb|(1, [TAll(Var__("X150"), Var__("X149"))])|, where \verb|1|
 refers to the second premise in example~\ref{ex:premise-dependencies}
 because of the topological sort.
+
+\subsubsection*{Conclusions}
 
 \begin{figure}
   \centering
