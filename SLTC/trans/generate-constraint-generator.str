@@ -117,7 +117,7 @@ rules
                               ((id, filter(not(node-is-ctx(|cc))), filter(node-is-ctx(|cc))), id);
                               ((get-generic-name; string-to-int, id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
                          end)> sorted-premisses,
-                  Rule__(<get-typing-judgment; get-generic-name; string-to-int> conclusion,
+                  Conjecture__(<get-typing-judgment; get-generic-name; string-to-int> conclusion,
                          name,
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
                          (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion',

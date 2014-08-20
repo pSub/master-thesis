@@ -207,7 +207,7 @@ signature
             // it is illegal in TPTP to quantify over no variables.
             prop := <if [] then <id> implication else <id> All__(free-vars-in-rule, implication) end> free-vars-in-rule
 
-    makeFormula(|type) : Binding__(xs, calls, Rule__(judg-number, name, (pattern, ctx), outputs, xs-outputs))
+    makeFormula(|type) : Binding__(xs, calls, Conjecture__(judg-number, name, (pattern, ctx), outputs, xs-outputs))
                             -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
         where
             conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
@@ -223,7 +223,7 @@ signature
             free-vars-in-rule := <free-vars> prop';
             prop'' := <if <[]> free-vars-in-rule then !prop' else !All__(free-vars-in-rule, prop') end>
 
-    premisses-to-props : Binding__(xs, calls, Rule__(_, _, _, _, xs-outputs)) -> <premisses-to-props(|xs, xs-outputs)> calls
+    premisses-to-props : Binding__(xs, calls, Conjecture__(_, _, _, _, xs-outputs)) -> <premisses-to-props(|xs, xs-outputs)> calls
     premisses-to-props(|xs, xs-outputs) = add-indices; map(\(i, c) -> <rewrite-call(|i, xs, xs-outputs)> c\)
 
     rewrite-pattern = topdown(try(makeTerm)); topdown(try(rewriteString))
