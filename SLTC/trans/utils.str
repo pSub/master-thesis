@@ -324,7 +324,6 @@ rules
     /**
      * Checks whether the given node is a context meta-variable.
      *
-     * @param cc - context classes
      * @type a -> a
      */
     node-is-ctx-var = and(node-is-meta-variable, get-context-id)
@@ -332,7 +331,6 @@ rules
     /**
      * Checks whether the given node is some form of context.
      *
-     * @param cc - context classes (hast type List(String))
      * @type a -> a
      */
     node-is-ctx = node-is-ctx-bind <+
@@ -371,6 +369,14 @@ rules
      * @type a -> Int
      */
     get-context-id = get-generic-name; string-to-int
+    
+    /**
+     * The generic name of user defined judgments is a number. This strategy retrieves the
+     * generic name as a real integer.
+     *
+     * @type a -> Int
+     */
+    get-judgment-id = get-generic-name; string-to-int
 
     /**
      *

@@ -27,7 +27,7 @@ rules
                     <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
-                        <generate(|judgments, context-definitions, templates, store)> (<get-generic-name; string-to-int> conjecture, input)
+                        <generate(|judgments, context-definitions, templates, store)> (<get-judgment-id> conjecture, input)
                     \;
                     // Append a constraint for the ouputs in the conjecture.
                     try(\(Some(outputs), constraints) ->

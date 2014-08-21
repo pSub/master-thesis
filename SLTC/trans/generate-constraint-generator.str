@@ -83,26 +83,24 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-hole-positions(|declarations) : cons#(args) -> <add-indices> holes
+    get-hole-positions(|declarations) : node -> <add-indices> holes
         where
-            [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
-            declaration-number := <string-to-int> generic;
+            declaration-number := <get-judgment-id> node;
             declaration := <index(|declaration-number)> declarations;
             holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
 
     /**
-     * Rule that transforms typing rules with premisses into a constraint template.
+     * Rule that transforms a typing rule into a constraint template.
      *
      * FIXME: This code needs refactoring
      *
      * @param j - judgment declarations
      * @param c - context declarartions
-     * @param cc - meta-variable classes that represent contexts
      */
-    step(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
+    to-template(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
           Template__(<map(Fst; Fst)> vars-outputs,
-                    <map(switch (get-typing-judgment, id)
+                     <map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
                               (get-typing-judgment; Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               ((get-context-id, get-inputs(|c)); mkLookup, id)
@@ -112,34 +110,59 @@ rules
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
                          otherwise: (get-typing-judgment; Trpl; (id, get-inputs(|j), get-inputs(|j)), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
                               ((id, filter(not(node-is-ctx)), filter(node-is-ctx)), id);
-                              ((get-generic-name; string-to-int, id, mapconcat(ctx-bind-to-kv-list(|c))); mkJudgment, id)
+                              ((get-judgment-id, id, mapconcat(ctx-bind-to-kv-list(|c))); mkJudgment, id)
                          end)> sorted-premisses,
-                     Conclusion__(<get-typing-judgment; get-generic-name; string-to-int> conclusion,
+                     Conclusion__(
+                         <get-typing-judgment; get-judgment-id> conclusion,
                          name,
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx), node-is-ctx);
                          (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
                          <get-typing-judgment; get-outputs(|j)> conclusion'),
                      <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeCEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs)
         where
+            // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
+
+            // Transform implicit equalities in the conclusion into explicit equalities. Implicit
+            // equalities are removed by introducing fresh variables and equality constraints
+            // between them. This results in a list of variable substitutions and a list of premisses.
             (substitutions, equalities) := <get-typing-judgment; get-inputs(|j);
                                             make-implicit-equalities-explicit(|<get-error-message> conclusion)> conclusion;
+
             // Replace each occurence with the corresponding new meta-variable.
             conclusion' := <concat; replace-once(|conclusion)> substitutions;
 
-            // Replace every occurence with only one representative of the new meta-variables. 
+            // Replace every occurence with only one representative of the new meta-variables.
             premisses-list' := <map(Hd); replace-all(meta-variable-equal|premisses-list)> substitutions;
 
+            // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
                                       make-implicit-equalities-explicit(|<get-error-message> premise)> premise\)> premisses-list';
+
+            // Replace every occurence with only one representative of the new meta-variables.
             premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
 
+            // Add the explicit equalities to the list of premisses.
             premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd)> premisses-impl-eq);
+
+            // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities;
-            dependencies := <map((id, get-typing-judgment; get-inputs(|j)); (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
+            
+            // Compute the dependencies between the premisses.
+            dependencies := <map((id, get-typing-judgment; get-inputs(|j));
+                                 (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
+            
+            // Create a topological order of the premisses according to their dependencies.
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort <+ exit-with-error(|<conc-strings> ("Cyclic dependencies in rule ", <option-to-string> name), 1)> dependencies);
+            
+            // Assign the dependencies to the premisses.
             premisses := <zip> (premisses-with-equalities, <map(Snd)> dependencies);
+            
+            // Sort the premisses according to the topological order. This includes updating references
+            // to premisses in the dependencies.
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
+            
+            // Assign variabels for the output positions.
             vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
                                  ((length; newnames(|"X"); map(makeVar), id), get-error-message; option(filter(where(?Error(_))))))> sorted-premisses
 
@@ -157,7 +180,6 @@ rules
      * and the outputs.
      *
      * @param c - context declarartions
-     * @param cc - meta-variable classes that represent contexts
      */
     ctx-bind-to-kv-list(|c) : node -> [Ctx__(ctx)]
         where <node-is-ctx-var> node;
@@ -220,4 +242,4 @@ rules
     
 strategies
     to-constraint-generator(|judgments, context-definitions) =
-         innermost(step(|judgments, context-definitions))
+         innermost(to-template(|judgments, context-definitions))
