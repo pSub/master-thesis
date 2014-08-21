@@ -283,6 +283,7 @@ variables are defined transitively.
 
 \todo[inline]{Implicit equalities between inputs and outputs and
   between the contexts}
+\todo[inline]{Describe the fiddeling with @implicit}
 
 After this step, there are no implicit equalities left. Now the
 premisses of the typing rule are analyzed for inter-dependencies. A
@@ -299,6 +300,11 @@ transposed dependency graph, that is topologically sorted with the
 algorithm by Kahn \cite{Kahn:1962:TSL:368996.369025}. The resulting
 topological order is reversed as we look at the transposed dependency
 graph.
+
+Now variables for the outputs of the premisses are generated, bound to
+the expected outputs. Premisses and conclusions are split up into
+inputs, outputs, and context parts and placed at the appropriate
+places in the template.
 
 \begin{figure}
   \centering
@@ -342,6 +348,16 @@ Template__(
 \label{sec:constr-gener}
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
+\todo[inline]{What else should be contained in this section?}
+Constraint solving is the last phase of the type checker. As the
+constraint language is with only three constructs simple, the
+algorithm to solve a constraint set is simple as well.
+
+Unification is used to solve the constraint set. Precisely we use a
+variant of Robinson unificiation \todo{Citation}. During the
+unification an most general unifier (mgu) is computed to instantiate
+the variables in the outputs and (in case of not well-typed programs)
+in the error messages.
 \section{Performance}
 \label{sec:performance}
 
