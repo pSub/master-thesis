@@ -210,7 +210,32 @@ dependency. For the first premise the dependency would look like
 refers to the second premise in example~\ref{ex:premise-dependencies}
 because of the topological sort.
 
-\subsubsection*{Conclusions}
+\subsubsection*{Conclusion}
+Conclusions contain the judgment identifier
+\refcallout{conclusion:number}, the name of the typing rule (which may
+be empty) \refcallout{conclusion:name}, the input positions of the
+judgment \refcallout{conclusion:inputs}, the context modifications
+\refcallout{conclusion:ctx} as well as the output positions of the
+conclusion \refcallout{conclusion:outputs}.
+
+\begin{example}{~}
+\begin{verbatim}
+Conclusion__(
+      3 !callout`conclusion:number'
+    , None() !callout`conclusion:name'
+    , ( [Var__("X177")] !callout`conclusion:inputs'
+      , [(2, [Var__("X178")], []), Ctx__(2)] !callout`conclusion:ctx'
+      )
+    , [] !callout`conclusion:outputs'
+    )
+\end{verbatim}
+\end{example}
+
+In this example judgment number three is in the conclusion and the
+typing rule has no name. There is only one input position and there
+has to be at least one element in the second context. The judgment
+three has no outputs.
+
 
 \begin{figure}
   \centering
