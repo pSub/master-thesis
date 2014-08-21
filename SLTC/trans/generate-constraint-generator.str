@@ -4,10 +4,11 @@ imports constraint-language
 imports constraint-template-language
 imports utils
 imports include/SLTC
+
+imports optimize-constraint-templates
        
 rules
     
-    // FIXME: The where clause of this rule duplicates code.
     make-constraint-generator :
         Module(ModuleDec(_),
                imports,
@@ -17,12 +18,8 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <to-constraint-generator(|judgments, context-definitions, context-classes)> typing-rules
-        where
-            context-names := <map(proj(ContextDefinition|1))> context-definitions;
-            context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
-                                       <isect; not(equal(|[])); !name> (context-names, scope)\)>
-                                       meta-variables
+        -> <to-constraint-generator(|judgments, context-definitions);
+            optimize-templates(|context-definitions)> typing-rules
 
     /**
      * Extracts the typing judgment.
@@ -102,7 +99,7 @@ rules
      * @param c - context declarartions
      * @param cc - meta-variable classes that represent contexts
      */
-    step(|j, c, cc) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
+    step(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
           Template__(<map(Fst; Fst)> vars-outputs,
                     <map(switch (get-typing-judgment, id)
@@ -114,13 +111,13 @@ rules
                          case where((get-generic-name; equal(|"Neq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
                          otherwise: (get-typing-judgment; Trpl; (id, get-inputs(|j), get-inputs(|j)), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
-                              ((id, filter(not(node-is-ctx(|cc))), filter(node-is-ctx(|cc))), id);
-                              ((get-generic-name; string-to-int, id, mapconcat(ctx-bind-to-kv-list(|c, cc))); mkJudgment, id)
+                              ((id, filter(not(node-is-ctx)), filter(node-is-ctx)), id);
+                              ((get-generic-name; string-to-int, id, mapconcat(ctx-bind-to-kv-list(|c))); mkJudgment, id)
                          end)> sorted-premisses,
                      Conclusion__(<get-typing-judgment; get-generic-name; string-to-int> conclusion,
                          name,
-                         <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx(|cc)), node-is-ctx(|cc));
-                         (id, mapconcat(ctx-bind-to-kv-list(|c, cc)))> conclusion',
+                         <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx), node-is-ctx);
+                         (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
                          <get-typing-judgment; get-outputs(|j)> conclusion'),
                      <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeCEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs)
         where
@@ -162,13 +159,13 @@ rules
      * @param c - context declarartions
      * @param cc - meta-variable classes that represent contexts
      */
-    ctx-bind-to-kv-list(|c, cc) : node -> [Ctx__(ctx)]
-        where <node-is-ctx-var(|cc)> node;
+    ctx-bind-to-kv-list(|c) : node -> [Ctx__(ctx)]
+        where <node-is-ctx-var> node;
               ctx := <get-context-id> node
-    ctx-bind-to-kv-list(|c, cc) : node -> [Reset__(ctx)]
+    ctx-bind-to-kv-list(|c) : node -> [Reset__(ctx)]
         where <node-is-ctx-empty> node;
               ctx := <get-context-id> node
-    ctx-bind-to-kv-list(|c, cc) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c, cc)> tail]
+    ctx-bind-to-kv-list(|c) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c)> tail]
         where <node-is-ctx-bind> node;
               ctx := <get-context-id> node;
               inputs := <get-inputs(|c)> node;
@@ -222,5 +219,5 @@ rules
         where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), errors)
     
 strategies
-    to-constraint-generator(|judgments, context-definitions, context-classes) =
-         innermost(step(|judgments, context-definitions, context-classes))
+    to-constraint-generator(|judgments, context-definitions) =
+         innermost(step(|judgments, context-definitions))

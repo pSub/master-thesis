@@ -24,7 +24,7 @@ rules
               map(finally(
                  \TypingRule(PremiseBase(), _, conjecture) ->
                     // Prepare the input and initialize the store.
-                    <prepare-generation(|judgments, context-definitions, context-classes, store);
+                    <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
                         <generate(|judgments, context-definitions, templates, store)> (<get-generic-name; string-to-int> conjecture, input)
@@ -36,16 +36,8 @@ rules
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
         where
-            // Retrieve all context names
-            context-names := <map(proj(ContextDefinition|1))> context-definitions;
-
-            // Obtain a list of meta-variable names, that represent contexts and contexts only
-            context-classes := <filter(\MetaVariableDefinition(name, _, Scope(scope)) ->
-                                       <isect; not(equal(|[])); !name> (context-names, scope)
-                                       \)> meta-variables;
-
             // Generate the constraint templates from the type system specification
-            templates := <to-constraint-generator(|judgments, context-definitions, context-classes);
+            templates := <to-constraint-generator(|judgments, context-definitions);
                           optimize-templates(|context-definitions)> typing-rules;
             
             // Initialize the store that contains the contexts
@@ -56,9 +48,9 @@ rules
     /**
      * Pepares the inputs for the constraint generation and initializes the store.
      */
-    prepare-generation(|judgments, context-definitions, context-classes, store) =
-        get-inputs(|judgments); where(initialize-store(|store, context-definitions, context-classes));
-        remove-all(node-is-ctx(|context-classes))
+    prepare-generation(|judgments, context-definitions, store) =
+        get-inputs(|judgments); where(initialize-store(|store, context-definitions));
+        remove-all(node-is-ctx)
     /**
      * Generates the set of constraints.
      *
@@ -196,9 +188,9 @@ rules
      * @param store - a store
      * @type List(term) -> store
      */
-    initialize-store(|store, context-definitions, context-classes) =
+    initialize-store(|store, context-definitions) =
                                filter(node-is-ctx-bind);
-                               mapconcat(ctx-bind-to-kv-list(|context-definitions, context-classes));
+                               mapconcat(ctx-bind-to-kv-list(|context-definitions));
                                update-store(|store)
 
 

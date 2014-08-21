@@ -327,7 +327,7 @@ rules
      * @param cc - context classes
      * @type a -> a
      */
-    node-is-ctx-var(|cc) = and(node-is-meta-variable, get-context-id)
+    node-is-ctx-var = and(node-is-meta-variable, get-context-id)
 
     /**
      * Checks whether the given node is some form of context.
@@ -335,10 +335,10 @@ rules
      * @param cc - context classes (hast type List(String))
      * @type a -> a
      */
-    node-is-ctx(|cc) = node-is-ctx-bind <+
+    node-is-ctx = node-is-ctx-bind <+
                   node-is-ctx-lookup <+
                   node-is-ctx-empty <+
-                  node-is-ctx-var(|cc)
+                  node-is-ctx-var
 
     /**
      * Splits the given string at '-' and compares the first part with `name'.
