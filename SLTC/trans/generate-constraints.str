@@ -83,7 +83,7 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|j, c, t, term, s) : Template__(xs, calls, Conjecture__(judg-name, name, (pattern, ctx), outputs), constraints) ->
+    generate'(|j, c, t, term, s) : Template__(xs, calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
            (Some(outputs'), new-constraints)
         where
             // Retrieve and remove elements from the context according to the context pattern.

@@ -4,7 +4,7 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
-       Conjecture__ : judg-number * Option(String) * Pattern * Outputs -> Conjecture
+       Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
        Template__ : List(List(var)) * List(premisse) * Conjecture * Constraint -> Template
 
        /** Extended Language */
@@ -24,7 +24,7 @@ rules
      *
      * @type Rule -> List(a)
      */
-    get-pattern : Conjecture__(_, _, (pattern, _), _) -> pattern
+    get-pattern : Conclusion__(_, _, (pattern, _), _) -> pattern
     get-pattern : Template__(_, _, rule, _) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
@@ -33,7 +33,7 @@ rules
      *
      * @type Rule -> List(a)
      */
-    get-ctx-pattern : Conjecture__(_, _, (_, ctx), _) -> ctx
+    get-ctx-pattern : Conclusion__(_, _, (_, ctx), _) -> ctx
     get-ctx-pattern : Template__(_, _, rule, _) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
@@ -42,7 +42,7 @@ rules
      *
      * @type Rule -> Int
      */
-    get-judgment-number : Conjecture__(judg-number, _, _, _) -> judg-number
+    get-judgment-number : Conclusion__(judg-number, _, _, _) -> judg-number
     get-judgment-number : Template__(_, _, rule, _) -> <get-judgment-number> rule
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
@@ -51,7 +51,7 @@ rules
      *
      * @type Rule -> Int
      */
-    get-rule-name : Conjecture__(_, name, _, _) -> name
+    get-rule-name : Conclusion__(_, name, _, _) -> name
     get-rule-name : Template__(_, _, rule, _) -> <get-rule-name> rule
 
     /**
