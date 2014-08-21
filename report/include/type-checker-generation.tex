@@ -348,6 +348,97 @@ Template__(
 \label{sec:constr-templ-optim}
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
+Constraint generation is the first phase of the type checker. The
+inputs of this phase are constraint templates and the expressions that
+should be type checked. Currently those expressions are defined in the
+conjecture section of the type system specification. \todo{Change
+  this, at least for benchmarking it is nescessary to pass programs
+  via stdin}
+
+The constraint generation phase structured as follows. First, contexts
+are intialized, then constraint are generated according to the
+programs structure and the templates and at the end a constraint is
+added that binds the infered type with the acutal type.
+
+Lets first look on the implementation of the contexts. Contexts are
+stored in a hashtable, with the context id as key. This implies that
+at every point in the derivation, there is only one instance of each
+context. This assumption is true for all type systems we have
+investigated. Further a context is defined as a hashtable which keeps
+track of the insertion order of the elements. The insertion order is
+important for type systems that rely on the ordering of contexts
+\todo{Example}. Keys of the hashtable are the input positions of the
+context and values are the output positions. As we use a hashtable
+rather than a hashmap it is also possible to store multiple values at
+a single key. We decided to use hashtables instead of normal key-value
+lists for the context representation to reduce the lookup time in
+large programs with many identifiers. However we do not have
+experimental evidence on this, because we do not have a key-value list
+implementation of contexts.
+
+However implementing contexts using extended hashtables forced us to
+separate context operations from normal inputs. This creates on the
+one hand many exceptional cases (e.g. the matching complex matching
+algorithms described in section~\ref{sec:constr-templ-optim}) it lead
+on the other hand to a modular context implementation with the
+potential to exchange the implementation easily.
+
+We now define the constraint language. It is a simple language
+consisting of three constraints.
+
+\begin{definition}{Constraint Language}
+  \begin{grammar}
+    <Constraint> ::= `CFail' <Error>
+    \alt `CEq' <Term> <Term> <Error>
+    \alt `CNeq' <Term> <Term> <Error>
+  \end{grammar}
+\end{definition}
+
+\verb|CFail| is the constraint that cannot be unified and \verb|CEq|
+and \verb|CNeq| are ordinary equality and inequality
+constraints. \verb|Term| and \verb|Error| are arbitrary terms.
+
+The program expression that is passed to the constraint generator is
+wrapped in the desired typing judgment with initial contexts and
+potentially with expected results. Every conjecture is provided with
+an empty context-store. The context in this store are intialized with
+the context information in the judgment.
+
+After the context is intialized all terms at input positions of the
+judgment are passed into the \verb|generate| rule, together with the
+judgment number. Now the templates are searched for a template that has the
+correct judgment identifier in its conclusion, matching input
+positions and a context description that reflects the current state in
+the store. The first template that matches is taken as we have ensured
+in section~\ref{sec:constr-templ-optim} that there is only one such
+rule. If no template matches those criteria the constraint that always
+fails is return with an appropriate error message. In general
+\verb|generate| returns a pair of the output and a constraint set,
+where the output is optional. \todo{It is not so clear where the
+  output comes from}
+
+The rule \verb|generate'| evaluates the selected template according to
+the given input. In case of \verb|Template__| the evaluation works as
+follows. At first the contexts are updated according to the context
+modifications in the conclusion. This means the description of the
+context modifications is read from left to right. On a context bind,
+the first element of the corresponding context is popped from the
+context. To be able to access this element, it is appended to the
+input. Context variables correspond to identity and \verb|Reset__|
+clears the whole context, without making any element available.
+
+Next all variables in the selected template are replaced by fresh
+ones. This is also indicated visually, as all variables in the
+template generation phase start with \verb|X| and all variables
+generated in the constraint generation phase with \verb|Y|. This
+renaming ensures that now collisions occur if a template is used more
+than once.
+
+Now that all variables are fresh, the context is modified in
+accordance to the premisses the premisses of the template are
+evaluated. A key element in the evaluation is the instantiation of
+variables according to the patterns and terms.
+
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
 \todo[inline]{What else should be contained in this section?}
