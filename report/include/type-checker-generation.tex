@@ -74,9 +74,12 @@ generator, one section per phase.
 \subsection{Template Generation}
 \label{sec:constraint-templates}
 In the first phase type system specifications are translated into
-templates. A template is a intermediate representation of a typing
-rule that is more suitable for the constraint generation process and
-defined as following.
+templates.
+
+\subsubsection{Templates}
+A template is a intermediate representation of a typing rule that is
+more suitable for the constraint generation process and defined as
+following.
 
 \begin{definition}{Template}
   \todo[inline]{Complete this grammar and synchronize it with the
@@ -106,7 +109,7 @@ output position there is one variable. Further there is a set of
 constraints. This set contains equalities that bind the variables of
 the premisses to the expected outputs.
 
-\subsubsection*{Premisses}
+\paragraph*{Premisses}
 Premisses in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities.
 
@@ -210,7 +213,7 @@ dependency. For the first premise the dependency would look like
 refers to the second premise in example~\ref{ex:premise-dependencies}
 because of the topological sort.
 
-\subsubsection*{Conclusion}
+\paragraph{Conclusion}
 Conclusions contain the judgment identifier
 \refcallout{conclusion:number}, the name of the typing rule (which may
 be empty) \refcallout{conclusion:name}, the input positions of the
@@ -236,6 +239,66 @@ typing rule has no name. There is only one input position and there
 has to be at least one element in the second context. The judgment
 three has no outputs.
 
+\subsubsection{Generation}
+Template generation is mainly done by the Stratego rule
+\verb|to-template| that takes a typing rule and returns a
+template. The first step in the conversion is the elimination of
+implicit equalities in the premisses and the conclusion.
+
+Implicit equalities are transformed in to explicit equalities, by
+collecting all variables that occur more than once in an input
+position, rename them and create premisses that state the equality of
+the newly created variables. Example~\ref{ex:implicit-equalities}
+shows this for a typing rule of the judgment
+
+\begin{verbatim}
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}
+\end{verbatim}
+
+which is used for type substitution in the SystemF specification. On
+the left of example~\ref{ex:implicit-equalities} you see the typing
+rule with implicit equalities and on the right the transformed version
+without implicit equalities.
+
+\begin{example}{~}
+\newline
+  \begin{minipage}[b]{.45\linewidth}
+    \begin{verbatim}
+=====================
+~S = [ %x -> ~S ] %x
+\end{verbatim}
+  \end{minipage}
+  \begin{minipage}[b]{.45\linewidth}
+    \begin{verbatim}
+%y = %z
+=====================
+~S = [ %y -> ~S ] %z
+\end{verbatim}
+  \end{minipage}
+\label{ex:implicit-equalities}
+\end{example}
+
+If a variable occurs more than twice the equalities for the new
+variables are defined transitively.
+
+\todo[inline]{Implicit equalities between inputs and outputs and
+  between the contexts}
+
+After this step, there are no implicit equalities left. Now the
+premisses of the typing rule are analyzed for inter-dependencies. A
+premise depends on an other, if it uses variables in input positions
+that occur in an output position of an other premise. As we need to
+supply the input positions with concrete terms to check if a premise
+holds, a dependency can only be evaluated if all its dependencies are
+evaluated. In the generation process we do two things, sort the
+premisses according to their dependencies and annotate them with the
+output positions of the dependencies, as described in the previous
+paragraph. The implementation of this ordering is straightforward,
+first the dependencies are collected for each premise. This creates an
+transposed dependency graph, that is topologically sorted with the
+algorithm by Kahn \cite{Kahn:1962:TSL:368996.369025}. The resulting
+topological order is reversed as we look at the transposed dependency
+graph.
 
 \begin{figure}
   \centering
