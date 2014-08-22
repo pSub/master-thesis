@@ -301,7 +301,7 @@ first the dependencies are collected for each premise. This creates an
 transposed dependency graph, that is topologically sorted with the
 algorithm by Kahn \cite{Kahn:1962:TSL:368996.369025}. The resulting
 topological order is reversed as we look at the transposed dependency
-graph.
+graph. Cycles are detected and reported.
 
 Now variables for the outputs of the premisses are generated, bound to
 the expected outputs. Premisses and conclusions are split up into
@@ -436,8 +436,41 @@ than once.
 
 Now that all variables are fresh, the context is modified in
 accordance to the premisses the premisses of the template are
-evaluated. A key element in the evaluation is the instantiation of
-variables according to the patterns and terms.
+evaluated. A key element in the evaluation is the instantiation of the
+variables in the premise patterns according to the conclusion pattern
+and input term, because we need input terms to call \verb|generate| on
+the premisses.
+
+Variables in inputs of a judgment are initialized using a term and a
+pattern which describes the structure of the term. Now every variable
+in the inputs is searched in the pattern, by walking through the
+abstract syntax tree of the pattern and recording the path to the
+variable. As there are no implicit equalities in the templates we can
+take the first and only occurrence of the variable. After a path was
+found for every variable that occurs in the pattern, those paths are
+used to retrieve terms from the corresponding term, by walking along
+the path and fetching the node at its end. The variables in the inputs
+are now replaced by the fetched nodes.
+
+As the premisses were topologically sorted as described in
+Section~\ref{sec:constraint-templates} they are evaluated in the
+correct order. However, to ensure that the terms of all dependencies
+are available during evaluation, we accumulate the outputs of the
+evaluated premisses and add those to the pattern and term used for the
+instantiation.
+
+\begin{description}
+\item[Lookup:] The inputs are instantiated, then the resulting term is
+  looked up in the context. If the lookup succeeds the result is
+  returned, together with an empty constraint set. Otherwise, no
+  output is returned together with the \verb|CFail| constraint.
+\item[(In)equality:] Equalities and inequalities are initialized and
+  return as constraints.
+\item[Judgment:] Judgments are instantiated, the store is updated
+  according to the context bindings and \verb|generate| is called on
+  the resulting terms. In addition constraints for the context
+  bindings are generated. \todo{Examples}
+\end{description}
 
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
