@@ -11,6 +11,7 @@ imports store-utils
 imports include/SLTC
 
 rules
+    generate-constraints : Module(_, _, _, _, _, _, _, None()) -> <exit-with-error(|"Not conjectures found", 1)>
     generate-constraints :
         Module(ModuleDec(_),
                  imports,
@@ -36,6 +37,8 @@ rules
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
         where
+            if <[]> typing-rules then exit-with-error(|"No typing rules found", 1) else id end;
+
             // Generate the constraint templates from the type system specification
             templates := <to-constraint-generator(|judgments, context-definitions);
                           optimize-templates(|context-definitions)> typing-rules;
