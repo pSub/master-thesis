@@ -4,7 +4,7 @@ imports
     libstratego-gpp
     libstratego-aterm
 	include/SLTC
-	trans/generate-constraint-generator
+	trans/generate-templates
 	trans/generate-constraints
 	trans/generate-sdf
 	trans/generate-fof

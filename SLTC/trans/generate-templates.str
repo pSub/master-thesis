@@ -1,4 +1,4 @@
-module generate-constraint-generator
+module generate-templates
 
 imports constraint-language
 imports constraint-template-language

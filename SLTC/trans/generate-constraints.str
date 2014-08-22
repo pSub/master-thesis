@@ -6,7 +6,7 @@ imports constraint-template-language
 imports constraint-solving
 imports constraint-utils
 imports optimize-constraint-templates
-imports generate-constraint-generator
+imports generate-templates
 imports store-utils
 imports include/SLTC
 
