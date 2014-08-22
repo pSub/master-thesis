@@ -151,7 +151,7 @@ rules
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
                                                info) ])
-                          otherwise:
+                          otherwise: // FIXME: Explicitly match on Judgment__
                             // Instantiate the judgment that shall be called.
                             (judg-number, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
 
