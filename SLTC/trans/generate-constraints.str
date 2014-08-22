@@ -145,12 +145,12 @@ rules
                                (lookup(|s) < \ o -> (Some(o), [])\ +
                                              \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
                           case ?Eq__(a, b, info):
-                              !(Some([]), [<instantiate-error(|pattern', term')>
+                              !(None(), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
                                               <instantiate(|pattern', term')> [b],
                                               info) ])
                           case ?Neq__(a, b, info):
-                              !(Some([]), [ <instantiate-error(|pattern', term')>
+                              !(None(), [ <instantiate-error(|pattern', term')>
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
                                                info) ])
