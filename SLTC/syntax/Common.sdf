@@ -7,7 +7,7 @@ exports
     [a-zA-Z0-9\~\$\%\&\?]+             -> PrefixChars
     [a-zA-Z0-9]                        -> MetaVariableChars
     MetaVariableChars+                 -> MetaVariableName
-    {ID "."}+                          -> MID
+    {ID "/"}+                          -> MID
     [\ \t\n\r]                         -> LAYOUT
     [\*]                               -> CommentChar
     "/*" ( ~[\*] | CommentChar )* "*/" -> LAYOUT  
