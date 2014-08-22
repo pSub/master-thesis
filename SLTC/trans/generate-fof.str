@@ -72,13 +72,9 @@ signature
         where context-formulas := <make-context-formulas> context-definitions;
               typing-rule-formulas := <map(cleanup; rewriteTypingRule)> typing-rules
 
-    fof-from-templates(|context-definitions, typing-rules) : conjectures ->
-        <map(\conjecture ->
-                FOFGoal__(<conc> (<make-context-formulas> context-definitions,
-                          <makeConjecture; makeInequalities> conjecture),
-                  <map(rewriteTypingRule)> typing-rules,
-                  <makeConjecture> conjecture)
-             \)> conjectures
+    fof-from-templates(|context-definitions, typing-rules) =
+        ?conjectures;
+        <fof-from-specification(|context-definitions, typing-rules)> Some(conjectures)
     
     make-context-formulas = map-with-index(makeContexts); flatten-list
 
