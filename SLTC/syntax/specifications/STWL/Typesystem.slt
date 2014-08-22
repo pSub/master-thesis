@@ -1,6 +1,6 @@
 module Typesystem
 
-language STWL
+language specifications/STWL/STWL
 
 meta-variables 	Exp "~" { Exp Type }
 				// TODO Replace ~1 and ~2 with subscript a and b

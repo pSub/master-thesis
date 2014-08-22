@@ -1,6 +1,6 @@
 module Typesystem
 
-language Language
+language specifications/secure-flow-analysis/Language
 
 meta-variables 	Exp "~" { Phrase Type }			
 				Dom "$" { LocationTyping VariableTyping }

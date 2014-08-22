@@ -1,6 +1,6 @@
 module test
 
-language PCF
+language specifications/FeatherweightJava/PCF
 
 meta-variables	Term "~" { Exp }
 				Ctx "$" { Context }

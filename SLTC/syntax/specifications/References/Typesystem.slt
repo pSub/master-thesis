@@ -1,6 +1,6 @@
 module Typesystem
 
-language SimplyTypedLambdaCalculus
+language specifications/References/SimplyTypedLambdaCalculus
 
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { Context Store }

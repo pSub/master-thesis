@@ -1,4 +1,4 @@
-module SystemF
+module specifications/SystemF/SystemF
 exports
 	
   context-free start-symbols

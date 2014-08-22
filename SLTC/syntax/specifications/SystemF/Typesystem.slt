@@ -1,6 +1,6 @@
 module Typesystem
 
-language SystemF
+language specifications/SystemF/SystemF
 
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { TermBinding TypeBinding }

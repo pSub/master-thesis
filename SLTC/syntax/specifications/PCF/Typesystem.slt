@@ -1,6 +1,6 @@
 module test
 
-language PCF
+language specifications/PCF/PCF
 
 meta-variables	Term "~" { Type Exp }
 				Ctx "$" { Context }
