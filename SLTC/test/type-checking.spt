@@ -13,4 +13,4 @@ test empty-module [[
   judgments
   rules
   conjectures
-]] run typecheck to []
+]] run generate-templates to []
