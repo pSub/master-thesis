@@ -18,7 +18,7 @@ signature
        Neq__ : term * term * error -> Neq
 
        /** Extended Language */
-       Fork__ : List(Rule) -> Rule
+       Fork__ : List(Rule) -> Template
 
 rules  
 
