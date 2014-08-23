@@ -12,7 +12,7 @@ exports
   %% The sections of a specification.
   context-free syntax
     "module" MID                             -> ModuleDec      {cons("ModuleDec")}
-    "imports" MID*							 -> Imports        {cons("Imports")}
+    "imports" MID+							 -> Imports        {cons("Imports")}
     "language" MID							 -> Language       {cons("Language")}
     "meta-variables" MetaVariableDefinition* -> MetaVariables  {cons("MetaVariables")}
     "contexts" ContextDefinition*		     -> Contexts       {cons("Contexts")}
