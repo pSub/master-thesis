@@ -472,6 +472,12 @@ instantiation.
   bindings are generated. \todo{Examples}
 \end{description}
 
+For the evaluation of every judgment a copy of the store is passed, to
+ensure that everything that is bound is released at the correct point
+in time.
+
+
+
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
 \todo[inline]{What else should be contained in this section?}
