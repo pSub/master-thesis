@@ -90,7 +90,7 @@ exports
     "@error" MessagePart+ "." -> Error {cons("Error")}
 
     %% Errors that are thrown if implicit equalities are not satisfied.
-    "@implicit" MessagePart + "." -> Error {cons("Implicit")}
+    "@implicit" MessagePart+ "." -> Error {cons("Implicit")}
 
     %% FIXME: Why is `(Error+)?' not directly possible?
     Error+ -> ErrorList
