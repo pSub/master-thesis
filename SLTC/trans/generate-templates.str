@@ -9,7 +9,7 @@ imports optimize-constraint-templates
        
 rules
     
-    make-constraint-generator :
+    generate-templates :
         Module(ModuleDec(_),
                imports,
                Language(l),

@@ -50,7 +50,7 @@ rules
     filename := <guarantee-extension(|"constraints")> path
 
   generate-templates :
-    (selected, position, ast, path, project-path) -> (filename, <make-constraint-generator> ast)
+    (selected, position, ast, path, project-path) -> (filename, <generate-templates> ast)
   where
     filename := <guarantee-extension(|"templates")> path
 
