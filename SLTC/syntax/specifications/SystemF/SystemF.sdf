@@ -5,12 +5,13 @@ exports
     Exp
     
   lexical syntax
-  	%% This definition creates ambiguties
-  	%%[a-z]+ -> ID
   	[a-zA-Z][a-zA-Z0-9]* -> ID
   	[0-9]+ -> Int
   	
   	"int" -> ID {reject}
+
+  lexical restrictions
+  	ID -/- [a-zA-Z0-9\_\-]
     
   context-free syntax
   	Int -> Exp {cons("Int")}
