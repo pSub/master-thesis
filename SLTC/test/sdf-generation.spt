@@ -4,6 +4,7 @@ language SLTC
 
 setup Common
 
+// FXIME: How to ignore the analysis result for tests?
 test empty-module [[
   module test
   imports test
