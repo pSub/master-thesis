@@ -1,4 +1,4 @@
-module SimplyTypedLambdaCalculus
+module specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 exports
 	
   context-free start-symbols

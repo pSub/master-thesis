@@ -1,6 +1,6 @@
 module Typesystem
 
-language specifications/Subtying-algorithmic/SimplyTypedLambdaCalculus
+language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { Context }
