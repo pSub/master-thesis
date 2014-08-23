@@ -1,5 +1,7 @@
 module constraint-template-language
 
+imports utils
+
 signature
     sorts Rule Lookup Judgment Neq
     constructors
@@ -77,3 +79,9 @@ rules
 
     makeEq(|info) : (a, b) -> Eq__(a, b, info)
     makeNeq(|info) : (a, b) -> Neq__(a, b, info)
+
+    /**
+     * Extracts the context id from a context modification of a template.
+     * @internal
+     */
+    get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ Fst

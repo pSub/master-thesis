@@ -266,12 +266,7 @@ signature
      */
     rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\);
                   map(reverse; \l -> <foldl(\((ctx, i, o), b) -> Pred__(<concat-strings> ["bind", <int-to-string> ctx], <conc> (i, o, [b])) \)> (<Tl> l, <Hd; convert-ctx> l)\)
-    
-    /**
-     * Extracts the context id from a context modification of a template.
-     * @internal
-     */
-    get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ Fst
+
 
     /**
      * Converts Reset and Ctx into equivalent first-order term.
