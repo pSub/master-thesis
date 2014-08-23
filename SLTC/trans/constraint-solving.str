@@ -2,7 +2,6 @@ module constraint-solving
 
 imports constraint-language
 imports utils
-imports include/SLTC
 
 rules
 
