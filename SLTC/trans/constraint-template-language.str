@@ -9,10 +9,10 @@ signature
        // FIXME: Clean up the template language definition.
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
        Template__ : List(List(var)) * List(premisse) * Conjecture * Constraint -> Template
-       Lookup__  : ctx * inputs -> Lookup
-       Reset__ : ctx -> Reset
+       Lookup__  : ctx * inputs -> Ctx
+       Reset__ : ctx -> Ctx
        Ctx__ : ctx -> Ctx
-       Binding__ : ctx * inputs * outputs -> Binding
+       Binding__ : ctx * inputs * outputs -> Ctx
        Judgment__ : number * term * binding -> Judgment
        Eq__ : term * term * error -> Eq
        Neq__ : term * term * error -> Neq
@@ -23,18 +23,18 @@ signature
 rules  
 
     /**
-     * Extracts the pattern from Rule, Binding or Fork
+     * Extracts the pattern from Rule, Binding or Fork.
      *
-     * @type Rule -> List(a)
+     * @type Template -> List(a)
      */
     get-pattern : Conclusion__(_, _, (pattern, _), _) -> pattern
     get-pattern : Template__(_, _, rule, _) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
-     * Extracts the context pattern from Rule, Binding or Fork
+     * Extracts the context pattern from Rule, Binding or Fork.
      *
-     * @type Rule -> List(a)
+     * @type Template -> List(a)
      */
     get-ctx-pattern : Conclusion__(_, _, (_, ctx), _) -> ctx
     get-ctx-pattern : Template__(_, _, rule, _) -> <get-ctx-pattern> rule
@@ -43,7 +43,7 @@ rules
     /**
      * Extracts the judgment number from the conclusion.
      *
-     * @type Rule -> Int
+     * @type Template -> Int
      */
     get-judgment-number : Conclusion__(judg-number, _, _, _) -> judg-number
     get-judgment-number : Template__(_, _, rule, _) -> <get-judgment-number> rule
@@ -52,39 +52,54 @@ rules
     /**
      * Extracts the name from the conclusion.
      *
-     * @type Rule -> Int
+     * @type Template -> Option(String)
      */
     get-rule-name : Conclusion__(_, name, _, _) -> name
     get-rule-name : Template__(_, _, rule, _) -> <get-rule-name> rule
 
     /**
-     * Transforms a triple into a judgment node
+     * Transforms a triple into a judgment node.
      *
      * @type (name, a, b) -> Judgment(name, a, b)
      */
     mkJudgment : (name, a, b) -> Judgment__(name, a, b)
 
     /**
-     * Transforms a tuple into a lookup node
+     * Transforms a tuple into a lookup node.
      *
      * @type (a, b) -> Lookup(a, b)
      */
     mkLookup : (a, b) -> Lookup__(a, b)
 
     /**
-     * Transforms a tuple into a fork node
+     * Transforms a list of templates into a fork node.
      *
-     * @type List(Rule) -> Fork(List(Rule))
+     * @type List(Template) -> Fork(List(Template))
      */
     mkFork : xs -> Fork__(xs)
 
+    /**
+     * Transforms a tuple into a equality node.
+     *
+     * @type (a, b) -> Eq(a, b)
+     */
     makeEq(|error) : (a, b) -> Eq__(a, b, error)
+
+    /**
+     * Transforms a tuple into a inequality node.
+     *
+     * @type (a, b) -> Neq(a, b)
+     */
     makeNeq(|error) : (a, b) -> Neq__(a, b, error)
 
     /**
      * Extracts the context id from a context modification of a template.
-     * @internal
+     *
+     * @type Ctx -> Int
      */
     get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ proj(Binding__|1)
-    
+
+    /**
+     * Succeeds if the node is a context modification and fails otherwise.
+     */
     is-ctx-modification = ?Reset__(_) <+ ?Ctx__(_) <+ ?Binding__(_, _, _)
