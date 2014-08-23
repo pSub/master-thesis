@@ -3,7 +3,7 @@ module constraint-language
 imports utils
 
 signature
-    sorts Constraint Constraints
+    sorts Constraint
     constructors
        Info__ : Option(String) -> Info
        Var__ : String -> term
