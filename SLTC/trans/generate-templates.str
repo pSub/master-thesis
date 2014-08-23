@@ -4,11 +4,14 @@ imports constraint-language
 imports constraint-template-language
 imports utils
 imports include/SLTC
+imports lib/editor-common.generated
 
 imports optimize-constraint-templates
        
 rules
     
+    wrapped-generate-templates = io-wrap(generate-templates)
+
     generate-templates :
         Module(ModuleDec(_),
                imports,
