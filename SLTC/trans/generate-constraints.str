@@ -78,11 +78,11 @@ rules
            (Some(outputs'), new-constraints)
         where
             // Retrieve and remove elements from the context according to the context pattern.
-            ctx' := <filter(\(ctx, i, _) -> <pop(|s)> ctx \ <+
+            ctx' := <filter(\Binding__(ctx, i, _) -> <pop(|s)> ctx \ <+
                             where(\Reset__(ctx) -> <clear-context(|s, ctx)> \); skip)> ctx;
 
             // Append the context pattern to the input pattern.
-            pattern'' := <conc> (pattern, <filter(\(_, i, o) -> (i, o)\)> ctx);
+            pattern'' := <conc> (pattern, <filter(\Binding__(_, i, o) -> (i, o)\)> ctx);
 
             // Append the instantiated context pattern to the input term.
             term'' := <conc> (term, ctx');

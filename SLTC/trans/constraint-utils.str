@@ -36,8 +36,10 @@ rules
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
      */
-    instantiate-ctx-binding(|pattern, terms) = map(try((id, instantiate(|pattern, terms),
-                                                        instantiate(|pattern, terms))))
+    instantiate-ctx-binding(|pattern, terms) =
+        map(try(\Binding__(ctx, input, output) ->
+                    Binding__(ctx, <instantiate(|pattern, terms)> input, <instantiate(|pattern, terms)> output)
+                \))
 
     /**
      * An version of `instantiate` tailored for context lookups.
@@ -94,7 +96,7 @@ rules
      * @type (binding, binding) -> List(Constraint)
      */
     make-binding-constraints(|info)
-        = (filter(Dupl; (Snd, Third); conc); concat, filter(Dupl; (Snd, Third); conc); concat);
+        = (filter(to-tuple; Dupl; (Snd, Third); conc); concat, filter(to-tuple;Dupl; (Snd, Third); conc); concat);
            zip; filter((?Var__(_), id));  map(makeCEq(|info))
         
     /**
@@ -186,7 +188,7 @@ rules
      */
     match-contexts(|store) =
                     where(contexts := <hashtable-getlist; map((id, Fst))> store);
-                    map(\(ctx, i, o) ->
+                    map(\Binding__(ctx, i, o) ->
                             <<zip; map(match-constructors)> (<lookup'; Hd> (ctx, contexts), i);
                              <alltd(?(ctx, _); !(ctx, <lookup; Tl> (ctx, contexts)))> contexts>
                         \ <+

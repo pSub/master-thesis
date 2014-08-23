@@ -12,7 +12,7 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    update-store(|s) = foldr(!s, \((ctx, i, o), s') ->
+    update-store(|s) = foldr(!s, \(Binding__(ctx, i, o), s') ->
                                     <hashtable-put(|ctx,
                                                     <hashtable-get(|ctx);
                                                     (\xs -> [i|xs]\, hashtable-put(|i, o))> s')> s'

@@ -15,6 +15,7 @@ signature
        Lookup__  : ctx * inputs -> Lookup
        Reset__ : ctx -> Reset
        Ctx__ : ctx -> Ctx
+       Binding__ : ctx * inputs * outputs -> Binding
        Judgment__ : number * term * binding -> Judgment
        Eq__ : term * term * info -> Eq
        Neq__ : term * term * info -> Neq
@@ -84,4 +85,4 @@ rules
      * Extracts the context id from a context modification of a template.
      * @internal
      */
-    get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ Fst
+    get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ proj(Binding__|1)

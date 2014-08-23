@@ -190,7 +190,7 @@ rules
     ctx-bind-to-kv-list(|c) : node -> [Reset__(ctx)]
         where <node-is-ctx-empty> node;
               ctx := <get-context-id> node
-    ctx-bind-to-kv-list(|c) : node -> [(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c)> tail]
+    ctx-bind-to-kv-list(|c) : node -> [Binding__(ctx, inputs, outputs) | <ctx-bind-to-kv-list(|c)> tail]
         where <node-is-ctx-bind> node;
               ctx := <get-context-id> node;
               inputs := <get-inputs(|c)> node;
