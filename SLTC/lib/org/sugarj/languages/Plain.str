@@ -2,7 +2,7 @@ module org/sugarj/languages/Plain
 
 signature
   constructors
-  	PlainDec : PlainDecHead * PlainBody -> ToplevelDeclaration
-  	PlainDecHead : list(AnnoOrSugarMod) * JavaId * Some(JavaID) -> PlainDecHead
-  	PlainBody : PlainContent -> PlainBody
+    PlainDec : PlainDecHead * PlainBody -> ToplevelDeclaration
+    PlainDecHead : list(AnnoOrSugarMod) * JavaId * Some(JavaID) -> PlainDecHead
+    PlainBody : PlainContent -> PlainBody
  

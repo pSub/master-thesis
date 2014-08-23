@@ -3,21 +3,21 @@ module generate
 imports
     libstratego-gpp
     libstratego-aterm
-	include/SLTC
-	trans/generate-templates
-	trans/generate-constraints
-	trans/generate-sdf
-	trans/generate-fof
-	trans/optimize-constraint-templates
-	trans/typecheck
-	trans/verification
+    include/SLTC
+    trans/generate-templates
+    trans/generate-constraints
+    trans/generate-sdf
+    trans/generate-fof
+    trans/optimize-constraint-templates
+    trans/typecheck
+    trans/verification
 
-	trans/tests
+    trans/tests
 
 rules
-	
+    
   generate-sdf :
-  	   (selected, position, ast, path, project-path) -> (filename, result)
+       (selected, position, ast, path, project-path) -> (filename, result)
   with
     filename := "syntax/Generated.sdf";
     aterm := <toSdf> selected;
@@ -29,7 +29,7 @@ rules
 
 
   generate-fof :
-	   (selected, position, ast, path, project-path) -> (filename, result)
+       (selected, position, ast, path, project-path) -> (filename, result)
   where
     filename := <guarantee-extension(|"fof")> path;
     aterm := <toFOF> selected;

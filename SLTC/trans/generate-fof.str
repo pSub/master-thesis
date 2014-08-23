@@ -7,37 +7,37 @@ imports constraint-template-language
 imports include/SLTC
 
 signature
-	sorts Prop Type FOF Goal
-	constructors
-	    // Constructors are postfixed with two underscores to
-	    // avoid collisions with other constructors.
-		False__ : Prop
-    	True__  : Prop
-    	Not__   : Prop -> Prop
-    	And__   : Prop * Prop -> Prop
-    	Or__    : Prop * Prop -> Prop
-    	Impl__  : List(Prop) * Prop -> Prop
-    	BiImpl__ : Prop * Prop -> Prop
-    	Eq__    : Prop * Prop -> Prop
-    	Neq__ : Prop * Prop -> Prop
-    	Var__   : String -> Prop                   // variables
-    	Var__   : String * String -> Prop          // variables annotated with a scope
-    	Pred__  : String -> Prop                   // Constants
-    	Pred__  : String * List(Prop) -> Prop      // Predicates consisting of a name and a list of arguments
-    	Term__  : String -> Prop                   // Terms
-    	Term__  : String * List(Prop) -> Prop      // Terms
-    	All__   : List(Var) * Prop -> Prop
-    	Exists__ : List(Var) * Prop -> Prop
-    	
-    	Axiom__ : Type
-    	Conjecture__ : Type
-    	
-    	Formula__ : String * Type * Prop -> FOF
-    	Formula__ : String * Prop -> FOF
-    	FOFGoal__ : List(Formula) * List(Formula) -> Goal
-    	FOFGoal__ : List(Formula) * List(Formula) * Formula -> Goal
-		
-		AuxCons__ : String * String * List(Prop) -> Prop
+    sorts Prop Type FOF Goal
+    constructors
+        // Constructors are postfixed with two underscores to
+        // avoid collisions with other constructors.
+        False__ : Prop
+        True__  : Prop
+        Not__   : Prop -> Prop
+        And__   : Prop * Prop -> Prop
+        Or__    : Prop * Prop -> Prop
+        Impl__  : List(Prop) * Prop -> Prop
+        BiImpl__ : Prop * Prop -> Prop
+        Eq__    : Prop * Prop -> Prop
+        Neq__ : Prop * Prop -> Prop
+        Var__   : String -> Prop                   // variables
+        Var__   : String * String -> Prop          // variables annotated with a scope
+        Pred__  : String -> Prop                   // Constants
+        Pred__  : String * List(Prop) -> Prop      // Predicates consisting of a name and a list of arguments
+        Term__  : String -> Prop                   // Terms
+        Term__  : String * List(Prop) -> Prop      // Terms
+        All__   : List(Var) * Prop -> Prop
+        Exists__ : List(Var) * Prop -> Prop
+        
+        Axiom__ : Type
+        Conjecture__ : Type
+        
+        Formula__ : String * Type * Prop -> FOF
+        Formula__ : String * Prop -> FOF
+        FOFGoal__ : List(Formula) * List(Formula) -> Goal
+        FOFGoal__ : List(Formula) * List(Formula) * Formula -> Goal
+        
+        AuxCons__ : String * String * List(Prop) -> Prop
 
  rules
     /**
@@ -45,14 +45,14 @@ signature
      *
      * @type Module -> List(Goal)
      */
-	make-conjectures : Module(ModuleDec(_),
-			                  imports,
-			                  Language(_),
-			                  MetaVariables(_),
-			                  Contexts(context-definitions),
-			                  Judgments(_),
-			                  Rules(typing-rules),
-			                  some-conjectures)
+    make-conjectures : Module(ModuleDec(_),
+                              imports,
+                              Language(_),
+                              MetaVariables(_),
+                              Contexts(context-definitions),
+                              Judgments(_),
+                              Rules(typing-rules),
+                              some-conjectures)
         -> <fof-from-specification(|context-definitions, typing-rules)> some-conjectures
 
     /**
@@ -101,25 +101,25 @@ signature
      * different. Those axioms are needed, because as soon as terms get
      * nested those equalities are hard to decide.
      */
-	make-inequalities : ast -> <collect-all(?Term__(_)); nub; tails; mapconcat(make-inequality)> ast
-	make-inequality : [] -> []
-	make-inequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <make-neq>(x, y))\)> ys
+    make-inequalities : ast -> <collect-all(?Term__(_)); nub; tails; mapconcat(make-inequality)> ast
+    make-inequality : [] -> []
+    make-inequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <make-neq>(x, y))\)> ys
     
     //TODO: Is the formulation important? What about using the contraposition?
     //FIXME: It seems those are not used at all. Check why that is and remove if they are superfluous.
     make-injectivity : (name, n) -> Formula__(<conc-strings> (name, "-injective"),
-    									     Axiom__(),
-									         All__(<conc>(Xs, Ys), Impl__(<zip; map(makeNeq)> (Xs, Ys),
-									                                      Neq__(Term__(name, Xs), Term__(name, Ys))))
-    									     )
-    	where Xs := <newnames(|"X")> n;
-    		  Ys := <newnames(|"Y")> n
+                                             Axiom__(),
+                                             All__(<conc>(Xs, Ys), Impl__(<zip; map(makeNeq)> (Xs, Ys),
+                                                                          Neq__(Term__(name, Xs), Term__(name, Ys))))
+                                             )
+        where Xs := <newnames(|"X")> n;
+              Ys := <newnames(|"Y")> n
     make-univalence : (name, n) -> Formula__(<conc-strings> (name, "-univalent"),
-    									    Axiom__(),
-									        All__(["Y" | ["Z" | Xs]], Impl__([Eq__(Term__(name, Xs), Var__("Y")), Eq__(Term__(name, Xs), Var__("Z"))],
-									              Eq__(Var__("Y"), Var__("Z"))))
-    									    )
-    	where Xs := <newnames(|"X")> n
+                                            Axiom__(),
+                                            All__(["Y" | ["Z" | Xs]], Impl__([Eq__(Term__(name, Xs), Var__("Y")), Eq__(Term__(name, Xs), Var__("Z"))],
+                                                  Eq__(Var__("Y"), Var__("Z"))))
+                                            )
+        where Xs := <newnames(|"X")> n
     
 
     /**
@@ -132,43 +132,43 @@ signature
     free-vars : All__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : Exists__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
     free-vars : cons#(xs) -> <map(free-vars); unions> xs
-	
-	/**
-	 * Generates context definitions.
-	 *
-	 * @type (Int, ContextDefinition) -> List(Formula)
-	 */
-	make-contexts : (i, ContextDefinition(name, raw-non-terminals)) -> [
-	    Formula__(<conc-strings> ("lookup base ", name),
-	              Axiom__(),
-	              All__([NAME|<conc>(inputs, outputs)],
-	                    Pred__(lookup, <conc> (inputs, outputs, [Pred__(bind, <conc> (non-terminals,
-	                                                                                  <singelton> NAME))])))),
-	    Formula__(<conc-strings> ("lookup step ", name),
-	              Axiom__(),
-	              All__([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
-	                    Impl__([Pred__(lookup, <concat> [inputs, outputs, <singelton> NAME]) | <zip; map(make-neq)> (inputs, inputs2)],
-	                           Pred__(lookup, <conc>(inputs, outputs, [Pred__(bind, <conc> (<map(append(|"_"))> non-terminals, <singelton> NAME))])))))
-	]
-	   where
-	       // Index non-terminals with new names
-	       indexed-non-terminals := <Dupl; (length; newnames(|"X"), id); zip> raw-non-terminals;
-		   // extract the list of new names
-	       non-terminals := <map(Fst; \s -> Var__(s)\)> indexed-non-terminals;
-	       // filter out the in- and outputs
-	       inputs := <filter(?(_, Hole(_, "I")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
-	       outputs := <filter(?(_, Hole(_, "O")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
-	       // duplicate the in- and outputs by appending underscores
-	       inputs2 := <map(append(|"_"))> inputs;
-	       outputs2 := <map(append(|"_"))> outputs;
-	       
-	       // Auxiliary definitions
-	       lookup := <conc-strings> ("lookup", <int-to-string> i);
-	       bind := <conc-strings> ("bind", <int-to-string> i);
-	       NAME := Var__(<newname> "X")
+    
+    /**
+     * Generates context definitions.
+     *
+     * @type (Int, ContextDefinition) -> List(Formula)
+     */
+    make-contexts : (i, ContextDefinition(name, raw-non-terminals)) -> [
+        Formula__(<conc-strings> ("lookup base ", name),
+                  Axiom__(),
+                  All__([NAME|<conc>(inputs, outputs)],
+                        Pred__(lookup, <conc> (inputs, outputs, [Pred__(bind, <conc> (non-terminals,
+                                                                                      <singelton> NAME))])))),
+        Formula__(<conc-strings> ("lookup step ", name),
+                  Axiom__(),
+                  All__([NAME|<concat> [inputs, inputs2, outputs, outputs2]],
+                        Impl__([Pred__(lookup, <concat> [inputs, outputs, <singelton> NAME]) | <zip; map(make-neq)> (inputs, inputs2)],
+                               Pred__(lookup, <conc>(inputs, outputs, [Pred__(bind, <conc> (<map(append(|"_"))> non-terminals, <singelton> NAME))])))))
+    ]
+       where
+           // Index non-terminals with new names
+           indexed-non-terminals := <Dupl; (length; newnames(|"X"), id); zip> raw-non-terminals;
+           // extract the list of new names
+           non-terminals := <map(Fst; \s -> Var__(s)\)> indexed-non-terminals;
+           // filter out the in- and outputs
+           inputs := <filter(?(_, Hole(_, "I")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
+           outputs := <filter(?(_, Hole(_, "O")); Fst; \s -> Var__(s)\)> indexed-non-terminals;
+           // duplicate the in- and outputs by appending underscores
+           inputs2 := <map(append(|"_"))> inputs;
+           outputs2 := <map(append(|"_"))> outputs;
+           
+           // Auxiliary definitions
+           lookup := <conc-strings> ("lookup", <int-to-string> i);
+           bind := <conc-strings> ("bind", <int-to-string> i);
+           NAME := Var__(<newname> "X")
            append(|p) = \ Var__(s) -> Var__(<conc-strings> (s, p)) \
 
-	       
+           
     /**
      * Translates all generic construtors into an auxillary data structure.
      */
@@ -177,42 +177,42 @@ signature
             [constant, generic] := <string-tokenize(|<singelton> '-')> cons;
             <is-generic> constant
             is-generic = "ContextEmpty" <+
-            			 "ContextBind" <+
-            			 "ContextLookup" <+
-            			 "TypingJudgment" <+
-            			 "MetaVariable"
+                         "ContextBind" <+
+                         "ContextLookup" <+
+                         "TypingJudgment" <+
+                         "MetaVariable"
     
     /**
      * Wraps meta-variables into an auxiliary constructor.
      */
     rewrite-meta-variable : AuxCons__("MetaVariable", scope, [name, _]) -> Var__(name, scope)
-	
-	/**
-	 * Wraps contexts in an auxiliary constructor.
-	 */
-	rewrite-context-empty : AuxCons__("ContextEmpty", name, []) -> Pred__(<concat-strings> ["empty", name])
-	rewrite-context-bind : AuxCons__("ContextBind", name, args) -> Pred__(<concat-strings> ["bind", name], args)
-	rewrite-context-lookup : AuxCons__("ContextLookup", name, args) -> Pred__(<concat-strings> ["lookup", name], args)
-	rewrite-context = rewrite-context-empty <+ rewrite-context-bind <+ rewrite-context-lookup
+    
+    /**
+     * Wraps contexts in an auxiliary constructor.
+     */
+    rewrite-context-empty : AuxCons__("ContextEmpty", name, []) -> Pred__(<concat-strings> ["empty", name])
+    rewrite-context-bind : AuxCons__("ContextBind", name, args) -> Pred__(<concat-strings> ["bind", name], args)
+    rewrite-context-lookup : AuxCons__("ContextLookup", name, args) -> Pred__(<concat-strings> ["lookup", name], args)
+    rewrite-context = rewrite-context-empty <+ rewrite-context-bind <+ rewrite-context-lookup
 
-	/**
-	 * Wraps typing judgment in an auxiliary constructor.
-	 */
-	rewrite-typing-judgment : AuxCons__("TypingJudgment", "False", []) -> False__()
-	rewrite-typing-judgment : AuxCons__("TypingJudgment", "Neq", [arg1, arg2]) -> Neq__(arg1, arg2)
-	rewrite-typing-judgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
-	rewrite-typing-judgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
-	rewrite-typing-judgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
+    /**
+     * Wraps typing judgment in an auxiliary constructor.
+     */
+    rewrite-typing-judgment : AuxCons__("TypingJudgment", "False", []) -> False__()
+    rewrite-typing-judgment : AuxCons__("TypingJudgment", "Neq", [arg1, arg2]) -> Neq__(arg1, arg2)
+    rewrite-typing-judgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
+    rewrite-typing-judgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
+    rewrite-typing-judgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
 
     /**
      * `make-formula' for axioms.
      */
-	rewrite-typing-rule = make-formula(|Axiom__())
+    rewrite-typing-rule = make-formula(|Axiom__())
 
-	/**
-	 * `make-formula' for conjectures.
-	 */
-	make-conjecture = make-formula(|Conjecture__())
+    /**
+     * `make-formula' for conjectures.
+     */
+    make-conjecture = make-formula(|Conjecture__())
 
     /**
      * String representation of formula type.
@@ -306,24 +306,24 @@ signature
      *
      * @type String -> Term__(n)
      */
-	wrap-string : v -> Term__(v)
-	   where <is-string; string-as-chars(map(is-alphanum))> v
+    wrap-string : v -> Term__(v)
+       where <is-string; string-as-chars(map(is-alphanum))> v
 
-	/**
-	 * Wrap all strings that are arguments of Term__ or Pred__ into terms.
-	 */
-	rewrite-string : Term__(n, args) -> Term__(n, <map(try(wrap-string))> args)
-	rewrite-string : Pred__(n, args) -> Pred__(n, <map(try(wrap-string))> args)
-	
-	/**
-	 * Wraps the constructors of the programming language into terms, i.e. wraps
-	 * all nodes with an unknown constructor.
-	 */
-	make-term : v -> v
-	   where <is-string> v
-	make-term : cons#([]) -> Term__(<lower-case> cons)
-	   where <not([])> cons;
-	   prop-constructors := ["True", "False"];
+    /**
+     * Wrap all strings that are arguments of Term__ or Pred__ into terms.
+     */
+    rewrite-string : Term__(n, args) -> Term__(n, <map(try(wrap-string))> args)
+    rewrite-string : Pred__(n, args) -> Pred__(n, <map(try(wrap-string))> args)
+    
+    /**
+     * Wraps the constructors of the programming language into terms, i.e. wraps
+     * all nodes with an unknown constructor.
+     */
+    make-term : v -> v
+       where <is-string> v
+    make-term : cons#([]) -> Term__(<lower-case> cons)
+       where <not([])> cons;
+       prop-constructors := ["True", "False"];
              <not(fetch-elem(\prop-cons ->  <equal(|<conc-strings> (prop-cons, "__"), cons)> \))> prop-constructors
     make-term : cons#(args) -> Term__(<lower-case> cons, args)
        where <not([])> cons;
@@ -337,36 +337,36 @@ strategies
     /**
      * Main strategy that apply all transformations to create valid TPTP formulas.
      */
-	toFOF = make-conjectures; make-variables-unique; remove-dashes
+    toFOF = make-conjectures; make-variables-unique; remove-dashes
 
     /**
      * Try to apply all rules that rewrite auxilary constructors.
      */
-	rewrite-aux-cons = rewrite-context <+ rewrite-typing-judgment <+ rewrite-meta-variable
-	
-	/**
-	 * Rewrite the AST topdown. If an auxilary construtor can be created rewrite it immediatly,
-	 * otherwise try to create a term. After the first topdown traversal, traverse the AST again
-	 * topdown to rewrite all relevant strings into terms.
-	 */
-	rewrite = topdown(make-aux-cons < rewrite-aux-cons + try(make-term)); topdown(try(rewrite-string))
-	
-	/**
-	 * Ensure that all variables are uniquely named and are valid TPTP names. Before that run all Variables are scoped, thus
-	 * all scoped variables are collected. After this the AST is folded over the collected variables. In the AST the scoped
-	 * variable nodes are replaced with unscoped fresh variables, variable by variable.
-	 */
-	make-variables-unique =
-	    ?ast;
-	    collect-all(?Var__(_,_)); Dupl;
+    rewrite-aux-cons = rewrite-context <+ rewrite-typing-judgment <+ rewrite-meta-variable
+    
+    /**
+     * Rewrite the AST topdown. If an auxilary construtor can be created rewrite it immediatly,
+     * otherwise try to create a term. After the first topdown traversal, traverse the AST again
+     * topdown to rewrite all relevant strings into terms.
+     */
+    rewrite = topdown(make-aux-cons < rewrite-aux-cons + try(make-term)); topdown(try(rewrite-string))
+    
+    /**
+     * Ensure that all variables are uniquely named and are valid TPTP names. Before that run all Variables are scoped, thus
+     * all scoped variables are collected. After this the AST is folded over the collected variables. In the AST the scoped
+     * variable nodes are replaced with unscoped fresh variables, variable by variable.
+     */
+    make-variables-unique =
+        ?ast;
+        collect-all(?Var__(_,_)); Dupl;
         (id, length; newnames(|"X"); map(\x -> Var__(x)\));
         zip; replace-all(|ast)
                                   
-	/**
-	 * Dashes in predicate names are not valid in TPTP.
-	 *
-	 * FIXME: It would be nice, if it is guaranteed, that the renaming creates no collisions
-	 * FIXME: Try to rename other invalid characters
-	 */
-	remove-dashes = topdown(try(\Term__(name, args) -> Term__(<string-replace(|"-", "")> name, args)\ <+
-	                           \Term__(name) -> Term__(<string-replace(|"-", "")> name)\))
+    /**
+     * Dashes in predicate names are not valid in TPTP.
+     *
+     * FIXME: It would be nice, if it is guaranteed, that the renaming creates no collisions
+     * FIXME: Try to rename other invalid characters
+     */
+    remove-dashes = topdown(try(\Term__(name, args) -> Term__(<string-replace(|"-", "")> name, args)\ <+
+                               \Term__(name) -> Term__(<string-replace(|"-", "")> name)\))
