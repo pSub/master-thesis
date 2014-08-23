@@ -1,71 +1,113 @@
+%% The specification language.
+%%
+%% Note: TypingJudgment and MetaVariable are provided
+%% by Generated.sdf and passed in SLTC.sdf
+%%
 module BaseLanguage[TypingJudgment MetaVariable]
+
 imports Common
 
 exports
+
+  %% The sections of a specification.
   context-free syntax
-    "module" MID                            -> ModuleDec      {cons("ModuleDec")}
-    "imports" MID*							-> Imports        {cons("Imports")}
-    "language" MID							-> Language       {cons("Language")}
-    "meta-variables" MetaVariableDefinition*-> MetaVariables  {cons("MetaVariables")}
-    "contexts" ContextDefinition*		    -> Contexts       {cons("Contexts")}
-    "judgments" Judgment*                   -> Judgments      {cons("Judgments")}
-    "rules" ErrorTypingRule*                -> Rules          {cons("Rules")}
-    "conjectures" TypingRule*               -> Conjectures    {cons("Conjectures")}
+    "module" MID                             -> ModuleDec      {cons("ModuleDec")}
+    "imports" MID*							 -> Imports        {cons("Imports")}
+    "language" MID							 -> Language       {cons("Language")}
+    "meta-variables" MetaVariableDefinition* -> MetaVariables  {cons("MetaVariables")}
+    "contexts" ContextDefinition*		     -> Contexts       {cons("Contexts")}
+    "judgments" Judgment*                    -> Judgments      {cons("Judgments")}
+    "rules" ErrorTypingRule*                 -> Rules          {cons("Rules")}
+    "conjectures" TypingRule*                -> Conjectures    {cons("Conjectures")}
     
+    %% A specification module.
     %%TODO: When introducing imports it might make sense to treat most
     %% consituents as optional.
     ModuleDec Imports? Language MetaVariables Contexts Judgments Rules Conjectures? -> Module {cons("Module")}
 
 
   lexical syntax
+    %% Used for text elements in declarations.
 	"\"" ~[\"]* "\"" -> Separator
-	"I" -> Mode
-	"O" -> Mode
+
+    %% Modes for holes in declarations.
+	"I" -> Mode %% Input
+	"O" -> Mode %% Output
 
   context-free syntax
+    %% Used for variables in declarations. Name is a SDF non-terminal.
 	Name "{" Mode "}" -> Hole {cons("Hole")}
 
-%% Meta-variables
+  %% Meta-variables
   context-free syntax
-  	"{" ID+ "}"-> Scope {cons("Scope")}
+    %% The scope of the variable. Name is a SDF non-terminal.
+  	"{" Name+ "}"-> Scope {cons("Scope")}
+
+  	%% The prefix is used to disambiguate.
 	"\"" PrefixChars "\"" -> Prefix {cons("MetaVariablePrefix")}
+	
+	%% A meta-variable consists of a class, a prefix and a scope.
   	Name Prefix Scope -> MetaVariableDefinition {cons("MetaVariableDefinition")}
   	
-%% Contexts
+  %% Contexts
   context-free syntax
-	ID ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
+    %% A context has a name and consists of a least one Hole. Holes are here
+    %% analogous to the set containing all terms of that non-terminal.
+	Name ":=" {Hole "x"}+ -> ContextDefinition {cons("ContextDefinition")}
 	
-%% Judgments
+  %% Declaration of built-in judgments.
   lexical syntax
     "Eq" -> Feature
     "Neq" -> Feature
-    "Not" -> Feature
 
+    %% FIXME: Currently not used.
+    %% "Not" -> Feature
+
+  %% Judgments
   context-free syntax
-    %%FIXME: How do I avoid this warning: Non-terminal used as a list separator (use round braces for grouping non-terminals)
-	Separator? {Hole Separator}+ Separator? BuiltIn? "." -> Judgment {cons("Judgment")}
-	"is" Feature-> BuiltIn {cons("BuiltIn")}
+    %% Built-ins are declared using "is".
+    "is" Feature-> BuiltIn {cons("BuiltIn")}
 
-%% Errors
+    %%FIXME: How do I avoid this warning: Non-terminal used as a list separator (use round braces for grouping non-terminals)
+    %%
+    %% Judgments are a list of holes interleaved with separators. They can have a
+    %% built-in annotation and end with a dot.
+	Separator? {Hole Separator}+ Separator? BuiltIn? "." -> Judgment {cons("Judgment")}
+
   lexical syntax
+    %% Special string that will be replaced with the actual
+    %% output in error messages.
     "INFTYPE" -> MessagePart
 
   context-free syntax
+    %% An Error Message consists of either a separator or
+    %% a meta-variable, in arbitrary order.
     Separator -> MessagePart
     MetaVariable -> MessagePart
+    
+    %% Errors that are thrown if the expected output of a premise
+    %% does not match the expected output.
     "@error" MessagePart+ "." -> Error {cons("Error")}
+
+    %% Errors that are thrown if implicit equalities are not satisfied.
     "@implicit" MessagePart + "." -> Error {cons("Implicit")}
+
     %% FIXME: Why is `(Error+)?' not directly possible?
     Error+ -> ErrorList
+    
+    %% A typing judgment can be annotated with a list of errors.
     TypingJudgment ErrorList? -> ErrorTypingJudgment {cons("ErrorTypingJudgment")}
 
-%% Typing Rules
   lexical syntax
+    %% String that separates premisses and conclusion.
     "===" "="*     -> RuleSep
     
   lexical restrictions
     RuleSep -/- [\=]
 
+  %% Typing rules
+  %% Typing rules are defined with and without errors, because error annotations
+  %% are not allowed in the conjecture section.
   context-free syntax
     RuleSep Name?                                                     -> RuleSepName                {cons("RuleName"), layout("1.first.line == 2.last.line")}
     ErrorTypingRulePremiseList RuleSepName ErrorTypingRuleConsequence -> ErrorTypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col && 2.first.col == 3.first.col")}
@@ -74,6 +116,6 @@ exports
     ErrorTypingJudgment ErrorTypingRulePremiseList                    -> ErrorTypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}
 
     TypingRulePremiseList RuleSepName TypingRuleConsequence   -> TypingRule            {cons("TypingRule"), layout("1.first.col == 2.first.col && 2.first.col == 3.first.col")}
-    TypingJudgment                                       -> TypingRuleConsequence
-                                                         -> TypingRulePremiseList {cons("PremiseBase")}
-    TypingJudgment TypingRulePremiseList                 -> TypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}
+    TypingJudgment                                            -> TypingRuleConsequence
+                                                              -> TypingRulePremiseList {cons("PremiseBase")}
+    TypingJudgment TypingRulePremiseList                      -> TypingRulePremiseList {cons("PremiseCons"), layout("1.first.col == 2.first.col")}

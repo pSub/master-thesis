@@ -6,7 +6,7 @@ exports
     [a-zA-Z0-9\~\$\%\&\?]+             -> PrefixChars
     [a-zA-Z0-9]                        -> MetaVariableChars
     MetaVariableChars+                 -> MetaVariableName
-    {Name "/"}+                          -> MID
+    {Name "/"}+                        -> MID
     [\ \t\n\r]                         -> LAYOUT
     [\*]                               -> CommentChar
     "/*" ( ~[\*] | CommentChar )* "*/" -> LAYOUT  
@@ -23,12 +23,12 @@ exports
     "conjectures"                      -> ReservedWord
     "@error"                           -> ReservedWord
     "@implicit"                        -> ReservedWord
-    ReservedWord                       -> ID           {reject}
+    ReservedWord                       -> Name {reject}
 
   lexical restrictions
     CommentChar -/- [\/]
     MetaVariableName -/- [a-zA-Z0-9]
-    ID -/- [a-zA-Z0-9\_\-]
+    Name -/- [a-zA-Z0-9\_\-]
     MID -/- [\.]
     EOF -/- ~[]
 
