@@ -11,3 +11,9 @@ strc -i trans/sltc.str -m wrapped-generate-templates -la stratego-lib -la strate
 
 echo "sglri -p include/SLTC.tbl -i syntax/specifications/Subtyping-algorithmic/Typesystem.slt | bin/.make-templates" > bin/make-templates
 chmod +x bin/make-templates
+
+# Generate def for input terms
+pack-sdf -i syntax/Input.sdf -o include/Input.def
+
+# Generate tbl for input terms
+sdf2table -i include/Input.def -m Input

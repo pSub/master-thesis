@@ -1,0 +1,7 @@
+module Input
+
+imports Generated
+imports BaseLanguage[TypingJudgment MetaVariable]
+
+exports
+    context-free start-symbols TypingJudgment
