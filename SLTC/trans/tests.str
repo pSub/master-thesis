@@ -7,7 +7,6 @@ imports tests-generate-constraints
 
 strategies
 
-    main = tests
     tests = test-suite(!"tests", tests-constraint-solving;
                                  tests-constraint-utils;
                                  tests-utils;
