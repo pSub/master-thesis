@@ -24,27 +24,27 @@ rules
     unify : cs -> <unify'> (cs, [], [])
     unify-internal : cs -> <unify'; where(Third; equal(|[])) < Snd + fail> (cs, [], [])
     unify' : ([], mgu, err) -> ([], mgu, err)
-    unify' : ([CFail__(info) | cs], mgu, err) -> <unify'> (cs, mgu, [info | err])
-    unify' : ([CEq__(t, t, info) | cs], mgu, err) -> <unify'> (cs, mgu, err)
-    unify' : ([CNeq__(t, s, info)| cs], mgu, err) ->
+    unify' : ([CFail__(error) | cs], mgu, err) -> <unify'> (cs, mgu, [error | err])
+    unify' : ([CEq__(t, t, error) | cs], mgu, err) -> <unify'> (cs, mgu, err)
+    unify' : ([CNeq__(t, s, error)| cs], mgu, err) ->
         <if and(or(<?Var__(_)> t, <?Var__(_)> s), <all(?CNeq__(_, _ ,_))> cs)
          then !(cs, mgu, [CFail__("Only inequalities left.") | err])
          else if <not(equal)> (t, s)
               then <unify'> (cs, mgu, err)
-              else <unify'> (<conc> (cs, <singelton> CNeq__(t, s, info)), mgu, err)
+              else <unify'> (<conc> (cs, <singelton> CNeq__(t, s, error)), mgu, err)
               end
          end>
         where <not(equal)> (t, s)
-    unify' : ([CEq__(t, Var__(x), info) | cs], mgu, err) ->
-         <unify'> (<conc> (cs, <singelton> CEq__(Var__(x), t, info)), mgu, err)
-    unify' : ([CEq__(v@Var__(x), t, info) | cs], mgu, err) -> <if <occurs> (v, t)
-                                     then <unify'> (cs, mgu, [info | err])
+    unify' : ([CEq__(t, Var__(x), error) | cs], mgu, err) ->
+         <unify'> (<conc> (cs, <singelton> CEq__(Var__(x), t, error)), mgu, err)
+    unify' : ([CEq__(v@Var__(x), t, error) | cs], mgu, err) -> <if <occurs> (v, t)
+                                     then <unify'> (cs, mgu, [error | err])
                                      else <unify'> (<replace(|cs)> (v, t), [(v, t)|mgu], err)
                                      end>
-    unify' : ([CEq__(n#(ts), n#(ts'), info) | cs], mgu, err) -> <unify'> (<conc> (cs, cs'), mgu, err)
+    unify' : ([CEq__(n#(ts), n#(ts'), error) | cs], mgu, err) -> <unify'> (<conc> (cs, cs'), mgu, err)
         where <equal>(<length> ts, <length> ts');
-              cs' := <zip; map(makeCEq(|info))> (ts, ts')
-    unify' : ([c | cs], mgu, err) -> <unify'> (cs, mgu, [<get-info> c | err])
+              cs' := <zip; map(makeCEq(|error))> (ts, ts')
+    unify' : ([c | cs], mgu, err) -> <unify'> (cs, mgu, [<get-error> c | err])
 
     /**
      * Apply the given mgu to term `t'. The difference to `replace-all'

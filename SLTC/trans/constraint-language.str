@@ -5,11 +5,11 @@ imports utils
 signature
     sorts Constraint
     constructors
-       Info__ : Option(String) -> Info
+       Error__ : Option(term) -> error
        Var__ : String -> term
-       CFail__ : info -> Constraint
-       CEq__ : term * term * Info -> Constraint
-       CNeq__ : term * term * Info -> Constraint
+       CFail__ : error -> Constraint
+       CEq__ : term * term * error -> Constraint
+       CNeq__ : term * term * error -> Constraint
 
 rules
 
@@ -23,32 +23,32 @@ rules
     /**
      * Helper rule to creae CEq__ nodes.
      *
-     * @param info - informations about the constraint (type Info)
-     * @type (a, b) -> CEq__(a, b, info)
+     * @param error - Error
+     * @type (a, b) -> CEq__(a, b, error)
      */
-    makeCEq(|info) : (a, b) -> CEq__(a, b, info)
+    makeCEq(|error) : (a, b) -> CEq__(a, b, error)
 
     /**
      * Helper rule to creae CNeq__ nodes.
      *
-     * @param info - informations about the constraint (type Info)
-     * @type (a, b) -> CNeq__(a, b, info)
+     * @param error - Error
+     * @type (a, b) -> CNeq__(a, b, error)
      */
-    makeCNeq(|info) : (a, b) -> CNeq__(a, b, info)
+    makeCNeq(|error) : (a, b) -> CNeq__(a, b, error)
 
     /**
-     * Extracts information about a constraint.
+     * Retrieves the error of a constraint.
      *
-     * @type Constraint -> Info
+     * @type Constraint -> error
      */
-    get-info = proj(CEq__|3) <+ proj(CNeq__|3) <+ proj(CFail__|1)
+    get-error = proj(CEq__|3) <+ proj(CNeq__|3) <+ proj(CFail__|1)
     
     /**
-     * Replaces the information of a constraint with new information.
+     * Replaces the error of a constraint with new error.
      *
-     * @param info - informations about the constraints (type Info)
+     * @param error - Error
      * @type Constraint -> Constraint
      */
-    put-info(|info) : CEq__(a, b, _) -> CEq__(a, b, info)
-    put-info(|info) : CNeq__(a, b, _) -> CNeq__(a, b, info)
-    put-info(|info) : CFail__(_) -> CFail__(info)
+    put-error(|error) : CEq__(a, b, _) -> CEq__(a, b, error)
+    put-error(|error) : CNeq__(a, b, _) -> CNeq__(a, b, error)
+    put-error(|error) : CFail__(_) -> CFail__(error)

@@ -17,8 +17,8 @@ signature
        Ctx__ : ctx -> Ctx
        Binding__ : ctx * inputs * outputs -> Binding
        Judgment__ : number * term * binding -> Judgment
-       Eq__ : term * term * info -> Eq
-       Neq__ : term * term * info -> Neq
+       Eq__ : term * term * error -> Eq
+       Neq__ : term * term * error -> Neq
 
 rules  
 
@@ -78,8 +78,8 @@ rules
      */
     mkFork : xs -> Fork__(xs)
 
-    makeEq(|info) : (a, b) -> Eq__(a, b, info)
-    makeNeq(|info) : (a, b) -> Neq__(a, b, info)
+    makeEq(|error) : (a, b) -> Eq__(a, b, error)
+    makeNeq(|error) : (a, b) -> Neq__(a, b, error)
 
     /**
      * Extracts the context id from a context modification of a template.

@@ -138,16 +138,16 @@ rules
                               <to-tuple; instantiate-lookup(|pattern', term');
                                (lookup(|s) < \ o -> (Some(o), [])\ +
                                              \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
-                          case ?Eq__(a, b, info):
+                          case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
                                               <instantiate(|pattern', term')> [b],
-                                              info) ])
-                          case ?Neq__(a, b, info):
+                                              error) ])
+                          case ?Neq__(a, b, error):
                               !(None(), [ <instantiate-error(|pattern', term')>
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
-                                               info) ])
+                                               error) ])
                           otherwise: // FIXME: Explicitly match on Judgment__
                             // Instantiate the judgment that shall be called.
                             (judg-number, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
