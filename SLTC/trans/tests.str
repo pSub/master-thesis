@@ -1,9 +1,9 @@
 module tests
 
-imports tests-constraint-solving
-imports tests-constraint-utils
-imports tests-utils
-imports tests-generate-constraints
+imports tests/tests-constraint-solving
+imports tests/tests-constraint-utils
+imports tests/tests-utils
+imports tests/tests-generate-constraints
 
 strategies
 
