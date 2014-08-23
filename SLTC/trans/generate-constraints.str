@@ -44,9 +44,9 @@ rules
                           optimize-templates(|context-definitions)> typing-rules;
             
             // Initialize the store that contains the contexts
-            empty-contexts := <map-with-index((id, !([], <new-hashtable>)))> context-definitions;
-            store := <new-hashtable(|<length; inc> context-definitions, 100);
-                             hashtable-putlist(|empty-contexts)>
+            context-number := <collect-om(is-ctx-modification; get-ctx-id); list-max> templates;
+            empty-contexts := <inc; range; Tl; map-with-index((id, !([], <new-hashtable>)))> context-number;
+            store := <new-hashtable(|context-number, 100); hashtable-putlist(|empty-contexts)>
 
     /**
      * Pepares the inputs for the constraint generation and initializes the store.

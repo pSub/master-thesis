@@ -86,3 +86,5 @@ rules
      * @internal
      */
     get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ proj(Binding__|1)
+    
+    is-ctx-modification = ?Reset__(_) <+ ?Ctx__(_) <+ ?Binding__(_, _, _)
