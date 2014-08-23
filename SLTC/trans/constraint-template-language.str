@@ -6,12 +6,9 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
+       // FIXME: Clean up the template language definition.
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
        Template__ : List(List(var)) * List(premisse) * Conjecture * Constraint -> Template
-
-       /** Extended Language */
-       Fork__ : List(Rule) -> Rule
-
        Lookup__  : ctx * inputs -> Lookup
        Reset__ : ctx -> Reset
        Ctx__ : ctx -> Ctx
@@ -19,6 +16,9 @@ signature
        Judgment__ : number * term * binding -> Judgment
        Eq__ : term * term * error -> Eq
        Neq__ : term * term * error -> Neq
+
+       /** Extended Language */
+       Fork__ : List(Rule) -> Rule
 
 rules  
 
