@@ -28,7 +28,7 @@ rules
                     <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
-                        <generate(|judgments, context-definitions, templates, store)> (<get-judgment-id> conjecture, input)
+                        <generate(|context-definitions, templates, store)> (<get-judgment-id> conjecture, input)
                     \;
                     // Append a constraint for the ouputs in the conjecture.
                     try(\(Some(outputs), constraints) ->
@@ -57,28 +57,26 @@ rules
     /**
      * Generates the set of constraints.
      *
-     * @param judgments - judgment declarations
      * @param contexts - context declarations
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
      */
-    generate(|judgments, contexts, templates, store) : (judg-number, inputs) ->
+    generate(|contexts, templates, store) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, judg-number, store) < generate'(|judgments, contexts, templates, inputs, store)
+             <find-match(|inputs, judg-number, store) < generate'(|contexts, templates, inputs, store)
                                          + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
      * template found in `generate` and does the actual constraint generation.
      *
-     * @param j - judgment declarations
      * @param c - context declarations
      * @param t - constraint templates
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|j, c, t, term, s) : Template__(xs, calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
+    generate'(|c, t, term, s) : Template__(xs, calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
            (Some(outputs'), new-constraints)
         where
             // Retrieve and remove elements from the context according to the context pattern.
@@ -97,7 +95,7 @@ rules
             (xs', pattern', term', calls', constraints', outputs') := <zip; replace-all(|(xs , pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
-            outputs-constraints := <foldl(execute(|j, c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
+            outputs-constraints := <foldl(execute(|c, t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
@@ -115,18 +113,17 @@ rules
             new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints,
                                        input-output-constraints)
 
-    generate'(|j, c, t, term, s) : Fork__(rulez) ->
+    generate'(|c, t, term, s) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output. The constraint
            // set is empty, because all produced constraints are already solved.
-           (<until(generate'(|j, c, t, term, <hashtable-deep-copy> s);
+           (<until(generate'(|c, t, term, <hashtable-deep-copy> s);
                    \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\) < \x -> Some(x)\ + !None()> rulez,
            [])
 
     /**
      * Executes the calls specified in the rules.
      *
-     * @param j - judgment declarations
      * @param c - context declarations
      * @param t - constraint templates
      * @param s - hashtable containing hashtables that store context information
@@ -135,7 +132,7 @@ rules
      * @param name - the name of the rule
      * @type ((call, dependencies), accumulator) -> (outputs, constraints)
      */
-    execute(|j, c, t, s, pattern, term, name) : ((call, dep), accu) ->
+    execute(|c, t, s, pattern, term, name) : ((call, dep), accu) ->
                           // Update the pattern and the term according to
                           // the dependencies.
                 <finally((term', pattern') := <update(|pattern, term, accu)> dep;
@@ -162,7 +159,7 @@ rules
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
-                            <generate(|j, c, t, <update-store(|s)> binding)> (judg-number, param);
+                            <generate(|c, t, <update-store(|s)> binding)> (judg-number, param);
 
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
