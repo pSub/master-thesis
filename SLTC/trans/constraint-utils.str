@@ -18,7 +18,9 @@ rules
      * @type List(a) -> List(a)
      */
     instantiate(|pattern, terms) : input -> <foldl(\((x, t), i) -> <replace(|x, t)> i\)> (instantiations, input)
-        where instantiations := <collect-om(?Var__(_)); find-matching-positions(|pattern); extract-terms(|terms)> input
+        where instantiations := <collect-om(?Var__(_));
+                                 find-matching-positions(|pattern);
+                                 extract-terms(|terms)> input
 
     /**
      * An version of `instantiate` tailored for judgments.
@@ -57,12 +59,12 @@ rules
      * @param terms - an arbitrary list of terms
      * @type Constraint -> List(a)
      */
-    instantiate-error(|pattern, terms) : constraint ->
-        <put-error(|<get-error; option(map(try(\ Error(e) ->
-                                        Error(<instantiate(|pattern, terms)> e)
-                                    \)))
-                   > constraint
-                  )> constraint
+    instantiate-error(|pattern, terms) =
+        ?constraint;
+        put-error(|<get-error;
+                    option(map(try(\Error(e) ->
+                                       Error(<instantiate(|pattern, terms)> e)
+                                    \)))> constraint)
     
     /**
      * Instantiate variables that occur as an output and as an input and
@@ -95,9 +97,9 @@ rules
      * @param info - constraint information (type Info)
      * @type (binding, binding) -> List(Constraint)
      */
-    make-binding-constraints(|info)
-        = (filter(to-tuple; Dupl; (Snd, Third); conc); concat, filter(to-tuple;Dupl; (Snd, Third); conc); concat);
-           zip; filter((?Var__(_), id));  map(makeCEq(|info))
+    make-binding-constraints(|info) =
+        (filter(to-tuple; Dupl; (Snd, Third); conc); concat, filter(to-tuple;Dupl; (Snd, Third); conc); concat);
+         zip; filter((?Var__(_), id));  map(makeCEq(|info))
         
     /**
      * Provided with a list of paths, this strategy returns the
@@ -142,7 +144,7 @@ rules
      * @type List(Int) -> List(a)
      */
     retrieve(|term) : [p] -> <index> (p, <get-arguments> term)
-    retrieve(|term) : [p|path] -> <index; \ node -> <retrieve(|node)> path\> (p, <get-arguments> term)
+    retrieve(|term) : [p|path] -> <index; \node -> <retrieve(|node)> path\> (p, <get-arguments> term)
 
     /**
      * Search for the matching pattern for `inputs` in the constraint templates. 
@@ -153,8 +155,10 @@ rules
      * @param store - a hashmap containing hashmaps
      * @type List(Rule) -> Rule
      */
-    find-match(|inputs, judg-number, store) = filter(where(get-judgment-number; equal(|judg-number)));
-                                              find-match(|inputs, store)
+    find-match(|inputs, judg-number, store) =
+        filter(where(get-judgment-number; equal(|judg-number)));
+        find-match(|inputs, store)
+
     find-match(|inputs, store) : [] -> <fail>
     find-match(|inputs, store) : [t|ts] ->
         <let check-constructors = zip; Dupl; (filter(match-constructors); length, length); equal
@@ -176,7 +180,8 @@ rules
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
      */
-    match-constructors : (t, s) -> <(<?Var__(_)> s <+ equal(|t-cons, s-cons); <zip> (t-args, s-args); map(match-constructors)); !"match">
+    match-constructors : (t, s) -> <(<?Var__(_)> s <+ equal(|t-cons, s-cons);
+                                    <zip> (t-args, s-args); map(match-constructors)); !"match">
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t;
