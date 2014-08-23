@@ -141,7 +141,7 @@ rules
     verify-vampire(|time, name) : ast -> <zip; map(\(r,f) -> <try(call-vampire(|r,time))> f\)> (rulez, outfiles)
         where
             // FIXME: Place those files into the project folder.
-            filename := <conc-strings; guarantee-extension(|"fof")> ("/tmp/proofs/", name);
+            filename := <conc-strings; guarantee-extension(|"fof")> ("/tmp/", name);
             rulez := <collect-all(?Formula__(_,Conjecture__(),_))> ast;
             strings := <map(pp-fof <+ pp-debug(pp-fof))> ast;
             outfiles := <generate-files(|filename)> strings
