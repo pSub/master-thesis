@@ -3,3 +3,7 @@
 *.proof
 *.info
 *.hash
+*.o
+*.c
+*.dep
+*.lo
