@@ -40,7 +40,7 @@ rules
             if <[]> typing-rules then exit-with-error(|"No typing rules found", 1) else id end;
 
             // Generate the constraint templates from the type system specification
-            templates := <to-constraint-generator(|judgments, context-definitions);
+            templates := <to-templates(|judgments, context-definitions);
                           optimize-templates(|context-definitions)> typing-rules;
             
             // Initialize the store that contains the contexts

@@ -21,7 +21,7 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <to-constraint-generator(|judgments, context-definitions);
+        -> <to-templates(|judgments, context-definitions);
             optimize-templates(|context-definitions)> typing-rules
 
     /**
@@ -244,5 +244,5 @@ rules
         where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), errors)
     
 strategies
-    to-constraint-generator(|judgments, context-definitions) =
+    to-templates(|judgments, context-definitions) =
          innermost(to-template(|judgments, context-definitions))
