@@ -14,6 +14,17 @@ test empty-module [[
   conjectures
 ]] parse succeeds
 
+test empty-module [[
+  module test
+  imports test1 test2
+  language test
+  meta-variables
+  contexts
+  judgments
+  rules
+  conjectures
+]] parse succeeds
+
 test empty-module-with-conjecture-section [[
   module test
   language test
