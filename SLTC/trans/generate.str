@@ -40,7 +40,7 @@ rules
     box2text-string(|100)
     
   typecheck :
-    (selected, position, ast, path, project-path) -> (filename, <typecheck> ast)
+    (selected, position, ast, path, project-path) -> (filename, <typecheck-editor> ast)
   where
     filename := <guarantee-extension(|"check")> path
 

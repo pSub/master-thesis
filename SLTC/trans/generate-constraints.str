@@ -11,8 +11,18 @@ imports store-utils
 imports include/SLTC
 
 rules
-    generate-constraints : Module(_, _, _, _, _, _, _, None()) -> <exit-with-error(|"Not conjectures found", 1)>
-    generate-constraints :
+    generate-constraints : Module(_, _, _, _,
+                                  Contexts(context-definitions),
+                                  Judgments(judgments),
+                                  Rules(typing-rules), _) -> <generate-constraints(|templates)>
+        where
+            // Generate the constraint templates from the type system specification
+            templates := <to-templates(|judgments, context-definitions);
+                          optimize-templates(|context-definitions)> typing-rules
+
+    generate-constraints(|templates) : Module(_, _, _, _, _, _, _, None()) ->
+         <exit-with-error(|"Not conjectures found", 1)>
+    generate-constraints(|templates) :
         Module(ModuleDec(_),
                  imports,
                  Language(l),
@@ -21,7 +31,7 @@ rules
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
-        -> <finally(
+        -> <debug; finally(
               map(finally(
                  \TypingRule(PremiseBase(), _, conjecture) ->
                     // Prepare the input and initialize the store.
@@ -38,10 +48,6 @@ rules
             tidy-up(|store))> conjectures
         where
             if <[]> typing-rules then exit-with-error(|"No typing rules found", 1) else id end;
-
-            // Generate the constraint templates from the type system specification
-            templates := <to-templates(|judgments, context-definitions);
-                          optimize-templates(|context-definitions)> typing-rules;
             
             // Initialize the store that contains the contexts
             context-number := <collect-om(is-ctx-modification; get-ctx-id); list-max> templates;

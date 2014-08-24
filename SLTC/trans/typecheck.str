@@ -7,11 +7,21 @@ imports include/SLTC
 
 strategies
     
-    typecheck = generate-constraints; map(\(t, cs) ->
-                                            <unify; \(cs, mgu, err) ->
-                                                     <if <equal(|[])> err
-                                                      then <apply-mgu(|t)> mgu
-                                                      else <apply-mgu(|err)> mgu
-                                                      end>
-                                                    \> cs
-                                          \)
+    typecheck-editor = generate-constraints; typecheck
+    wrapped-typecheck =
+        io-wrap(
+            ArgOption(
+                "-t",
+                where(<extend-config> ("-t", [<id>])),
+                !"-t template"
+            ),
+            generate-constraints(|<open(<get-config; Hd> "-t")>); typecheck)
+    
+    typecheck = map(\(t, cs) ->
+                        <unify; \(cs, mgu, err) ->
+                                    <if <equal(|[])> err
+                                     then <apply-mgu(|t)> mgu
+                                     else <apply-mgu(|err)> mgu
+                                     end>
+                                 \> cs
+                    \)
