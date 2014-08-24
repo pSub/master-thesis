@@ -76,7 +76,7 @@ signature
 
     fof-from-templates(|context-definitions, typing-rules) =
         ?conjectures;
-        <fof-from-specification(|context-definitions, typing-rules)> Some(conjectures)
+        <fof-from-specification(|context-definitions, typing-rules)> Some(Conjectures(conjectures))
     
     /**
      * Helper strategy to create context formulas.
