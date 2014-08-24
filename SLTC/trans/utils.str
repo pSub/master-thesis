@@ -2,17 +2,25 @@ module utils
     
 rules
     
+    /**
+     * Used to skip an element in e.g. filter.
+     */
     skip = fail
 
     /**
-     * Group
+     * Creates the equivalence class defined by `eq'.
+     *
+     * @param eq : (a, a) -> b
+     * @type List(a) -> List(List(a))
      */
     group(eq) : [] -> []
     group(eq) : [x | xs] -> [[x|matching] | <group(eq)> xs']
         where matching := <filter(where(\y -> <eq> (x, y)\))> xs;
               xs' := <diff> (xs, matching)
     /**
+     * A wrapper around `gt'.
      *
+     * @param y : Int
      */
     gt(|y) : x -> <gt> (x, y)
 
@@ -54,7 +62,7 @@ rules
      * @type Int -> [String]
      */
     newnames(|l) : 0 -> []
-    newnames(|l) : n -> [<newname> l | <newnames(|l)> <subt> (n, 1)]
+    newnames(|l) : n -> [<newname> l | <dec; newnames(|l)> n]
 
     /**
      * Converts a list like data structure into a list.
@@ -167,7 +175,10 @@ rules
     isect(|set1) : set2 -> <isect> (set1, set2)
 
     /**
+     * Convenience wrapper around `diff'.
      *
+     * @param set2 - some arbitary list
+     * @type List(a) -> List(a)
      */
     diff(|set2) : set1 -> <diff> (set1, set2)
 
@@ -227,18 +238,6 @@ rules
     has-edges = some(Snd; not(equal([])))
 
     /**
-     * A version of `set-index' that is 1-indexed.
-     */
-    set-index' : (i, x, xs) -> <set-index> (<dec> i, x, xs)
-
-    /**
-     * Computes all indices of occurences of `y' in the list `xs'.
-     *
-     * @type (a, List(a)) -> List(Int)
-     */
-    get-indices : (y, xs) -> <filter(where(Snd; equal(|y)); Fst)> xs
-
-    /**
      * Applys strategy `s' to the elements of the list until it succeeds
      * and returns the result. Fails otherwise
      *
@@ -266,7 +265,7 @@ rules
     hashtable-deep-copy = hashtable-getlist; map(alltd(?Hashtable(_); hashtable-deep-copy)); hashtable-init
 
     /**
-     *
+     * Meta-variables are equal independent of the error annotation.
      */
     meta-variable-equal : (cons1#([name1, _]), cons2#([name2, _])) ->
         <where(<equal> (cons1, cons2);
@@ -379,6 +378,6 @@ rules
     get-judgment-id = get-generic-name; string-to-int
 
     /**
-     *
+     * Stops the execution. Only for unrecoverable errors.
      */
     exit-with-error(|error-msg, error-number) = <debug> error-msg; <exit> error-number
