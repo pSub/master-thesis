@@ -5,6 +5,11 @@ imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
 rules
+
+    /**
+     * Entry point for the generation of syntax definition file for
+     * the given specification.
+     */
     make-nodes : 
         Module(ModuleDec(_),
                imports,
@@ -24,7 +29,9 @@ rules
               )
         where indexed-contexts := <add-indices> contexts
 
-    // Generate syntax of context definitons    
+    /**
+     * Generate syntax of context definitons.
+     */
     make-context : (num, ContextDefinition(Name, Definition)) -> [
         prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", <int-to-string> num]),
         prod(<concat-strings> [elem, " \";\" ", Name], Name,
@@ -36,7 +43,9 @@ rules
         where
             elem := <names; separate-by(|" \":\" "); concat-strings> Definition
 
-    // Generate syntax of meta-variable definitions 
+    /**
+     * Generate syntax of meta-variable definitions
+     */ 
     make-variable(|indexed-contexts) : MetaVariableDefinition(name, MetaVariablePrefix(prefix), Scope(ids)) ->
         <mapconcat(\scope -> [ prod(<concat-strings>["\"", prefix, "\" MetaVariableName (\"@\" ErrorNumber)?"],
                                     scope,
@@ -47,10 +56,17 @@ rules
                              ]
                    \)> ids
 
+    /**
+     * Extracts the context id for the given meta-variable scope.
+     *
+     * @type (String, List((Int, ContextDefinition))) -> Int
+     */
     extract-ctx-id : (name, [(n, ContextDefinition(name, _)) | _] ) -> <int-to-string> n
     extract-ctx-id : (name, [_ | contexts]) -> <extract-ctx-id> (name, contexts)
 
-    // Generate syntax of typing judgments
+    /**
+     * Generate syntax of typing judgments.
+     */
     make-judgment : (num, Judgment(s1, pos, s2, built-in))
            -> prod(<names; separate-by(|" "); concat-strings> merged,
                    "TypingJudgment",
@@ -61,17 +77,34 @@ rules
                 merged := <conc> ([<option-to-string> s1], pos, [<option-to-string> s2]);
                 typing-judgment := "TypingJudgment-"
 
-    // Extract position 1 (the name) of the hole for all elements of the list
-    names : list -> <map(try(proj(Hole|1)))> list
+    /**
+     * Extract position 1 (the name) of the hole for all elements of the list.
+     * All other elements are not touched.
+     *
+     * @type List(Hole) -> List(a)
+     */
+    names = map(try(proj(Hole|1)))
 
-    // Create a constructor attribute
+    /**
+     * Create a constructor attribute.
+     *
+     * @type String -> String
+     */
     make-cons : name -> <concat-strings; make-attr> ["cons(\"", name , "\")"]
 
-    // Concatenate a given list of strings and create a constructor attribute
-    // from the result  
+    /**
+     * Concatenate a given list of strings and create a constructor attribute
+     * from the result.
+     *
+     * @type List(String) -> String
+     */  
     make-cons' = concat-strings ; make-cons
 
-    // Create an attribute from the given string
+    /**
+     * Create an attribute from the given string.
+     *
+     * @type String -> String
+     */
     make-attr : str  -> <concat-strings> ["{", str, "}"]
 
 strategies
