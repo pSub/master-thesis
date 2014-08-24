@@ -93,7 +93,7 @@ rules
             (xs', pattern', term', calls', constraints', outputs') := <zip; replace-all(|(xs , pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
-            outputs-constraints := <foldl(execute(|t, <hashtable-deep-copy> s, pattern', term', name))> (calls', []);
+            outputs-constraints := <foldl(execute(|t, <where(<equal(|[])> ctx) <+ hashtable-deep-copy> s, pattern', term', name))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
