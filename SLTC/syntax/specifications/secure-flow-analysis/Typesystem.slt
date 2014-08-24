@@ -2,15 +2,35 @@ module Typesystem
 
 language specifications/secure-flow-analysis/Language
 
-meta-variables 	Exp "~" { Phrase Type }			
+meta-variables 	Exp "~" { Phrase DataType PhraseType }			
 				Dom "$" { LocationTyping VariableTyping }
-				Id "%" { Var }
+				Id "%" { ID }
 				Num "&" { Int }
 
-contexts LocationTyping := Loc{I} x Type{O}
-         VariableTyping := Var{I} x Type{O}
+contexts LocationTyping := Int{I} x PhraseType{O}
+         VariableTyping := ID{I} x PhraseType{O}
 
 judgments
 LocationTyping{I} ";" VariableTyping{I} "|-" Phrase{I} ":" PhraseType{O}.
 
 rules
+
+=== INT
+$l ; $c |- &n : ~t
+
+%x : ~t var in $c
+====================== VAR
+$l ; $c |- %x : ~t var
+
+&l : ~t var in $l
+=========================== VARLOC
+$l ; $c |- loc &l : ~t var
+
+$l ; $c |- e : ~t
+$l ; $c |- f : ~t
+====================== ARITH
+$l ; $c |- e + f : ~t
+
+//$l ; $c |- 
+// === R-VAL
+// $l ; $c |- e : ~t
