@@ -31,7 +31,7 @@ rules
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
-        -> <debug; finally(
+        -> <finally(
               map(finally(
                  \TypingRule(PremiseBase(), _, conjecture) ->
                     // Prepare the input and initialize the store.
