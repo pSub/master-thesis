@@ -11,7 +11,10 @@ rules
                               !"x",  !("x", [1]));
                    apply-test(!"search", search(|["a", "x", "b", ["x", "y", "z"]]),
                               !"x",
-                              !("x", [2]))
+                              !("x", [2]));
+                   apply-test(!"search", search(|["a", "y", "b", ["x", "y", "z"]]),
+                              !"x",
+                              !("x", [4, 1]))
 
     instantiate-tests = apply-test(!"instantiate", instantiate(|[], []),
                                    !["x"], !["x"]);
