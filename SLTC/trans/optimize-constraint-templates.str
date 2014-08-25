@@ -15,7 +15,7 @@ signature
 rules
     
     solve-which-ambiguities(|context-definitions) : templates -> 
-        <conc> (<map(mkFork; optimize-fork(|context-definitions, templates))> equality-classes,
+        <conc> (<map(mkFork; remove-uneeded-forks; optimize-fork(|context-definitions, templates))> equality-classes,
                 <diff(eq)> (templates, <flatten-list> equality-classes))
         where equality-classes := <group(equal-mod-var)> templates
     
@@ -68,15 +68,24 @@ rules
     solve-when-ambiguities(|context-definitions) =
         ?templates;
         where(equality-classes := <group(subsume-mod-var)> templates);
-        <conc> (<map(mkFork)> equality-classes,
+        <conc> (<map(remove-forks; mkFork; remove-uneeded-forks)> equality-classes,
                 <diff(eq)> (templates, <flatten-list> equality-classes))
 
     subsume-mod-var =
         ?(a, b);
-        where(equal(|<get-judgment-number> a, <get-judgment-number> b))
-        // ;
-        // where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), true))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
-        // where(<zip; map(match-constructors(?DummyVar__(), true))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
+        where(equal(|<get-judgment-number> a, <get-judgment-number> b));
+        where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), true))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
+        where(<zip; map(match-constructors(?DummyVar__(), true))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
+
+    remove-forks : [Fork__(ts) | ts'] -> <conc> (ts, <remove-forks> ts')
+    remove-forks : [t | ts] ->  [t | <remove-forks> ts]
+    remove-forks : [] -> []
+
+    remove-uneeded-forks : Fork__(ts) ->
+         <if <equal> (<length> ts, 1)
+          then <Hd> ts
+          else !Fork__(ts)
+          end>
 
     optimize-templates(|context-definitions) =
         solve-which-ambiguities(|context-definitions);
