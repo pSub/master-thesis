@@ -30,8 +30,8 @@ rules
      */
     equal-mod-var =
         ?(a, b);
-        where(equal(|<Dupl; (get-pattern, get-ctx-pattern); make-dummy-vars> a,
-                     <Dupl; (get-pattern, get-ctx-pattern); make-dummy-vars> b))
+        where(equal(|<Trpl; (get-pattern, get-ctx-pattern, get-judgment-number); make-dummy-vars> a,
+                     <Trpl; (get-pattern, get-ctx-pattern, get-judgment-number); make-dummy-vars> b))
     
     /**
      * Replaces all occurences of Var(_) with DummyVar(). This strategy
