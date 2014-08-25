@@ -183,7 +183,7 @@ rules
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
      */
-    match-constructors(var, sym) : (t, s) -> <(and(<where(not(sym)) <+ var> t, <var> s) <+ equal(|t-cons, s-cons);
+    match-constructors(var, sym) : (t, s) -> <(or(<where(sym); var> t, <var> s) <+ equal(|t-cons, s-cons);
                                     <zip> (t-args, s-args); map(match-constructors(var, sym))); !"match">
         where
             s-cons := <get-constructor> s;
