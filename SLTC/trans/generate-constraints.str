@@ -40,10 +40,6 @@ rules
                         // Generate the constraints.
                         <generate(|templates, store)> (<get-judgment-id> conjecture, input, <get-outputs(|judgments)> conjecture)
                     \;
-                    // Append a constraint for the ouputs in the conjecture.
-                    // try(\(Some(outputs), constraints) ->
-                    //   (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeCEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
-                    // \)
                     try(\(Some(outputs), constraints) -> (outputs, constraints)\)
                     > conjecture
                  \, clear-store(|store))),
