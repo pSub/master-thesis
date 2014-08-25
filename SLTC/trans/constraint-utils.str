@@ -161,7 +161,7 @@ rules
 
     find-match(|inputs, store) : [] -> <fail>
     find-match(|inputs, store) : [t|ts] ->
-        <let check-constructors = zip; Dupl; (filter(match-constructors); length, length); equal
+        <let check-constructors = zip; Dupl; (filter(match-constructors(?Var__(_), false)); length, length); equal
              check-contexts(|store) : (i, t) -> <get-ctx-pattern;
                                                  instantiate-ctx-binding(|<get-pattern> t, i);
                                                  match-contexts(|store)> t
@@ -180,8 +180,8 @@ rules
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
      */
-    match-constructors : (t, s) -> <(<?Var__(_)> s <+ equal(|t-cons, s-cons);
-                                    <zip> (t-args, s-args); map(match-constructors)); !"match">
+    match-constructors(var, sym) : (t, s) -> <(and(<where(not(sym)) <+ var> t, <var> s) <+ equal(|t-cons, s-cons);
+                                    <zip> (t-args, s-args); map(match-constructors(var, sym))); !"match">
         where
             s-cons := <get-constructor> s;
             t-cons := <get-constructor> t;
