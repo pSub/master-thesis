@@ -43,7 +43,7 @@
 	<!-- Copy a dummy file if no sdf file was generated
 	     or if the dummy file is newer than the generated file -->
 	<target name="check-generated">
-	       <copyfile src="res/Generated.sdf" dest="syntax/Generated.sdf"/>
+	       <copy file="res/Generated.sdf" tofile="syntax/Generated.sdf"/>
 	</target>
 	
     <!-- Main target -->
