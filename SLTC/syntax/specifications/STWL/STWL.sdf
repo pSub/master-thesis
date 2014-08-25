@@ -1,4 +1,4 @@
-module STWL
+module specifications/STWL/STWL
 exports
 	
   context-free start-symbols
