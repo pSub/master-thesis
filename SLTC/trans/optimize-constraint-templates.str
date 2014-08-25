@@ -1,8 +1,5 @@
 module optimize-constraint-templates
 
-imports libstratego-gpp
-imports libstratego-aterm
-
 imports utils
 imports constraint-language
 imports constraint-template-language
