@@ -197,8 +197,8 @@ rules
     match-contexts(|store) =
                     where(contexts := <hashtable-getlist; map((id, Fst))> store);
                     map(\Binding__(ctx, i, o) ->
-                            <<zip; map(match-constructors)> (<lookup'; Hd> (ctx, contexts), i);
+                            <<zip; map(match-constructors(?Var__(_), false))> (<lookup'; Hd> (ctx, contexts), i);
                              <alltd(?(ctx, _); !(ctx, <lookup; Tl> (ctx, contexts)))> contexts>
                         \ <+
                         \Reset__(ctx) ->  <equal> (<lookup> (ctx, contexts), [])
-                        \ <+ id)
+                        \ <+ ?Ctx__(_))
