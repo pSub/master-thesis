@@ -38,12 +38,14 @@ rules
                     <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
-                        <generate(|templates, store)> (<get-judgment-id> conjecture, input)
+                        <generate(|templates, store)> (<get-judgment-id> conjecture, input, <get-outputs(|judgments)> conjecture)
                     \;
                     // Append a constraint for the ouputs in the conjecture.
-                    try(\(Some(outputs), constraints) ->
-                      (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeCEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
-                    \)> conjecture
+                    // try(\(Some(outputs), constraints) ->
+                    //   (outputs, <conc(|constraints)> <zip; map(\(a, b) -> <makeCEq(|Some(Error(["Type", a, "does not match annotated type", b])))> (a, b)\)> (outputs, <get-outputs(|judgments)> conjecture))
+                    // \)
+                    try(\(Some(outputs), constraints) -> (outputs, constraints)\)
+                    > conjecture
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
         where
@@ -66,11 +68,21 @@ rules
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
      */
+    generate(|templates, store) : (judg-number, inputs, expected-outputs) ->
+             // Find the constraint template that matches the inputs of the given term
+             // if a matching rule could be found evaluate that, otherwise return an error.
+             <find-match(|inputs, judg-number, store) < (add-assertion(|expected-outputs); generate'(|templates, inputs, store))
+                                                      + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+
     generate(|templates, store) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
              <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store)
-                                         + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+                                                      + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+
+    add-assertion(|expected-outputs) : Template__(a, b, Conclusion__(c, d, e, outputs), constraints) ->
+        Template__(a, b, Conclusion__(c, d, e, outputs), <conc> (<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs), constraints))
+    add-assertion(|expected-outputs) : Fork__(ts) -> Fork__(<map(add-assertion(|expected-outputs))> ts)
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
