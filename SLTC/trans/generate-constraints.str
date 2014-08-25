@@ -39,8 +39,7 @@ rules
                     \input ->
                         // Generate the constraints.
                         <generate(|templates, store)> (<get-judgment-id> conjecture, input, <get-outputs(|judgments)> conjecture)
-                    \;
-                    try(\(Some(outputs), constraints) -> (outputs, constraints)\)
+                    \
                     > conjecture
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
