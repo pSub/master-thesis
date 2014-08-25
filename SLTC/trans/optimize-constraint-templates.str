@@ -14,12 +14,10 @@ signature
 
 rules
     
-    // FIXME: Currently there is no distinction between which and when ambiguities!
     solve-which-ambiguities(|context-definitions) : templates -> 
         <conc> (<map(mkFork; optimize-fork(|context-definitions, templates))> equality-classes,
-               <diff(eq)> (templates,
-                           <flatten-list> equality-classes))
-        where equality-classes :=  <group(equal-mod-var)> templates
+                <diff(eq)> (templates, <flatten-list> equality-classes))
+        where equality-classes := <group(equal-mod-var)> templates
     
     /**
      * Extracts the pattern from the rules and compares the results modulo
@@ -67,4 +65,19 @@ rules
                                      \)> premisses
                                  \); map(Fst)> rulez-premisses
 
-    optimize-templates(|context-definitions) = solve-which-ambiguities(|context-definitions)
+    solve-when-ambiguities(|context-definitions) =
+        ?templates;
+        where(equality-classes := <group(subsume-mod-var)> templates);
+        <conc> (<map(mkFork)> equality-classes,
+                <diff(eq)> (templates, <flatten-list> equality-classes))
+
+    subsume-mod-var =
+        ?(a, b);
+        where(equal(|<get-judgment-number> a, <get-judgment-number> b))
+        // ;
+        // where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), true))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
+        // where(<zip; map(match-constructors(?DummyVar__(), true))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
+
+    optimize-templates(|context-definitions) =
+        solve-which-ambiguities(|context-definitions);
+        solve-when-ambiguities(|context-definitions)
