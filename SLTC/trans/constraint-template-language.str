@@ -8,7 +8,7 @@ signature
        /** Base Language */
        // FIXME: Clean up the template language definition.
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
-       Template__ : List(List(var)) * List(premisse) * Conjecture * Constraint -> Template
+       Template__ : List(List(var)) * List(premisse) * Conclusion * Constraint -> Template
        Lookup__  : ctx * inputs -> Ctx
        Reset__ : ctx -> Ctx
        Ctx__ : ctx -> Ctx
