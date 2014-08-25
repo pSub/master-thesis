@@ -160,6 +160,9 @@ rules
         find-match(|inputs, store)
 
     find-match(|inputs, store) : [] -> <fail>
+    find-match(|inputs, store) : [Fork__(ts) | ts'] -> Fork__(ts)
+        where <find-match(|inputs, store)> ts
+    find-match(|inputs, store) : [Fork__(ts) | ts'] -> <find-match(|inputs, store)> ts'
     find-match(|inputs, store) : [t|ts] ->
         <let check-constructors = zip; Dupl; (filter(match-constructors(?Var__(_), false)); length, length); equal
              check-contexts(|store) : (i, t) -> <get-ctx-pattern;
