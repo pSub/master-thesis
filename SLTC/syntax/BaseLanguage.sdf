@@ -97,21 +97,17 @@ exports
     
     %% A typing judgment can be annotated with a list of errors.
     TypingJudgment ErrorList? -> ErrorTypingJudgment {cons("ErrorTypingJudgment")}
-
-  lexical syntax
-    %% String that separates premisses and conclusion.
-    "===" "="*     -> Derivable
-    "/===" "="*    -> NotDerivable
     
   lexical restrictions
     Derivable -/- [\=]
     NotDerivable -/- [\=]
 
-
-  %% Typing rules
   %% Typing rules are defined with and without errors, because error annotations
   %% are not allowed in the conjecture section.
   context-free syntax
+    %% String that separates premisses and conclusion.
+    "===" "="*     -> Derivable {cons("Derivable")}
+    "/===" "="*    -> NotDerivable {cons("NotDerivable")}
     Derivable Name?                                                   -> AxiomRule         {cons("RuleName"), layout("1.first.line == 2.last.line")}
     Derivable Name?                                                   -> ConjectureRule    {cons("RuleName"), layout("1.first.line == 2.last.line")}
     NotDerivable Name?                                                -> ConjectureRule    {cons("RuleName"), layout("1.first.line == 2.last.line")}

@@ -33,13 +33,13 @@ rules
                  Some(Conjectures(conjectures)))
         -> <finally(
               map(finally(
-                 \TypingRule(PremiseBase(), _, conjecture) ->
+                 \TypingRule(PremiseBase(), RuleName(type,_), conjecture) ->
                     // Prepare the input and initialize the store.
                     <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
                         <generate(|templates, store)> (<get-judgment-id> conjecture, input, <get-outputs(|judgments)> conjecture)
-                    \
+                    \; \result -> (result, type)\
                     > conjecture
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures

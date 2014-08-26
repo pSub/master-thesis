@@ -17,11 +17,15 @@ strategies
             ),
             generate-constraints(|<open(<get-config; Hd> "-t")>); typecheck)
     
-    typecheck = map(\(t, cs) ->
+    typecheck =
+        ?constraints;
+        <foldl(\(((t, cs), type), (result, succs, fails)) ->
                         <unify; \(cs, mgu, err) ->
                                     <if <equal(|[])> err
-                                     then <apply-mgu(|t)> mgu
-                                     else <apply-mgu(|err)> mgu
+                                     then <?Derivable(_)> type < \ _ -> ([<apply-mgu(|t)> mgu | result], <inc> succs, fails)\
+                                                               + \ _ -> ([<apply-mgu(|t)> mgu | result], succs, <inc> fails)\
+                                     else <?Derivable(_)> type < \ _ -> ([<apply-mgu(|err)> mgu | result], succs, <inc> fails)\
+                                                               + \ _ -> ([<apply-mgu(|err)> mgu | result], <inc> succs, fails)\
                                      end>
                                  \> cs
-                    \)
+                    \); where(Third; debug(!"Failures: ")); Fst; reverse> (constraints, ([], 0, 0))
