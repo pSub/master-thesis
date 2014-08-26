@@ -22,11 +22,11 @@ Domain{I} "|" Type{I} "|-" Exp{I}.
 rules
 
 ================ num
-$dom |- &i : low
+$dom |- &n : low
 
-%i : low in $dom
+%x : low in $dom
 ================ var
-$dom |- %i : low
+$dom |- %x : low
 
 $dom |- ~1e1 : low
 $dom |- ~1e2 : low
@@ -66,7 +66,7 @@ $dom | high |- ~e
 ================= sub
 $dom | low |- ~e
 
-%x : high in $dom
+%x : high in $dom @error %x "should have type high".
 ======================== assgnh
 $dom | ~pc |- %x := ~1e
 
@@ -111,3 +111,9 @@ conjectures
 
 ===
 (x : low ; y : low ; ()) |- (x + 5) + y : high
+
+/===
+(x : low ; y : high ; ()) | low |- x := y
+
+/===
+(h : high; l : low ; ()) | high |- if h < 1 then l := 1 else skip
