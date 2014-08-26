@@ -126,12 +126,12 @@ rules
 
     generate'(|t, term, s) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
-           // apply the resulting mgu and return the term as an output. The constraint
-           // set is empty, because all produced constraints are already solved.
+           // apply the resulting mgu and return the term as an output.
            // FIXME: destroy the store copies
-           (<until(generate'(|t, term, <hashtable-deep-copy> s);
-                   \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\) < \x -> Some(x)\ + !None()> rulez,
-           [])
+           <until(generate'(|t, term, <hashtable-deep-copy> s);
+                   \(Some(o), cs) -> (<unify-internal; apply-mgu(|o)> cs, cs)\)
+                   < \(x, cs) -> (Some(x), cs)\
+                   + !(None(), [CFail__(Error("No rule matched."))])> rulez
 
     /**
      * Executes the calls specified in the rules.
