@@ -162,7 +162,7 @@ rules
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
                                                error) ])
-                          otherwise: // FIXME: Explicitly match on Judgment__
+                          case ?Judgment__(num, inputs, ctx):
                             // Instantiate the judgment that shall be called.
                             (judg-number, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
 
@@ -175,6 +175,8 @@ rules
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
                             (id, conc(|binding-constraints))
+                            otherwise:
+                                exit-with-error(|"Encountered a maleformed template", 1)
                           end;
                           singelton; conc(|accu), // Book keeping.
                           destroy-store(|s))>
