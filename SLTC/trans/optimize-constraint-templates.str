@@ -15,9 +15,9 @@ signature
 rules
     
     solve-which-ambiguities(|context-definitions) : templates -> 
-        <conc> (<map(mkFork; optimize-fork(|context-definitions, templates); remove-uneeded-forks)> equality-classes,
-                <diff(eq)> (templates, <flatten-list> equality-classes))
-        where equality-classes := <group(equal-mod-var)> templates
+        <conc> (<map(mkFork; optimize-fork(|context-definitions, templates); remove-uneeded-forks)> equivalence-classes,
+                <diff(eq)> (templates, <flatten-list> equivalence-classes))
+        where equivalence-classes := <group(equal-mod-var)> templates
     
     /**
      * Extracts the pattern from the rules and compares the results modulo
@@ -63,9 +63,23 @@ rules
 
     solve-when-ambiguities(|context-definitions) =
         ?templates;
-        where(equality-classes := <group(subsume-mod-var)> templates);
-        <conc> (<map(remove-forks; mkFork; remove-uneeded-forks)> equality-classes,
-                <diff(eq)> (templates, <flatten-list> equality-classes))
+        where(equivalence-classes := <create-classes> templates);
+        <conc> (<map(mkFork; remove-uneeded-forks)> equivalence-classes,
+                <diff(eq)> (templates, <flatten-list> equivalence-classes))
+
+    create-classes : [] -> []
+    create-classes : [t | ts] -> [class | <create-classes> ts']
+        where class := <create-class; nub> (t, ts);
+              ts' := <diff> (ts, class)
+
+    create-class =
+        ?(t, ts);
+        where(subsumed := <filter(where(\t' -> <subsume-mod-var> (t, t')\))> ts;
+              ts' := <diff> (ts, subsumed));
+        if <equal> (ts, ts')
+        then ![t]
+        else <conc> ([t | subsumed], <mapconcat(\t' -> <create-class> (t', ts')\)> subsumed)
+        end
 
     subsume-mod-var =
         ?(a, b);
