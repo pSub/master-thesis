@@ -127,36 +127,35 @@ int = [ x -> int ] x
 
 /* Negative Conjectures */
 
-
-===
+/===
 x fresh in (y; x; ())
 
-===
+/===
 int = [ x -> int ] y
 
-===
+/===
 () | () |- \ x : int . x : int
 
-===
+/===
 () | () |- (\x : int . x) x : int
 
-===
+/===
 () | () |- 1 1 : int
 
-======
+/======
 f : int ; () | () |- f 1 : int
 
-======
+/======
 f : (int -> int); () | () |- f f : int
 
-===
+/===
 () | () |- x : int
 
-===
+/===
 () | () |- \ x . \ y : x . y : all x . x
 
-===
+/===
 () | () |- (\ x . \ y : y . y) [ int ] : int -> int
 
-===
+/===
 () | () |- (\ x . \ y . \ x . \ a : y . a) : all x . all y . all z . (y -> y)
