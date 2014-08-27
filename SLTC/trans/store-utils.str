@@ -26,7 +26,7 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); Snd; hashtable-get(|key)> s
+    lookup(|s) : (ctx, key, _) -> <hashtable-get(|ctx); Snd; hashtable-get(|key)> s
 
     /**
      * Removes and returns the first element from the hashmap.

@@ -38,7 +38,7 @@ rules
                     <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
-                        <generate(|templates, store)> (<get-judgment-id> conjecture, input, <get-outputs(|judgments)> conjecture)
+                        <generate(|templates, store, <get-outputs(|judgments)> conjecture)> (<get-judgment-id> conjecture, input)
                     \; \result -> (result, type)\
                     > conjecture
                  \, clear-store(|store))),
@@ -63,21 +63,24 @@ rules
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
      */
-    generate(|templates, store) : (judg-number, inputs, expected-outputs) ->
+    generate(|templates, store, expected-outputs) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, judg-number, store) < (add-assertion(|expected-outputs); generate'(|templates, inputs, store))
+             <find-match(|inputs, judg-number, store) < \t -> <generate'(|templates, inputs, store, [])>\// <get-outputs; make-assertion(|expected-outputs)> t )> \
                                                       + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
-    generate(|templates, store) : (judg-number, inputs) ->
-             // Find the constraint template that matches the inputs of the given term
-             // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store)
-                                                      + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+    make-assertion(|expected-outputs) : Some(outputs) -> <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs)
+    make-assertion(|expected-outputs) : None() -> None()
 
-    add-assertion(|expected-outputs) : Template__(a, b, Conclusion__(c, d, e, outputs), constraints) ->
-        Template__(a, b, Conclusion__(c, d, e, outputs), <conc> (<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs), constraints))
-    add-assertion(|expected-outputs) : Fork__(ts) -> Fork__(<map(add-assertion(|expected-outputs))> ts)
+    // generate(|templates, store) : (judg-number, inputs) ->
+    //          // Find the constraint template that matches the inputs of the given term
+    //          // if a matching rule could be found evaluate that, otherwise return an error.
+    //          <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store)
+    //                                                   + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+
+    // add-assertion(|expected-outputs) : Template__(a, b, Conclusion__(c, d, e, outputs), constraints) ->
+    //     Template__(a, b, Conclusion__(c, d, e, outputs), <conc> (<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs), constraints))
+    // add-assertion(|expected-outputs) : Fork__(ts) -> Fork__(<map(add-assertion(|expected-outputs))> ts)
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -87,9 +90,11 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|t, term, s) : Template__(xs, calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
-           (Some(outputs'), new-constraints)
+    generate'(|t, term, s, output-constraints) :
+         Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
+         (Some(outputs'), new-constraints)
         where
+            <debug> name;
             // Retrieve and remove elements from the context according to the context pattern.
             ctx' := <filter(\Binding__(ctx, i, _) -> <pop(|s)> ctx \ <+
                             where(\Reset__(ctx) -> <clear-context(|s, ctx)> \); skip)> ctx;
@@ -102,8 +107,8 @@ rules
 
             // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v\)> (xs, pattern'', term'', calls, constraints);
-            (xs', pattern', term', calls', constraints', outputs') := <zip; replace-all(|(xs , pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
+            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v\)> (pattern'', term'', calls, constraints);
+            (pattern', term', calls', constraints', outputs') := <zip; replace-all(|(pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
             outputs-constraints := <foldl(execute(|t, <where(<equal(|[])> ctx) <+ hashtable-deep-copy> s, pattern', term', name))> (calls', []);
@@ -115,23 +120,25 @@ rules
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
             // Associate the outputs of the calls with the variables of the binding.
-            xs-outputs := <zip; filter(\(xs, Some(s)) -> (xs, s)\); mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
+            //xs-outputs := <zip; filter(\(xs, Some(s)) -> (xs, s)\); mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
 
             // Replace all previously bound variables with their values in the constraint set.
-            constraints'' := <replace-all(|iconstraints)> xs-outputs;
+            //constraints'' := <replace-all(|iconstraints)> xs-outputs;
 
             // Merge all generated constraints.
-            new-constraints := <conc> (constraints'', <mapconcat(Snd)> outputs-constraints,
+            new-constraints := <conc> (
+                // constraints'',
+                 <mapconcat(Snd)> outputs-constraints,
                                        input-output-constraints)
 
-    generate'(|t, term, s) : Fork__(rulez) ->
+    generate'(|ts, term, s, output-constraints) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output.
            // FIXME: destroy the store copies
-           <until(generate'(|t, term, <hashtable-deep-copy> s);
+           <until(\t -> <generate'(|ts, term, <hashtable-deep-copy> s, output-constraints)> t\; debug;
                    \(Some(o), cs) -> (<unify-internal; apply-mgu(|o)> cs, cs)\)
                    < \(x, cs) -> (Some(x), cs)\
-                   + !(None(), [CFail__(Error("No rule matched."))])> rulez
+                   + !(None(), [CFail__(Error(term))])> rulez
 
     /**
      * Executes the calls specified in the rules.
@@ -148,9 +155,10 @@ rules
                           // the dependencies.
                 <finally((term', pattern') := <update(|pattern, term, accu)> dep;
                           switch !call
-                          case ?Lookup__(_,_):
+                          case ?Lookup__(_,_, outputs):
+                              // FIXME
                               <to-tuple; instantiate-lookup(|pattern', term');
-                               (lookup(|s) < \ o -> (Some(o), [])\ +
+                               (lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|""))> (o, outputs))\ +
                                              \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
                           case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
@@ -162,19 +170,21 @@ rules
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
                                                error) ])
-                          case ?Judgment__(num, inputs, ctx):
+                          case ?Judgment__(num, inputs, ctx, _):
+                            // FIMXE
                             // Instantiate the judgment that shall be called.
-                            (judg-number, param, binding) := <to-tuple; instantiate-judgment(|pattern', term')> call;
+                            (judg-number, param, binding, outputs) := <to-tuple; instantiate-judgment(|pattern', term')> call;
 
                             // Create constraints for the variables in the context bindings.
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
-                            <generate(|t, <update-store(|s)> binding)> (judg-number, param);
+                            <generate(|t, <update-store(|s)> binding, Some([]))> (judg-number, param);
 
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
-                            (id, conc(|binding-constraints))
+                            (id, conc(|binding-constraints));
+                            try(\(Some(o), cs) -> (o, <conc(|binding-constraints); conc(|<zip;map(makeCEq(|""))> (o, outputs))> cs)\)
                             otherwise:
                                 exit-with-error(|"Encountered a maleformed template", 1)
                           end;

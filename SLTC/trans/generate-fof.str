@@ -234,12 +234,12 @@ signature
             // it is illegal in TPTP to quantify over no variables.
             prop := <if <[]> free-vars-in-rule then !implication else !All__(free-vars-in-rule, implication) end>
 
-    make-formula(|type) : Template__(xs, calls, Conclusion__(judg-number, name, (pattern, ctx), outputs), xs-outputs)
+    make-formula(|type) : Template__(calls, Conclusion__(judg-number, name, (pattern, ctx), outputs), xs-outputs)
                             -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
         where
             conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
                                 , <concat> [<rewrite-pattern> pattern, <rewrite-ctx> ctx, <rewrite-pattern> outputs]);
-            premisses := <premisses-to-props(|xs, xs-outputs)> calls;
+            premisses := <premisses-to-props> calls;
             formula := <if <[]> calls then !conclusion else !Impl__(premisses, conclusion) end>;
             free-vars-in-rule := <free-vars> formula;
             prop := <if <[]> free-vars-in-rule then !formula else !All__(free-vars-in-rule, formula) end>
@@ -253,8 +253,7 @@ signature
     /**
      * Helper rule to transform premisses of templates into first-order predicates.
      */
-    premisses-to-props : Template__(xs, calls, Conclusion__(_, _, _, _), xs-outputs) -> <premisses-to-props(|xs, xs-outputs)> calls
-    premisses-to-props(|xs, xs-outputs) = add-indices; map(\(i, c) -> <rewrite-call(|i, xs, xs-outputs)> c\)
+    premisses-to-props : Template__(calls, Conclusion__(_, _, _, _), xs-outputs) -> <map(rewrite-call)> calls
 
     /**
      * Transforms a term that is not a context into a first-order term.
@@ -279,27 +278,16 @@ signature
      * Rewrites a premisse of a template into a proposition.
      * @internal
      */
-    rewrite-call(|i, vars, vars-outputs) : (Lookup__(ctx, inputs), _) ->
+    rewrite-call : (Lookup__(ctx, inputs, outputs), _) ->
         Pred__(<concat-strings> ["lookup", <int-to-string> ctx],
-               <conc> (<rewrite-pattern> inputs, <retrieve-outputs(|vars, vars-outputs); rewrite-pattern> i))
-    rewrite-call(|i, vars, vars-outputs) : (Judgment__(n, t, binding), _) ->
+               <conc> (<rewrite-pattern> inputs, <rewrite-pattern> outputs))
+    rewrite-call : ((Judgment__(n, t, binding, outputs), outputs), _) ->
         Pred__(<conc-strings>("'tcheck", <int-to-string> n, "'"),
                <conc> (<rewrite-pattern> t,
                        <rewrite-ctx> binding,
-                       <retrieve-outputs(|vars, vars-outputs); rewrite-pattern> i))
-    rewrite-call(|i, vars, vars-outputs) : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
-    rewrite-call(|i, vars, vars-outputs) : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
-
-    /**
-     * Extracts the expected outputs from templates for premisse `i'.
-     * @internal
-     */
-    retrieve-outputs(|vars, vars-outputs) =
-        ?i;
-        <index(|i)> vars;
-        filter(\var ->
-                  <fetch-elem(?CEq__(var, _, _); proj(CEq__|2))> vars-outputs
-               \)
+                       <rewrite-pattern> outputs))
+    rewrite-call : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
 
     /**
      * Wrap strings into terms.

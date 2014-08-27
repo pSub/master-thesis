@@ -8,12 +8,12 @@ signature
        /** Base Language */
        // FIXME: Clean up the template language definition.
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
-       Template__ : List(List(var)) * List(premisse) * Conclusion * Constraint -> Template
-       Lookup__  : ctx * inputs -> Ctx
+       Template__ : List(premisse) * Conclusion * Constraint -> Template
+       Lookup__  : ctx * inputs * outputs -> Ctx
        Reset__ : ctx -> Ctx
        Ctx__ : ctx -> Ctx
        Binding__ : ctx * inputs * outputs -> Ctx
-       Judgment__ : number * term * binding -> Judgment
+       Judgment__ : number * term * binding * outputs -> Judgment
        Eq__ : term * term * error -> Eq
        Neq__ : term * term * error -> Neq
 
@@ -28,7 +28,7 @@ rules
      * @type Template -> List(a)
      */
     get-pattern : Conclusion__(_, _, (pattern, _), _) -> pattern
-    get-pattern : Template__(_, _, rule, _) -> <get-pattern> rule
+    get-pattern : Template__(_, rule, _) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
@@ -37,7 +37,7 @@ rules
      * @type Template -> List(a)
      */
     get-ctx-pattern : Conclusion__(_, _, (_, ctx), _) -> ctx
-    get-ctx-pattern : Template__(_, _, rule, _) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Template__(_, rule, _) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
@@ -46,7 +46,7 @@ rules
      * @type Template -> Int
      */
     get-judgment-number : Conclusion__(judg-number, _, _, _) -> judg-number
-    get-judgment-number : Template__(_, _, rule, _) -> <get-judgment-number> rule
+    get-judgment-number : Template__(_, rule, _) -> <get-judgment-number> rule
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
@@ -55,21 +55,25 @@ rules
      * @type Template -> Option(String)
      */
     get-rule-name : Conclusion__(_, name, _, _) -> name
-    get-rule-name : Template__(_, _, rule, _) -> <get-rule-name> rule
-
+    get-rule-name : Template__(_, rule, _) -> <get-rule-name> rule
+    
+    get-outputs : Conclusion__(_, _, _, outputs) -> Some(outputs)
+    get-outputs : Template__(_, rule, _) -> <get-outputs> rule
+    get-outputs : Fork__(_) -> None()
+    
     /**
      * Transforms a triple into a judgment node.
      *
      * @type (name, a, b) -> Judgment(name, a, b)
      */
-    mkJudgment : (name, a, b) -> Judgment__(name, a, b)
+    mkJudgment : (name, a, b, c) -> Judgment__(name, a, b, c)
 
     /**
      * Transforms a tuple into a lookup node.
      *
      * @type (a, b) -> Lookup(a, b)
      */
-    mkLookup : (a, b) -> Lookup__(a, b)
+    mkLookup : (a, b, c) -> Lookup__(a, b, c)
 
     /**
      * Transforms a list of templates into a fork node.

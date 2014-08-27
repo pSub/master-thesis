@@ -30,7 +30,8 @@ rules
      * @type (List(a), List(a, List(a), List(a)) -> List(a)
      */    
     instantiate-judgment(|pattern, terms) =
-        (id, instantiate(|pattern, terms), instantiate-ctx-binding(|pattern, terms))
+        (id, instantiate(|pattern, terms), instantiate-ctx-binding(|pattern, terms),
+         instantiate(|pattern, terms)) //FIXME
 
     /**
      * An version of `instantiate' tailored for conext bindings.
@@ -50,7 +51,7 @@ rules
      * @param terms - an arbitrary list of terms
      * @type (List(a), List(a)) -> List(a)
      */
-    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
+    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), instantiate(|pattern, terms)) //FIMXE
 
     /**
      * An version of `instantiate` tailored for error messages.

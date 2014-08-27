@@ -102,18 +102,17 @@ rules
      */
     to-template(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <replace-meta-variables>
-          Template__(<map(Fst; Fst)> vars-outputs,
-                     <map(switch (get-typing-judgment, id)
+          Template__(<map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
-                              (get-typing-judgment; Dupl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
-                              ((get-context-id, get-inputs(|c)); mkLookup, id)
+                              (get-typing-judgment; Trpl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
+                              ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
                          case where((get-generic-name; equal(|"Eq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message> j)> j, dep) \
                          case where((get-generic-name; equal(|"Neq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
-                         otherwise: (get-typing-judgment; Trpl; (id, get-inputs(|j), get-inputs(|j)), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
-                              ((id, filter(not(node-is-ctx)), filter(node-is-ctx)), id);
-                              ((get-judgment-id, id, mapconcat(ctx-bind-to-kv-list(|c))); mkJudgment, id)
+                         otherwise: (get-typing-judgment; Qrpl; (id, get-inputs(|j), get-inputs(|j), get-outputs(|j)), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
+                              ((id, filter(not(node-is-ctx)), filter(node-is-ctx), id), id);
+                              ((get-judgment-id, id, mapconcat(ctx-bind-to-kv-list(|c)), id); mkJudgment, id)
                          end)> sorted-premisses,
                      Conclusion__(
                          <get-typing-judgment; get-judgment-id> conclusion,
@@ -121,7 +120,8 @@ rules
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx), node-is-ctx);
                          (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
                          <get-typing-judgment; get-outputs(|j)> conclusion'),
-                     <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeCEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs)
+                     [])
+                   //  <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeCEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs)
         where
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
@@ -163,11 +163,11 @@ rules
             
             // Sort the premisses according to the topological order. This includes updating references
             // to premisses in the dependencies.
-            sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order;
+            sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order
             
             // Assign variabels for the output positions.
-            vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
-                                 ((length; newnames(|"X"); map(makeVar), id), get-error-message; option(filter(where(?Error(_))))))> sorted-premisses
+            // vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
+            //                      ((length; newnames(|"X"); map(makeVar), id), get-error-message; option(filter(where(?Error(_))))))> sorted-premisses
 
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
