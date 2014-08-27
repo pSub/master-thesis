@@ -80,4 +80,14 @@
   - This can be interesting!
   - They do not do this automatically, but the reasoning might be interessting.
 * [#A] Automatic Type Inference via Partial Evaluation
-  - Very interesting and closely related to my work
+  - Use a prolog representation of the type system
+  - Works well in syntax-directed case, may diverge otherwise because
+    of prologs depth-first search
+  - Translates prolog clauses automatically into an efficient
+    two-phase constraint-based type inference algorithm
+  - Partitioning paramter that specifies with parts should be delayed
+    to the second phase
+  - Result of the first phase can potenially be solved by e.g. datalog
+  - Syntax directed typing rules produce conjucntions of constraints
+    wether non-syntax directed typing rules produce conjunction and
+    disjunctions and may be less efficient
