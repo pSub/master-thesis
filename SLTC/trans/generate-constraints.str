@@ -66,11 +66,11 @@ rules
     generate(|templates, store, expected-outputs) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, judg-number, store) < \t -> <generate'(|templates, inputs, store, [])>\// <get-outputs; make-assertion(|expected-outputs)> t )> \
+             <find-match(|inputs, judg-number, store) < \t -> <generate'(|templates, inputs, store, <get-outputs; make-assertion(|expected-outputs)> t )> \
                                                       + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
     make-assertion(|expected-outputs) : Some(outputs) -> <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs)
-    make-assertion(|expected-outputs) : None() -> None()
+    make-assertion(|expected-outputs) : None() -> expected-outputs
 
     // generate(|templates, store) : (judg-number, inputs) ->
     //          // Find the constraint template that matches the inputs of the given term
@@ -131,12 +131,12 @@ rules
                  <mapconcat(Snd)> outputs-constraints,
                                        input-output-constraints)
 
-    generate'(|ts, term, s, output-constraints) : Fork__(rulez) ->
+    generate'(|ts, term, s, expected-outputs) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output.
            // FIXME: destroy the store copies
-           <until(\t -> <generate'(|ts, term, <hashtable-deep-copy> s, output-constraints)> t\; debug;
-                   \(Some(o), cs) -> (<unify-internal; apply-mgu(|o)> cs, cs)\)
+           <until(\t -> <generate'(|ts, term, <hashtable-deep-copy> s, expected-outputs)> t\;
+                   \(Some(o), cs) -> (<conc(|<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (o, expected-outputs)); unify-internal; apply-mgu(|o)> cs, cs)\)
                    < \(x, cs) -> (Some(x), cs)\
                    + !(None(), [CFail__(Error(term))])> rulez
 
@@ -159,7 +159,7 @@ rules
                               // FIXME
                               <to-tuple; instantiate-lookup(|pattern', term');
                                (lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|""))> (o, outputs))\ +
-                                             \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
+                                             \ (_, o, _) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
                           case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
@@ -179,7 +179,7 @@ rules
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
-                            <generate(|t, <update-store(|s)> binding, Some([]))> (judg-number, param);
+                            <generate(|t, <update-store(|s)> binding, [])> (judg-number, param);
 
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
