@@ -6,6 +6,7 @@
 - Convert everything to sdf3
 - Support multiple languages without manual recompilation
 - Make syntax of typing rules more flexible (e.g. dot notation)
+- Modular context descriptions like in Typmix
 \section{Related Work}
 \subsubsection{Ott}
 \subsubsection{The Synthesizer Generator}
@@ -32,8 +33,25 @@ In contrast to the present work the TyS framework does not provide a
 high-level specification language in favor of readable generated code
 and is tied to object oriented languages. It however delivers a tool
 that has been successfully integrated in existing tool chains.
-\subsubsection{A Framework for Implementing Modular Extensible Type
+\subsubsection{Typmix: A Framework for Implementing Modular Extensible Type
   Systems}
+Typmix~\cite{bergan2007typmix} is a framework for implementing type
+systems in for the extensible compiler xoc. Although type systems can
+be implemented in xoc directly, the author claims that they are often
+verbose and contain redundancies. Type system specifications in Typmix
+are written in two languages. One describes the context modifications,
+they are called scoperules. The other describes typing rules using
+premisses and conclusions. The contexts in the typing rules are
+referred to as \verb|Env| and one concrete context as
+\verb|Env.Ctx|. This separation of concerns increases modularity,
+e.g.\ adding a context to a judgment requires only changes were it is
+actually used. Typmix used to implement a type system for an ML-like
+language and for FeatherweightJava.
+
+As typmix is integrated in an extensible compiler, its focus is on
+extending type systems. Although the scope and type language are
+declarative it has no interface to proof assistants.
+
 \subsubsection{Automatic Type Inference via Partial Evaluation}
 Tomb and Flanagan~\cite{tomb2005automatic} use Prolog to implement
 type inference. If typing rules are syntax directed Prolog can type
