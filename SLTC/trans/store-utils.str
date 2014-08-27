@@ -33,7 +33,7 @@ rules
      */
     pop(|s) : ctx -> <hashtable-get(|ctx);
                      \ ([x | xs], context) ->
-                        <!(x, <lookup(|s)> (ctx, x));
+                        <!(x, <lookup(|s)> (ctx, x, []));
                         where(<hashtable-put(|ctx, (xs, <hashtable-remove(|x)> context))> s) >
                      \> s
 

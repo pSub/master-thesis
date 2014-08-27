@@ -184,7 +184,7 @@ rules
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
                             (id, conc(|binding-constraints));
-                            try(\(Some(o), cs) -> (o, <conc(|binding-constraints); conc(|<zip;map(makeCEq(|""))> (o, outputs))> cs)\)
+                            try(\(Some(o), cs) -> (Some(o), <conc(|binding-constraints); conc(|<zip;map(makeCEq(|""))> (o, outputs))> cs)\)
                             otherwise:
                                 exit-with-error(|"Encountered a maleformed template", 1)
                           end;
