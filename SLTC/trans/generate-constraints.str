@@ -66,11 +66,8 @@ rules
     generate(|templates, store, expected-outputs) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, judg-number, store) < \t -> <generate'(|templates, inputs, store, <get-outputs; make-assertion(|expected-outputs)> t )> \
+             <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store, expected-outputs)
                                                       + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
-
-    make-assertion(|expected-outputs) : Some(outputs) -> <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs)
-    make-assertion(|expected-outputs) : None() -> expected-outputs
 
     // generate(|templates, store) : (judg-number, inputs) ->
     //          // Find the constraint template that matches the inputs of the given term
@@ -90,7 +87,7 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|t, term, s, output-constraints) :
+    generate'(|t, term, s, expected-outputs) :
          Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
          (Some(outputs'), new-constraints)
         where
@@ -125,9 +122,12 @@ rules
             // Replace all previously bound variables with their values in the constraint set.
             //constraints'' := <replace-all(|iconstraints)> xs-outputs;
 
+            assertion := <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs', expected-outputs);
+
             // Merge all generated constraints.
             new-constraints := <conc> (
                 // constraints'',
+                assertion,
                  <mapconcat(Snd)> outputs-constraints,
                                        input-output-constraints)
 
@@ -179,7 +179,7 @@ rules
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
-                            <generate(|t, <update-store(|s)> binding, [])> (judg-number, param);
+                            <generate(|t, <update-store(|s)> binding, outputs)> (judg-number, param);
 
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
