@@ -64,6 +64,15 @@
   - Meta-language is divided into two languages, one is specifically desinged to describe binding constructs
   - Meta-language is compiled to proof-assistent and latex code
 * Automatic Generation of Object-Oriented Type Checkers
+  - TyS frame work to faciliate the implementation of object type checkers
+  - Language independent design patterns
+  - Dynamic and static type system features
+  - File with Types, subtyping relation and operation on types is processed by TyCC
+  - Different output languages are supported (currently only Java)
+  - API implemented in Java
+  - Tested with flex, bison/yacc and ANTLR
+  - Has been used for Calc, Drill, Frog, SubC and StaDyn
+  - Polymorphic types and type variable are currently not supported
 * [#C] Strict Bidirectional Type Checking
   - Does not seem that helpfule.
   - Look into it if I have time left, or no other ideas.
