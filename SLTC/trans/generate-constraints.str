@@ -69,16 +69,6 @@ rules
              <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store, expected-outputs)
                                                       + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
-    // generate(|templates, store) : (judg-number, inputs) ->
-    //          // Find the constraint template that matches the inputs of the given term
-    //          // if a matching rule could be found evaluate that, otherwise return an error.
-    //          <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store)
-    //                                                   + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
-
-    // add-assertion(|expected-outputs) : Template__(a, b, Conclusion__(c, d, e, outputs), constraints) ->
-    //     Template__(a, b, Conclusion__(c, d, e, outputs), <conc> (<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs, expected-outputs), constraints))
-    // add-assertion(|expected-outputs) : Fork__(ts) -> Fork__(<map(add-assertion(|expected-outputs))> ts)
-
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
      * template found in `generate` and does the actual constraint generation.
@@ -91,7 +81,6 @@ rules
          Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
          (Some(outputs'), new-constraints)
         where
-            <debug> name;
             // Retrieve and remove elements from the context according to the context pattern.
             ctx' := <filter(\Binding__(ctx, i, _) -> <pop(|s)> ctx \ <+
                             where(\Reset__(ctx) -> <clear-context(|s, ctx)> \); skip)> ctx;
@@ -116,20 +105,10 @@ rules
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
-            // Associate the outputs of the calls with the variables of the binding.
-            //xs-outputs := <zip; filter(\(xs, Some(s)) -> (xs, s)\); mapconcat(zip)> (xs', <map(Fst)> outputs-constraints);
-
-            // Replace all previously bound variables with their values in the constraint set.
-            //constraints'' := <replace-all(|iconstraints)> xs-outputs;
-
             assertion := <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs', expected-outputs);
 
             // Merge all generated constraints.
-            new-constraints := <conc> (
-                // constraints'',
-                assertion,
-                 <mapconcat(Snd)> outputs-constraints,
-                                       input-output-constraints)
+            new-constraints := <conc> (assertion, <mapconcat(Snd)> outputs-constraints, input-output-constraints)
 
     generate'(|ts, term, s, expected-outputs) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
