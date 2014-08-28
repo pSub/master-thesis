@@ -267,15 +267,20 @@ rules
 
     /**
      * A version of hashtable-deep-copy that ensures that the copy is released after the
-     * computation `s' has finished.
+     * computation `s' has finished. Only copy the hashtable if  `cond' succeeds on `value'.
      *
      * @param s has type (Hashtable(_), a) -> b
      * @param hashtable has type Hashtabe(_)
      * @type a -> b
      */
-    safe-hashtable-deep-copy(s|hashtable) = finally(where(hashtable' := <hashtable-deep-copy> hashtable);
-                                                    \input -> <s> (hashtable', input)\,
-                                                    where(<hashtable-deep-destroy> hashtable'))
+    safe-hashtable-deep-copy(s | hashtable) = safe-hashtable-deep-copy(s, true | hashtable, 1)
+    safe-hashtable-deep-copy(s, cond | hashtable, value) =
+        if <cond> value
+        then finally(where(hashtable' := <hashtable-deep-copy> hashtable);
+                     \input -> <s> (hashtable', input)\,
+                     where(<hashtable-deep-destroy> hashtable'))
+        else \input -> <s> (hashtable, input)\
+        end
 
     /**
      * Destroys the Hashtable and all containing Hashtables.
