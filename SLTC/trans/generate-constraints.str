@@ -134,11 +134,10 @@ rules
                           // the dependencies.
                 <finally((term', pattern') := <update(|pattern, term, accu)> dep;
                           switch !call
-                          case ?Lookup__(_,_, outputs):
-                              // FIXME
-                              <to-tuple; instantiate-lookup(|pattern', term');
-                               (lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|""))> (o, outputs))\ +
-                                             \ (_, o, _) -> (None(), [CFail__(Error([o, " not found in context"]))])\)> call
+                          case ?Lookup__(ctx, inputs, outputs, error):
+                                <instantiate-lookup(|pattern', term')> (ctx, inputs);
+                                lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|<replace(|"INFTYPE", outputs)> error); instantiate-error(|pattern', term'))> (o, outputs))\
+                                           + \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\
                           case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> [a],
@@ -149,10 +148,9 @@ rules
                                         CNeq__(<instantiate(|pattern', term')> [a],
                                                <instantiate(|pattern', term')> [b],
                                                error) ])
-                          case ?Judgment__(num, inputs, ctx, _):
-                            // FIMXE
+                          case ?Judgment__(num, inputs, ctx, expected-outputs, error):
                             // Instantiate the judgment that shall be called.
-                            (judg-number, param, binding, outputs) := <to-tuple; instantiate-judgment(|pattern', term')> call;
+                            (judg-number, param, binding, outputs) := <instantiate-judgment(|pattern', term')> (num, inputs, ctx, expected-outputs);
 
                             // Create constraints for the variables in the context bindings.
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
@@ -163,7 +161,7 @@ rules
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
                             (id, conc(|binding-constraints));
-                            try(\(Some(o), cs) -> (Some(o), <conc(|binding-constraints); conc(|<zip;map(makeCEq(|""))> (o, outputs))> cs)\)
+                            try(\(Some(o), cs) -> (Some(o), <conc(|<zip;map(makeCEq(|<replace(|"INFTYPE", outputs)> error); instantiate-error(|pattern', term'))> (o, outputs))> cs)\)
                             otherwise:
                                 exit-with-error(|"Encountered a maleformed template", 1)
                           end;

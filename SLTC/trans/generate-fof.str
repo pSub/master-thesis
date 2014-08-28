@@ -278,10 +278,10 @@ signature
      * Rewrites a premisse of a template into a proposition.
      * @internal
      */
-    rewrite-call : (Lookup__(ctx, inputs, outputs), _) ->
+    rewrite-call : (Lookup__(ctx, inputs, outputs, error), _) ->
         Pred__(<concat-strings> ["lookup", <int-to-string> ctx],
                <conc> (<rewrite-pattern> inputs, <rewrite-pattern> outputs))
-    rewrite-call : (Judgment__(n, t, binding, outputs), _) ->
+    rewrite-call : (Judgment__(n, t, binding, outputs, error), _) ->
         Pred__(<conc-strings>("'tcheck", <int-to-string> n, "'"),
                <conc> (<rewrite-pattern> t,
                        <rewrite-ctx> binding,

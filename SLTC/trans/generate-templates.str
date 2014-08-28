@@ -107,7 +107,8 @@ rules
                               \(lookup, deps) ->
                                 (Lookup__(<get-typing-judgment; get-context-id> lookup,
                                           <get-typing-judgment; get-inputs(|c)> lookup,
-                                          <get-typing-judgment; get-outputs(|c)> lookup)
+                                          <get-typing-judgment; get-outputs(|c)> lookup,
+                                          <get-error-message> lookup)
                                  , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps)\
                          case where((get-generic-name; equal(|"Eq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message> j)> j, dep) \
@@ -118,8 +119,9 @@ rules
                                  (Judgment__(<get-typing-judgment; get-judgment-id> judgment,
                                             <get-typing-judgment; get-inputs(|j); filter(not(node-is-ctx))> judgment,
                                             <get-typing-judgment; get-inputs(|j); filter(node-is-ctx); mapconcat(ctx-bind-to-kv-list(|c))> judgment,
-                                            <get-typing-judgment; get-outputs(|j)> judgment)
-                                 , < map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps) \
+                                            <get-typing-judgment; get-outputs(|j)> judgment,
+                                            <get-error-message> judgment)
+                                 , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps) \
                          end)> sorted-premisses,
                      Conclusion__(
                          <get-typing-judgment; get-judgment-id> conclusion,
@@ -128,7 +130,6 @@ rules
                          (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
                          <get-typing-judgment; get-outputs(|j)> conclusion'),
                      [])
-                   //  <mapconcat(\(var-out, err) -> <zip(\(v, o) -> <makeCEq(|<replace(|"INFTYPE", v)> err)> (v, o)\)> var-out\)> vars-outputs)
         where
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
@@ -171,10 +172,6 @@ rules
             // Sort the premisses according to the topological order. This includes updating references
             // to premisses in the dependencies.
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order
-            
-            // Assign variabels for the output positions.
-            // vars-outputs := <map(Fst; Dupl; (get-typing-judgment; (node-is-ctx-lookup < get-outputs(|c) + get-outputs(|j)); Dupl, id);
-            //                      ((length; newnames(|"X"); map(makeVar), id), get-error-message; option(filter(where(?Error(_))))))> sorted-premisses
 
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.

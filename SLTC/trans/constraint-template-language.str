@@ -9,11 +9,11 @@ signature
        // FIXME: Clean up the template language definition.
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
        Template__ : List(premisse) * Conclusion * Constraint -> Template
-       Lookup__  : ctx * inputs * outputs -> Ctx
+       Lookup__  : ctx * inputs * outputs * error -> Ctx
        Reset__ : ctx -> Ctx
        Ctx__ : ctx -> Ctx
        Binding__ : ctx * inputs * outputs -> Ctx
-       Judgment__ : number * term * binding * outputs -> Judgment
+       Judgment__ : number * term * binding * outputs * error -> Judgment
        Eq__ : term * term * error -> Eq
        Neq__ : term * term * error -> Neq
 
@@ -61,20 +61,6 @@ rules
     get-outputs : Template__(_, rule, _) -> <get-outputs> rule
     get-outputs : Fork__(_) -> None()
     
-    /**
-     * Transforms a triple into a judgment node.
-     *
-     * @type (name, a, b) -> Judgment(name, a, b)
-     */
-    mkJudgment : (name, a, b, c) -> Judgment__(name, a, b, c)
-
-    /**
-     * Transforms a tuple into a lookup node.
-     *
-     * @type (a, b) -> Lookup(a, b)
-     */
-    mkLookup : (a, b, c) -> Lookup__(a, b, c)
-
     /**
      * Transforms a list of templates into a fork node.
      *

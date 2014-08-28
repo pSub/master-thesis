@@ -51,7 +51,7 @@ rules
      * @param terms - an arbitrary list of terms
      * @type (List(a), List(a)) -> List(a)
      */
-    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms), instantiate(|pattern, terms)) //FIMXE
+    instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
 
     /**
      * An version of `instantiate` tailored for error messages.

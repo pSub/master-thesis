@@ -15,7 +15,9 @@ signature
 rules
     
     solve-which-ambiguities(|context-definitions) : templates -> 
-        <conc> (<map(mkFork; optimize-fork(|context-definitions, templates); remove-uneeded-forks)> equivalence-classes,
+        <conc> (<map(mkFork;
+        // optimize-fork(|context-definitions, templates);
+           remove-uneeded-forks)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
         where equivalence-classes := <group(equal-mod-var)> templates
     

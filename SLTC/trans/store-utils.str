@@ -26,14 +26,14 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    lookup(|s) : (ctx, key, _) -> <hashtable-get(|ctx); Snd; hashtable-get(|key)> s
+    lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); Snd; hashtable-get(|key)> s
 
     /**
      * Removes and returns the first element from the hashmap.
      */
     pop(|s) : ctx -> <hashtable-get(|ctx);
                      \ ([x | xs], context) ->
-                        <!(x, <lookup(|s)> (ctx, x, []));
+                        <!(x, <lookup(|s)> (ctx, x));
                         where(<hashtable-put(|ctx, (xs, <hashtable-remove(|x)> context))> s) >
                      \> s
 
