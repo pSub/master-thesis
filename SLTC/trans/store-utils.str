@@ -61,4 +61,4 @@ rules
      *
      * @param store - a hashtable containing hashtables
      */
-    destroy-store(|store) = where(<hashtable-values; map((id, hashtable-destroy))> store; <hashtable-destroy> store)
+    destroy-store(|store) = where(<hashtable-deep-destroy> store)
