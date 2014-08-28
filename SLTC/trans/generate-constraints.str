@@ -114,7 +114,7 @@ rules
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output.
            // FIXME: destroy the store copies
-           <until(\t -> <generate'(|ts, term, <hashtable-deep-copy> s, expected-outputs)> t\;
+           <until(generate'(|ts, term, <hashtable-deep-copy> s, expected-outputs);
                    \(Some(o), cs) -> (<conc(|<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (o, expected-outputs)); unify-internal; apply-mgu(|o)> cs, cs)\)
                    < \(x, cs) -> (Some(x), cs)\
                    + !(None(), [CFail__(Error(term))])> rulez
