@@ -97,7 +97,7 @@ rules
             (pattern', term', calls', constraints', outputs') := <zip; replace-all(|(pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
-            outputs-constraints := <foldl(execute(|t, <where(<equal(|[])> ctx) <+ hashtable-deep-copy> s, pattern', term', name))> (calls', []);
+            outputs-constraints := <foldl(safe-hashtable-deep-copy(\(s', i) -> <execute(|t, s', pattern', term', name)> i\ | s))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
@@ -132,7 +132,7 @@ rules
     execute(|t, s, pattern, term, name) : ((call, dep), accu) ->
                           // Update the pattern and the term according to
                           // the dependencies.
-                <finally((term', pattern') := <update(|pattern, term, accu)> dep;
+                        <(term', pattern') := <update(|pattern, term, accu)> dep;
                           switch !call
                           case ?Lookup__(ctx, inputs, outputs, error):
                                 <instantiate-lookup(|pattern', term')> (ctx, inputs);
@@ -165,8 +165,7 @@ rules
                             otherwise:
                                 exit-with-error(|"Encountered a maleformed template", 1)
                           end;
-                          singelton; conc(|accu), // Book keeping.
-                          destroy-store(|s))>
+                          singelton; conc(|accu)> // Book keeping.
     /**
      * Extracts the patterns out of the dependencies and appends those
      * to the pattern of the conclusion.
