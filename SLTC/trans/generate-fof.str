@@ -239,7 +239,7 @@ signature
         where
             conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
                                 , <concat> [<rewrite-pattern> pattern, <rewrite-ctx> ctx, <rewrite-pattern> outputs]);
-            premisses := <premisses-to-props> calls;
+            premisses := <map(rewrite-call)> calls;
             formula := <if <[]> calls then !conclusion else !Impl__(premisses, conclusion) end>;
             free-vars-in-rule := <free-vars> formula;
             prop := <if <[]> free-vars-in-rule then !formula else !All__(free-vars-in-rule, formula) end>
@@ -253,7 +253,7 @@ signature
     /**
      * Helper rule to transform premisses of templates into first-order predicates.
      */
-    premisses-to-props : Template__(calls, Conclusion__(_, _, _, _), xs-outputs) -> <map(rewrite-call)> calls
+    premisses-to-props : Template__(calls, _, _) -> <map(rewrite-call)> calls
 
     /**
      * Transforms a term that is not a context into a first-order term.
@@ -281,7 +281,7 @@ signature
     rewrite-call : (Lookup__(ctx, inputs, outputs), _) ->
         Pred__(<concat-strings> ["lookup", <int-to-string> ctx],
                <conc> (<rewrite-pattern> inputs, <rewrite-pattern> outputs))
-    rewrite-call : ((Judgment__(n, t, binding, outputs), outputs), _) ->
+    rewrite-call : (Judgment__(n, t, binding, outputs), _) ->
         Pred__(<conc-strings>("'tcheck", <int-to-string> n, "'"),
                <conc> (<rewrite-pattern> t,
                        <rewrite-ctx> binding,
