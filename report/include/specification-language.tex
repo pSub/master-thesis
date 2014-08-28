@@ -25,27 +25,40 @@ how this architecture reflects the characteristics mentioned above.
 A specification is divided into eight sections, of which two are
 optional.
 
-\paragraph{Modulename} The first section declare the name of the
-specification. This name is a unique identifier and used for imports.
+\paragraph{Modulename} The first section declares the name of the
+specification module. This name is a unique identifier and used for
+imports.
 
 \paragraph{Imports} The second section declares which other
 specifications are imported and is optional.
 
 \paragraph{Language} The third section declares the language for which
 a type system should be specified. This language needs to be present
-in SDF and there must be a module with exactly that name.
+as an gls{sdf} module located at the specified path. This language is
+from now on called \textit{target language}.
 
 \paragraph{Meta-variables} In the fourth section meta-variables are
-declared. The declaration of a meta-variable consists of an
-identifier, of a prefix and of a set of non-terminals of the base
-language. The identifier can be used to distinguish different kinds of
-meta-variables. A meta-variable can consist of letters and numbers, to
-ensure that we can parse meta-variables of different kinds
-unambiguously every meta-variable must be prepended with the declared
-prefix. As we want to introduce meta-variables at different positions
-in the base language we need a way to extend the syntax of the base
-language. The set of non-terminals in a meta-variable definition lists
-the non-terminals that shall be extended.
+declared. The declaration of a meta-variable consists of a class
+\refcallout{ex:spec:class}, of a prefix \refcallout{ex:spec:prefix}
+and of a set of non-terminals of the target language
+\refcallout{ex:spec:scope}. The class can be used to distinguish
+different kinds of meta-variables, e.g.\ for optimization
+purposes. \todo{Give an example optimization}
+
+The set of non-terminals defines the scope of the meta-variable. Every
+non-terminal that is contained in this set is extended with
+meta-variables. In other words, a meta-variable is a substitute for
+every terminal that can be produced from the
+non-terminal. Section~\ref{sec:generate-sdf} explains in detail how
+the target language is extended.
+
+Syntactically a meta-variable is a string of numbers and letters that
+is prefixed with the prefix of the meta-variable definition. The sole
+purpose of the prefix is to avoid ambiguities while parsing. The
+prefix itself can consist of numbers, letters and the following
+symbols \verb|~|, \verb|$|, \verb|%|, \verb|&| and \verb|?|.
+\todo{Is this list complete?} Usually a prefix is chosen such that it
+is not a prefix of a construct of the target language.
 
 \paragraph{Contexts} In the fifth section all contexts that will be
 used in the judgments are defined. Informally these contexts are
@@ -81,8 +94,8 @@ optional name and a typing judgment as conclusion.
 \begin{verbatim}
 module example
 imports common
-language simply-typed-lambda-calculus
-meta-variables 	Term "~" { Type Exp }
+language syntax/simply-typed-lambda-calculus
+meta-variables 	Term !callout`ex:spec:class' "~" !callout`ex:spec:prefix' { Type Exp } !callout`ex:spec:scope'
                 Ctx "$" { Context }
                 Id "%" { ID }
 contexts Context := ID{I} x Type{O}
@@ -132,6 +145,7 @@ How does this design reflect the goals declared above?
   syntax.\todo[inline]{Given an example.}
 \end{description}
 \section{Implementation}
+\label{sec:generate-sdf}
 \todo[inline]{Integration with sugar-lang is not done yet.}
 
 %%% Local Variables: 
