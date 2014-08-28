@@ -10,7 +10,19 @@
 \section{Related Work}
 \subsubsection{Ott}
 \subsubsection{The Synthesizer Generator}
-\subsubsection{A generator for Type Checkers}
+\subsubsection{A Generator for Type Checkers}
+Gast introduces in~\cite{gast2005generator} a type checker generator
+that can produce from declarative type system specifications type
+checkers for functional as well as imperative and object-oriented
+programming languages. Type checking is done by a specialized proof
+search, which is based on unification and backtracking. A
+distinguishing feature of Gasts work is the possibility to annotate
+the typing rules with optimizations. For example it is possible to
+reuse (potentially incomplete) proofs using subproof extraction. Gast
+also provides a formal foundation for his proof search. However the
+resulting type checkers do not report specialized error messages on
+ill-typed  programs.
+
 \subsubsection{Automatic Generation of Object-Oriented Type Checkers}
 Ortin et al.\ present in~\cite{ortin2014automatic} the framework TyS
 for the implementation of type checkers for object-oriented

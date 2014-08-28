@@ -1,6 +1,10 @@
 #+TITLE: Related Work
 
 * A Generator for Type Checkers by H. Gast
+  - Provides a declarative specification language for type systems
+  - Implements a proof search via unification and backtracking
+  - Uses context modifiers (has one global context)
+  - Has flags in typing rules to optimize proof search
 * Formally Specified Type Checkers for Domain Specific Languages: Experience Report by van den Brand, van der Meer, Serebrenik, Hofkamp
   - Designed for the quick prototyping of the specification language
     Chi 2.0, a language for describing concurrent systems.
