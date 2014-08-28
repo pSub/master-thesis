@@ -273,9 +273,9 @@ rules
      * @param hashtable has type Hashtabe(_)
      * @type a -> b
      */
-    safe-hashtable-deep-copy(s|hashtable) = where(hashtable' := <hashtable-deep-copy> hashtable);
-                                            \input -> <s> (hashtable', input)\;
-                                            where(<hashtable-deep-destroy> hashtable')
+    safe-hashtable-deep-copy(s|hashtable) = finally(where(hashtable' := <hashtable-deep-copy> hashtable);
+                                                    \input -> <s> (hashtable', input)\,
+                                                    where(<hashtable-deep-destroy> hashtable'))
 
     /**
      * Destroys the Hashtable and all containing Hashtables.
