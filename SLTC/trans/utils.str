@@ -266,6 +266,25 @@ rules
     hashtable-deep-copy = hashtable-getlist; map(alltd(?Hashtable(_); hashtable-deep-copy)); hashtable-init
 
     /**
+     * A version of hashtable-deep-copy that ensures that the copy is released after the
+     * computation `s' has finished.
+     *
+     * @param s has type (Hashtable(_), a) -> b
+     * @param hashtable has type Hashtabe(_)
+     * @type a -> b
+     */
+    safe-hashtable-deep-copy(s|hashtable) = where(hashtable' := <hashtable-deep-copy> hashtable);
+                                            \input -> <s> (hashtable', input)\;
+                                            where(<hashtable-deep-destroy> hashtable')
+
+    /**
+     * Destroys the Hashtable and all containing Hashtables.
+     *
+     * @type Hashtable(_) -> Hashtable(_)
+     */
+    hashtable-deep-destroy = where(hashtable-values; map(alltd(?Hashtable(_); hashtable-deep-destroy))); hashtable-destroy
+
+    /**
      * Meta-variables are equal independent of the error annotation.
      */
     meta-variable-equal : (cons1#([name1, _]), cons2#([name2, _])) ->
