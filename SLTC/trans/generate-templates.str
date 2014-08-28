@@ -104,15 +104,22 @@ rules
         <replace-meta-variables>
           Template__(<map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
-                              (get-typing-judgment; Trpl, map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
-                              ((get-context-id, get-inputs(|c), get-outputs(|c)); mkLookup, id)
+                              \(lookup, deps) ->
+                                (Lookup__(<get-typing-judgment; get-context-id> lookup,
+                                          <get-typing-judgment; get-inputs(|c)> lookup,
+                                          <get-typing-judgment; get-outputs(|c)> lookup)
+                                 , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps)\
                          case where((get-generic-name; equal(|"Eq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message> j)> j, dep) \
                          case where((get-generic-name; equal(|"Neq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
-                         otherwise: (get-typing-judgment; Qrpl; (id, get-inputs(|j), get-inputs(|j), get-outputs(|j)), map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j))));
-                              ((id, filter(not(node-is-ctx)), filter(node-is-ctx), id), id);
-                              ((get-judgment-id, id, mapconcat(ctx-bind-to-kv-list(|c)), id); mkJudgment, id)
+                         otherwise:
+                              \(judgment, deps) ->
+                                 (Judgment__(<get-typing-judgment; get-judgment-id> judgment,
+                                            <get-typing-judgment; get-inputs(|j); filter(not(node-is-ctx))> judgment,
+                                            <get-typing-judgment; get-inputs(|j); filter(node-is-ctx); mapconcat(ctx-bind-to-kv-list(|c))> judgment,
+                                            <get-typing-judgment; get-outputs(|j)> judgment)
+                                 , < map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps) \
                          end)> sorted-premisses,
                      Conclusion__(
                          <get-typing-judgment; get-judgment-id> conclusion,
