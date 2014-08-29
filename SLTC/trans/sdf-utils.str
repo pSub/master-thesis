@@ -1,0 +1,14 @@
+module sdf-utils
+
+imports libstratego-sdf
+imports org/sugarj/languages/Sdf2
+
+rules
+    parse-sdf-definition(|language) = <concat-strings; parse-sdf-definition-file> ["syntax/", language, ".def"]
+    
+    get-immediate-substructures(|language) =
+        ?non-terminal;
+        parse-sdf-definition(|language);
+        collect-all(?prod(_,sort(non-terminal),_))
+        
+    test-substructures = <get-immediate-substructures(|"specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus")> "Type"
