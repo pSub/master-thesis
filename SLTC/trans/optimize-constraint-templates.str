@@ -76,18 +76,20 @@ rules
 
     create-class =
         ?(t, ts);
-        where(subsumed := <filter(where(\t' -> <subsume-mod-var> (t, t')\))> ts;
+        where(subsumed := <filter(where(\t' -> <subsume-mod-var(true)> (t, t')\))> ts;
               ts' := <diff> (ts, subsumed));
         if <equal> (ts, ts')
         then ![t]
         else <conc> ([t | subsumed], <mapconcat(\t' -> <create-class> (t', ts')\)> subsumed)
         end
 
-    subsume-mod-var =
+    subsume-mod-var(sym) =
         ?(a, b);
         where(equal(|<get-judgment-number> a, <get-judgment-number> b));
-        where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), true))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
-        where(<zip; map(match-constructors(?DummyVar__(), true))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
+        where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), sym))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
+        where(<zip; map(match-constructors(?DummyVar__(), sym))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
+
+    order-forks-by-subsumption = map(try(\Fork__(ts) -> Fork__(<isort-list(LSort(subsume-mod-var(false))); reverse> ts)\))
 
     remove-forks : [Fork__(ts) | ts'] -> <conc> (ts, <remove-forks> ts')
     remove-forks : [t | ts] ->  [t | <remove-forks> ts]
@@ -101,4 +103,5 @@ rules
 
     optimize-templates(|context-definitions) =
         solve-which-ambiguities(|context-definitions);
-        solve-when-ambiguities(|context-definitions)
+        solve-when-ambiguities(|context-definitions);
+        order-forks-by-subsumption
