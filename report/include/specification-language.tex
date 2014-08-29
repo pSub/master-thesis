@@ -37,13 +37,27 @@ a type system should be specified. This language needs to be present
 as an \gls{sdf} module located at the specified path. This language is
 from now on called \textit{target language}.
 
+\begin{example}{~}
+\begin{verbatim}
+language specifications/simply-typed-lambda-calculus/syntax
+\end{verbatim}
+\label{ex:language-section}
+\end{example}
+
+In Example~\ref{ex:language-section} the language definition at
+\todo{A better way to typeset that path?}
+\begin{verbatim}
+specifications/simply-typed-lambda-calculus/syntax.sdf
+\end{verbatim}
+
+is used, this path is relative to the syntax folder of the Spoo@fax
+project.
+
 \paragraph{Meta-variables} In the fourth section meta-variables are
-declared. The declaration of a meta-variable consists of a class
-\refcallout{ex:spec:class}, of a prefix \refcallout{ex:spec:prefix}
-and of a set of non-terminals of the target language
-\refcallout{ex:spec:scope}. The class can be used to distinguish
-different kinds of meta-variables, e.g.\ for optimization
-purposes. \todo{Give an example optimization}
+declared. The declaration of a meta-variable consists of a class, of a
+prefix and of a set of non-terminals of the target language. The class
+can be used to distinguish different kinds of meta-variables, e.g.\
+for optimization purposes. \todo{Give an example optimization}
 
 The set of non-terminals defines the scope of the meta-variable. Every
 non-terminal that is contained in this set is extended with
@@ -60,17 +74,32 @@ symbols \verb|~|, \verb|$|, \verb|%|, \verb|&| and \verb|?|.
 \todo{Is this list complete?} Usually a prefix is chosen such that it
 is not a prefix of a construct of the target language.
 
-\paragraph{Contexts} The fifth section defines all contexts used in
-the typing rules. Informally these contexts are declared as
-cross-products of non-terminals, i.e.\ an context is a set consisting
-of pairs of terminals that can be produced by the non-terminals in the
-declaration. Every context has a name, which can be used in further
-declarations. Lookups may differ for contexts and use cases, therefore
-one has to annotate the non-terminals with input and output
-tags. Terminals at positions that are tagged with input are used to
-look up terminals tagged with output that are saved in the context. An
-context for which all non-terminals are tagged with input, is
-equivalent to a normal look up in a set and will return whether the
+\begin{example}{~}
+\begin{verbatim}
+meta-variables 	Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+\end{verbatim}
+\label{ex:meta-variable-section}
+\end{example}
+
+In Example~\ref{ex:meta-variable-section} three classes of
+meta-variables are declared. The first class is called \verb|Term| and
+each meta-variable of this class has the prefix
+\verb|"~"|. Productions that produce meta-variables of this class are
+added to the non-terminals \verb|Type| and \verb|Exp|.
+
+\paragraph{Contexts} The fifth section declares the contexts that can
+be used in the judgments and rules. Informally these contexts are
+declared as cross-products of non-terminals, i.e.\ an context is a set
+consisting of pairs of terminals that can be produced by the
+non-terminals in the declaration. Every context has a name, which can
+be used in further declarations. Lookups may differ for contexts and
+use cases, therefore one has to annotate the non-terminals with input
+and output tags. Terminals at positions that are tagged with input are
+used to look up terminals tagged with output that are saved in the
+context. An context for which all non-terminals are tagged with input,
+is equivalent to a normal look up in a set and will return whether the
 tuple could be found. An context with only outputs acts as a sink, one
 can put things into it, but never retrieve anything back.
 
@@ -198,7 +227,10 @@ implementation are shown. They use the judgment shown in
 Example~\ref{ex:judgment-section}. The first conjecture asserts that
 the type of the faculty function apply to three is \verb|int| and the
 second conjecture asserts that \verb|fun x : int (x)| does not have
-type \verb|int|
+type \verb|int|.
+
+Line comments (\verb|//|) and block comments (\verb|/* … */|) can be
+insert everywhere in the module.
 
 \begin{figure}
 \scriptsize
