@@ -138,7 +138,7 @@ rules
             // equalities are removed by introducing fresh variables and equality constraints
             // between them. This results in a list of variable substitutions and a list of premisses.
             (substitutions, equalities) := <get-typing-judgment; get-inputs(|j);
-                                            make-implicit-equalities-explicit(|<get-error-message> conclusion)> conclusion;
+                                            make-implicit-equalities-explicit(true | <get-error-message> conclusion, conclusion)> conclusion;
 
             // Replace each occurence with the corresponding new meta-variable.
             conclusion' := <concat; replace-once(|conclusion)> substitutions;
@@ -148,7 +148,7 @@ rules
 
             // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
-                                      make-implicit-equalities-explicit(|<get-error-message> premise)> premise\)> premisses-list';
+                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion')> premise\)> premisses-list';
 
             // Replace every occurence with only one representative of the new meta-variables.
             premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
@@ -210,19 +210,19 @@ rules
      */
     compute-dependencies(|terms, conclusion, decls) : inputs ->
         <filter(where(Snd; get-typing-judgment; get-outputs(|decls);
-               \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
-                              \)> (input-meta-variables, [])
-               \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
+                \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
+                               \)> (input-meta-variables, [])
+                \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
         where input-meta-variables := <collect-om(node-is-meta-variable)> inputs;
               conclusion-meta-variables := <get-typing-judgment; get-inputs(|decls); collect-om(node-is-meta-variable)> conclusion
 
     /**
      * Generates from implicit equalities equality premisses.
      */
-    make-implicit-equalities-explicit(|errors) =
-        collect-om(node-is-meta-variable, conc);
+    make-implicit-equalities-explicit(is-conclusion | errors, conclusion) =
+        collect-om(and(node-is-meta-variable, is-conclusion <+ \ n -> <collect(?n); equal(|[])> conclusion\), conc);
         group(meta-variable-equal); filter(where(length; gt(|1)));
-        Dupl;(id, map(map(make-new-meta-variable))); zip;
+        Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map(zip), mapconcat(make-eq-judgments(|errors)))
 
     /**
