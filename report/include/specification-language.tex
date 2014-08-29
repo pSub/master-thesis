@@ -232,7 +232,8 @@ type \verb|int|.
 Line comments (\verb|//|) and block comments (\verb|/* … */|) can be
 insert everywhere in the module.
 
-How does this design reflect the goals declared above?
+How does this design reflect the characteristics from the beginning of
+this chapter? We will address this point by point.
 
 \begin{description}
 \item[Usage] Mathematical definitions of type systems usually consist
@@ -251,16 +252,54 @@ How does this design reflect the goals declared above?
   code.
 \item[Modularity] \todo[inline]{Imports are not implemented yet.}
 \item[Integration] Type systems can be defined for every programming
-  language for which a SDF syntax definition exists. These definitions
-  can in most cases be used in the specification language without
-  modifications. Modifications are needed if one wants to use a
-  language concept inductively in the type system, but has not
-  implemented this concept with explicit induction in the
-  syntax.\todo[inline]{Given an example.}
+  language for which a \gls{sdf} syntax definition exists. These
+  definitions can be used in most cases without further
+  modifications. One requirement is that they introduce for every
+  context-free production a constructor. Modifications are also needed
+  if one wants to use a language concept inductively in the type
+  system, but has not implemented this concept with explicit induction
+  in the syntax. An example for this is the implementation of records
+  in the simply typed lambda calculus. \todo{Reference}
 \end{description}
 \section{Implementation}
 \label{sec:generate-sdf}
-\todo[inline]{Integration with sugar-lang is not done yet.}
+In this section we describe how the specification language is
+implemented and how the new syntactic constructs that can be defined
+in a specification are integrated.
+
+The specification language is itself defined in \gls{sdf} and consists
+of four \gls{sdf} modules. The module \verb|Common| which consists of
+lexical definitions that are used in multiple modules, the module
+\verb|BaseLanguage| which defines the syntax of the specification
+language, the module \verb|Generated| which contains new syntax that
+was define in a specification and the main module \verb|SLTC| that
+combines the previous modules.
+
+The module \verb|Common| is not particularly interesting therefore we
+will not explain it in detail but mention it when it is used in other
+modules.
+
+The syntax of the specification language is defined in the module
+\verb|BaseLanguage|, which is parameterized by the non-terminals
+\verb|TypingJudgment| and \verb|MetaVariable|. Those non-terminals
+depend on the actual target language and are therefore defined in
+\verb|Generated|. \todo[inline]{What is interesting of the
+  implementation?}
+
+In a fresh project the module \verb|Generated| does not exist in the
+syntax folder, as no specification was activated. If the project is
+build, a dummy module is copied from the resource folder. This module
+contains empty productions for the non-terminals \verb|TypingJudgment|
+and \verb|MetaVariable|. This dummy module ensures that a compilation
+of the whole project is possible, without a specification (e.g.\ to
+run tests). The strategy \verb|toSdf| generates a specification
+specific \verb|Generated| module. 
+
+\todo[inline]{Insert description of the generate-sdf module here}
+
+The module \verb|SLTC| plugs all modules together. It imports the
+module \verb|Generated| and instantiates the parameters of module
+\verb|BaseLanguage|.
 
 %%% Local Variables: 
 %%% mode: latex
