@@ -111,7 +111,7 @@ rules
                                           <get-error-message> lookup)
                                  , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps)\
                          case where((get-generic-name; equal(|"Eq"), id)):
-                              \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message> j)> j, dep) \
+                              \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message; option(filter(?Error(_)))> j)> j, dep) \
                          case where((get-generic-name; equal(|"Neq"), id)):
                               \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
                          otherwise:
