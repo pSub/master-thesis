@@ -1,4 +1,4 @@
-module test
+module PCF
 
 language specifications/PCF/PCF
 
@@ -37,7 +37,7 @@ $C |- ~E2 : ~T1
 ==================== T-app
 $C |- ~E1 ~E2 : ~T2
 
-(%f : ~T -> ~T ; $C) |- ~e : ~T -> ~T 
+(%f : ~T -> ~T ; $C) |- ~e : ~T -> ~T
 ========================================= T-fix
 $C |- fix %f : ~T -> ~T ( ~e ) : ~T -> ~T
 
@@ -124,15 +124,15 @@ conjectures
 
 /** Negative Tests */
 
-// ===========================
-// () |- fun x : int (x) : int
+/===========================
+() |- fun x : int (x) : int
 
-// ===
-// () |- let fac : int -> int =
-//   fix f : int -> int (
-//     fun n : int (
-//       ifz n then 1
-//       else n * (n (f - 1))
-//     )
-//   )
-//  in (fac 3) : int
+/===
+() |- let fac : int -> int =
+  fix f : int -> int (
+    fun n : int (
+      ifz n then 1
+      else n * (n (n - 1))
+    )
+  )
+ in (fac 3) : int

@@ -1,7 +1,6 @@
 %% Copied from https://github.com/metaborg/metaborg-pcf
 
-module PCF
-%% imports Common
+module specifications/PCF/PCF
 
 exports
     
