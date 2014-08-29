@@ -289,9 +289,14 @@ without implicit equalities.
 If a meta-variable occurs more than twice the equalities for the new
 variables are defined transitively.
 
+In the case of annotations for implicit errors, for each meta-variable
+for which implicit equalities exist the corresponding error messages
+is fetched from the annotations. The meta-variables are then replaced
+by the meta-variables of the explicit equality and the error message
+is added as a normal error to the explicit equality.
+
 \todo[inline]{Implicit equalities between inputs and outputs and
   between the contexts}
-\todo[inline]{Describe the fiddeling with @implicit}
 
 After this step, there are no implicit equalities left. Now the
 premisses of the typing rule are analyzed for inter-dependencies. A
