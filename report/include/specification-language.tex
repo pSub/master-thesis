@@ -167,7 +167,38 @@ used in the error messages and how premisses are annotated with error
 messages. All error message annotation belong to the preceding
 premise.
 
-\paragraph{Conjectures}
+\paragraph{Conjectures} Tests for a specification are called
+\textit{conjectures}. Their syntax is similar to the syntax of rules,
+with two exceptions. It is not possible to annotate premisses or
+conclusions with error messages and a conjecture can be marked as
+\textit{not derivable} by prepending the separating line with a
+slash. Marking conjectures not derivable allows to formulate negative
+tests.
+
+\begin{example}
+\begin{verbatim}
+===
+() |- let fac : int -> int = 
+  fix f : int -> int (
+    fun n : int (
+      ifz n then 1 
+      else n * (f (n - 1))
+    )
+  )
+ in (fac 3) : int
+
+/===========================
+() |- fun x : int (x) : int
+\end{verbatim}
+\label{ex:conjecture-section}
+\end{example}
+
+In Example~\ref{ex:conjecture-section} two conjectures of the PCF
+implementation are shown. They use the judgment shown in
+Example~\ref{ex:judgment-section}. The first conjecture asserts that
+the type of the faculty function apply to three is \verb|int| and the
+second conjecture asserts that \verb|fun x : int (x)| does not have
+type \verb|int|
 
 \begin{figure}
 \scriptsize
