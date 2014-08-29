@@ -110,12 +110,47 @@ defines a relation between the types of the target language, i.e.\ it
 has only input positions. This judgment could represent a subtyping
 relation.
 
-\paragraph{Rules/Conjectures} In the last two sections the typing
-rules and conjectures are declared. Both typing rules and conjectures
-have the same syntax. Typing rules specify the type system and
-conjectures are used to provide test cases and are optional. A typing
-rule consists of a possible empty list of typing judgments, an
-optional name and a typing judgment as conclusion.
+\paragraph{Rules} The seventh section of the module declares the
+(typing) rules. These rules define the semantics for the judgments
+declared in the previous section. The syntax of the rules replicates
+the form of inference rules: A (possibly empty) list of premisses
+separated from a conclusion by a horizontal line. Premisses and
+conclusion are instantiated judgments. All meta-variables that occur
+in freely in rules are implicitly all-quantified. This means that all
+meta-variables are all-quantified, as there is not mechanism to bind
+variables in typing rules.
+
+Rules can be annotated with a name. This increases the readability of
+the specification and allows to create human readable derivation
+traces. The rules have also support for custom error messages. There
+are two kinds of error annotation. Premisses can be annotated with
+\verb|@error msg|, where \verb|msg| can contain meta-variables and the
+special symbol \verb|INFTYPE| interleaved with arbitrary
+strings. Those errors are thrown if the premise could not be derived
+or if the calculated output does not match the expected output. The
+meta-variables are instantiated with the appropriate terms and
+\verb|INFTYPE| with the expected output. The other kind of error
+messages can also be annotated on the conclusion. Those errors are
+prefixed with \verb|@implicit| and are thrown if an implicit equality
+between two meta-variables cannot be satisfied. The meta-variables are
+distinguished in the error message by \verb|@[number]|
+annotations. How error messages are implemented in the type checker
+generator is explained in Section~\ref{sec:constr-gener} and
+Section~\ref{sec:constraint-solving}.
+
+\begin{example}{~}
+\begin{verbatim}
+===================== Subst-Eq
+~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
+
+~U = [ %x -> ~S ] ~T @error ~U "is not" ~T "where" %x "is replaced by" ~S.
+$C1 | $C2 |- ~e : all %x . ~T @error ~e "should have type all" %x "." ~T "but has type" INFTYPE.
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
+\end{verbatim}
+\end{example}
+
+\paragraph{Conjectures}
 
 \begin{figure}
 \scriptsize
