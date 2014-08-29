@@ -140,15 +140,32 @@ Section~\ref{sec:constraint-solving}.
 
 \begin{example}{~}
 \begin{verbatim}
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+
+rules
+
 ===================== Subst-Eq
 ~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
 
-~U = [ %x -> ~S ] ~T @error ~U "is not" ~T "where" %x "is replaced by" ~S.
-$C1 | $C2 |- ~e : all %x . ~T @error ~e "should have type all" %x "." ~T "but has type" INFTYPE.
+~U = [ %x -> ~S ] ~T @error ~U "is not" ~T "where" %x "is
+                            replaced by" ~S.
+$C1 | $C2 |- ~e : all %x . ~T 
+@error ~e "should have type all" %x "." %~T "but has type" { }.
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
 \end{verbatim}
+\label{ex:rules}
 \end{example}
+
+In Example~\ref{ex:rules} the rules \verb|Subst-Eq| and \verb|T-Tapp|
+from the SystemF \todo{Reference} implementation are
+shown. \verb|Subst-Eq| has no premisses and an implicit equality in
+the conclusion. Rule \verb|T-Tapp| show how the expected output is
+used in the error messages and how premisses are annotated with error
+messages. All error message annotation belong to the preceding
+premise.
 
 \paragraph{Conjectures}
 
