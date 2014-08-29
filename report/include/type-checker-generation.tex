@@ -250,8 +250,14 @@ implicit equalities in the premisses and the conclusion.
 Implicit equalities are transformed in to explicit equalities, by
 collecting all variables that occur more than once in an input
 position, rename them and create premisses that state the equality of
-the newly created variables. Example~\ref{ex:implicit-equalities}
-shows this for a typing rule of the judgment
+the newly created variables. Implicit equalities in premisses are not
+transformed into explicit equalities if the meta-variables also occur
+in the conclusion. These equalities are either ensured by explicit
+equalities from the conclusion or if there are no implicit equalities
+in the conclusion for this meta-variable, by the fact that this
+variable occurs only once as a source an thus, cannot introduce
+different values. Example~\ref{ex:implicit-equalities} shows this for
+a typing rule of the judgment
 
 \begin{verbatim}
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}
@@ -280,7 +286,7 @@ without implicit equalities.
 \label{ex:implicit-equalities}
 \end{example}
 
-If a variable occurs more than twice the equalities for the new
+If a meta-variable occurs more than twice the equalities for the new
 variables are defined transitively.
 
 \todo[inline]{Implicit equalities between inputs and outputs and
