@@ -232,35 +232,6 @@ type \verb|int|.
 Line comments (\verb|//|) and block comments (\verb|/* … */|) can be
 insert everywhere in the module.
 
-\begin{figure}
-\scriptsize
-\begin{verbatim}
-module example
-imports common
-language syntax/simply-typed-lambda-calculus
-meta-variables 	Term !callout`ex:spec:class' "~" !callout`ex:spec:prefix' { Type Exp } !callout`ex:spec:scope'
-                Ctx "$" { Context }
-                Id "%" { ID }
-contexts Context := ID{I} x Type{O}
-judgments Context{I} "|-" Exp{I} ":" Type{O}.
-rules
-
-%x : ~T in $C @error %x "should have type" ~T "but has" INFTYPE
-============== T-Var
-$C |- ~x : ~T
-
-(%x : ~T ; $C) |- ~t : ~T @error ~t "should have type ~T" "but has" INFTYPE
-================================= T-Abs
-$C |- \ %x : ~T . ~t : ~T -> ~T
-
-$C |- ~t1 : ~T11 -> ~T12 @error ~t1 "should have type" ~T11 "->" ~T12 "but has" INFTYPE
-$C |- ~t2 : ~T2          @error ~t2 "should have type" ~T2 "but has" INFTYPE
-========================= T-App
-$C |- ~t1 ~t2 : ~S
-\end{verbatim}
-\caption{Specification for a type system for the simply typed lambda calculus}
-\end{figure}
-
 How does this design reflect the goals declared above?
 
 \begin{description}
