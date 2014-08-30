@@ -143,13 +143,13 @@ rules
                                            + \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\
                           case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
-                                        CEq__(<instantiate(|pattern', term')> [a],
-                                              <instantiate(|pattern', term')> [b],
+                                        CEq__(<instantiate(|pattern', term')> a,
+                                              <instantiate(|pattern', term')> b,
                                               error) ])
                           case ?Neq__(a, b, error):
                               !(None(), [ <instantiate-error(|pattern', term')>
-                                        CNeq__(<instantiate(|pattern', term')> [a],
-                                               <instantiate(|pattern', term')> [b],
+                                        CNeq__(<instantiate(|pattern', term')> a,
+                                               <instantiate(|pattern', term')> b,
                                                error) ])
                           case ?Judgment__(num, inputs, ctx, expected-outputs, error):
                             // Instantiate the judgment that shall be called.
