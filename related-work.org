@@ -106,3 +106,11 @@
       syntax-directed rules interpreted in first-oder logic.
   - Type and scope rules are declarative, but Typmix has no support
     for proof assistence.
+* JavaCOP: Declarative Pluggable Types for Java
+  - A frame work for pluggable type systems in Java
+  - provides three tools
+    - a declarative language for structural constraints (flow-insensitive)
+    - a dataflow analysis engine for pluggable type systems
+    - a test harness for pluggable type systems
+  - hooks into javac, applies user defined rules are standard java type checking
+  - JavaCOP cannot extend the syntax of Java
