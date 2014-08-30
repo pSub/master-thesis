@@ -3,6 +3,11 @@ module sdf-utils
 imports libstratego-sdf
 imports org/sugarj/languages/Sdf2
 
+signature
+    constructors
+        // Somehow this constructor is not defined in org/sugarj/languages/Sdf2
+        cons: String -> WTF
+
 rules
     parse-sdf-definition(|language) = <concat-strings; parse-sdf-definition-file> ["syntax/", language, ".def"]
     
@@ -11,4 +16,11 @@ rules
         parse-sdf-definition(|language);
         collect-all(?prod(_,sort(non-terminal),_))
         
+    // construct-substructure =
+    //     ?prod(consituents, _, attrs);
+    //     <mkterm> (<fetch-constructor> attrs,
+    //               )
+
+    fetch-constructor = fetch-elem(?term(cons(constructor)); !constructor)
+
     test-substructures = <get-immediate-substructures(|"specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus")> "Type"
