@@ -81,20 +81,23 @@ rules
          Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs), constraints) ->
          (Some(outputs'), new-constraints)
         where
+            var := <filter(?Var__(_); where(\v -> <elem> (v, <collect-om(get-premise-inputs); flatten-list> calls)\);
+                                      where(\v -> <not(elem)> (v, <collect-om(get-premise-outputs); flatten-list> calls)\))> outputs;
+
             // Retrieve and remove elements from the context according to the context pattern.
             ctx' := <filter(\Binding__(ctx, i, _) -> <pop(|s)> ctx \ <+
                             where(\Reset__(ctx) -> <clear-context(|s, ctx)> \); skip)> ctx;
 
             // Append the context pattern to the input pattern.
-            pattern'' := <conc> (pattern, <filter(\Binding__(_, i, o) -> (i, o)\)> ctx);
+            pattern'' := <conc> (pattern, <filter(\Binding__(_, i, o) -> (i, o)\)> ctx, [var]);
 
             // Append the instantiated context pattern to the input term.
-            term'' := <conc> (term, ctx');
+            term'' := <conc> (term, ctx', <instantiate(|outputs, expected-outputs); singelton> var);
 
             // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v\)> (pattern'', term'', calls, constraints);
-            (pattern', term', calls', constraints', outputs') := <zip; replace-all(|(pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
+            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v\)> (expected-outputs, outputs, pattern'', term'', calls, constraints);
+            (expected-outputs', pattern', term', calls', constraints', outputs') := <zip; replace-all(|(expected-outputs, pattern'', term'', calls, constraints, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
             outputs-constraints := <foldl(safe-hashtable-deep-copy(\(s', i) -> <execute(|t, s', pattern', term', name)> i\ | s))> (calls', []);
