@@ -108,7 +108,7 @@ rules
             // Instantiate the variables in the error messages.
             iconstraints := <map(instantiate-error(|pattern', term'))> constraints';
 
-            assertion := <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs', expected-outputs);
+            assertion := <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs', expected-outputs');
 
             // Merge all generated constraints.
             new-constraints := <conc> (assertion, <mapconcat(Snd)> outputs-constraints, input-output-constraints)
