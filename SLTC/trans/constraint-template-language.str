@@ -80,7 +80,7 @@ rules
      *
      * @type List(Template) -> Fork(List(Template))
      */
-    mkFork : xs -> Fork__(xs)
+    mkFork : xs -> Fork__(<map(try(\Fork__(ts) -> ts\)); flatten-list> xs)
 
     /**
      * Transforms a tuple into a equality node.
