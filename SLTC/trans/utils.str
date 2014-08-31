@@ -258,6 +258,11 @@ rules
     delete : (y, [x | xs]) -> [x | <delete> (y, xs)]
 
     /**
+     * Computes the n-ary cartesian product.
+     */
+    cartesian-product = foldr(![[]], \(l, a) -> <mapconcat(\x -> <map(\xs -> [x|xs]\)> a\)> l\)
+
+    /**
      * A version of `hashtable-copy' that can deal with hashtables that
      * contain hashtables.
      *
