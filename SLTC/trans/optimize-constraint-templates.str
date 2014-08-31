@@ -66,8 +66,15 @@ rules
     solve-when-ambiguities(|context-definitions) =
         ?templates;
         where(equivalence-classes := <create-classes> templates);
-        <conc> (<map(mkFork; remove-trivial-fork)> equivalence-classes,
+        <conc> (<map(mkFork; optimize-relation; remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
+
+    optimize-relation = is-relation < optimize-relation' + id
+    optimize-relation' : Fork__(ts) -> Fork__(ts)
+        where not-syntax-directed-templates := <filter(where(get-pattern; all(?Var__(_))))> ts
+
+    is-relation : Fork__([t|ts]) -> Fork__([t|ts])
+        where <get-outputs; option(equal(|[]))> t
 
     create-classes : [] -> []
     create-classes : [t | ts] -> [class | <create-classes> ts']
