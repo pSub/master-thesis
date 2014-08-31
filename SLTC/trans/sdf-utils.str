@@ -6,7 +6,7 @@ imports org/sugarj/languages/Sdf2
 signature
     constructors
         // Somehow this constructor is not defined in org/sugarj/languages/Sdf2
-        cons: String -> WTF
+        cons: String -> Dummy
 
 rules
     parse-sdf-definition(|language) = <concat-strings; parse-sdf-definition-file> ["syntax/", language, ".def"]
@@ -14,12 +14,13 @@ rules
     get-immediate-substructures(|language) =
         ?non-terminal;
         parse-sdf-definition(|language);
-        collect-all(?prod(_,sort(non-terminal),_))
-        
-    // construct-substructure =
-    //     ?prod(consituents, _, attrs);
-    //     <mkterm> (<fetch-constructor> attrs,
-    //               )
+        collect-all(?prod(_,sort(non-terminal),_));
+        map(construct-substructure)
+
+    construct-substructure =
+        ?prod(consituents, _, attrs(attributes));
+        <mkterm> (<fetch-constructor> attributes,
+                  <filter(?sort(_))> consituents)
 
     fetch-constructor = fetch-elem(?term(cons(constructor)); !constructor)
 

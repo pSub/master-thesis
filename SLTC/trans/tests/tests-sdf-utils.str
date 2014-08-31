@@ -1,0 +1,18 @@
+module tests-sdf-utils
+
+imports sdf-utils
+
+signature
+    constructors
+        TInt : Dummy
+        TArrow : Dummy * Dummy -> Dummy
+        sort : Dummy -> Dummy
+        TRecord : Dummy -> Dummy
+
+rules
+    
+    get-immediate-substructures-tests =
+        apply-test(!"get-immediate-substructures", get-immediate-substructures(|"tests/SimplyTypedLambdaCalculus"),
+                   !"Type", [TInt(), TArrow(sort("Type"), sort("Type")), TRecord(sort("TRecordEntries"))])
+    
+    tests-sdf-utils = get-immediate-substructures-tests

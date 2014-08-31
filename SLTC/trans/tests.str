@@ -4,10 +4,12 @@ imports tests/tests-constraint-solving
 imports tests/tests-constraint-utils
 imports tests/tests-utils
 imports tests/tests-generate-constraints
+imports tests/tests-sdf-utils
 
 strategies
 
     tests = test-suite(!"tests", tests-constraint-solving;
                                  tests-constraint-utils;
                                  tests-utils;
-                                 tests-generate-constraints)
+                                 tests-generate-constraints;
+                                 tests-sdf-utils)
