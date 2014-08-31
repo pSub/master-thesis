@@ -6,6 +6,9 @@ imports constraint-template-language
 imports constraint-utils
 imports generate-fof
 imports verification
+imports sdf-utils
+
+imports include/SLTC
 
 signature
     sorts DummyVar
@@ -63,18 +66,25 @@ rules
                                      \)> premisses
                                  \); map(Fst)> rulez-premisses
 
-    solve-when-ambiguities(|context-definitions) =
+    solve-when-ambiguities(|judgments, target-language, context-definitions) =
         ?templates;
         where(equivalence-classes := <create-classes> templates);
-        <conc> (<map(mkFork; optimize-relation; remove-trivial-fork)> equivalence-classes,
+        <conc> (<map(mkFork; optimize-relation(|judgments, target-language); remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
 
-    optimize-relation = is-relation < optimize-relation' + id
-    optimize-relation' : Fork__(ts) -> Fork__(ts)
-        where not-syntax-directed-templates := <filter(where(get-pattern; all(?Var__(_))))> ts
+    optimize-relation(|judgments, target-language) =
+        is-relation; where(get-non-syntax-directed-templates; not(equal(|[])))
+        < optimize-relation'(|judgments, target-language) + id
+    optimize-relation'(|judgments, target-language) : f@Fork__(ts) -> Fork__(ts)
+        where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
+              judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
+              non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal)> judgments;
+              substructures := <map(get-immediate-substructures(|target-language))> non-terminals
 
     is-relation : Fork__([t|ts]) -> Fork__([t|ts])
         where <get-outputs; option(equal(|[]))> t
+
+    get-non-syntax-directed-templates : Fork__(ts) -> <filter(where(get-pattern; all(?Var__(_))))> ts
 
     create-classes : [] -> []
     create-classes : [t | ts] -> [class | <create-classes> ts']
@@ -108,7 +118,7 @@ rules
           else !Fork__(ts)
           end>
 
-    optimize-templates(|context-definitions) =
+    optimize-templates(|judgments, target-language, context-definitions) =
         solve-which-ambiguities(|context-definitions);
-        solve-when-ambiguities(|context-definitions);
+        solve-when-ambiguities(|judgments, target-language, context-definitions);
         order-forks-by-subsumption

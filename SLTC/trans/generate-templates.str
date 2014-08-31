@@ -15,14 +15,14 @@ rules
     generate-templates :
         Module(ModuleDec(_),
                imports,
-               Language(l),
+               Language(target-language),
                MetaVariables(meta-variables),
                Contexts(context-definitions),
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
         -> <to-templates(|judgments, context-definitions);
-            optimize-templates(|context-definitions)> typing-rules
+            optimize-templates(|judgments, target-language, context-definitions)> typing-rules
 
     /**
      * Extracts the typing judgment.
