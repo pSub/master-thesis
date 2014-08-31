@@ -25,12 +25,12 @@ rules
                         apply-test(!"instantiate", instantiate(|[Var__("x"), Var__("y"), Var__("x")], ["s", "u", "t"]),
                                    ![Var__("x"), Var__("x")], ["s", "s"])
 
-    match-constructors-tests = apply-and-fail(!"match-constructors", match-constructors,
+    match-constructors-tests = apply-and-fail(!"match-constructors", match-constructors(?Var__(_), false),
                                               !(1, 2));
-                               apply-test(!"match-constructors", match-constructors,
+                               apply-test(!"match-constructors", match-constructors(?Var__(_), false),
                                           !(<mkterm> ("A", []), <mkterm> ("A", [])),
                                           !"match");
-                               apply-test(!"match-constructors", match-constructors,
+                               apply-test(!"match-constructors", match-constructors(?Var__(_), false),
                                           !(1, Var__("x")), !"match")
 
     tests-constraint-utils =
