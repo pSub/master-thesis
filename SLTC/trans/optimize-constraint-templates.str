@@ -89,7 +89,7 @@ rules
         where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), sym))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
         where(<zip; map(match-constructors(?DummyVar__(), sym))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
 
-    order-forks-by-subsumption = map(try(\Fork__(ts) -> Fork__(<isort-list(LSort(subsume-mod-var(false))); reverse> ts)\))
+    order-forks-by-subsumption = map(try(\Fork__(ts) -> Fork__(<qsort(subsume-mod-var(false))> ts)\))
 
     remove-forks : [Fork__(ts) | ts'] -> <conc> (ts, <remove-forks> ts')
     remove-forks : [t | ts] ->  [t | <remove-forks> ts]
