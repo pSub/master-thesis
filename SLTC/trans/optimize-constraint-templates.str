@@ -69,17 +69,25 @@ rules
     solve-when-ambiguities(|judgments, target-language, context-definitions) =
         ?templates;
         where(equivalence-classes := <create-classes> templates);
-        <conc> (<map(mkFork; optimize-relation(|judgments, target-language); remove-trivial-fork)> equivalence-classes,
+        <conc> (<map(mkFork; optimize-relation(|judgments, context-definitions, target-language); remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
 
-    optimize-relation(|judgments, target-language) =
+    // FXIME: Take care of contexts.
+    optimize-relation(|judgments, context-definitions, target-language) =
         is-relation; where(get-non-syntax-directed-templates; not(equal(|[])))
-        < optimize-relation'(|judgments, target-language) + id
-    optimize-relation'(|judgments, target-language) : f@Fork__(ts) -> Fork__(ts)
+        < optimize-relation'(|judgments, context-definitions, target-language) + id
+    optimize-relation'(|judgments, context-definitions, target-language) : f@Fork__(ts) -> Fork__(<conc> (ts, base-templates))
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
               judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
-              non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal)> judgments;
-              substructures := <map(get-immediate-substructures(|target-language))> non-terminals
+              non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal, conc)> judgments;
+              substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
+              base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
+              base-cons-product := <cartesian-product> base-constructors;
+              base-goals := <map(\args -> Formula__("", Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args))\)> base-cons-product;
+              proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> base-goals;
+              base-templates := <zip; debug;  filter(\(goal, VerificationSuccess(_)) -> <make-base-template> (judgment-number, goal) \); debug> (base-cons-product, proofs)
+
+    make-base-template : (judgment-number, pattern) -> Template__([], Conclusion__(judgment-number, None(), (pattern, []), []), [])
 
     is-relation : Fork__([t|ts]) -> Fork__([t|ts])
         where <get-outputs; option(equal(|[]))> t
