@@ -17,7 +17,7 @@ rules
     solve-which-ambiguities(|context-definitions) : templates -> 
         <conc> (<map(mkFork;
         // optimize-fork(|context-definitions, templates);
-           remove-uneeded-forks)> equivalence-classes,
+           remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
         where equivalence-classes := <group(equal-mod-var)> templates
     
@@ -66,7 +66,7 @@ rules
     solve-when-ambiguities(|context-definitions) =
         ?templates;
         where(equivalence-classes := <create-classes> templates);
-        <conc> (<map(mkFork; remove-uneeded-forks)> equivalence-classes,
+        <conc> (<map(mkFork; remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
 
     create-classes : [] -> []
@@ -95,7 +95,7 @@ rules
     remove-forks : [t | ts] ->  [t | <remove-forks> ts]
     remove-forks : [] -> []
 
-    remove-uneeded-forks : Fork__(ts) ->
+    remove-trivial-fork : Fork__(ts) ->
          <if <equal> (<length> ts, 1)
           then <Hd> ts
           else !Fork__(ts)
