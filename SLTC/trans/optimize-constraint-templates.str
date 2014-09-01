@@ -85,7 +85,7 @@ rules
               base-cons-product := <cartesian-product> base-constructors;
               base-goals := <map(\args -> Formula__("", Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args))\)> base-cons-product;
               proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> base-goals;
-              base-templates := <zip; debug;  filter(\(goal, VerificationSuccess(_)) -> <make-base-template> (judgment-number, goal) \); debug> (base-cons-product, proofs)
+              base-templates := <zip; filter(\(goal, VerificationSuccess(_)) -> <make-base-template> (judgment-number, goal) \)> (base-cons-product, proofs)
 
     make-base-template : (judgment-number, pattern) -> Template__([], Conclusion__(judgment-number, None(), (pattern, []), []), [])
 
