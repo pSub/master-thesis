@@ -40,7 +40,7 @@ used at all. With regard to formula generation they are only used to
 ensure correct syntax.
 
 The following parts of a type system specification are translated into
-first-order formulas as described below: Contexts, AST nodes of
+first-order formulas as described below: Contexts, \gls{ast} nodes of
 the programming language, meta-variables and typing rules.
 
 \todo[inline]{Implement imports and describe how they are handled.}
@@ -71,7 +71,7 @@ contexts. The $bind$ predicate used in this formula models the
 binding of new input/output pairs to the context. In the
 implementation the order of arguments is a bit different, but this
 difference is for the discussion of the concept negligible. For
-details see Section \ref{sec:implementation-fof}. The predicate
+details see Section~\ref{sec:implementation-fof}. The predicate
 $lookup$ models the lookup in the context. It is used to check
 whether some input/output pair exists in the context. In the base
 case the an input/output pair is added to an context $e$ and
@@ -91,7 +91,7 @@ required elements are directly given in the bind predicate.
 \label{formula:context-step}
 \end{figure}
 
-Formula \ref{formula:context-step} models the step case of
+Formula~\ref{formula:context-step} models the step case of
 context look-ups. The intuition is that if some input/output pair
 is contained in an context $e$ the it is also contained in an
 context in which in addition a different input/output pair is
@@ -99,14 +99,14 @@ stored. Variables $x_i$ and $x_i'$ are non-terminals from the
 context declaration tagged with input, $y_i$ and $y_i'$ are
 non-terminals tagged with output respectively.
 
-The AST nodes of the programming language are translated directly into
+The \gls{ast} nodes of the programming language are translated directly into
 predicates. For the translation the following scheme is used. Assume
-an AST node of the following form $Cons(e_1, \dots, e_n)$ is
+an \gls{ast} node of the following form $Cons(e_1, \dots, e_n)$ is
 translated into a predicate of the form $cons(p_1, \dots, p_n)$, where
 all consituents $e_i$ are translated into predicates $p_i$
 recursively. To help theorem provers for each of those predicates an
 axiom for injectivity and univalence is created. Those hold by
-definition of the AST nodes.
+definition of the \gls{ast} nodes.
 
 The most important part is the translation of the typing
 rules. Depending on whether the typing rules has premises either of
@@ -162,17 +162,17 @@ The module is split up by pattern matching. For formula generation
 only the context definitions, typing rules and conjectures are
 used.
 
-Formulas for the context definitions are generated for each
-context definition separately and are added to the axioms. The
-non-terminals of an context definition are indexed with fresh
-names. Those fresh names will be used as variables in the first-order
-formulas. The structure of the formulas, as it is defined in
-\ref{formula:context-base} and \ref{formula:context-step}, is
+Formulas for the context definitions are generated for each context
+definition separately and are added to the axioms. The non-terminals
+of an context definition are indexed with fresh names. Those fresh
+names will be used as variables in the first-order formulas. The
+structure of the formulas, as it is defined
+in~\ref{formula:context-base} and~\ref{formula:context-step}, is
 hard-coded in the internal representation for first-order formulas. To
 adhere to this structure the variables representing the non-terminals
 are split up by their input/output attribute. The counter parts for
 the variables needed in the step case are created by appending an
-underscore to the variable name, as a tick is not valid in TPTP.
+underscore to the variable name, as a tick is not valid in \gls{tptp}.
 
 Rewriting typing rules into first-order formulas is the most complex
 process in the formula generation. The rewrite process is triggered
@@ -186,7 +186,7 @@ free variables of premises and constraints are collected. Now an
 implication is constructed from the list of premises and the
 conclusion and in the case there are free variables, those variables
 are all quantified. By now the constructed formula has the structure
-shown in \ref{formula:typing-rule}.
+shown in~\ref{formula:typing-rule}.
 
 Now the details of the \texttt{rewrite} strategy are presented. This
 strategy is defined as a sequence of two top down traversals. The first
@@ -196,7 +196,7 @@ as follows. An attempt to rewrite the current node into an auxiliary
 constructor is made, if this attempt succeeds the auxiliary
 constructor is rewritten into a term of the first-order formula
 language, if it does not succeed it is wrapped into the \texttt{Term}
-constructor. The reasoning is the following. Some AST nodes of the
+constructor. The reasoning is the following. Some \gls{ast} nodes of the
 specification language are generic, those referring to the context
 formulas, to the typing judgments and to the meta-variables. Those
 consist of some constant string plus some user defined
@@ -218,7 +218,7 @@ transformation into an auxiliary constructor is not possible, the
 current node is wrapped into a \texttt{Term} constructor if it is not
 a constructor of the target language. The constructor \texttt{Term}
 indicates that the wrapped constructor is a constructor of the
-programming language, i.e. no constructor of the specification, nor of
+programming language, i.e.\ no constructor of the specification, nor of
 the target language. This wrapping is needed for controlled pretty
 printing of programming language constructors. In the second top down
 traversal strings in the arguments of predicates (\texttt{Pred}) and
@@ -238,3 +238,7 @@ formulas tagged as conjectures and are therefore also named
 %%% mode: latex
 %%% TeX-master: "../report"
 %%% End: 
+
+
+
+
