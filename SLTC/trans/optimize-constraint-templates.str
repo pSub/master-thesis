@@ -46,7 +46,13 @@ rules
     make-dummy-vars = innermost(?Var__(_); !DummyVar__())
 
     /**
-     * Stub for checking whether a rule within a Fork is redundant.
+     * Checks whether a template in a Fork is redundant. Only applicable to Forks in which
+     * all templates have patterns that are equal modulo variable names.
+     *
+     * Checks for each template if all premisses are implied by the premisses of a singel other
+     * template. If this is the case the template is removed.
+     *
+     * @type Fork_(Template) -> Fork__(Template)
      */
     optimize-fork(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
         where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
@@ -121,6 +127,9 @@ rules
     remove-forks : [t | ts] ->  [t | <remove-forks> ts]
     remove-forks : [] -> []
 
+    /**
+     * Unpacks a Fork if it only contains a single template.
+     */
     remove-trivial-fork : Fork__(ts) ->
          <if <equal> (<length> ts, 1)
           then <Hd> ts
