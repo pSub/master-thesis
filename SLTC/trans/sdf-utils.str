@@ -5,23 +5,48 @@ imports org/sugarj/languages/Sdf2
 
 signature
     constructors
-        // Somehow this constructor is not defined in org/sugarj/languages/Sdf2
+        // FIXME: Somehow this constructor is not defined in org/sugarj/languages/Sdf2
         cons: String -> Dummy
 
 rules
-    parse-sdf-definition(|language) = <concat-strings; parse-sdf-definition-file> ["syntax/", language, ".def"]
     
+    /**
+     * Wrapper around `parse-sdf-defintion-file' that works with the language attribute
+     * specified in the specifications.
+     *
+     * @type a -> ATerm
+     * @param String
+     */
+    parse-sdf-definition(|language) = <concat-strings; parse-sdf-definition-file> ["syntax/", language, ".def"]
+
+    /**
+     * Extract the immediate substructures for a given term.
+     * Used for case-distinction and structural induction.
+     *
+     * @type String -> List(ATerm)
+     * @param String
+     */
     get-immediate-substructures(|language) =
         ?non-terminal;
         parse-sdf-definition(|language);
         collect-all(?prod(_,sort(non-terminal),_));
         map(construct-substructure)
 
+    /**
+     * Creates a term from sdf productions.
+     *
+     * @type prod(_) -> ATerm
+     */
     construct-substructure =
-        ?prod(consituents, _, attrs(attributes));
+        ?prod(consituents, _, attributes);
         <mkterm> (<fetch-constructor> attributes,
                   <filter(?sort(_))> consituents)
 
-    fetch-constructor = fetch-elem(?term(cons(constructor)); !constructor)
+    /**
+     * Extracts the constructor from the attribute set of an sdf production.
+     *
+     * @type attrs(_) -> String
+     */
+    fetch-constructor = ?attrs(attributes); <fetch-elem(?term(cons(constructor)); !constructor)> attributes
 
     test-substructures = <get-immediate-substructures(|"specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus")> "Type"
