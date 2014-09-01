@@ -7,15 +7,15 @@ signature
     constructors
        /** Base Language */
        // FIXME: Clean up the template language definition.
+       Template__ : List(Premisse) * Conclusion * Constraint -> Template
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
-       Template__ : List(premisse) * Conclusion * Constraint -> Template
-       Lookup__  : ctx * inputs * outputs * error -> Ctx
+       Judgment__ : number * term * binding * outputs * error -> Premise
+       Lookup__  : ctx * inputs * outputs * error -> Premise
+       Eq__ : term * term * error -> Premise
+       Neq__ : term * term * error -> Premise
        Reset__ : ctx -> Ctx
        Ctx__ : ctx -> Ctx
        Binding__ : ctx * inputs * outputs -> Ctx
-       Judgment__ : number * term * binding * outputs * error -> Judgment
-       Eq__ : term * term * error -> Eq
-       Neq__ : term * term * error -> Neq
 
        /** Extended Language */
        Fork__ : List(Rule) -> Template
