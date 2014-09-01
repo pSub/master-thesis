@@ -74,7 +74,8 @@ rules
 
     // FXIME: Take care of contexts.
     optimize-relation(|judgments, context-definitions, target-language) =
-        is-relation; where(get-non-syntax-directed-templates; not(equal(|[])))
+        is-relation; where(get-non-syntax-directed-templates; not(equal(|[])));
+        where(get-ctx-pattern; equal(|[]))
         < optimize-relation'(|judgments, context-definitions, target-language) + id
     optimize-relation'(|judgments, context-definitions, target-language) : f@Fork__(ts) -> Fork__(<conc> (ts, base-templates))
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
