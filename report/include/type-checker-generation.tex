@@ -87,11 +87,20 @@ following.
   \todo[inline]{Complete this grammar and synchronize it with the
     stratego source code}
   \begin{grammar}
-    <Template> ::= `Template__' <Vars> <Premisses> <Conjecture> <Constraints>
+    <Template> ::= `Template__' <Premisses> <Conjecture> <Constraints>
 
-    <Conjecture> ::= `Conjecture__' <Int> <Name> <Pattern> <Outputs>
+    <Conjecture> ::= `Conjecture__' <Judg> <Name> <Pattern> <Outputs>
+
+    <Premisses> ::= $\epsilon$ | <Premise> <Premisses>
+
+    <Premise> ::= `Lookup' <Ctx> <Inputs> <Outputs> <Error>
+    \alt `Judgment' <Judg> <Inputs> <Binding> <Outputs> <Error>
+    \alt `Eq' <Term> <Term> <Error>
+    \alt `Neq' <Term> <Term> <Error>
 
     <Name> ::= `Some' <String> | `None'
+
+    <Judg> ::= <Int>
   \end{grammar}
 \end{definition}
 
@@ -310,7 +319,7 @@ output positions of the dependencies, as described in the previous
 paragraph. The implementation of this ordering is straightforward,
 first the dependencies are collected for each premise. This creates an
 transposed dependency graph, that is topologically sorted with the
-algorithm by Kahn \cite{Kahn:1962:TSL:368996.369025}. The resulting
+algorithm by Kahn~\cite{Kahn:1962:TSL:368996.369025}. The resulting
 topological order is reversed as we look at the transposed dependency
 graph. Cycles are detected and reported.
 
