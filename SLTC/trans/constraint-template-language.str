@@ -6,10 +6,9 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
-       // FIXME: Clean up the template language definition.
-       Template__ : List(Premisse) * Conclusion * Constraint -> Template
+       Template__ : List(Premise) * Conclusion -> Template
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
-       Judgment__ : number * term * binding * outputs * error -> Premise
+       Judgment__ : judg-number * term * binding * outputs * error -> Premise
        Lookup__  : ctx * inputs * outputs * error -> Premise
        Eq__ : term * term * error -> Premise
        Neq__ : term * term * error -> Premise
@@ -42,7 +41,7 @@ rules
      * @type Template -> List(a)
      */
     get-pattern : Conclusion__(_, _, (pattern, _), _) -> pattern
-    get-pattern : Template__(_, rule, _) -> <get-pattern> rule
+    get-pattern : Template__(_, rule) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
@@ -51,7 +50,7 @@ rules
      * @type Template -> List(a)
      */
     get-ctx-pattern : Conclusion__(_, _, (_, ctx), _) -> ctx
-    get-ctx-pattern : Template__(_, rule, _) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Template__(_, rule) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
@@ -60,7 +59,7 @@ rules
      * @type Template -> Int
      */
     get-judgment-number : Conclusion__(judg-number, _, _, _) -> judg-number
-    get-judgment-number : Template__(_, rule, _) -> <get-judgment-number> rule
+    get-judgment-number : Template__(_, rule) -> <get-judgment-number> rule
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
@@ -69,10 +68,10 @@ rules
      * @type Template -> Option(String)
      */
     get-rule-name : Conclusion__(_, name, _, _) -> name
-    get-rule-name : Template__(_, rule, _) -> <get-rule-name> rule
+    get-rule-name : Template__(_, rule) -> <get-rule-name> rule
     
     get-outputs : Conclusion__(_, _, _, outputs) -> Some(outputs)
-    get-outputs : Template__(_, rule, _) -> <get-outputs> rule
+    get-outputs : Template__(_, rule) -> <get-outputs> rule
     get-outputs : Fork__(_) -> None()
     
     /**

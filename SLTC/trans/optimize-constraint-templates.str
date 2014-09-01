@@ -87,7 +87,7 @@ rules
               proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> base-goals;
               base-templates := <zip; filter(\(goal, VerificationSuccess(_)) -> <make-base-template> (judgment-number, goal) \)> (base-cons-product, proofs)
 
-    make-base-template : (judgment-number, pattern) -> Template__([], Conclusion__(judgment-number, None(), (pattern, []), []), [])
+    make-base-template : (judgment-number, pattern) -> Template__([], Conclusion__(judgment-number, None(), (pattern, []), []))
 
     is-relation : Fork__([t|ts]) -> Fork__([t|ts])
         where <get-outputs; option(equal(|[]))> t

@@ -128,8 +128,7 @@ rules
                          name,
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx), node-is-ctx);
                          (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
-                         <get-typing-judgment; get-outputs(|j)> conclusion'),
-                     [])
+                         <get-typing-judgment; get-outputs(|j)> conclusion'))
         where
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;

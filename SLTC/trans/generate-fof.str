@@ -234,7 +234,7 @@ signature
             // it is illegal in TPTP to quantify over no variables.
             prop := <if <[]> free-vars-in-rule then !implication else !All__(free-vars-in-rule, implication) end>
 
-    make-formula(|type) : Template__(calls, Conclusion__(judg-number, name, (pattern, ctx), outputs), xs-outputs)
+    make-formula(|type) : Template__(calls, Conclusion__(judg-number, name, (pattern, ctx), outputs))
                             -> Formula__(<option-to-string-newname(|<type-to-string> type)> name, type, prop)
         where
             conclusion := Pred__(<conc-strings>("'tcheck", <int-to-string> judg-number , "'")
@@ -253,7 +253,7 @@ signature
     /**
      * Helper rule to transform premisses of templates into first-order predicates.
      */
-    premisses-to-props : Template__(calls, _, _) -> <map(rewrite-call)> calls
+    premisses-to-props : Template__(calls, _) -> <map(rewrite-call)> calls
 
     /**
      * Transforms a term that is not a context into a first-order term.
