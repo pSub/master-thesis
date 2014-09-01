@@ -38,7 +38,7 @@ rules
                     <prepare-generation(|judgments, context-definitions, store);
                     \input ->
                         // Generate the constraints.
-                        <generate(|templates, store, <get-outputs(|judgments)> conjecture)> (<get-judgment-id> conjecture, input)
+                        <generate(true |templates, store, <get-outputs(|judgments)> conjecture)> (<get-judgment-id> conjecture, input)
                     \; \result -> (result, type)\
                     > conjecture
                  \, clear-store(|store))),
@@ -63,10 +63,11 @@ rules
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
      */
-    generate(|templates, store, expected-outputs) : (judg-number, inputs) ->
+    generate(|templates, store, expected-outputs) = generate(false | templates, store, expected-outputs)
+    generate(init | templates, store, expected-outputs) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
-             <find-match(|inputs, judg-number, store) < generate'(|templates, inputs, store, expected-outputs)
+             <find-match(|inputs, judg-number, store) < generate'(init | templates, inputs, store, expected-outputs)
                                                       + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
 
     /**
@@ -77,7 +78,7 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      */
-    generate'(|t, term, s, expected-outputs) :
+    generate'(init |t, term, s, expected-outputs) :
          Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs)) ->
          (Some(outputs'), new-constraints)
         where
@@ -105,15 +106,18 @@ rules
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
 
-            assertion := <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs', expected-outputs');
+            if or(init, <equal(|[])> calls)
+            then assertion := <zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (outputs', expected-outputs')
+            else assertion := []
+            end;
 
             // Merge all generated constraints.
             new-constraints := <conc> (assertion, <mapconcat(Snd)> outputs-constraints, input-output-constraints)
 
-    generate'(|ts, term, s, expected-outputs) : Fork__(rulez) ->
+    generate'(init | ts, term, s, expected-outputs) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output.
-           <until(safe-hashtable-deep-copy(\(s', i) -> <generate'(|ts, term, s', expected-outputs);
+           <until(safe-hashtable-deep-copy(\(s', i) -> <generate'(init | ts, term, s', expected-outputs);
                    \(Some(o), cs) -> (<conc(|<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (o, expected-outputs));
                     unify-internal; apply-mgu(|o)> cs, cs)\> i\| s))
                    < \(x, cs) -> (Some(x), cs)\
