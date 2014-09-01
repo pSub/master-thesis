@@ -48,5 +48,3 @@ rules
      * @type attrs(_) -> String
      */
     fetch-constructor = ?attrs(attributes); <fetch-elem(?term(cons(constructor)); !constructor)> attributes
-
-    test-substructures = <get-immediate-substructures(|"specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus")> "Type"
