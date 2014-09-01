@@ -2,7 +2,7 @@ module Typesystem
 
 language specifications/secure-flow-analysis/Language
 
-meta-variables 	Exp "~" { Phrase DataType PhraseType }			
+meta-variables 	Exp "~" { Phrase DataType }			
 				Dom "$" { LocationTyping VariableTyping }
 				Id "%" { ID }
 				Num "&" { Int }
