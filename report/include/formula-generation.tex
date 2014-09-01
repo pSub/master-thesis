@@ -40,41 +40,41 @@ used at all. With regard to formula generation they are only used to
 ensure correct syntax.
 
 The following parts of a type system specification are translated into
-first-order formulas as described below: Environments, AST nodes of
+first-order formulas as described below: Contexts, AST nodes of
 the programming language, meta-variables and typing rules.
 
 \todo[inline]{Implement imports and describe how they are handled.}
 
-Environments declarations are translated in a uniform way. For every
-environment two formulas are generated. These two formulas model the
-look-up of entries in the environment, which is equivalent to how they
+Context declarations are translated in a uniform way. For every
+context two formulas are generated. These two formulas model the
+look-up of entries in the context, which is equivalent to how they
 are stored. Those formulas have an inductive nature, one formula
 models the base case and the other one the step case for the lookup.
 
 %% FIXME: This seems to be no good way to refer to formulas. How is it
 %% done right? Haven't found an example in my bachelor thesis by chance.
 \begin{figure}
-\label{formula:environment-base}
 \begin{multline}
   \forall e, x_1, \dots, x_n, y_1, \dots, y_m . \\
   (lookup_e(x_1,\dots,x_n,y_1,\dots,y_m,
   bind(x_1,\dots,x_n,y_1,\dots,y_m,e)))
 \end{multline}
+\label{formula:context-base}
 \end{figure}
 
-The formula \ref{formula:environment-base} represents the base case of
-environment look-ups. All non-terminals in the environment definition
+The Formula~\ref{formula:context-base} represents the base case of
+context look-ups. All non-terminals in the context definition
 tagged as input are translated into variables $x_1 \dots x_n$ and all
 tagged as output are translated into variables $y_1 \dots y_m$,
 respectively. The variable $e$ ranges over all possible
-environments. The $bind$ predicate used in this formula models the
-binding of new input/output pairs to the environment. In the
+contexts. The $bind$ predicate used in this formula models the
+binding of new input/output pairs to the context. In the
 implementation the order of arguments is a bit different, but this
 difference is for the discussion of the concept negligible. For
 details see Section \ref{sec:implementation-fof}. The predicate
-$lookup$ models the lookup in the environment. It is used to check
-whether some input/output pair exists in the environment. In the base
-case the an input/output pair is added to an environment $e$ and
+$lookup$ models the lookup in the context. It is used to check
+whether some input/output pair exists in the context. In the base
+case the an input/output pair is added to an context $e$ and
 looked-up directly afterwards. Therefore the look-up succeeds as the
 required elements are directly given in the bind predicate.
 
@@ -88,15 +88,15 @@ required elements are directly given in the bind predicate.
   \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup(x_1, \dots, x_n,
   y_1, \dots, y_m, bind(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \end{multline}
-\label{formula:environment-step}
+\label{formula:context-step}
 \end{figure}
 
-Formula \ref{formula:environment-step} models the step case of
-environment look-ups. The intuition is that if some input/output pair
-is contained in an environment $e$ the it is also contained in an
-environment in which in addition a different input/output pair is
+Formula \ref{formula:context-step} models the step case of
+context look-ups. The intuition is that if some input/output pair
+is contained in an context $e$ the it is also contained in an
+context in which in addition a different input/output pair is
 stored. Variables $x_i$ and $x_i'$ are non-terminals from the
-environment declaration tagged with input, $y_i$ and $y_i'$ are
+context declaration tagged with input, $y_i$ and $y_i'$ are
 non-terminals tagged with output respectively.
 
 The AST nodes of the programming language are translated directly into
@@ -151,23 +151,23 @@ language into first-order formula is described in this section.
 \todo[inline]{Extend for imports.}
 The implementation is organized in the following steps. Fist, the
 module is split up into its components. Those are: module description,
-imports, programming language, meta-variables, environments,
-judgments, typing rules and conjectures. Second, environments, typing
+imports, programming language, meta-variables, contexts,
+judgments, typing rules and conjectures. Second, contexts, typing
 rules and conjectures are transformed into first-order
 formulas. Third, for each conjecture a file is created which contains
 all generated formulas. In the following those steps are explained in
 detail.
 
 The module is split up by pattern matching. For formula generation
-only the environment definitions, typing rules and conjectures are
+only the context definitions, typing rules and conjectures are
 used.
 
-Formulas for the environment definitions are generated for each
-environment definition separately and are added to the axioms. The
-non-terminals of an environment definition are indexed with fresh
+Formulas for the context definitions are generated for each
+context definition separately and are added to the axioms. The
+non-terminals of an context definition are indexed with fresh
 names. Those fresh names will be used as variables in the first-order
 formulas. The structure of the formulas, as it is defined in
-\ref{formula:environment-base} and \ref{formula:environment-step}, is
+\ref{formula:context-base} and \ref{formula:context-step}, is
 hard-coded in the internal representation for first-order formulas. To
 adhere to this structure the variables representing the non-terminals
 are split up by their input/output attribute. The counter parts for
@@ -197,7 +197,7 @@ constructor is made, if this attempt succeeds the auxiliary
 constructor is rewritten into a term of the first-order formula
 language, if it does not succeed it is wrapped into the \texttt{Term}
 constructor. The reasoning is the following. Some AST nodes of the
-specification language are generic, those referring to the environment
+specification language are generic, those referring to the context
 formulas, to the typing judgments and to the meta-variables. Those
 consist of some constant string plus some user defined
 string. Therefore it is not possible to use normal pattern matching on
