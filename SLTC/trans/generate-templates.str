@@ -159,7 +159,7 @@ rules
             enum-premisses := <add-indices> premisses-with-equalities;
             
             // Compute the dependencies between the premisses.
-            dependencies := <map((id, get-typing-judgment; get-inputs(|j));
+            dependencies := <map((id, get-typing-judgment; node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
                                  (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
             
             // Create a topological order of the premisses according to their dependencies.
