@@ -47,7 +47,7 @@ rules
             if <[]> typing-rules then exit-with-error(|"No typing rules found", 1) else id end;
             
             // Initialize the store that contains the contexts
-            context-number := <collect-om(is-ctx-modification; get-ctx-id); list-max> templates;
+            context-number := <collect-om(is-ctx-modification; get-ctx-id); list-max <+ !0> templates;
             empty-contexts := <inc; range; Tl; map-with-index((id, !([], <new-hashtable>)))> context-number;
             store := <new-hashtable(|context-number, 100); hashtable-putlist(|empty-contexts)>
 
