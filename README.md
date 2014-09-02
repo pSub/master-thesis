@@ -8,6 +8,7 @@ Quick-Start-Guide:
     * Install Eclipse plugin Spoofax (http://download.spoofax.org/update/nightly)
     * Import project into Eclipse
     * Build the project to make sure everything works
+    * Restart Eclipse
     * Choose a type system from the folder syntax/specification/
     * Comment all lines after `rules'
     * Click on `Generation' -> `Generate SDF'
