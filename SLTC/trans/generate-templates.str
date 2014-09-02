@@ -157,11 +157,11 @@ rules
 
             // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities;
-            
+
             // Compute the dependencies between the premisses.
-            dependencies := <map((id, get-typing-judgment; node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
-                                 (id, compute-dependencies(|enum-premisses, conclusion', j)))> enum-premisses;
-            
+            dependencies := <map((id, get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j)));
+                                 (id, compute-dependencies(|enum-premisses, conclusion', j, c)))> enum-premisses;
+
             // Create a topological order of the premisses according to their dependencies.
             eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort <+ exit-with-error(|<conc-strings> ("Cyclic dependencies in rule ", <option-to-string> name), 1)> dependencies);
             
@@ -207,13 +207,13 @@ rules
      * @param terms - judgments
      * @param decls - judgment declarations
      */
-    compute-dependencies(|terms, conclusion, decls) : inputs ->
-        <filter(where(Snd; get-typing-judgment; get-outputs(|decls);
+    compute-dependencies(|terms, conclusion, judgments, contexts) : inputs ->
+        <filter(where(Snd; get-typing-judgment; (node-is-ctx-lookup < get-outputs(|contexts) + get-outputs(|judgments));
                 \ os -> <foldl(\ (i, l) -> <collect-om(?i); conc(|l)> os
                                \)> (input-meta-variables, [])
                 \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
         where input-meta-variables := <collect-om(node-is-meta-variable)> inputs;
-              conclusion-meta-variables := <get-typing-judgment; get-inputs(|decls); collect-om(node-is-meta-variable)> conclusion
+              conclusion-meta-variables := <get-typing-judgment; get-inputs(|judgments); collect-om(node-is-meta-variable)> conclusion
 
     /**
      * Generates from implicit equalities equality premisses.
