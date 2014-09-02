@@ -198,7 +198,7 @@ signature
     /**
      * Wraps typing judgment in an auxiliary constructor.
      */
-    rewrite-typing-judgment : AuxCons__("TypingJudgment", "False", []) -> False__()
+    rewrite-typing-judgment : AuxCons__("TypingJudgment", "False", []) -> Eq__(1, 0)
     rewrite-typing-judgment : AuxCons__("TypingJudgment", "Neq", [arg1, arg2]) -> Neq__(arg1, arg2)
     rewrite-typing-judgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
     rewrite-typing-judgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
