@@ -2,7 +2,9 @@ module Typesystem
 
 language specifications/secure-flow-analysis/Language
 
-meta-variables 	Exp "~" { Phrase DataType }			
+meta-variables 	Type "~" { DataType }
+                Exp "~1" { Exp }
+                Cmd "~2" { Cmd }			
 				Dom "$" { LocationTyping VariableTyping }
 				Id "%" { ID }
 				Num "&" { Int }
@@ -26,11 +28,37 @@ $l ; $c |- %x : ~t var
 =========================== VARLOC
 $l ; $c |- loc &l : ~t var
 
-$l ; $c |- e : ~t
-$l ; $c |- f : ~t
+$l ; $c |- ~1e : ~t
+$l ; $c |- ~1f : ~t
 ====================== ARITH
-$l ; $c |- e + f : ~t
+$l ; $c |- ~1e + ~1f : ~t
 
-//$l ; $c |- 
-// === R-VAL
-// $l ; $c |- e : ~t
+$l ; $c |- ~1e : ~t var
+====================== R-VAL
+$l ; $c |- ~1e : ~t
+
+$l ; $c |- ~1e : ~t var
+$l ; $c |- ~1f : ~t
+======================= ASSIGN
+$l ; $c |- ~1e := ~1f : ~t
+
+$l ; $c |- ~2c : ~t cmd
+$l ; $c |- ~2d : ~t cmd
+========================== COMPOSE
+$l ; $c |- ~2c ; ~2d : ~t cmd
+
+$l ; $c |- ~1e : ~t
+$l ; $c |- ~2c : ~t cmd
+$l ; $c |- ~2d : ~t cmd
+============================================== IF
+$l ; $c |- if ~1e then ~2c else ~2 d : ~t cmd
+
+$l ; $c |- ~1e : ~t
+$l ; $c |- ~2c : ~t cmd
+===================================== WHILE
+$l ; $c |- while ~1e do ~2c : ~t cmd
+
+$l ; $c |- ~1e : ~t
+$l ; (%x : ~t ; $c) |- ~2c : ~s cmd
+============================================ LETVAR
+$l ; $c |- letvar %x := ~1e in ~2c : ~s cmd

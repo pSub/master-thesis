@@ -38,7 +38,7 @@ exports
   	Exp ":=" Exp -> Cmd {cons("Ass")}
   	Cmd ";" Cmd -> Cmd {cons("Comp")}
   	"if" Exp "then" Cmd "else" Cmd -> Cmd {cons("Cond")}
-  	"while" Exp "do" Cmd "od" -> Cmd {cons("While")}
+  	"while" Exp "do" Cmd -> Cmd {cons("While")}
   	"letvar" ID ":=" Exp "in" Cmd -> Cmd {cons("Letvar")}
   	
   	Exp -> Phrase
