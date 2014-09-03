@@ -104,12 +104,14 @@ following.
 
     <Conjecture> ::= `Conjecture' <Judg> <Name> <Pattern> <Outputs>
 
-    <Premisses> ::= $\epsilon$ | <Premise> <Premisses>
+    <Premisses> ::= $\epsilon$ | <Premise> <Dependencies> <Premisses>
 
     <Premise> ::= `Lookup' <Ctx> <Inputs> <Outputs> <Error>
     \alt `Judgment' <Judg> <Inputs> <Binding> <Outputs> <Error>
     \alt `Eq' <Term> <Term> <Error>
     \alt `Neq' <Term> <Term> <Error>
+
+    <Dependencies> ::= $\epsilon$ | <Judg> <Outputs> <Dependencies>
 
     <Name> ::= `Some' <String> | `None'
 

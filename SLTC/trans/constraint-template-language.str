@@ -6,7 +6,7 @@ signature
     sorts Rule Lookup Judgment Neq
     constructors
        /** Base Language */
-       Template__ : List(Premise) * Conclusion -> Template
+       Template__ : List((Premise, Dependency)) * Conclusion -> Template
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
        Judgment__ : judg-number * term * binding * outputs * error -> Premise
        Lookup__  : ctx * inputs * outputs * error -> Premise
