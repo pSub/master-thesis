@@ -40,7 +40,7 @@ $l ; $c |- ~1e : ~t
 $l ; $c |- ~1e : ~t var
 $l ; $c |- ~1f : ~t
 ======================= ASSIGN
-$l ; $c |- ~1e := ~1f : ~t
+$l ; $c |- ~1e := ~1f : ~t cmd
 
 $l ; $c |- ~2c : ~t cmd
 $l ; $c |- ~2d : ~t cmd
