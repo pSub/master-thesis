@@ -122,15 +122,22 @@ phase of the type checker and are introduced so that the type checker
 can be used with other specification languages. The structure of the
 templates is close to the structure of the typing rules of the
 specification language in Section~\ref{sec:design--architecture}, but
-has no requirements other than being declarative.
+has no requirements on the specification language other than being
+declarative.
 
 Before describing the structure of templates in depth, the conceptual
 differences between templates and typing rules are highlighted.
 Templates take advantage of the input/output tags of typing judgments
 by splitting everything up into an input and output part. This will
-become handy in the constraint generation phase. An other difference
-is that they already carry some constraints and that the dependencies
-between the premisses are resolved.
+become handy in the constraint generation phase, as one can observe
+which positions are given and which need to be computed. An other
+difference is that templates are normalized. That means, implicit
+equalities in the conclusion and premisses of typing rules are
+added as explicit equalities and premisses are sorted by input/output
+position dependencies. The normalizations are described in the
+remainder of this section. Note that the template optimization and
+constraint generation phase take advantage of these normalizations and
+therefore expect their inputs to be normalized.
 
 The structure of a template is close to the structure of a typing
 rule, there are premisses and a conjecture. In addition to those there
