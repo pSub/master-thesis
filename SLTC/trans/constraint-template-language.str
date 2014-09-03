@@ -21,18 +21,31 @@ signature
 
 rules
 
+    /**
+     * Extracts the inputs from a premise.
+     *
+     * @type Premise -> Inputs
+     */
     get-premise-inputs : Binding__(_, inputs, _) -> inputs
     get-premise-inputs : Judgment__(_, inputs, bindings, _, _) -> <conc> (inputs, <mapconcat(get-premise-inputs)> bindings)
     get-premise-inputs : Lookup__(_, inputs, _, _) -> inputs
     get-premise-inputs : Eq__(a, b, _) -> [a, b]
     get-premise-inputs : Neq__(a, b, _) -> [a, b]
 
+    /**
+     * Extracts the outputs from a premise.
+     *
+     * @type Premise -> Inputs
+     */
     get-premise-outputs : Binding__(_, _, outputs) -> outputs
     get-premise-outputs : Judgment__(_, _, bindings, outputs, _) -> <conc> (outputs, <mapconcat(get-premise-outputs)> bindings)
     get-premise-outputs : Lookup__(_, _, outputs, _) -> outputs
     get-premise-outputs : Eq__(_, _, _) -> []
     get-premise-outputs : Neq__(_, _, _) -> []
 
+    /**
+     * Succeeds if the input is a premise and fails otherwise.
+     */
     is-premise = ?Judgment__(_,_,_,_,_) <+ ?Lookup__(_,_,_,_) <+ ?Eq__(_,_,_) <+ ?Neq__(_,_,_)
 
     /**
@@ -70,6 +83,11 @@ rules
     get-rule-name : Conclusion__(_, name, _, _) -> name
     get-rule-name : Template__(_, rule) -> <get-rule-name> rule
     
+    /**
+     * Extract the outputs of the conclusion from the template.
+     *
+     * @type Template -> Option(Outputs)
+     */
     get-outputs : Conclusion__(_, _, _, outputs) -> Some(outputs)
     get-outputs : Template__(_, rule) -> <get-outputs> rule
     get-outputs : Fork__(_) -> None()
