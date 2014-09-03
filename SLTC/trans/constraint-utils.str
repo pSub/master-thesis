@@ -181,6 +181,10 @@ rules
     /**
      * Defines when two terms match. Succeeds if terms match
      * fails otherwise.
+     *
+     * @param strategy that succeedes if node is a variable fails otherwise
+     * @param true for symmetric check, false otherwise
+     * @type (ATerm, ATerm) -> a
      */
     match-constructors(var, sym) : (t, s) -> <(or(<where(sym); var> t, <var> s) <+ equal(|t-cons, s-cons);
                                     <zip> (t-args, s-args); map(match-constructors(var, sym))); !"match">
