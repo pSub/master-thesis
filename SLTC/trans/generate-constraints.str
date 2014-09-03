@@ -101,7 +101,7 @@ rules
             (expected-outputs', pattern', term', calls', outputs') := <zip; replace-all(|(expected-outputs, pattern'', term'', calls, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
-            outputs-constraints := <foldl(safe-hashtable-deep-copy(\(s', i) -> <execute(|t, s', pattern', term', name)> i\ | s))> (calls', []);
+            outputs-constraints := <foldl( safe-hashtable-deep-copy(\(s', i) -> <execute(|t, s', pattern', term', name, outputs', expected-outputs')> i\ | s))> (calls', []);
 
             // Make constraints for input-output dependencies in the conclusion of the rule.
             input-output-constraints := <make-io-dependency-constraints(|pattern', term', name)> outputs';
@@ -133,7 +133,7 @@ rules
      * @param name - the name of the rule
      * @type ((call, dependencies), accumulator) -> (outputs, constraints)
      */
-    execute(|t, s, pattern, term, name) : ((call, dep), accu) ->
+    execute(|t, s, pattern, term, name, o, e) : ((call, dep), accu) ->
                           // Update the pattern and the term according to
                           // the dependencies.
                         <(term', pattern') := <update(|pattern, term, accu)> dep;
@@ -160,7 +160,7 @@ rules
                             binding-constraints := <make-binding-constraints(|name)> (<to-tuple; Third> call, binding);
 
                             // Call generate for the instantiated judgment and the updated store.
-                            <generate(|t, <update-store(|s)> binding, outputs)> (judg-number, param);
+                            <generate(|t, <update-store(|s)> binding, <try(instantiate(|o, e))> outputs)> (judg-number, param);
 
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
