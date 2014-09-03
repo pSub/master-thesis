@@ -148,11 +148,14 @@ rules
     retrieve(|term) : [p|path] -> <index; \node -> <retrieve(|node)> path\> (p, <get-arguments> term)
 
     /**
-     * Search for the matching pattern for `inputs` in the constraint templates. 
+     * Search for the matching pattern for `inputs` in the constraint templates.
      *
-     * FIXME: What if multiple rules match?
+     * A match is found, if the constructors of the input term and match the
+     * pattern of the conclusion of a template and if the state of the store matches
+     * the context pattern of the conclusion and if the judgment matches. 
      *
      * @param inputs - a list of arbitary terms
+     * @param judgment number
      * @param store - a hashmap containing hashmaps
      * @type List(Rule) -> Rule
      */
