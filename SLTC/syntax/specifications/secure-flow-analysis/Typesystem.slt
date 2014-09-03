@@ -17,7 +17,7 @@ LocationTyping{I} ";" VariableTyping{I} "|-" Phrase{I} ":" PhraseType{O}.
 
 rules
 
-=== INT
+=================== INT
 $l ; $c |- &n : ~t
 
 %x : ~t var in $c
@@ -51,7 +51,7 @@ $l ; $c |- ~1e : ~t
 $l ; $c |- ~2c : ~t cmd
 $l ; $c |- ~2d : ~t cmd
 ============================================== IF
-$l ; $c |- if ~1e then ~2c else ~2 d : ~t cmd
+$l ; $c |- if ~1e then ~2c else ~2d : ~t cmd
 
 $l ; $c |- ~1e : ~t
 $l ; $c |- ~2c : ~t cmd
@@ -62,3 +62,8 @@ $l ; $c |- ~1e : ~t
 $l ; (%x : ~t ; $c) |- ~2c : ~s cmd
 ============================================ LETVAR
 $l ; $c |- letvar %x := ~1e in ~2c : ~s cmd
+
+conjectures
+
+===
+(); (x : high; y : high; ()) |- if 1 then y := 1 else y := 0 : high cmd
