@@ -101,7 +101,7 @@ rules
      * @param c - context declarartions
      */
     to-template(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
-        <replace-meta-variables>
+        <{|Fresh: replace-meta-variables|}>
           Template__(<map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
                               \(lookup, deps) ->

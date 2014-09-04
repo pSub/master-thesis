@@ -138,7 +138,8 @@ signature
      *
      * @type (Int, ContextDefinition) -> List(Formula)
      */
-    make-contexts : (i, ContextDefinition(name, raw-non-terminals)) -> [
+    make-contexts = {|Fresh: make-contexts'|}
+    make-contexts' : (i, ContextDefinition(name, raw-non-terminals)) -> [
         Formula__(<conc-strings> ("lookup base ", name),
                   Axiom__(),
                   All__([NAME|<conc>(inputs, outputs)],
@@ -165,7 +166,7 @@ signature
            // Auxiliary definitions
            lookup := <conc-strings> ("lookup", <int-to-string> i);
            bind := <conc-strings> ("bind", <int-to-string> i);
-           NAME := Var__(<newname> "X")
+           NAME := Var__(<make-fresh> "X")
            append(|p) = \ Var__(s) -> Var__(<conc-strings> (s, p)) \
 
            
@@ -325,7 +326,7 @@ strategies
     /**
      * Main strategy that apply all transformations to create valid TPTP formulas.
      */
-    toFOF = make-conjectures; make-variables-unique; remove-dashes
+    toFOF = make-conjectures; {|Fresh: make-variables-unique|}; remove-dashes
 
     /**
      * Try to apply all rules that rewrite auxilary constructors.

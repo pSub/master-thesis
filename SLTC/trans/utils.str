@@ -42,7 +42,7 @@ rules
      * @type Option(a) -> a | String
      */
     option-to-string-newname(|l) : Some(s) -> s
-    option-to-string-newname(|l) : None() -> <newname> l
+    option-to-string-newname(|l) : None() -> <make-fresh> l
 
     /**
      * Takes a rule `f` and a default value `s`. None() is rewritten to
@@ -62,7 +62,7 @@ rules
      * @type Int -> [String]
      */
     newnames(|l) : 0 -> []
-    newnames(|l) : n -> [<newname> l | <dec; newnames(|l)> n]
+    newnames(|l) : n -> [<make-fresh> l | <dec; newnames(|l)> n]
 
     /**
      * Converts a list like data structure into a list.
@@ -293,6 +293,23 @@ rules
      * @type Hashtable(_) -> Hashtable(_)
      */
     hashtable-deep-destroy = where(hashtable-values; map(alltd(?Hashtable(_); hashtable-deep-destroy))); hashtable-destroy
+    
+    
+    /**
+     * Appends a fresh integer at the end of a string. The counter
+     * can be controlled with Fresh.
+     *
+     * @author: Sebastian Erdweg
+     */    
+    make-fresh : v -> w
+    where
+        i := <Fresh> v;
+        rules ( Fresh :+ v -> <inc> i);
+        w := <conc-strings> (v, <int-to-string> i)
+    make-fresh : v -> w
+    where
+        rules ( Fresh :+ v -> 0);
+        w := <make-fresh> v
 
     /**
      * Meta-variables are equal independent of the error annotation.
