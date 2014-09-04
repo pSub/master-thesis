@@ -53,6 +53,10 @@ rules
 
     /**
      * Pepares the inputs for the constraint generation and initializes the store.
+     *
+     * @param judgment definitions
+     * @param context definitions
+     * @param store - hashtables that store context information
      */
     prepare-generation(|judgments, context-definitions, store) =
         get-inputs(|judgments); where(initialize-store(|store, context-definitions));
@@ -62,8 +66,18 @@ rules
      *
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
+     * @param expected outputs of the previous template
      */
     generate(|templates, store, expected-outputs) = generate(false | templates, store, expected-outputs)
+
+    /**
+     * Generates the set of constraints.
+     *
+     * @param succeeds if this is the first call to generate fails otherwise
+     * @param templates - constraint templates
+     * @param store - hashtables that store context information
+     * @param expected outputs of the previous template
+     */
     generate(init | templates, store, expected-outputs) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
              // if a matching rule could be found evaluate that, otherwise return an error.
@@ -74,9 +88,11 @@ rules
      * Helper rule for constraint generation. It pattern matches against the matching
      * template found in `generate` and does the actual constraint generation.
      *
+     * @param succeeds if this is the first call to generate fails otherwise
      * @param t - constraint templates
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
+     * @param expected outputs of the previous template
      */
     generate'(init |t, term, s, expected-outputs) :
          Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs)) ->
@@ -131,6 +147,8 @@ rules
      * @param pattern - the pattern of the conclusion
      * @param term - input terms
      * @param name - the name of the rule
+     * @param outputs of the conclusion
+     * @param expected outputs of the conclusion
      * @type ((call, dependencies), accumulator) -> (outputs, constraints)
      */
     execute(|t, s, pattern, term, name, o, e) : ((call, dep), accu) ->
@@ -170,6 +188,7 @@ rules
                                 exit-with-error(|"Encountered a maleformed template", 1)
                           end;
                           singelton; conc(|accu)> // Book keeping.
+
     /**
      * Extracts the patterns out of the dependencies and appends those
      * to the pattern of the conclusion.
@@ -189,6 +208,7 @@ rules
      * Initialized the given store with the context bindings.
      *
      * @param store - a store
+     * @param context definitions
      * @type List(term) -> store
      */
     initialize-store(|store, context-definitions) =
