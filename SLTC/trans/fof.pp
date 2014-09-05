@@ -1,3 +1,4 @@
+%% Pretty printer for first-order formulas in the TPTP format.
 [
     FOFGoal__ -- V [ _1 _ 2],
 	FOFGoal__ -- V [ _1 _2 _3 ],
