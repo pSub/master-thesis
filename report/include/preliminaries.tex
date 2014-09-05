@@ -1,42 +1,47 @@
 
 \chapter{Preliminaries}
 \section{Tools}
-In this section the tools used in this thesis are introduced. Their
-capabilities and usage is presented and it is argued for what purpose
-they are used in the thesis and why they are suite for those.
+This section introduces the tools and concepts used in this
+thesis. The capabilities and usage of the tools is presented and it is
+argued for what purpose they are used and why they are suite for those
+purposes.
 \subsection{SDF}
 \todo[inline]{Citations needed.}
-The \gls{sdf} is a formalism to define syntax like \gls{bnf}. \gls{sdf}
-allows to define lexical and context-free grammars and is, in contrast
-to \gls{bnf}, modular. This modularity allows to compose \gls{sdf} syntax
-definitions. \gls{sdf} is also supported by parser generators. In contrast
-to traditional parser generators like YACC, \gls{sdf} specifications are
-purely declarative, which increases understandability of the
+\gls{sdf} is a formalism to define the syntax of formal languages in
+the tradition of \gls{bnf}. \gls{sdf} allows to define lexical and
+context-free grammars and is, in contrast to \gls{bnf}, modular. This
+modularity allows to compose \gls{sdf} syntax definitions. There are
+also parser generators for \gls{sdf},
+see~\cite{Rekers92parsergeneration}. In contrast to formalisms for
+traditional parser generators like YACC, \gls{sdf} specifications are
+purely declarative, which increases the reusability of the
 specifications.
 
-The modularity of \gls{sdf} is a consequence of being a generalized LR
-parsable. Generalized parsing means that parsing might be
-indeterminate, i.e.\ ambiguities in the specifications are
-allowed. This might not seem to be an advantage, but generalized
-parsing has some nice implications. First the class of supported
-grammars is bigger and therefore enforces less restrictions and allows
-a natural definition of languages. Second, it enables the modularity
-of \gls{sdf}. The composition of normal LR grammars is not guaranteed to be
-an LR grammar again, but this is guaranteed for generalized LR
-grammars.
+The modularity of \gls{sdf} is a consequence of the fact that
+\gls{sdf} is \textit{generalized LR
+  parsable}\cite{Rekers92parsergeneration}. Generalized parsing means
+that parsing might be indeterminate, i.e.\ the parser produces all
+possibilities for syntactic ambiguities. This might not seem to be an
+advantage, but generalized parsing has some nice implications. First,
+the class of supported grammars is bigger and therefore enforces less
+restrictions on the programmer and might allow a natural definition of
+languages. Second, it enables the modularity of \gls{sdf}, because
+composition of normal LR grammars is not guaranteed to be an LR
+grammar again, but this is guaranteed for generalized LR grammars.
 
-An other advantage is that \gls{sdf} is also scannerless parsable, that
-means that tokenization and parsing can be done in a single step.
+An other advantage is that \gls{sdf} is also scannerless
+parsable~\cite{Brand02disambiguationfilters}, that means that
+tokenization and parsing can be done in a single step.
 
 \todo[inline]{Create and explain an small example}
 \todo[inline]{Talk about layout constraints}
 
-\gls{sdf} is used in this thesis to define the syntax of the specification
-language for type systems. Features like layout constraints make \gls{sdf} a
-good tool for defining complex syntax for natural deduction rules. The
-modularity and composability make it possible to define that syntax of
-the specification language independent of the language under
-consideration.
+\gls{sdf} is used in this thesis to define the syntax of the
+specification language for type systems and for the target
+languages. Features like layout constraints make \gls{sdf} a good tool
+for defining complex syntax for natural deduction rules. The
+modularity and composability make it possible to define the syntax of
+the specification language independent of the target language.
 \subsection{Stratego/XT}
 Stratego is a framework for the development of transformation
 systems. It consists of the transformation language Stratego and a set
