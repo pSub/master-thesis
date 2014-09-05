@@ -10,9 +10,8 @@ signature
     sorts Template Conclusion Premise Ctx
     constructors
        /** Base Language */
-       Template__ : List((Premise, Dependency)) * Conclusion -> Template
-       // FIXME: Move the rule/template name into Template__
-       Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
+       Template__ : Option(String) * List((Premise, Dependency)) * Conclusion -> Template
+       Conclusion__ : judg-number * Pattern * Outputs -> Conclusion
        Judgment__ : judg-number * term * binding * outputs * error -> Premise
        Lookup__  : ctx * inputs * outputs * error -> Premise
        Eq__ : term * term * error -> Premise
@@ -62,8 +61,8 @@ rules
      *
      * @type Template -> List(a)
      */
-    get-pattern : Conclusion__(_, _, (pattern, _), _) -> pattern
-    get-pattern : Template__(_, rule) -> <get-pattern> rule
+    get-pattern : Conclusion__(_, (pattern, _), _) -> pattern
+    get-pattern : Template__(_, _, rule) -> <get-pattern> rule
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
@@ -71,8 +70,8 @@ rules
      *
      * @type Template -> List(Ctx)
      */
-    get-ctx-pattern : Conclusion__(_, _, (_, ctx), _) -> ctx
-    get-ctx-pattern : Template__(_, rule) -> <get-ctx-pattern> rule
+    get-ctx-pattern : Conclusion__(_, (_, ctx), _) -> ctx
+    get-ctx-pattern : Template__(_, _, rule) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
@@ -80,8 +79,8 @@ rules
      *
      * @type Template -> Int
      */
-    get-judgment-number : Conclusion__(judg-number, _, _, _) -> judg-number
-    get-judgment-number : Template__(_, rule) -> <get-judgment-number> rule
+    get-judgment-number : Conclusion__(judg-number, _, _) -> judg-number
+    get-judgment-number : Template__(_, _, rule) -> <get-judgment-number> rule
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
@@ -89,16 +88,15 @@ rules
      *
      * @type Template -> Option(String)
      */
-    get-rule-name : Conclusion__(_, name, _, _) -> name
-    get-rule-name : Template__(_, rule) -> <get-rule-name> rule
+    get-rule-name : Template__(name, _, rule) -> name
     
     /**
      * Extract the outputs of the conclusion from the template.
      *
      * @type Template -> Option(Outputs)
      */
-    get-outputs : Conclusion__(_, _, _, outputs) -> Some(outputs)
-    get-outputs : Template__(_, rule) -> <get-outputs> rule
+    get-outputs : Conclusion__(_, _, outputs) -> Some(outputs)
+    get-outputs : Template__(_, _, rule) -> <get-outputs> rule
     get-outputs : Fork__(_) -> None()
     
     /**

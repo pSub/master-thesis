@@ -95,7 +95,7 @@ rules
      * @param expected outputs of the previous template
      */
     generate'(init |t, term, s, expected-outputs) :
-         Template__(calls, Conclusion__(judg-name, name, (pattern, ctx), outputs)) ->
+         Template__(name, calls, Conclusion__(judg-name, (pattern, ctx), outputs)) ->
          (Some(outputs'), new-constraints)
         where
             var := <filter(?Var__(_); where(\v -> <elem> (v, <collect-om(get-premise-inputs); flatten-list> calls)\);

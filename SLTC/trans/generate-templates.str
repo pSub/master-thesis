@@ -102,7 +102,8 @@ rules
      */
     to-template(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <{|Fresh: replace-meta-variables|}>
-          Template__(<map(switch (get-typing-judgment, id)
+          Template__(name,
+                     <map(switch (get-typing-judgment, id)
                          case (node-is-ctx-lookup, id):
                               \(lookup, deps) ->
                                 (Lookup__(<get-typing-judgment; get-context-id> lookup,
@@ -125,7 +126,6 @@ rules
                          end)> sorted-premisses,
                      Conclusion__(
                          <get-typing-judgment; get-judgment-id> conclusion,
-                         name,
                          <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx), node-is-ctx);
                          (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
                          <get-typing-judgment; get-outputs(|j)> conclusion'))
