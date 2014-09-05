@@ -48,7 +48,16 @@ rules
                    apply-test(!"delete", delete,
                               !(1, [1,2,3]), ![2,3]);
                    apply-test(!"delete", delete,
-                              !(1, [1,2,1]), ![2, 1])   
+                              !(1, [1,2,1]), ![2, 1])
+
+    group-tests = apply-test(!"group", group(eq),
+                             ![1,2,3,4,5,6], ![[1],[2],[3],[4],[5],[6]]);
+                  apply-test(!"group", group(eq),
+                             ![], ![]);
+                  apply-test(!"group", group(eq),
+                             ![1,2,2,3,4,4,5], ![[1],[2,2],[3],[4,4],[5]]);
+                  apply-test(!"group", group(eq),
+                             ![1,2,3,1,2,3], ![[1,1],[2,2],[3,3]])
 
     tests-utils = 
-        top-sort-tests; replace-tests; until-tests; delete-tests
+        top-sort-tests; replace-tests; until-tests; delete-tests; group-tests
