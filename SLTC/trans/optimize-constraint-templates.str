@@ -65,9 +65,9 @@ rules
                                          remove-all(
                                           \(i, p') ->
                                              <map(\p ->
-                                                     Formula__(<get-rule-name; option-to-string-newname(|"Goal")> rule, Impl__(p', p))
+                                                     Formula__(<get-template-name; option-to-string-newname(|"Goal")> rule, Impl__(p', p))
                                                   \);
-                                              fof-from-templates(|context-definitions, templates); verify-vampire(|"2", <conc-strings> (<int-to-string> i, <get-rule-name; option-to-string-newname(|"Goal")> rule)); some(?VerificationSuccess(_))> ps
+                                              fof-from-templates(|context-definitions, templates); verify-vampire(|"2", <conc-strings> (<int-to-string> i, <get-template-name; option-to-string-newname(|"Goal")> rule)); some(?VerificationSuccess(_))> ps
                                           \); equal(|[])> rule
                                      \)> premisses
                                  \); map(Fst)> rulez-premisses
