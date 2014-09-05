@@ -1,3 +1,8 @@
+/**
+ * Bundles all rules and strategies that are needed for
+ * constraint generation. They are bundled here to avoid
+ * cluttering up the constraint generation itself.
+ */
 module constraint-utils
 
 imports utils
@@ -23,21 +28,27 @@ rules
                                  extract-terms(|terms)> input
 
     /**
-     * An version of `instantiate` tailored for judgments.
+     * A version of `instantiate' tailored for judgments.
+     *
+     * Note: Expects a tuple representation of a judgment as
+     *       computed by `to-tuple'.
+     *
+     * FIXME: What is about the error?
      *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
-     * @type (List(a), List(a, List(a), List(a)) -> List(a)
+     * @type (number, input, binding, output) -> (number, input, binding, output)
      */    
     instantiate-judgment(|pattern, terms) =
         (id, instantiate(|pattern, terms), instantiate-ctx-binding(|pattern, terms),
-         instantiate(|pattern, terms)) //FIXME
+         instantiate(|pattern, terms))
 
     /**
-     * An version of `instantiate' tailored for conext bindings.
+     * A version of `instantiate' tailored for conext bindings.
      *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
+     * @type List(Ctx) -> List(Ctx)
      */
     instantiate-ctx-binding(|pattern, terms) =
         map(try(\Binding__(ctx, input, output) ->
@@ -45,16 +56,21 @@ rules
                 \))
 
     /**
-     * An version of `instantiate` tailored for context lookups.
+     * A version of `instantiate' tailored for context lookups.
+     *
+     * Note: Expects a tuple representation of a judgment as
+     *       computed by `to-tuple'.
+     *
+     * FIXME: What is about outputs?
      *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
-     * @type (List(a), List(a)) -> List(a)
+     * @type (ctx, inputs) -> List(a)
      */
     instantiate-lookup(|pattern, terms) = (id, instantiate(|pattern, terms))
 
     /**
-     * An version of `instantiate` tailored for error messages.
+     * A version of `instantiate' tailored for error messages.
      *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
@@ -80,8 +96,10 @@ rules
         make-implicit-equality-constraints(filter(where(\v -> <sometd(?v)> pattern\)) | pattern, term, name)
 
     /**
-     * Creates implicit equalities for those variables selected by `select'.
+     * Creates implicit equalities for those variables selected by
+     * strategy `select'.
      *
+     * @param select - strategy that selects variables
      * @param pattern - an arbitrary list of terms
      * @param term - an arbitrary list of terms
      * @param name - a string
@@ -104,8 +122,8 @@ rules
         
     /**
      * Provided with a list of paths, this strategy returns the
-     * elements in `terms` described by the paths. A path describes
-     * contains the positions in the argument list to which should be
+     * elements in `terms' described by the paths. A path contains
+     * the positions in the argument list of nodes to which should be
      * descended to.
      * 
      * @param terms - an list of arbitrary terms
@@ -114,7 +132,7 @@ rules
     extract-terms(|terms) = map((id, retrieve(|terms)))
     
     /**
-     * Finds the positions of the provided elements in the `pattern`.
+     * Finds the positions of the provided elements in the `pattern'.
      *
      * @param pattern - an arbitrary term
      * @type List(a) -> List((a, List(Int)))
@@ -122,8 +140,8 @@ rules
     find-matching-positions(|pattern) = filter(search(|pattern))
 
     /**
-     * Traverses the pattern like a tree and records the path until `x` is
-     * found literally in `pattern`. The recorded path contains the positions
+     * Traverses the pattern like a tree and records the path until `x' is
+     * found literally in `pattern'. The recorded path contains the positions
      * in the argument list in which was descended.
      *
      * @param pattern - an arbitrary term
@@ -138,7 +156,7 @@ rules
          <search'> (x, is, pattern)>
 
     /**
-     * Walks along the paths in `term` and returns to element
+     * Walks along the paths in `term' and returns to element
      * at the end of the path.
      *
      * @param pattern - an arbitrary term
@@ -148,7 +166,7 @@ rules
     retrieve(|term) : [p|path] -> <index; \node -> <retrieve(|node)> path\> (p, <get-arguments> term)
 
     /**
-     * Search for the matching pattern for `inputs` in the constraint templates.
+     * Search for the matching pattern for `inputs' in the constraint templates.
      *
      * A match is found, if the constructors of the input term and match the
      * pattern of the conclusion of a template and if the state of the store matches
@@ -162,7 +180,7 @@ rules
     find-match(|inputs, judg-number, store) =
         filter(where(get-judgment-number; equal(|judg-number)));
         fetch-elem(find-match(|inputs, store))
-
+    /** @internal */
     find-match(|inputs, store) : Fork__(ts) -> Fork__(ts')
         where ts' := <filter(find-match(|inputs, store)); where(not(equal(|[])))> ts
     find-match(|inputs, store) : t ->
@@ -198,7 +216,11 @@ rules
             t-args := <get-arguments> t
 
     /**
-     * Defines when a context pattern matches an the contexts in the store.
+     * Defines when a context pattern matches an the contexts in the store. Succeeds
+     * if the context pattern can be found in the given store and fails otherwise.
+     *
+     * @param store - a hashmap containing hashmaps
+     * @type List(Ctx) -> List(Ctx)
      */
     match-contexts(|store) =
                     where(contexts := <hashtable-getlist; map((id, Fst))> store);
