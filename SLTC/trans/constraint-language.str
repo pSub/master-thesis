@@ -1,3 +1,7 @@
+/**
+ * Defines the constructors of the constraint language
+ * and provides auxiliary rules.
+ */
 module constraint-language
 
 imports utils
@@ -5,9 +9,9 @@ imports utils
 signature
     sorts Constraint
     constructors
-       Error__ : Option(term) -> error
-       Var__ : String -> term
-       CFail__ : error -> Constraint
+       Error__ : Option(term) -> Error
+       Var__ : String -> Term
+       CFail__ : Error -> Constraint
        CEq__ : term * term * error -> Constraint
        CNeq__ : term * term * error -> Constraint
 
@@ -24,7 +28,7 @@ rules
      * Helper rule to creae CEq__ nodes.
      *
      * @param error - Error
-     * @type (a, b) -> CEq__(a, b, error)
+     * @type (a, b) -> CEq__(a, b, Error)
      */
     makeCEq(|error) : (a, b) -> CEq__(a, b, error)
 
@@ -32,14 +36,14 @@ rules
      * Helper rule to creae CNeq__ nodes.
      *
      * @param error - Error
-     * @type (a, b) -> CNeq__(a, b, error)
+     * @type (a, b) -> CNeq__(a, b, Error)
      */
     makeCNeq(|error) : (a, b) -> CNeq__(a, b, error)
 
     /**
      * Retrieves the error of a constraint.
      *
-     * @type Constraint -> error
+     * @type Constraint -> Error
      */
     get-error = proj(CEq__|3) <+ proj(CNeq__|3) <+ proj(CFail__|1)
     
