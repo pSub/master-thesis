@@ -1,12 +1,17 @@
+/**
+ * Defines the constructors of the templates and provides
+ * auxiliary definitions.
+ */
 module constraint-template-language
 
 imports utils
 
 signature
-    sorts Rule Lookup Judgment Neq
+    sorts Template Conclusion Premise Ctx
     constructors
        /** Base Language */
        Template__ : List((Premise, Dependency)) * Conclusion -> Template
+       // FIXME: Move the rule/template name into Template__
        Conclusion__ : judg-number * Option(String) * Pattern * Outputs -> Conclusion
        Judgment__ : judg-number * term * binding * outputs * error -> Premise
        Lookup__  : ctx * inputs * outputs * error -> Premise
@@ -27,7 +32,8 @@ rules
      * @type Premise -> Inputs
      */
     get-premise-inputs : Binding__(_, inputs, _) -> inputs
-    get-premise-inputs : Judgment__(_, inputs, bindings, _, _) -> <conc> (inputs, <mapconcat(get-premise-inputs)> bindings)
+    get-premise-inputs : Judgment__(_, inputs, bindings, _, _) ->
+        <conc> (inputs, <mapconcat(get-premise-inputs)> bindings)
     get-premise-inputs : Lookup__(_, inputs, _, _) -> inputs
     get-premise-inputs : Eq__(a, b, _) -> [a, b]
     get-premise-inputs : Neq__(a, b, _) -> [a, b]
@@ -38,18 +44,21 @@ rules
      * @type Premise -> Inputs
      */
     get-premise-outputs : Binding__(_, _, outputs) -> outputs
-    get-premise-outputs : Judgment__(_, _, bindings, outputs, _) -> <conc> (outputs, <mapconcat(get-premise-outputs)> bindings)
+    get-premise-outputs : Judgment__(_, _, bindings, outputs, _) ->
+        <conc> (outputs, <mapconcat(get-premise-outputs)> bindings)
     get-premise-outputs : Lookup__(_, _, outputs, _) -> outputs
     get-premise-outputs : Eq__(_, _, _) -> []
     get-premise-outputs : Neq__(_, _, _) -> []
 
     /**
      * Succeeds if the input is a premise and fails otherwise.
+     *
+     * @type Premise -> Premise
      */
     is-premise = ?Judgment__(_,_,_,_,_) <+ ?Lookup__(_,_,_,_) <+ ?Eq__(_,_,_) <+ ?Neq__(_,_,_)
 
     /**
-     * Extracts the pattern from Rule, Binding or Fork.
+     * Extracts the pattern of the conclusion from a template.
      *
      * @type Template -> List(a)
      */
@@ -58,16 +67,16 @@ rules
     get-pattern : Fork__([rule | _]) -> <get-pattern> rule
 
     /**
-     * Extracts the context pattern from Rule, Binding or Fork.
+     * Extracts the context pattern of the conclusion from a template.
      *
-     * @type Template -> List(a)
+     * @type Template -> List(Ctx)
      */
     get-ctx-pattern : Conclusion__(_, _, (_, ctx), _) -> ctx
     get-ctx-pattern : Template__(_, rule) -> <get-ctx-pattern> rule
     get-ctx-pattern : Fork__([rule | _]) -> <get-ctx-pattern> rule
 
     /**
-     * Extracts the judgment number from the conclusion.
+     * Extracts the judgment number of the conclusion from a template.
      *
      * @type Template -> Int
      */
@@ -76,7 +85,7 @@ rules
     get-judgment-number : Fork__([rule | _]) -> <get-judgment-number> rule
 
     /**
-     * Extracts the name from the conclusion.
+     * Extracts the name of the template.
      *
      * @type Template -> Option(String)
      */
@@ -93,15 +102,18 @@ rules
     get-outputs : Fork__(_) -> None()
     
     /**
-     * Transforms a list of templates into a fork node.
+     * Transforms a list of templates into a fork node. Forks created
+     * with this rule will not be nested, i.e. the templates of all forks
+     * in the input are extracted from the fork and inserted in the new fork.
      *
      * @type List(Template) -> Fork(List(Template))
      */
-    mkFork : xs -> Fork__(<map(try(\Fork__(ts) -> ts\)); flatten-list> xs)
+    mkFork : ts -> Fork__(<map(try(\Fork__(ts') -> ts'\)); flatten-list> ts)
 
     /**
      * Transforms a tuple into a equality node.
      *
+     * @param error - Error
      * @type (a, b) -> Eq(a, b)
      */
     makeEq(|error) : (a, b) -> Eq__(a, b, error)
@@ -109,12 +121,13 @@ rules
     /**
      * Transforms a tuple into a inequality node.
      *
+     * @param error - Error
      * @type (a, b) -> Neq(a, b)
      */
     makeNeq(|error) : (a, b) -> Neq__(a, b, error)
 
     /**
-     * Extracts the context id from a context modification of a template.
+     * Extracts the context id from a context modification.
      *
      * @type Ctx -> Int
      */
@@ -122,5 +135,7 @@ rules
 
     /**
      * Succeeds if the node is a context modification and fails otherwise.
+     *
+     * @type Ctx -> Ctx
      */
     is-ctx-modification = ?Reset__(_) <+ ?Ctx__(_) <+ ?Binding__(_, _, _)
