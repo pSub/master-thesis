@@ -150,7 +150,6 @@ rules
      * @type a -> Tuple(a, a, a)
      */  
     Trpl : v -> (v, v, v)
-    Qrpl : v -> (v, v, v, v)
 
     /**
      * Computes all tails of the given list.
