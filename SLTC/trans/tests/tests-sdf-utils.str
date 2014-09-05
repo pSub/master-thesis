@@ -8,11 +8,15 @@ signature
         TArrow : Dummy * Dummy -> Dummy
         sort : Dummy -> Dummy
         TRecord : Dummy -> Dummy
+        TRecordEntries : Dummy
+        TRecordEntries : Dummy * Dummy * Dummy -> Dummy
 
 rules
     
     get-immediate-substructures-tests =
         apply-test(!"get-immediate-substructures", get-immediate-substructures(|"tests/SimplyTypedLambdaCalculus"),
-                   !"Type", [TInt(), TArrow(sort("Type"), sort("Type")), TRecord(sort("TRecordEntries"))])
+                   !"Type", [TInt(), TArrow(sort("Type"), sort("Type")), TRecord(sort("TRecordEntries"))]);
+        apply-test(!"get-immediate-substructures", get-immediate-substructures(|"tests/SimplyTypedLambdaCalculus"),
+                   !"TRecordEntries", [TRecordEntries,TRecordEntries(sort("ID"),sort("Type"),sort("TRecordEntries"))])           
     
     tests-sdf-utils = get-immediate-substructures-tests
