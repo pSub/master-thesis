@@ -1,3 +1,6 @@
+/**
+ * Implements constraint solving via Robinson unification.
+ */
 module constraint-solving
 
 imports constraint-language
@@ -6,10 +9,10 @@ imports utils
 rules
 
     /**
-     * Occurs check. Succeeds if x is contained in t and
+     * Occurs check. Succeeds if `x' is contained in `t' and
      * fails otherwise.
      *
-     * @type (a, b) -> a
+     * @type (x, t) -> a
      */
     occurs : (x, t) -> <sometd(?x)> t
 
@@ -18,9 +21,16 @@ rules
      *   ROBINSON, J.A. Computational logic: The unification computation.
      *   ROBINSON, J.A. A machine-oriented logicbased on the resolution principle
      *
-     * @type List(Constraint) -> (List(Constraint), (Var, a))
+     * @type List(Constraint) -> (List(Constraint), List(Var, a), List(Error))
      */
     unify : cs -> <unify'> (cs, [], [])
+    
+    /**
+     * A variant of unify that returns the mgu if the constraint set was solvable
+     * and that fails otherwise.
+     *
+     * @type List(Constraint) -> List(Var, a) 
+     */
     unify-internal : cs -> <unify'; where(Third; equal(|[])) < Snd + fail> (cs, [], [])
     unify' : ([], mgu, err) -> ([], mgu, err)
     unify' : ([CFail__(error) | cs], mgu, err) -> <unify'> (cs, mgu, [error | err])
@@ -46,11 +56,11 @@ rules
     unify' : ([c | cs], mgu, err) -> <unify'> (cs, mgu, [<get-error> c | err])
 
     /**
-     * Apply the given mgu to term `t'. The difference to `replace-all'
+     * Applies the given mgu to term `t'. The difference to `replace-all'
      * is, that the substitution is also applied to the mgu itself.
      *
      * @param t - term to which the mgu is applied
-     * @type List(a, b) -> c
+     * @type List(Var, a) -> ATerm
      */
     apply-mgu(|t) : [] -> t
     apply-mgu(|t) : [(x, s) | mgu] -> <apply-mgu(|t')> mgu'
