@@ -157,26 +157,29 @@ lookups, equalities and inequalities.
 \item[Judgments] are the user defined judgments form the
   specification. They consist of the judgment number
   \refcallout{judgment:number}, the positions of the judgment that are
-  marked as inputs \refcallout{judgment:inputs} and context
-  modifications \refcallout{judgment:context}. A context modification
-  can either be a addition to a context \refcallout{judgment:bind}
-  which is a triple of a context identifier a list of inputs and a
-  list of outputs, a context identity \refcallout{judgment:identity}
-  which corresponds to the context meta-variables in the specification
-  and a reset operation \refcallout{judgment:reset} which resets the given context and corresponds
-  to the empty context. Those context modifications are meant to be
-  executed from right to left. A detail explanation of the semantics
-  will follow in Section~\ref{sec:constr-gener}.
+  marked as inputs \refcallout{judgment:inputs}, context modifications
+  \refcallout{judgment:context} and the output positions of the
+  judgments \refcallout{judgment:outputs}. A context modification can
+  either be an addition to a context \refcallout{judgment:bind} which
+  is a triple of a context identifier, a list of inputs and a list of
+  outputs, a context identity \refcallout{judgment:identity} which
+  corresponds to the context meta-variables in the specification and a
+  reset operation \refcallout{judgment:reset} which resets the given
+  context and corresponds to the empty context. Those context
+  modifications are meant to be read from right to left. A detail
+  explanation of the semantics will follow in
+  Section~\ref{sec:constr-gener}.
 
 \begin{example}{~}
 \begin{verbatim}
 Judgment__(
           1 !callout`judgment:number'
-        , [Var__("X219")] !callout`judgment:inputs'
-        , [ (1, [Var__("X217")], [Var__("X218")]) !callout`judgment:bind'
+        , [Var__("X0")] !callout`judgment:inputs'
+        , [ (1, [Var__("X1")], [Var__("X2")]) !callout`judgment:bind'
           , Reset__(1) !callout`judgment:reset'
           , Ctx__(2) !callout`judgment:identity'
           ] !callout`judgment:context'
+        , [Var__("X3")] !callout`judgment:outputs'
         )
 \end{verbatim}
 \label{ex:judgment}
