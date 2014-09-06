@@ -52,12 +52,13 @@ rules
      * Checks for each template if all premisses are implied by the premisses of a singel other
      * template. If this is the case the template is removed.
      *
-     * @type Fork_(Template) -> Fork__(Template)
+     * @type Fork__(Template) -> Fork__(Template)
      */
-    optimize-fork(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
-        where vars := <Hd; get-pattern; collect-om(?Var__(_))> rulez;
+    optimize-fork(|context-definitions, templates) = {|Fresh: optimize-fork'(|context-definitions, templates)|}
+    optimize-fork'(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
+        where vars := <Hd; get-pattern; collect-om(?Var__(_)); length; newnames(|"Z"); map(makeVar)> rulez;
               // Make the conclusions of the rules equal.
-              rulez' := [<Hd> rulez | <Tl; map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez];
+              rulez' := <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez;
               rulez-premisses := <zip> (rulez', <map(\r -> <filter(not(?r); premisses-to-props)> rulez'\)> rulez');
               rulez'' := <remove-all(\(rule, premisses) ->
                                     <fetch-elem(
