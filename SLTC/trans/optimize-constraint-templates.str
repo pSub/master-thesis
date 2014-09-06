@@ -22,7 +22,7 @@ rules
         // optimize-fork(|context-definitions, templates);
            remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
-        where equivalence-classes := <group(equal-mod-var)> templates
+        where equivalence-classes := <group(equal-mod-var); filter(where(length; gt(|1)))> templates
     
     /**
      * Extracts the pattern from the rules and compares the results modulo
