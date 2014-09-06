@@ -134,7 +134,7 @@ rules
 
             // Use fresh variable names to instantiate the rule.
             // FIXME: Is there a better solution, than renaming?
-            vars := <collect-om(\Var__(v) -> <(string-starts-with(|"X"); !Var__(v))> v\)> (expected-outputs, outputs, pattern'', term'', calls);
+            vars := <collect-om(\Var__(v) -> <(not(string-starts-with(|"Y")); !Var__(v))> v\)> (expected-outputs, outputs, pattern'', term'', calls);
             (expected-outputs', pattern', term', calls', outputs') := <zip; replace-all(|(expected-outputs, pattern'', term'', calls, outputs))> (vars, <length; newnames(|"Y"); map(makeVar)> vars);
 
             // Execute the calls of the rule.
