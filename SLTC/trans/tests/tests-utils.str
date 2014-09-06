@@ -21,6 +21,15 @@ rules
                      apply-and-fail(!"top-sort", top-sort,
                                 ![(1, []), (2, [1, 3]), (3, [4]), (4, [2])])
 
+    has-edges-tests = apply-test(!"has-edges", has-edges,
+                                 ![(1, [2,3])], ![[2,3]]);
+                      apply-test(!"has-edges", has-edges,
+                                 ![(1, [2,3]), (2,[]), (3,[4,5])], ![[2,3],(2,[]),[4,5]]);
+                      apply-and-fail(!"has-edges", has-edges,
+                                 ![(1, [])]);
+                      apply-and-fail(!"has-edges", has-edges,
+                                 ![(1,[]), (2,[]), (3, [])])
+
     replace-tests = apply-test(!"subst", replace(|"x", "a"),
                               !["x", "b", "c"],
                               !["a", "b", "c"]);
@@ -70,4 +79,4 @@ rules
 
     tests-utils = 
         top-sort-tests; replace-tests; until-tests; delete-tests; group-tests;
-        cartesian-product-tests
+        cartesian-product-tests; has-edges-tests
