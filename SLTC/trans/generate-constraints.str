@@ -1,3 +1,6 @@
+/**
+ * Constraint generation phase
+ */
 module generate-constraints
 
 imports utils
@@ -11,6 +14,13 @@ imports store-utils
 imports include/SLTC
 
 rules
+
+    /**
+     * Generates constraints from the given specification but
+     * calls `to-temlates' on its own. Useful for testing purposes.
+     *
+     * @type Module -> List(Option(Outputs), List(Constraint))
+     */
     generate-constraints : Module(_, _, Language(target-language), _,
                                   Contexts(context-definitions),
                                   Judgments(judgments),
@@ -20,6 +30,13 @@ rules
             templates := <to-templates(|judgments, context-definitions);
                           optimize-templates(|judgments, target-language, context-definitions)> typing-rules
 
+    /**
+     * Generates constraints from the given specification module
+     * and from the `templates'.
+     *
+     * @param List(Template)
+     * @type Module -> List(Option(Outputs), List(Constraint))
+     */
     generate-constraints(|templates) : Module(_, _, _, _, _, _, _, None()) ->
          <exit-with-error(|"Not conjectures found", 1)>
     generate-constraints(|templates) :
@@ -61,12 +78,14 @@ rules
     prepare-generation(|judgments, context-definitions, store) =
         get-inputs(|judgments); where(initialize-store(|store, context-definitions));
         remove-all(node-is-ctx)
+
     /**
      * Generates the set of constraints.
      *
      * @param templates - constraint templates
      * @param store - list of hashtables that store context information
      * @param expected outputs of the previous template
+     * @type (judgment-number, inputs) -> (Option(Outputs), List(Constraints))
      */
     generate(|templates, store, expected-outputs) = generate(false | templates, store, expected-outputs)
 
@@ -77,6 +96,7 @@ rules
      * @param templates - constraint templates
      * @param store - hashtables that store context information
      * @param expected outputs of the previous template
+     * @type (judgment-number, inputs) -> (Option(Outputs), List(Constraints))
      */
     generate(init | templates, store, expected-outputs) : (judg-number, inputs) ->
              // Find the constraint template that matches the inputs of the given term
@@ -93,8 +113,9 @@ rules
      * @param term - input terms
      * @param s - hashtable containing hashtables that store context information
      * @param expected outputs of the previous template
+     * @type inputs -> (Option(Outputs), List(Constraints))
      */
-    generate'(init |t, term, s, expected-outputs) :
+    generate'(init | t, term, s, expected-outputs) :
          Template__(name, calls, Conclusion__(judg-name, (pattern, ctx), outputs)) ->
          (Some(outputs'), new-constraints)
         where
@@ -133,6 +154,7 @@ rules
     generate'(init | ts, term, s, expected-outputs) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output.
+           // FIXME: Is this CEq constraint neccessary?
            <until(safe-hashtable-deep-copy(\(s', i) -> <generate'(init | ts, term, s', expected-outputs);
                    \(Some(o), cs) -> (<conc(|<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (o, expected-outputs));
                     unify-internal; apply-mgu(|o)> cs, cs)\> i\| s))
