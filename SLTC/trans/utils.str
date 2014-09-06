@@ -98,9 +98,14 @@ rules
      * @type a
      */
     replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
-    
+
     /**
+     * Like `replace', but only terms are substitued for which `select' succeeds.
      *
+     * @param selects which terms should be substituted
+     * @param the node that should be replaced
+     * @param the substitute for the old node
+     * @param the term to which the substitution should be applied
      */
     replace(select|old-node, new-node, ast) = <innermost(\ current-node ->
                                                                  <select> (old-node, current-node)
@@ -122,7 +127,14 @@ rules
      * @type (a, b) -> c
      */
     replace(|ast) : (old-node, new-node) -> <replace(|old-node, new-node, ast)>
-    
+
+    /**
+     * Like `replace', but only terms are substitued for which `select' succeeds.
+     *
+     * @param selects which terms should be substituted
+     * @param the term to which the substitution should be applied
+     * @type (ATerm, ATerm) -> ATerm
+     */
     replace(select|ast) : (old-node, new-node) -> <replace(select|old-node, new-node, ast)>
 
     /**
@@ -135,14 +147,23 @@ rules
     replace-all(|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(|ast')> subst\)> (substitutions, ast)
 
     /**
+     * Like `replace-all', but substitions are only applied to terms, for which
+     * `select' succeeds.
      *
+     * @param selects which terms should be substituted
+     * @param the term to which the substitutions should be applied
+     * @type List(ATerm, ATerm) -> ATerm 
      */
-    replace-all(select|ast) : substitutions -> <foldl(\(subst, ast') -> <replace(select|ast')> subst\)> (substitutions, ast)
+    replace-all(select|term) : substitutions -> <foldl(\(subst, term') -> <replace(select|term')> subst\)> (substitutions, term)
 
     /**
+     * Applies the substituions from left to right. Each substitution is only applied to
+     * the first match.
      *
+     * @param the term to which the substitutions should be applied
+     * @type List(ATerm, ATerm) -> ATerm
      */
-    replace-once(|ast) : substitutions -> <foldl(\((x, t), i) -> <try(oncetd(?x; !t))> i\)> (substitutions, ast)
+    replace-once(|term) : substitutions -> <foldl(\((x, t), i) -> <try(oncetd(?x; !t))> i\)> (substitutions, term)
 
     /** 
      * Duplicate a term into a three-element tuple
