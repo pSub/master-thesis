@@ -15,7 +15,9 @@ signature
         True__  : Prop
         Not__   : Prop -> Prop
         And__   : Prop * Prop -> Prop
+        And__   : List(Prop) -> Prop
         Or__    : Prop * Prop -> Prop
+        Or__    : List(Prop) -> Prop
         Impl__  : List(Prop) * Prop -> Prop
         BiImpl__ : Prop * Prop -> Prop
         Eq__    : Prop * Prop -> Prop
