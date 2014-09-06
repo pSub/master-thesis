@@ -97,7 +97,7 @@ rules
      * @param ast - an arbitrary term
      * @type a
      */
-    replace(|old-node, new-node, ast) = <innermost(?old-node; !new-node)> ast
+    replace(|old-node, new-node, ast) = <alltd(?old-node; !new-node)> ast
 
     /**
      * Like `replace', but only terms are substitued for which `select' succeeds.
