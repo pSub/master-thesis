@@ -47,6 +47,7 @@ exports
   context-free syntax
     "true"  -> Bool
     "false" -> Bool
+    "~" Bool -> Bool {cons("Not")}
     Bool "&" Bool -> Bool {cons("And"),
                            layout("2.first.col < 2.left.col")}
 \end{verbatim}
@@ -91,7 +92,31 @@ distinguished.
   transformation usually including a parser and pretty printer.
 \end{description}
 
-\todo[inline]{Create and explain an small example}
+Example~\ref{ex:stratego-module} shows a Stratego module that declares
+the constructors from Example~\ref{ex:sdf-grammar}. It has one rule
+\verb|Eval| that reduces a term one step. The strategy \verb|eval|
+applies rule \verb|Eval| repeatedly from bottom to top.
+
+\begin{example}{~}
+\begin{verbatim}
+module Bool
+signature
+  sorts Bool
+  constructors
+    Not   : Bool -> Bool 
+    And   : Bool * Bool -> Bool
+rules
+  Eval : Not(True)      -> False
+  Eval : Not(False)     -> True
+  Eval : And(True, x)   -> x
+  Eval : And(x, True)   -> x
+  Eval : And(False, x)  -> False
+  Eval : And(x, False)  -> False
+strategies
+  eval = bottomup(repeat(Eval))
+\end{verbatim}
+\label{ex:stratego-module}
+\end{example}
 
 Stratego interacts well with \gls{sdf} and has facilities to integrate
 nicely into tool-chains. In addition it allows to write abstract and
