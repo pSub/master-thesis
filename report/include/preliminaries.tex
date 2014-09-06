@@ -66,21 +66,22 @@ for defining complex syntax for natural deduction rules. The
 modularity and composability make it possible to define the syntax of
 the specification language independent of the target language.
 \subsection{Stratego/XT}
-Stratego is a framework for the development of transformation
-systems. It consists of the transformation language Stratego and a set
-of tools XT for tasks like parsing and pretty printing. The paradigm
-of Stratego is to use user-definable strategies for
-rewriting. In Stratego the following abstraction levels can be
-distiguished.
+Stratego~\cite{Visser01} is a framework for the development of
+transformation systems. It consists of the transformation language
+Stratego and a set of tools (XT) for tasks like parsing and pretty
+printing. The paradigm of Stratego is to use user-definable strategies
+for rewriting. In Stratego the following abstraction levels can be
+distinguished.
 
 \begin{description}
 \item[Transformation rules] are basic rewrite rules on the structure
   of the \gls{ast}.
 \item[Transformation strategies] are the glue between the
-  transformation rules. They combine rules and define the order of
-  application and the traversal order of the \gls{ast}. These strategies can
-  be defined generically. Context information are passed using
-  \textit{scoped dynamic rewrite rules} during the traversal, as
+  transformation rules. They combine rules, define the order of
+  application and the traversal order of the \gls{ast}. These
+  strategies can be defined generically. Context information are
+  passed using \textit{scoped dynamic rewrite
+    rules}~\cite{Visser01scopeddynamic} during the traversal, because
   normal rewrite rules are context-free.
 \item[Transformation tools] allow to compile transformation strategies
   into a stand-alone program. The interface between such programs is
