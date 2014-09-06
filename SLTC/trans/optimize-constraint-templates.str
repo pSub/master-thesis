@@ -80,16 +80,24 @@ rules
         is-relation; where(get-non-syntax-directed-templates; not(equal(|[])));
         where(get-ctx-pattern; equal(|[]))
         < optimize-relation'(|judgments, context-definitions, target-language) + id
-    optimize-relation'(|judgments, context-definitions, target-language) : f@Fork__(ts) -> Fork__(<conc> (ts, base-templates))
+    optimize-relation'(|judgments, context-definitions, target-language) :
+        f@Fork__(ts) -> <if <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs
+                         then !Fork__(<conc> (ts, base-templates))
+                         else !f
+                         end>
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
               judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
               non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal, conc)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
               base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
               base-cons-product := <cartesian-product> base-constructors;
-              base-goals := <map(\args -> Formula__("", Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args))\)> base-cons-product;
-              proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> base-goals;
-              base-templates := <zip; filter(\(goal, VerificationSuccess(_)) -> <make-base-template> (judgment-number, goal) \)> (base-cons-product, proofs)
+              pos-base-goals := <map(\args -> Formula__("", Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args))\)> base-cons-product;
+              neg-base-goals := <map(\args -> Formula__("", Not__(Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args)))\)> base-cons-product;
+              pos-proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> pos-base-goals;
+              neg-proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> neg-base-goals;
+              proofs := <zip> (pos-proofs, neg-proofs);
+              <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs;
+              base-templates := <zip; filter(\(goal, (VerificationSuccess(_),_)) -> <make-base-template> (judgment-number, goal)\)> (base-cons-product, proofs)
 
     make-base-template : (judgment-number, pattern) -> Template__(None(), [], Conclusion__(judgment-number, (pattern, []), []))
 
