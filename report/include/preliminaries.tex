@@ -33,8 +33,32 @@ An other advantage is that \gls{sdf} is also scannerless
 parsable~\cite{Brand02disambiguationfilters}, that means that
 tokenization and parsing can be done in a single step.
 
-\todo[inline]{Create and explain an small example}
-\todo[inline]{Talk about layout constraints}
+\gls{sdf} also has support to specify layout sensitive
+languages\cite{conf/sle/ErdwegRKO12} like Python or Haskell. Context
+insensitive layout constraints are enforced at parse time and context
+sensitive constraints are enforced at disambiguation time, i.e.\ all
+ambiguities that violate layout constraints are removed.
+
+\begin{example}{~}
+\begin{verbatim}
+module Bool
+exports
+  context-free start-symbols Bool
+  sorts Bool
+  context-free syntax
+    "true"  -> Bool
+    "false" -> Bool
+    Bool "&" Bool -> Bool {cons("And"),
+                           layout("2.first.col < 2.left.col")}
+\end{verbatim}
+\label{ex:sdf-grammar}
+\end{example}
+
+Example~\ref{ex:sdf-grammar} shows a grammar that allows to write
+conjunctions of \verb|true| and \verb|false|. Conjunctions are
+represented in the \gls{ast} with the constructor \verb|And| and the
+layout constraint enforces, that if conjunctions span over multiple
+lines, the right-hand side of \verb|&| needs to be indented.
 
 \gls{sdf} is used in this thesis to define the syntax of the
 specification language for type systems and for the target
