@@ -1,71 +1,40 @@
-module Typesystem
+module Subtyping
 
-language specifications/Subtyping/SimplyTypedLambdaCalculus
+import Typesystem
 
-meta-variables 	Term "~" { Type Exp }
-				Ctx "$" { Context }
-				Id "%" { ID }
-				R "$" {TRecordEntries RecordEntries}
-				Num "&" { Int }
+language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
+
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+                R "$" {TRecordEntries RecordEntries}
+                Num "&" { Int }
 
 contexts Context := ID{I} x Type{O}
 
 judgments
-Context{I} "|-" Exp{I} ":" Type{O}.
 Type{I} "<:" Type{I}.
 
 rules
 
-/* Typing rules */
-
-============== T-int
-$C |- &i : int
-
-%x : ~T in $C
-============== T-var
-$C |- %x : ~T
-
-(%x : ~T1 ; $C) |- ~e : ~T2
-================================= T-abs
-$C |- \ %x : ~T1 . ~e : ~T1 -> ~T2
-
-$C |- ~e1 : ~T1 -> ~T2
-$C |- ~e2 : ~T1
+$C |- ~e1 : ~T11 -> ~T12
+$C |- ~e2 : ~T2
+~T2 <: ~T11
 ========================= T-app
-$C |- ~e1 ~e2 : ~T2
-
-$C |- ~e : { %l : ~T $R }
-========================= T-proj
-$C |- ~e . %l : ~T
-
-============= T-empty
-$C |- {} : {}
-
-$C |- ~e : ~T
-$C |- { $R } : { $S }
-=====================================  T-record
-$C |- { %l = ~e $R } : { %l : ~T $S }
-
-$C |- ~t : ~S
-~S <: ~T
-============== T-sub
-$C |- ~t : ~T
+$C |- ~e1 ~e2 : ~T12
 
 /* Definition of the subtyping relation */
 
 ======== S-refl
-~S <: ~S 
+~S <: ~S
 
-~S <: ~T
-~T <: ~U
-======== S-trans
-~S <: ~U
+// =========== S-ref
+// int <: int
 
 ~T1 <: ~S1
 ~S2 <: ~T2
 ======================== S-arrow
 ~S1 -> ~S2 <: ~T1 -> ~T2
-
 
 /* Record Subtyping */
 
@@ -81,10 +50,16 @@ $C |- ~t : ~T
 =============================== S-width
 { %l : ~T $R } <: { %l : ~T $S}
 
-======================================================= S-perm
-{ %l1 : ~T1 %l2 : ~T2 $R } <: { %l2 : ~T2 %l1 : ~T1 $R}
+======================================================== S-perm
+{ %l1 : ~T1 %l2 : ~T2 $R } <: { %l2 : ~T2 %l1 : ~T1 $R }
+
+======================================== S-perm
+{ %m : ~S %l : ~T $R } <: { %l : ~T $R }
 
 conjectures
+
+===
+int <: int
 
 ===
 {} <: {}
@@ -97,6 +72,12 @@ conjectures
 
 ===
 { l : {o : int} } <: { l : {}}
+
+===
+{ l : int m : int } <: { m : int l : int}
+
+===
+{ m : int l : int }  <: { l : int}
 
 ===
 () |- {x=0 y=1} : {x : int y : int}
@@ -118,18 +99,21 @@ conjectures
 
 ===
 () |- (\x : {y : int} . x) {y=1 x=1} : { y : int }
-
+ 
 ===
-() |- (\x : {y : int} . x) {x=1 y=1} : { y : int }
-
-// ===
-// (r : {x : int y : int} ; ()) |- r . x : int
+(r : {x : int y : int} ; ()) |- r . x : int
 
 ===
 () |- (\r : {x : int} . (r.x)) : { x : int } -> int
 
 ===
 () |- (\r : {x : int} . (r.x)) {x=0 y=0} : int
+
+===
+() |- (\x : {y:int x:int} . x) {x=1 y=1} : { y:int x:int }
+
+===
+() |- (\x : {y:int} . x) {x=1 y=1} : {y:int}
 
 ===
 () |- (\r : {x : int} . (r.x)) {y=0 x=0} : int

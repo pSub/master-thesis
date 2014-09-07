@@ -1,4 +1,5 @@
-module specifications/Subtyping/SimplyTypedLambdaCalculus
+definition
+module specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 exports
 	
   context-free start-symbols
@@ -9,8 +10,6 @@ exports
   	%%[a-z]+ -> ID
   	[a-zA-Z][a-zA-Z0-9]* -> ID
   	[0-9]+ -> Int
-  	
-  	"int" -> ID {reject}
     
   context-free syntax
   	Int -> Exp {cons("Int")}

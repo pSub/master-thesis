@@ -1,0 +1,154 @@
+module test
+
+language specifications/PCF-with-algorithmic-subtyping/PCF
+
+meta-variables	Term "~" { Type Exp }
+				Ctx "$" { Context }
+				Id "%" { ID }
+				Num "&" { INT }
+
+contexts Context := ID{I} x Type{O}
+
+judgments
+Context{I} "|-" Exp{I} ":" Type{O}.
+Type{I} "<:" Type{I}.
+
+rules
+
+// /* FIXME: Maybe it is not a good idea that diffent types
+//    of meta-variables have diffent scopes. The following
+//    T-var' rule looks similar to T-Var but is malicous, as it
+//    introduces all-quantified variables that will not be
+//    instantiated.
+//   
+// %X : ~T in $C
+// =============== T-var'
+// $C |- ~X : ~T 
+// */
+// 
+// %X : ~T in $C
+// =============== T-var
+// $C |- %X : ~T
+// 
+// (%X : ~T1 ; $C) |- ~E : ~T2
+// ===================================== T-abs
+// $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
+//  
+// $C |- ~E1 : ~T11 -> ~T12
+// $C |- ~E2 : ~T2
+// ~T2 <: ~T11
+// ==================== T-app
+// $C |- ~E1 ~E2 : ~T12
+// 
+// (%f : ~T -> ~T ; $C) |- ~e : ~T -> ~T 
+// ========================================= T-fix
+// $C |- fix %f : ~T -> ~T ( ~e ) : ~T -> ~T
+// 
+// $C |- ~e1 : ~T
+// (%x : ~T ; $C) |- ~e2 : ~U 
+// =================================== T-let
+// $C |- let %x : ~T = ~e1 in ~e2 : ~U
+// 
+// ============== T-int
+// $C |- &i : int
+// 
+// $C |- ~e1 : int
+// $C |- ~e2 : ~T
+// $C |- ~e3 : ~T
+// ==================================== T-ifz
+// $C |- ifz ~e1 then ~e2 else ~e3 : ~T
+// 
+// $C |- ~e1 : int
+// $C |- ~e2 : int
+// ==================== T-add
+// $C |- ~e1 + ~e2 : int
+// 
+// $C |- ~e1 : int
+// $C |- ~e2 : int
+// ==================== T-sub
+// $C |- ~e1 - ~e2 : int
+// 
+// $C |- ~e1 : int
+// $C |- ~e2 : int 
+// ==================== T-mul
+// $C |- ~e1 * ~e2 : int 
+// 
+// $C |- ~e1 : int
+// $C |- ~e2 : int
+// ==================== T-div
+// $C |- ~e1 / ~e2 : int
+// 
+// /** Definition of the subtyping relation */
+// 
+// ========== S-refl
+// int <: int
+// 
+// ~T1 <: ~S1
+// ~S2 <: ~T2
+// ======================== S-arrow
+// ~S1 -> ~S2 <: ~T1 -> ~T2
+// 
+// conjectures
+// 
+// /** Positive Tests */
+// 
+// ============= 
+// () |- 1 + 2 : int
+// 
+// ===
+// () |- ifz (ifz 1 then 2 else 3) then 3 + 4 else 3 : int
+// 
+// ===============================
+// (x0 : int ; ()) |- x0 + 3 : int
+//  
+// ==================================
+// () |- fun x : int (x) : int -> int
+// 
+// =============================
+// () |- fun x : int (x) 3 : int
+// 
+// =================================================
+// () |- (fun x : int (fun y : int (x))) 1 : int -> int
+// 
+// =================================================
+// () |- ((fun x : int (fun y : int (x))) 1) 1 : int
+// 
+// ========================================
+// (x : int ; y : int ;  ()) |- x + y : int
+// 
+// ===
+// () |- fix f : int -> int (fun n: int (ifz n then 1 else n * (f (n - 1)))) : int -> int
+// 
+// ===
+// () |- let fac : int -> int = 
+//   fix f : int -> int (
+//     fun n : int (  
+//       ifz n then 1 
+//       else n * (f (n - 1))
+//     )
+//   )
+//  in (fac 3) : int
+//  
+// ===
+// () |- fun x : int (fun y : int (y)) : int -> int -> int
+// 
+// ===
+// (x : int; y : int ; ()) |- y : int
+//  
+// ===
+// () |- fun f : int -> int (fun x : int (f x)) : (int -> int) -> int -> int
+// 
+// /** Negative Tests */
+// 
+// ===========================
+// () |- fun x : int (x) : int
+// 
+// // ===
+// // () |- let fac : int -> int =
+// //   fix f : int -> int (
+// //     fun n : int (
+// //       ifz n then 1
+// //       else n * (n (f - 1))
+// //     )
+// //   )
+// //  in (fac 3) : int

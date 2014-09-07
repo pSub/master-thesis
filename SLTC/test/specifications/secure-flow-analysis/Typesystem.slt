@@ -66,4 +66,4 @@ $l ; $c |- letvar %x := ~1e in ~2c : ~s cmd
 conjectures
 
 ===
-(); (x : high; y : high; ()) |- if 1 then y := 1 else y := 0 : high cmd
+(); (x : high var; y : low var; ()) |- if 1 then y := 1 else y := 0 : high cmd

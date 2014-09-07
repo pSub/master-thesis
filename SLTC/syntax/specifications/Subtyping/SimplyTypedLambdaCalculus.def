@@ -1,3 +1,4 @@
+definition
 module specifications/Subtyping/SimplyTypedLambdaCalculus
 exports
 	
