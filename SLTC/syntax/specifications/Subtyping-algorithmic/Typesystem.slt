@@ -139,6 +139,9 @@ int <: int
 ===
 () |- (\r : {x : int} . (r.x)) {x=0 y=0} : int
 
+===
+() |- (\x : {y:int x:int} . x) {x=1 y=1} : { y:int x:int }
+
 // Fails in both typechecker and vampire (permutation seems to be broken)
 // ===
 // () |- (\x : {y : int} . x) {x=1 y=1} : { y : int }
