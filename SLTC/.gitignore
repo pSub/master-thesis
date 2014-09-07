@@ -19,6 +19,7 @@ editor/*.generated.*
 syntax/SLTC*.generated.esv
 syntax/SLTC.generated.pp
 trans/*.pp.generated.str
+trans/names.str
 .settings/org.eclipse.jdt.core.prefs
 utils
 lib/runtime
