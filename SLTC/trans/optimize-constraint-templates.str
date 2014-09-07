@@ -93,8 +93,8 @@ rules
               base-cons-product := <cartesian-product> base-constructors;
               pos-base-goals := <map(\args -> Formula__("", Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args))\)> base-cons-product;
               neg-base-goals := <map(\args -> Formula__("", Not__(Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args)))\)> base-cons-product;
-              pos-proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> pos-base-goals;
-              neg-proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "base-goal")> neg-base-goals;
+              pos-proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "pos-base-goal")> pos-base-goals;
+              neg-proofs := <fof-from-templates(|context-definitions, ts); verify-vampire(|"2", "neg-base-goal")> neg-base-goals;
               proofs := <zip> (pos-proofs, neg-proofs);
               <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs;
               base-templates := <zip; filter(\(goal, (VerificationSuccess(_),_)) -> <make-base-template> (judgment-number, goal)\)> (base-cons-product, proofs)
