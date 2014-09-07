@@ -13,6 +13,8 @@ contexts Context := ID{I} x Type{O}
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 Type{I} "<:" Type{I}.
+TRecordEntries{I} "has" Exp{I} ":" Type{I}.
+ID{I} "!=" ID{I} is Neq.
 
 rules
 
@@ -35,7 +37,8 @@ $C |- ~e2 : ~T2
 ========================= T-app
 $C |- ~e1 ~e2 : ~T12
 
-$C |- ~e : { %l : ~T $R }
+$C |- ~e : { $R }
+$R has %l : ~T
 ========================= T-proj
 $C |- ~e . %l : ~T
 
@@ -47,13 +50,22 @@ $C |- { $R } : { $S }
 =====================================  T-record
 $C |- { %l = ~e $R } : { %l : ~T $S }
 
+/* Checks whether some label exists in TRecordEntries */
+%m != %l
+$R has %l : ~T
+======================
+%m : ~T $R has %l : ~T
+
+======================
+%l : ~T $R has %l : ~T
+
 /* Definition of the subtyping relation */
 
-// ======== S-refl
-// ~S <: ~S
+======== S-refl
+~S <: ~S
 
-=== S-ref
-int <: int
+// =========== S-ref
+// int <: int
 
 ~T1 <: ~S1
 ~S2 <: ~T2
@@ -65,83 +77,75 @@ int <: int
 ============ S-top
 { $R } <: {}
 
-// // TODO: S-depth and S-perm need to be integrated into S-width
 ~T <: ~S
 { $R } <: { $U }
 =============================== S-depth
 { %l : ~T $R } <: { %l : ~S $U }
 
-// { $R } <: { $S }
-// =============================== S-width
-// { %l : ~T $R } <: { %l : ~T $S}
+{ $R } <: { $S }
+=============================== S-width
+{ %l : ~T $R } <: { %l : ~T $S}
 
 ======================================================== S-perm
 { %l1 : ~T1 %l2 : ~T2 $R } <: { %l2 : ~T2 %l1 : ~T1 $R }
 
 conjectures
 
-// ===
-// ~S <: ~S
+===
+int <: int
 
-// ===
-// int <: int
-// 
-// ===
-// {} <: {}
-// 
-// ===
-// { abc : int } <: {}
-// 
-// ===
-// { l : int m : int } <: { l : int}
-// 
-// ===
-// { l : {o : int} } <: { l : {}}
-// 
-// ===
-// { l : int m : int } <: { m : int l : int}
+===
+{} <: {}
 
-// ===
-// () |- {x=0 y=1} : {x : int y : int}
+===
+{ abc : int } <: {}
 
-// ===
-// () |- {x=0 y=1}.x : int
+===
+{ l : int m : int } <: { l : int}
 
-// FIXME: Does not work because of ordering problems
-// ===
-// () |- {y=0 x=1}.x : int
+===
+{ l : {o : int} } <: { l : {}}
 
-// ===
-// () |- \x : {y : int} . x : { y : int } -> { y : int }
+===
+{ l : int m : int } <: { m : int l : int}
 
-// ===
-// () |- (\x : {y : int} . x) {y=1} : { y : int }
+===
+() |- {x=0 y=1} : {x : int y : int}
 
-// ===
-// () |- (\x : {x : int} . x) {x=1} : { x : int }
+===
+() |- {x=0 y=1}.x : int
 
-// ===
-// () |- (\x : {y : int} . x) {y=1 x=1} : { y : int }
+===
+() |- {y=0 x=1}.x : int
+
+===
+() |- \x : {y : int} . x : { y : int } -> { y : int }
+
+===
+() |- (\x : {y : int} . x) {y=1} : { y : int }
+
+===
+() |- (\x : {x : int} . x) {x=1} : { x : int }
+
+===
+() |- (\x : {y : int} . x) {y=1 x=1} : { y : int }
+ 
+===
+(r : {x : int y : int} ; ()) |- r . x : int
+
+===
+() |- (\r : {x : int} . (r.x)) : { x : int } -> int
+
+===
+() |- (\r : {x : int} . (r.x)) {x=0 y=0} : int
 
 // Fails in both typechecker and vampire (permutation seems to be broken)
 // ===
 // () |- (\x : {y : int} . x) {x=1 y=1} : { y : int }
- 
-// ===
-// (r : {x : int y : int} ; ()) |- r . x : int
-
-// ===
-// () |- (\r : {x : int} . (r.x)) : { x : int } -> int
-// 
-// ===
-// () |- (\r : {x : int} . (r.x)) {x=0 y=0} : int
-
 // ===
 // () |- (\r : {x : int} . (r.x)) {y=0 x=0} : int
-
 // ===
 // () |- (\r : {x : int} . (r.x)) {y=(\x : int. x) x=0} : int
-
 // ===
 // () |- (\r : {x : int -> int} . (r.x)) {y=0 x=(\x : int. x)} : int -> int
 // 
