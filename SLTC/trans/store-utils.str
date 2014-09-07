@@ -15,7 +15,7 @@ rules
     update-store(|s) = foldr(!s, \(Binding__(ctx, i, o), s') ->
                                     <hashtable-put(|ctx,
                                                     <hashtable-get(|ctx);
-                                                    (\xs -> [i|xs]\, hashtable-put(|i, o))> s')> s'
+                                                    (\xs -> [i|xs]\, hashtable-push(|i, o))> s')> s'
                                  \ <+
                                  \(Reset__(ctx), s') ->
                                     <clear-context(|s', ctx)> s'
@@ -26,7 +26,7 @@ rules
      *
      * @param s - a hashtable containing hashtables
      */
-    lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); Snd; hashtable-get(|key)> s
+    lookup(|s) : (ctx, key) -> <hashtable-get(|ctx); Snd; hashtable-peek(|key)> s
 
     /**
      * Removes and returns the first element from the hashmap.
