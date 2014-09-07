@@ -1,0 +1,55 @@
+module fof-language
+
+imports utils
+
+signature
+    sorts Prop Type FOF Goal
+    constructors
+        // Constructors are postfixed with two underscores to
+        // avoid collisions with other constructors.
+        False__ : Prop
+        True__  : Prop
+        Not__   : Prop -> Prop
+        And__   : Prop * Prop -> Prop
+        And__   : List(Prop) -> Prop
+        Or__    : Prop * Prop -> Prop
+        Or__    : List(Prop) -> Prop
+        Impl__  : List(Prop) * Prop -> Prop
+        BiImpl__ : Prop * Prop -> Prop
+        Eq__    : Prop * Prop -> Prop
+        Neq__ : Prop * Prop -> Prop
+        Var__   : String -> Prop                   // variables
+        Var__   : String * String -> Prop          // variables annotated with a scope
+        Pred__  : String -> Prop                   // Constants
+        Pred__  : String * List(Prop) -> Prop      // Predicates consisting of a name and a list of arguments
+        Term__  : String -> Prop                   // Terms
+        Term__  : String * List(Prop) -> Prop      // Terms
+        All__   : List(Var) * Prop -> Prop
+        Exists__ : List(Var) * Prop -> Prop
+        
+        Axiom__ : Type
+        Conjecture__ : Type
+        
+        Formula__ : String * Type * Prop -> FOF
+        Formula__ : String * Prop -> FOF
+        FOFGoal__ : List(Formula) * List(Formula) -> Goal
+        FOFGoal__ : List(Formula) * List(Formula) * Formula -> Goal
+
+rules
+
+    /**
+     * Collects free variables.
+     *
+     * @type node -> List(Var__)
+     */
+    free-vars : v@Var__(_) -> <strip-annos; singelton> v
+    free-vars : v@Var__(_,_) -> <strip-annos; singelton> v
+    free-vars : All__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
+    free-vars : Exists__(vars, prop) -> <diff> (<free-vars> prop, <free-vars> vars)
+    free-vars : cons#(xs) -> <map(free-vars); unions> xs
+
+    /**
+     * String representation of formula type.
+     */
+    type-to-string : Axiom__() -> "formula"
+    type-to-string : Conjecture__() -> "goal"
