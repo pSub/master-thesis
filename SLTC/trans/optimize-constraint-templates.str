@@ -58,7 +58,7 @@ rules
     optimize-fork'(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
         where vars := <Hd; get-pattern; collect-om(?Var__(_)); length; newnames(|"Z"); map(makeVar)> rulez;
               // Make the conclusions of the rules equal.
-              rulez' := <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\)> rulez;
+              rulez' := <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> rulez;
               rulez-premisses := <zip> (rulez', <map(\r -> <filter(not(?r); premisses-to-props)> rulez'\)> rulez');
               rulez'' := <remove-all(\(rule, premisses) ->
                                     <fetch-elem(where(
