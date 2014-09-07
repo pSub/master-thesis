@@ -1,10 +1,18 @@
 module names
 
-imports
+imports include/SLTC
 	
-	include/SLTC
-	
-namespaces
+namespaces Module Context Rule
+
+properties
+  module-ref of Module : ModuleRef
 	
 binding rules
 
+    mod@Module(ModuleDec(m),_,_,_,_,_,_,_):
+        defines unique Module m
+                of module-ref mod
+        scopes Context, Rule
+
+    Import(m):
+        imports Context, Rule from Module m
