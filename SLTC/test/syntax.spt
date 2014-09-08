@@ -16,7 +16,8 @@ test empty-module [[
 
 test empty-module [[
   module test
-  imports test1 test2
+  import test1
+  import test2
   language test
   meta-variables
   contexts
