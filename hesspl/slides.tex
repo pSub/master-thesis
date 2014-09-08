@@ -7,6 +7,8 @@
 \setbeamertemplate{footline}[frame number]
 
 \usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
 \usepackage{verbatim}
 
 \title{A Language for the Specification and Efficient Implementation
@@ -53,6 +55,31 @@
     \item takes advantage of facts proven by automated theorem provers
     \end{itemize}
   \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phases of the type checker generator}
+\begin{figure}
+\begin{tikzpicture}[scale=.8,transform shape,->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
+  thick,main node/.style={rectangle,fill=blue!20,draw,font=\small\bfseries}]
+
+  \node[main node] (1) {Template Generation};
+  \node[main node] (2) [right=3cm of 1] {Template Optimization};
+  \node[main node] (3) [below of=2] {Constraint Generation};
+  \node[main node] (4) [below of=1] {Constraint Solving};
+  \coordinate [below right of=3] (5);
+  \coordinate [above of=1] (6);
+
+  \path[every node/.style={font=\small}]
+    (1) edge node [right, below] {Templates} (2)
+    (2) edge node [right] {Extended Templates} (3)
+    (5) edge node [right] {Program} (3)
+    (3) edge node [right, below] {Constraints} (4)
+    (6) edge node [right] {Specification} (1);
+\end{tikzpicture}
+\caption{Phases of the type checker generator}
+\label{fig:phases}
+\end{figure}
 \end{frame}
 
 \begin{frame}
