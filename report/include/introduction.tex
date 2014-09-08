@@ -1,28 +1,30 @@
 \chapter{Introduction}
 \section{Motiviation}
-\todo[inline]{Somehow mention that we are always talking about static
-  type systems}
-\todo[inline]{Mention studies on type systems, e.g. by Hanenberg}
+Type systems ensure that programs are well-behaved. In other words,
+they try to ensure that programs have meaning in the sense of the
+semantics of the programming language. The type systems we focus on
+are static type systems and can be thought of as a static
+approximation of the program semantics. Besides ensuring that programs
+are well-behaved, type systems are means to establish abstractions and
+to enforce adherence to these abstractions. They can also serve as
+documentation that cannot become obsolete and give hints for
+optimization to the compiler. All in all type systems can help to
+develop software more efficiently
+(cf.~\cite{Petersen:2014:ECS:2597008.2597152}
+and~\cite{Mayer:2012:ESI:2384616.2384666}).
 
-Type systems try to solve the problem of ensuring that programs have
-meaning. They assign types to expressions and have rules that state
-which expressions of which types can be combined. A type checker
-ensures that the expressions of a program meet those rules, if those
-rules are met, the program is called well-typed. Essentially a type
-system ensures that a program has meaning, by approximating its
-semantics. They also can be used to establish abstractions and to
-enforce the adherence to these abstractions.
-
-Although type systems are a useful tool increase software quality,
-there is a lack of tools that help to create and modify type
-checkers. Almost all type checkers are implemented by hand and are far
-away from their formal models. In addition it is non-trivial to write
-or even extend a type checker. Therefore current tools are not suited
-for quick prototyping of type system features for new or existing
-languages. This is also true for the development of domain specific
-languages (DSL). In that sense type systems are underprivileged in
-comparison to parsers. Parser generators are widely spread and
-accepted tools.
+Type systems are useful tools, particularly if they fit to the
+programming language and the application scenario. Ensuring this,
+e.g.\ in the context of a \gls{dsl}, it makes sense to adapt and
+modify existing type systems or create new specialized type
+systems. Those specializations can lead to better error messages, more
+expressive type systems and the detection of more errors
+\cite{Thiemann02programmabletype}. Currently there are, to our best
+knowledge, no established tools that generate type checkers from a
+declarative specification. Such generators could make the development
+of type checkers faster and less error prone. Those generators would
+fit well into the language development workbench besides the long
+established lexer and parser generators.
 
 The goal of this thesis is to close that gap in the tool chain. A
 declarative specification language is developed, in which type systems
@@ -49,5 +51,5 @@ The main contributions of this thesis are:
 
 %%% Local Variables:
 %%% mode: latex
-%%% TeX-master: "../thesis"
+%%% TeX-master: "../report"
 %%% End:
