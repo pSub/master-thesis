@@ -4,6 +4,7 @@ imports utils
 imports constraint-language
 imports constraint-template-language
 imports constraint-utils
+imports fof-language
 imports generate-fof
 imports verification
 imports sdf-utils
