@@ -1,7 +1,19 @@
 module tests-generate-constraints
 
 imports generate-constraints
+imports constraint-language
 
 rules
     
-    tests-generate-constraints = id
+    update-tests = apply-test(!"update", update(|[],[],[(Some(Var__("x")), [CEq__(Var__("x"), "b", Error__(""))])]),
+                              ![(1, Var__("x"))], !(["b"], [Var__("x")]));
+                   apply-test(!"update", update(|["x","y","z"],[1,2,3],[(Some(Var__("x")), [CEq__(Var__("x"), "b", Error__(""))])]),
+                              ![(1, Var__("x"))], !([1,2,3,"b"], ["x","y","z",Var__("x")]));
+                   apply-test(!"update", update(|[],[],[(None(), [CEq__(Var__("x"), "b", Error__(""))])]),
+                              ![(1, Var__("x"))], !([], []));
+                   apply-test(!"update", update(|[],[],[(Some(Var__("x")), [CEq__(Var__("x"), "b", Error__(""))]),
+                                                        (Some(Var__("z")), [CEq__(Var__("z"), "c", Error__(""))]) ]),
+                              ![(1, Var__("x")), (2, Var__("y"))], !(["b","c"], [Var__("x"), Var__("y")]))
+    
+    tests-generate-constraints =
+        update-tests

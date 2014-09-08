@@ -223,8 +223,9 @@ rules
      * @type dependencies -> List(pattern) 
      */                      
     update(|pattern, term, accu) = filter(Dupl;(Fst; \i -> <index(|i)> accu\;
-                                           \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\,
-                                           Snd)); unzip; (conc(|term), conc(|pattern))
+                                                \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\,
+                                                Snd)
+                                          ); unzip; (conc(|term), conc(|pattern))
 
     /**
      * Initialized the given store with the context bindings.
