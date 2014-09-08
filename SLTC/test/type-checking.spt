@@ -6,7 +6,7 @@ setup Common
 
 test empty-module [[
   module test
-  imports test
+  import test
   language test
   meta-variables
   contexts
