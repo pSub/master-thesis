@@ -58,6 +58,49 @@
 \end{frame}
 
 \begin{frame}[fragile]
+  \frametitle{Specification Language}
+\begin{verbatim}
+module Typesystem
+
+language specifications/SystemF/SystemF
+
+meta-variables 	Term "~" { Type Exp }
+                Ctx "$" { TermBinding TypeBinding }
+                Id "%" { ID }
+                Num "&" { Int }
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{verbatim}
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
+
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "fresh in" TypeBinding{I}.
+ID{I} "!=" ID{I} is Neq.
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{verbatim}
+rules
+
+%x : ~T in $C1        @error %x "should have type" ~T "but has type" INFTYPE.
+=============== T-Var
+$C1 | $C2 |- %x : ~T
+
+~U = [ %x -> ~S ] ~T            @error ~U "is not" ~T "where" %x "is replaced by" ~S.
+$C1 | $C2 |- ~e : all %x . ~T   @error ~e "should have type all" %x "." ~T "but has type" INFTYPE.
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
   \frametitle{Phases of the type checker generator}
 \begin{figure}
 \begin{tikzpicture}[scale=.8,transform shape,->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
