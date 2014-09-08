@@ -16,3 +16,9 @@ binding rules
 
     Import(m):
         imports Context, Rule from Module m
+        
+    ContextDefinition(c,_):
+        defines Context c
+        
+    RuleName(_,r):
+        defines Rule r
