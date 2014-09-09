@@ -101,16 +101,19 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[fragile]
+\newcommand*\selectTemplateGeneration{}
+\newcommand*\selectTemplateOptimization{}
+\newcommand*\selectConstraintGeneration{}
+\newcommand*\selectConstraintSolving{}
+\begin{frame}[fragile, label=overview]
   \frametitle{Phases of the type checker generator}
 \begin{figure}
 \begin{tikzpicture}[scale=.8,transform shape,->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
   thick,main node/.style={rectangle,fill=blue!20,draw,font=\small\bfseries}]
-
-  \node[main node] (1) {Template Generation};
-  \node[main node] (2) [right=3cm of 1] {Template Optimization};
-  \node[main node] (3) [below of=2] {Constraint Generation};
-  \node[main node] (4) [below of=1] {Constraint Solving};
+  \node[main node,fill=\selectTemplateGeneration] (1) {Template Generation};
+  \node[main node,fill=\selectTemplateOptimization] (2) [right=3cm of 1] {Template Optimization};
+  \node[main node,fill=\selectConstraintGeneration] (3) [below of=2] {Constraint Generation};
+  \node[main node,fill=\selectConstraintSolving] (4) [below of=1] {Constraint Solving};
   \coordinate [below right of=3] (5);
   \coordinate [above of=1] (6);
 
@@ -125,6 +128,18 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \label{fig:phases}
 \end{figure}
 \end{frame}
+
+\renewcommand*\selectTemplateGeneration{orange}
+\againframe{overview}
+\renewcommand*\selectTemplateGeneration{}
+
+\begin{frame}
+  \frametitle{Template Generation}
+\end{frame}
+
+\renewcommand*\selectTemplateOptimization{orange}
+\againframe{overview}
+\renewcommand*\selectTemplateOptimization{}
 
 \begin{frame}
   \frametitle{References}
