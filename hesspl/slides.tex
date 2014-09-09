@@ -247,7 +247,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
   \item If the set of terms is equal, we call the ambiguity
     \textit{which-ambiguity}.
 \begin{figure}
-\begin{verbatim}
+\begin{lstlisting}
 ~T <: ~S
 { $R } <: { $U }
 =============================== S-depth
@@ -256,9 +256,38 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 { $R } <: { $S }
 =============================== S-width
 { %l : ~T $R } <: { %l : ~T $S}
-\end{verbatim}
+\end{lstlisting}
 \caption{Which-ambiguity between depth and width subtyping rules of records}
 \end{figure}
+\end{itemize}
+
+\framebreak
+
+\begin{itemize}
+\item We also try to solve a certain class of when-ambiguities, namely
+  relations that do not involve contexts.
+\item Look at the subtyping relation \verb|Type{I} "<:" Type{I}|,
+  where \verb|Type| contains arrow and base type \verb|int|.
+  \begin{minipage}[b]{.4\linewidth}
+\begin{lstlisting}
+======== S-refl
+~T <: ~T
+\end{lstlisting}
+  \end{minipage}
+  \begin{minipage}[b]{.4\linewidth}
+\begin{lstlisting}
+~S <: ~Y
+~Y <: ~T
+======== S-trans
+~S <: ~T
+\end{lstlisting}
+  \end{minipage}
+  \begin{lstlisting}
+~T1 <: ~S1
+~S2 <: ~T2
+======================== S-arrow
+~S1 -> ~S2 <: ~T1 -> ~T2
+  \end{lstlisting}
 \end{itemize}
 \end{frame}
 
