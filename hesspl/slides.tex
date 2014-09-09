@@ -261,7 +261,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \end{figure}
 \end{itemize}
 
-\framebreak
+\framebreak{}
 
 \begin{itemize}
 \item We also try to solve a certain class of when-ambiguities, namely
@@ -288,6 +288,19 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 ======================== S-arrow
 ~S1 -> ~S2 <: ~T1 -> ~T2
   \end{lstlisting}
+\end{itemize}
+
+\framebreak{}
+
+\begin{itemize}
+\item Ambiguities are captured in the template language by \verb|Fork|
+\item \verb|Fork| groups templates, such that they match at least on
+  one common term
+\item After the last optimization forks are sorted by $<$
+  \begin{align}
+    t_1 < t_2 \iff m(t_1) \supseteq m(t_2)
+  \end{align}
+  where $m(t)$ computes the set of terms that match the conclusion of $t$
 \end{itemize}
 \end{frame}
 
