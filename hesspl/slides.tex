@@ -10,6 +10,7 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning}
 \usepackage{verbatim}
+\usepackage{syntax}
 
 \title{A Language for the Specification and Efficient Implementation
   of Type Systems}
@@ -135,6 +136,26 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 
 \begin{frame}
   \frametitle{Template Generation}
+  \begin{itemize}
+  \item Templates are an intermediate representation of the rules
+    suitable for constraint generation
+  \item An excerpt of the syntax definition of a template:
+  \end{itemize}
+
+  \begin{grammar}
+    <Template> ::= `Template' $\langle$Premisses$\rangle$ $\langle$Conjecture$\rangle$
+
+    <Conjecture> ::= `Conjecture' $\langle$Judg$\rangle$ $\langle$Name$\rangle$ $\langle$Pattern$\rangle$ $\langle$Outputs$\rangle$
+
+    <Premisses> ::= $\epsilon$ | $\langle$Premise$\rangle$ $\langle$Dependencies$\rangle$ $\langle$Premisses$\rangle$
+
+    <Premise> ::= `Lookup' $\langle$Ctx$\rangle$ $\langle$Inputs$\rangle$ $\langle$Outputs$\rangle$ $\langle$Error$\rangle$
+    \alt `Judgment' $\langle$Judg$\rangle$ $\langle$Inputs$\rangle$ $\langle$Binding$\rangle$ $\langle$Outputs$\rangle$ $\langle$Error$\rangle$
+    \alt `Eq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
+    \alt `Neq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
+
+    <Dependencies> ::= $\epsilon$ | $\langle$Judg$\rangle$ $\langle$Outputs$\rangle$ $\langle$Dependencies$\rangle$
+  \end{grammar}
 \end{frame}
 
 \renewcommand*\selectTemplateOptimization{orange}
