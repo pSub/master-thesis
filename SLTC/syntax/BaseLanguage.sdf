@@ -78,7 +78,7 @@ exports
   lexical syntax
     %% Special string that will be replaced with the actual
     %% output in error messages.
-    "INFTYPE" -> MessagePart
+    "{}" -> MessagePart
 
   context-free syntax
     %% An Error Message consists of either a separator or
