@@ -291,6 +291,38 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \end{itemize}
 \end{frame}
 
+\renewcommand*\selectConstraintGeneration{orange}
+\againframe{overview}
+\renewcommand*\selectConstraintGeneration{}
+
+\begin{frame}
+  \frametitle{Constraint Generation}
+  \begin{itemize}
+  \item The constraint language
+  \begin{grammar}
+    <Constraint> ::= `CFail' $\langle$Error$\rangle$
+    \alt `CEq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
+    \alt `CNeq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
+  \end{grammar}
+  \item 
+  \end{itemize}
+\end{frame}
+
+\renewcommand*\selectConstraintSolving{orange}
+\againframe{overview}
+\renewcommand*\selectConstraintSolving{}
+
+\begin{frame}
+  \frametitle{Constraint Solving}
+  \begin{itemize}
+  \item Constraints are solved by Robinson unification
+  \item If a constraint cannot be unified the error message is recorded
+  \item During unification a most general unifier (mgu) is computed
+  \item On a successful unification the mgu is applied to the output
+    of the constraint generation, otherwise it is applied to the
+    collected error messages
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \frametitle{References}
