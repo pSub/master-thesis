@@ -304,7 +304,17 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
     \alt `CEq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
     \alt `CNeq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
   \end{grammar}
-  \item 
+  \item Contexts are stored has hash tables
+  \item As a fist step constraints are initialized
+  \item Then a template that matches the input and the current state
+    of the contexts is fetched
+  \item If the selected template is a fork, the contained templates
+    are processed from left to right until the first resulting
+    constraint set unifies
+  \item Otherwise the context is modified accordingly to the
+    conclusion, the patterns of the premisses are instantiated, the
+    premisses are evaluated and then the emitted constraints are
+    collected
   \end{itemize}
 \end{frame}
 
@@ -340,7 +350,8 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
     \begin{itemize}
     \item programming languages like SystemF and variants of the lambda
       calculus with subtyping
-    \item security type systems from information flow security
+    \item security type systems from information flow
+      security~\cite{Volpano:1996:STS:353629.353648}
     \end{itemize}
   \end{itemize}
 \end{frame}
