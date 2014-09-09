@@ -2,14 +2,14 @@ module Typesystem
 
 language specifications/SystemF/SystemF
 
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
+
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { TermBinding TypeBinding }
 				Id "%" { ID }
                 Num "&" { Int }
-
-contexts
-TermBinding := ID{I} x Type{O}
-TypeBinding := ID{I}
 
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.

@@ -20,8 +20,8 @@ signature
     make-conjectures : Module(ModuleDec(_),
                               imports,
                               Language(_),
-                              MetaVariables(_),
                               Contexts(context-definitions),
+                              MetaVariables(_),
                               Judgments(_),
                               Rules(typing-rules),
                               some-conjectures)

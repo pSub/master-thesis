@@ -14,8 +14,8 @@ rules
         Module(ModuleDec(_),
                imports,
                Language(t),
-               MetaVariables(meta-variables),
                Contexts(contexts),
+               MetaVariables(meta-variables),
                Judgments(judgments),
                Rules(_),
                conjectures)

@@ -2,6 +2,8 @@ module Typesystem
 
 language specifications/STWL/STWL
 
+contexts Domain := ID{I} x Type{O}
+
 meta-variables 	Exp "~" { Exp Type }
 				// TODO Replace ~1 and ~2 with subscript a and b
 				AExp "~1" { AExp }
@@ -9,8 +11,6 @@ meta-variables 	Exp "~" { Exp Type }
 				Dom "$" { Domain }
 				Id "%" { ID }
 				Num "&" { Int }
-
-contexts Domain := ID{I} x Type{O}
 
 judgments
 // TODO: Make the domain implicit e.g. using the following notation

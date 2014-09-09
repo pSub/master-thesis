@@ -2,12 +2,12 @@ module PCF
 
 language specifications/PCF/PCF
 
+contexts Context := ID{I} x Type{O}
+
 meta-variables	Term "~" { Type Exp }
 				Ctx "$" { Context }
 				Id "%" { ID }
 				Num "&" { INT }
-
-contexts Context := ID{I} x Type{O}
 
 judgments Context{I} "|-" Exp{I} ":" Type{O}.
 

@@ -2,14 +2,13 @@ module Typesystem
 
 language specifications/Subtyping/SimplyTypedLambdaCalculus
 
+contexts Context := ID{I} x Type{O}
+
 meta-variables 	Term "~" { Type Exp }
 				Ctx "$" { Context }
 				Id "%" { ID }
 				R "$" {TRecordEntries RecordEntries}
 				Num "&" { Int }
-
-contexts Context := ID{I} x Type{O}
-
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 Type{I} "<:" Type{I}.

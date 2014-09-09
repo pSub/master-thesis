@@ -21,8 +21,8 @@ rules
      *
      * @type Module -> List(Option(Outputs), List(Constraint))
      */
-    generate-constraints : Module(_, _, Language(target-language), _,
-                                  Contexts(context-definitions),
+    generate-constraints : Module(_, _, Language(target-language),
+                                  Contexts(context-definitions), _,
                                   Judgments(judgments),
                                   Rules(typing-rules), _) -> <generate-constraints(|templates)>
         where
