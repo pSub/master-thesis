@@ -9,7 +9,12 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning}
-\usepackage{verbatim}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+}
 \usepackage{syntax}
 
 \title{A Language for the Specification and Efficient Implementation
@@ -60,7 +65,7 @@
 
 \begin{frame}[allowframebreaks,fragile]
   \frametitle{Specification Language}
-\begin{verbatim}
+\begin{lstlisting}
 module Typesystem
 
 language specifications/SystemF/SystemF
@@ -73,18 +78,18 @@ meta-variables 	Term "~" { Type Exp }
                 Ctx "$" { TermBinding TypeBinding }
                 Id "%" { ID }
                 Num "&" { Int }
-\end{verbatim}
+\end{lstlisting}
 \framebreak{}
-\begin{verbatim}
+\begin{lstlisting}
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 ID{I} "fresh in" TypeBinding{I}.
 ID{I} "!=" ID{I} is Neq.
-\end{verbatim}
+\end{lstlisting}
 \framebreak{}
 \small
-\begin{verbatim}
+\begin{lstlisting}
 rules
 
 %x : ~T in $C1       @error %x "should have type" ~T
@@ -99,14 +104,14 @@ $C1 | $C2 |- ~e : all %x . ~T
 @error ~e "should have type all" %x "." %~T "but has type" {}.
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
-\end{verbatim}
+\end{lstlisting}
 \end{frame}
 
 \newcommand*\selectTemplateGeneration{}
 \newcommand*\selectTemplateOptimization{}
 \newcommand*\selectConstraintGeneration{}
 \newcommand*\selectConstraintSolving{}
-\begin{frame}[fragile, label=overview]
+\begin{frame}[label=overview]
   \frametitle{Phases of the type checker generator}
 \begin{figure}
 \begin{tikzpicture}[scale=.8,transform shape,->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
@@ -134,7 +139,40 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \againframe{overview}
 \renewcommand*\selectTemplateGeneration{}
 
-\begin{frame}
+\defverbatim[colored]\lstApp{%
+\begin{lstlisting}
+~U = [ %x -> ~S ] ~T
+$C1 | $C2 |- ~e : all %x . ~T
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
+\end{lstlisting}
+}
+
+\defverbatim[colored]\lstAppRewritten{%
+\begin{lstlisting}
+$C1 | $C2 |- ~e : all %x . ~T
+~U = [ %x -> ~S ] ~T
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
+\end{lstlisting}
+}
+
+\defverbatim[colored]\lstSubst{%
+\begin{lstlisting}
+===================== Subst-Eq
+~S = [ %x -> ~S ] %x
+\end{lstlisting}
+}
+
+\defverbatim[colored]\lstSubstRewritten{%
+\begin{lstlisting}
+%y = %z
+===================== SubstEq
+~S = [ %y -> ~S ] %z
+\end{lstlisting}
+}
+
+\begin{frame}[allowframebreaks, fragile]
   \frametitle{Template Generation}
   \begin{itemize}
   \item Templates are an intermediate representation of the rules
@@ -158,9 +196,57 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
   \end{grammar}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Template Generation II}
+\begin{itemize}
+\item Resolve Dependencies between premisses
+\item Resolve implicit equalities
+\end{itemize}
+
+\begin{lstlisting}
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+\end{lstlisting}
+
+\only<1>{\lstApp}
+\only<2->{\lstAppRewritten}
+\only<1,2>{\lstSubst}
+\only<3->{\lstSubstRewritten}
+\end{frame}
+
 \renewcommand*\selectTemplateOptimization{orange}
 \againframe{overview}
 \renewcommand*\selectTemplateOptimization{}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Template Optimization}
+  \begin{itemize}
+  \item In contrast to the rules templates are normalized
+  \item Templates can still contain redundancies and
+    non-syntax-directed rules
+  \item We use a first-order formula representation of the templates
+    to proof properties that allow to remove redundancies and to make
+    rule syntax directed
+  \item The first-order formula representation of a template looks
+    roughly like this
+    \begin{align}
+      \forall FV(p_1,\dots, p_n, c) .& p_1 \land \dots \land p_n
+      \implies c
+    \end{align}
+    where $p_i$ and $c$ are propositions representing the premisses
+    respectively the conclusion.
+  \end{itemize}
+
+\framebreak{}
+
+  \begin{itemize}
+  \item A template is ambiguous if there is an other template such
+    that there is at least one term that matches the conclusion of
+    both templates.
+  \end{itemize}
+
+\end{frame}
 
 \begin{frame}
   \frametitle{References}
