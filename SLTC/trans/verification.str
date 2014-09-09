@@ -6,6 +6,7 @@ imports
   include/SLTC
   generate
   names
+  fof-language
   generate-fof
   sltc
   lib/editor-common.generated
