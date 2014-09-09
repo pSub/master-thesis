@@ -219,7 +219,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \againframe{overview}
 \renewcommand*\selectTemplateOptimization{}
 
-\begin{frame}[allowframebreaks]
+\begin{frame}[allowframebreaks, fragile]
   \frametitle{Template Optimization}
   \begin{itemize}
   \item In contrast to the rules templates are normalized
@@ -241,12 +241,27 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \framebreak{}
 
   \begin{itemize}
-  \item A template is ambiguous if there is an other template such
-    that there is at least one term that matches the conclusion of
-    both templates.
-  \end{itemize}
+  \item A template is \textit{when-ambiguous} if there is an other
+    template such that there is at least one term that matches the
+    conclusion of both templates.
+  \item If the set of terms is equal, we call the ambiguity
+    \textit{which-ambiguity}.
+\begin{figure}
+\begin{verbatim}
+~T <: ~S
+{ $R } <: { $U }
+=============================== S-depth
+{ %l : ~T $R } <: { %l : ~S $U }
 
+{ $R } <: { $S }
+=============================== S-width
+{ %l : ~T $R } <: { %l : ~T $S}
+\end{verbatim}
+\caption{Which-ambiguity between depth and width subtyping rules of records}
+\end{figure}
+\end{itemize}
 \end{frame}
+
 
 \begin{frame}
   \frametitle{References}
