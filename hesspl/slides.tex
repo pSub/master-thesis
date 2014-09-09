@@ -57,44 +57,45 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}[allowframebreaks,fragile]
   \frametitle{Specification Language}
 \begin{verbatim}
 module Typesystem
 
 language specifications/SystemF/SystemF
 
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
+
 meta-variables 	Term "~" { Type Exp }
                 Ctx "$" { TermBinding TypeBinding }
                 Id "%" { ID }
                 Num "&" { Int }
 \end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]
+\framebreak{}
 \begin{verbatim}
-contexts
-TermBinding := ID{I} x Type{O}
-TypeBinding := ID{I}
-
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 ID{I} "fresh in" TypeBinding{I}.
 ID{I} "!=" ID{I} is Neq.
 \end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]
+\framebreak{}
+\small
 \begin{verbatim}
 rules
 
-%x : ~T in $C1        @error %x "should have type" ~T "but has type" INFTYPE.
+%x : ~T in $C1       @error %x "should have type" ~T
+                            "but has type" {}.
 =============== T-Var
 $C1 | $C2 |- %x : ~T
 
-~U = [ %x -> ~S ] ~T            @error ~U "is not" ~T "where" %x "is replaced by" ~S.
-$C1 | $C2 |- ~e : all %x . ~T   @error ~e "should have type all" %x "." ~T "but has type" INFTYPE.
+
+~U = [ %x -> ~S ] ~T           @error ~U "is not" ~T "where"
+                                      %x "is replaced by" ~S.
+$C1 | $C2 |- ~e : all %x . ~T
+@error ~e "should have type all" %x "." %~T "but has type" {}.
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
 \end{verbatim}
