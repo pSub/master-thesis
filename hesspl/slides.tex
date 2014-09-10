@@ -238,7 +238,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
     non-syntax-directed rules
   \item We use a first-order formula representation of the templates
     to prove properties that allow to remove redundancies and to make
-    rule syntax directed
+    templates syntax directed
   \item The first-order formula representation of a template looks
     roughly like this
     \begin{align}
@@ -246,7 +246,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
       \implies c
     \end{align}
     where $p_i$ and $c$ are propositions representing the premisses
-    respectively the conclusion.
+    respectively the conclusion
   \end{itemize}
 
 \framebreak{}
@@ -254,9 +254,8 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
   \begin{itemize}
   \item A template is \textit{when-ambiguous} if there is an other
     template such that there is at least one term that matches the
-    conclusion of both templates.
-  \item If the set of terms is equal, we call the ambiguity
-    \textit{which-ambiguity}.
+    conclusion of both templates
+  \item If the set of terms is equal, they are \textit{which-ambiguous}
 \begin{figure}
 \begin{lstlisting}
 ~T <: ~S
@@ -276,9 +275,9 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 
 \begin{itemize}
 \item We also try to solve a certain class of when-ambiguities, namely
-  relations that do not involve contexts.
+  relations that do not involve contexts
 \item Look at the subtyping relation \verb|Type{I} "<:" Type{I}|,
-  where \verb|Type| contains arrow and base type \verb|int|.
+  where \verb|Type| contains arrow types and the base type \verb|int|
   \begin{minipage}[b]{.4\linewidth}
 \begin{lstlisting}
 ======== S-refl
@@ -307,7 +306,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \item Ambiguities are captured in the template language by \verb|Fork|
 \item \verb|Fork| groups templates, such that they match at least on
   one common term
-\item After the last optimization forks are sorted by $<$
+\item After the last optimization step forks are sorted by $<$
   \begin{align}
     t_1 < t_2 \iff m(t_1) \supseteq m(t_2)
   \end{align}
@@ -353,8 +352,8 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
   \item If a constraint cannot be unified the error message is recorded
   \item During unification a most general unifier (mgu) is computed
   \item On a successful unification the mgu is applied to the output
-    of the constraint generation, otherwise it is applied to the
-    collected error messages
+    of the constraint generation
+  \item Otherwise the mgu is applied to the collected error messages
   \end{itemize}
 \end{frame}
 
