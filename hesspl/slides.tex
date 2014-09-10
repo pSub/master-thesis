@@ -67,8 +67,8 @@
     \node[main node] (3) [below right=2cm and 1.5cm of 1] {Type Checker};
 
   \path[every node/.style={font=\small}]
-  (1) edge node [left] {generation} (2)
-  (1) edge node [right] {generation} (3);
+  (1) edge node [outer sep=10pt,left] {generation} (2)
+  (1) edge node [outer sep=10pt,right] {generation} (3);
 
   \path[every node/.style={font=\small}, dashed]
   (2) edge node [above] {used to validate applicability of
