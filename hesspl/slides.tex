@@ -114,7 +114,6 @@ $C1 | $C2 |- %x : ~T
 ~U = [ %x -> ~S ] ~T           @error ~U "is not" ~T "where"
                                       %x "is replaced by" ~S.
 $C1 | $C2 |- ~e : all %x . ~T
-@error ~e "should have type all" %x "." %~T "but has type" {}.
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
 \end{lstlisting}
