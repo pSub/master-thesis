@@ -17,6 +17,9 @@
 }
 \usepackage{syntax}
 
+\usepackage{amsthm}
+%\newtheorem{definition}{Definition}
+
 \title{A Language for the Specification and Efficient Implementation
   of Type Systems}
 \author{Pascal Wittmann}
@@ -324,27 +327,100 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \againframe{overview}
 \renewcommand*\selectConstraintGeneration{}
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Constraint Generation}
-  \begin{itemize}
-  \item The constraint language
+  \begin{definition}[The constraint language]
   \begin{grammar}
     <Constraint> ::= `CFail' $\langle$Error$\rangle$
     \alt `CEq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
     \alt `CNeq' $\langle$Term$\rangle$ $\langle$Term$\rangle$ $\langle$Error$\rangle$
   \end{grammar}
-  \item Contexts are stored has hash tables
-  \item As a fist step constraints are initialized
-  \item Then a template that matches the input and the current state
-    of the contexts is fetched
-  \item If the selected template is a fork, the contained templates
-    are processed from left to right until the first resulting
-    constraint set unifies
-  \item Otherwise the context is modified accordingly to the
-    conclusion, the patterns of the premisses are instantiated, the
-    premisses are evaluated and then the emitted constraints are
-    collected
-  \end{itemize}
+  \end{definition}
+
+\begin{definition}[Rules for variables and abstraction for PCF]
+\begin{lstlisting}
+%X : ~T in $C
+=============== T-var
+$C |- %X : ~T
+\end{lstlisting}
+\begin{lstlisting}
+(%X : ~T1 ; $C) |- ~E : ~T2
+===================================== T-abs
+$C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
+\end{lstlisting}
+\end{definition}
+\end{frame}
+
+\defverbatim[colored]\lstGenFour{%
+\begin{lstlisting}
+         x : int in (y : int; x : int; ())
+         =================================
+         (y : int; x : int; ()) |- x : int
+    =========================================== 
+    (x : int; ()) |- fun y : int x : int -> int
+=======================================================
+() |- fun x : int (fun y : int (x)) : int -> int -> int
+\end{lstlisting}
+}
+
+\defverbatim[colored]\lstGenThree{%
+\begin{lstlisting}
+
+         ================================= 
+         (y : int; x : int; ()) |- x : int
+    ===========================================
+    (x : int; ()) |- fun y : int x : int -> int
+=======================================================
+() |- fun x : int (fun y : int (x)) : int -> int -> int
+\end{lstlisting}
+}
+
+\defverbatim[colored]\lstGenTwo{%
+\begin{lstlisting}
+
+
+
+    ===========================================
+    (x : int; ()) |- fun y : int x : int -> int
+=======================================================
+() |- fun x : int (fun y : int (x)) : int -> int -> int
+\end{lstlisting}
+}
+
+\defverbatim[colored]\lstGenOne{%
+\begin{lstlisting}
+
+
+
+
+
+=======================================================
+() |- fun x : int (fun y : int (x)) : int -> int -> int
+\end{lstlisting}
+}
+
+\begin{frame}[fragile]
+  \frametitle{Constraint Generation II}
+\tiny
+\begin{minipage}[b]{.4\linewidth}    
+\begin{lstlisting}
+%X : ~T in $C
+=============== T-var
+$C |- %X : ~T
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}[b]{.4\linewidth}
+\begin{lstlisting}
+(%X : ~T1 ; $C) |- ~E : ~T2
+===================================== T-abs
+$C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
+\end{lstlisting}
+\end{minipage}
+
+\only<1>{\lstGenOne}
+\only<2>{\lstGenTwo}
+\only<3>{\lstGenThree}
+\only<4>{\lstGenFour}
 \end{frame}
 
 \renewcommand*\selectConstraintSolving{orange}
