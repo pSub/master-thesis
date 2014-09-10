@@ -58,14 +58,21 @@ can be integrated in existing tool chains.
 \section{Contributions}
 The main contributions of this thesis are:
 \begin{enumerate}
-\item A declarative specification language for static type systems, in
-  which typing rules can be written in the style of natural deduction
-  and which builds \gls{sdf} definitions of programming languages.
-\item The transformation of type system specifications into equivalent
-  first-order formulas in the \gls{tptp} format, suitable to be passed to
-  automated theorem provers.
+\item A declarative specification language for static type systems,
+  with support for natural deductive style typing rules and error
+  messages. A type system specification for a programming language
+  requires that the syntax of the programming language is present as
+  and \gls{sdf} file.
+\item The transformation of a type system specification into
+  equivalent an first-order formula representation in the \gls{tptp}
+  format. The first-order formula representation is suitable for
+  typing checking and theorem proving using theorem provers that
+  support \gls{tptp}.
 \item A generator that creates type checkers from type system
-  specifications and which is designed for performance.
+  specifications. This generator uses an intermediate representation
+  for typing rules suitable for constraint generation and optimizes
+  the transformed specification using automated theorem proving to
+  check the applicability of the optimizations.
 \end{enumerate}
 
 \section{Structure}
