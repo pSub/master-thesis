@@ -61,6 +61,19 @@
     \item takes advantage of facts proven by automated theorem provers
     \end{itemize}
   \end{itemize}
+  \begin{tikzpicture}[scale=.8,transform shape,->,>=stealth',shorten >=1pt,auto,align=center,node distance=5cm,thick,main node/.style={rectangle,fill=blue!20,draw,font=\small\bfseries}]
+    \node[main node] (1) {Type System Specification};
+    \node[main node] (2) [below left=2cm and 1.5cm of 1]  {First-order Formulas};
+    \node[main node] (3) [below right=2cm and 1.5cm of 1] {Type Checker};
+
+  \path[every node/.style={font=\small}]
+  (1) edge node [left] {generation} (2)
+  (1) edge node [right] {generation} (3);
+
+  \path[every node/.style={font=\small}, dashed]
+  (2) edge node [above] {used to validate applicability of
+    optimizations} (3);
+  \end{tikzpicture}
 \end{frame}
 
 \begin{frame}[allowframebreaks,fragile]
