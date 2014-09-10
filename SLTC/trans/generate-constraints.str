@@ -43,8 +43,8 @@ rules
         Module(ModuleDec(_),
                  imports,
                  Language(l),
-                 MetaVariables(meta-variables),
                  Contexts(context-definitions),
+                 MetaVariables(meta-variables),
                  Judgments(judgments),
                  Rules(typing-rules),
                  Some(Conjectures(conjectures)))
