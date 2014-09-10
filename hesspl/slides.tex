@@ -216,8 +216,8 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \item Resolve implicit equalities
 \end{itemize}
 
+\begin{figure}
 \begin{lstlisting}
-judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \end{lstlisting}
@@ -226,6 +226,10 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \only<2->{\lstAppRewritten}
 \only<1,2>{\lstSubst}
 \only<3->{\lstSubstRewritten}
+%% TODO: Verbatim does not work in captions
+\caption{Premisses depend on each other in T-Tapp and
+  Subst-Eq has an implicit equality}
+\end{figure}
 \end{frame}
 
 \renewcommand*\selectTemplateOptimization{orange}
