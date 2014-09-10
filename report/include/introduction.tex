@@ -38,6 +38,16 @@ traditional implementations. High-level specification languages are
 also suited to specify type systems from other areas, like
 language-based security.
 
+To have more confidence into properties of a type system the
+declarative specification can be translated into first-order formula
+representation, which can be used to conduct proofs of these
+properties. As the proofs of propositions about type systems change
+when the type system changes, it is desirable to make most of these
+changes automatically. Automated theorem provers can try to conduct
+those proves automatically. If the proof search fails one can give
+hints for proof search. This establishes a direct connection between
+the specified type system, the proofs and the generated type checker.
+
 The goal of this thesis is to close that gap in the tool chain. A
 declarative specification language is developed, in which type systems
 can be represented very close to the standard formalisms. Two things
