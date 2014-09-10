@@ -20,6 +20,30 @@
 \usepackage{amsthm}
 %\newtheorem{definition}{Definition}
 
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  keywordstyle=\color{blue},       % keyword style
+  stringstyle=\color{mymauve},     % string literal style
+  showstringspaces=false,
+}
+
+\lstdefinelanguage{sltc}
+{
+morekeywords={module,contexts,meta-variables,judgments,rules,conjectures,language},
+alsoletter=-,
+sensitive=false,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]",
+}
+
 \title{A Language for the Specification and Efficient Implementation
   of Type Systems}
 \author{Pascal Wittmann}
@@ -81,7 +105,7 @@
 
 \begin{frame}[allowframebreaks,fragile]
   \frametitle{Specification Language}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 module Typesystem
 
 language specifications/SystemF/SystemF
@@ -96,7 +120,7 @@ meta-variables 	Term "~" { Type Exp }
                 Num "&" { Int }
 \end{lstlisting}
 \framebreak{}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
@@ -105,7 +129,7 @@ ID{I} "!=" ID{I} is Neq.
 \end{lstlisting}
 \framebreak{}
 \small
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 rules
 
 %x : ~T in $C1       @error %x "should have type" ~T
@@ -154,7 +178,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \renewcommand*\selectTemplateGeneration{}
 
 \defverbatim[colored]\lstApp{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 ~U = [ %x -> ~S ] ~T
 $C1 | $C2 |- ~e : all %x . ~T
 ============================== T-Tapp
@@ -163,7 +187,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 }
 
 \defverbatim[colored]\lstAppRewritten{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 $C1 | $C2 |- ~e : all %x . ~T
 ~U = [ %x -> ~S ] ~T
 ============================== T-Tapp
@@ -172,7 +196,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 }
 
 \defverbatim[colored]\lstSubst{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 ===================== Subst-Eq
 ~S = [ %x -> ~S ] %x
@@ -180,7 +204,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 }
 
 \defverbatim[colored]\lstSubstRewritten{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 %y = %z
 ===================== SubstEq
 ~S = [ %y -> ~S ] %z
@@ -220,7 +244,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \end{itemize}
 
 \begin{figure}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \end{lstlisting}
@@ -266,7 +290,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
     conclusion of both templates
   \item If the set of terms is equal, they are \textit{which-ambiguous}
 \begin{figure}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 ~T <: ~S
 { $R } <: { $U }
 =============================== S-depth
@@ -288,20 +312,20 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 \item Look at the subtyping relation \verb|Type{I} "<:" Type{I}|,
   where \verb|Type| contains arrow types and the base type \verb|int|
   \begin{minipage}[b]{.4\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 ======== S-refl
 ~T <: ~T
 \end{lstlisting}
   \end{minipage}
   \begin{minipage}[b]{.4\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 ~S <: ~Y
 ~Y <: ~T
 ======== S-trans
 ~S <: ~T
 \end{lstlisting}
   \end{minipage}
-  \begin{lstlisting}
+  \begin{lstlisting}[language=sltc]
 ~T1 <: ~S1
 ~S2 <: ~T2
 ======================== S-arrow
@@ -339,21 +363,21 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 
 \begin{definition}[Rules for variables and abstraction for PCF]
 \begin{minipage}{.5\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 %X : ~T in $C
 =============== T-var
 $C |- %X : ~T
 \end{lstlisting}
 \end{minipage}
 \begin{minipage}{.4\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 $C |- ~E1 : ~T1 -> ~T2
 $C |- ~E2 : ~T1
 ==================== T-app
 $C |- ~E1 ~E2 : ~T2
 \end{lstlisting}
 \end{minipage}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 (%X : ~T1 ; $C) |- ~E : ~T2
 ===================================== T-abs
 $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
@@ -362,7 +386,7 @@ $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
 \end{frame}
 
 \defverbatim[colored]\lstGenEight{%
-  \begin{lstlisting}
+  \begin{lstlisting}[language=sltc]
     Error(
           [ "x"
           , "\"should have type\""
@@ -375,7 +399,7 @@ $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
 }
 
 \defverbatim[colored]\lstGenSeven{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 
 y:int; x:int |- x : int          y:int; x:int |- x : int
@@ -388,7 +412,7 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 \end{lstlisting}
 
 \tiny
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 CEq(IntType,Var("Y13"),Error("x should have type Var("Y13") but has Var("Y13")))
 CEq(IntType,Var("Y15"),Error("x should have type Var("Y15") but has Var("Y15")))
 CEq(Var("Y13"),FunType(Var("Y11"),Var("Y9")),None)
@@ -397,7 +421,7 @@ CEq(Var("Y15"),Var("Y11"),None)
 }
 
 \defverbatim[colored]\lstGenSix{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 x : int in (y:int; x:int)       x : int in (y:int; x:int)
 =========================       =========================
 y:int; x:int |- x : int          y:int; x:int |- x : int
@@ -410,14 +434,14 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 \end{lstlisting}
 
 \tiny
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 CEq(IntType,Var("Y13"),Error("x should have type Var("Y13") but has Var("Y13")))
 CEq(IntType,Var("Y15"),Error("x should have type Var("Y15") but has Var("Y15")))
 \end{lstlisting}
 }
 
 \defverbatim[colored]\lstGenFive{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 x : int in (y:int; x:int)
 =========================
 y:int; x:int |- x : int          y:int; x:int |- x : int
@@ -430,13 +454,13 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 \end{lstlisting}
 
 \tiny
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 CEq(IntType,Var("Y13"),Error("x should have type Var("Y13") but has Var("Y13"))
 \end{lstlisting}
 }
 
 \defverbatim[colored]\lstGenFour{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 
 y:int; x:int |- x : int          y:int; x:int |- x : int
@@ -450,7 +474,7 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 }
 
 \defverbatim[colored]\lstGenThree{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 
 
@@ -464,7 +488,7 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 }
 
 \defverbatim[colored]\lstGenTwo{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 
 
@@ -478,7 +502,7 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 }
 
 \defverbatim[colored]\lstGenOne{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 
 
@@ -492,7 +516,7 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 }
 
 \defverbatim[colored]\lstGenZero{%
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 
 
 
@@ -510,21 +534,21 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
   \frametitle{Constraint Generation II}
 \tiny
 \begin{minipage}[b]{.2\linewidth}    
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 %X : ~T in $C
 =============
 $C |- %X : ~T
 \end{lstlisting}
 \end{minipage}
 \begin{minipage}[b]{.45\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 (%X : ~T1 ; $C) |- ~E : ~T2
 ======================================
 $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
 \end{lstlisting}
 \end{minipage}
 \begin{minipage}[b]{.3\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=sltc]
 $C |- ~E1 : ~T1 -> ~T2
 $C |- ~E2 : ~T1
 ==================== T-app
