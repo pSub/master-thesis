@@ -341,7 +341,7 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
   one common term
 \item After the last optimization step forks are sorted by $<$
   \begin{align}
-    t_1 < t_2 \iff m(t_1) \supseteq m(t_2)
+    t_1 < t_2 \iff m(t_1) \subseteq m(t_2)
   \end{align}
   where $m(t)$ computes the set of terms that match the conclusion of $t$
 \end{itemize}
@@ -392,7 +392,7 @@ $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
           , "\"should have type\""
           , FunType(IntType(), IntType())
           , "\"but has\""
-          , [FunType(IntType(), IntType())]
+          , [IntType()]
           ]
         )
   \end{lstlisting}
@@ -411,12 +411,14 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 () |- fun x : int (fun y : int (x x)) : int -> int -> int
 \end{lstlisting}
 
-\tiny
+\footnotesize
 \begin{lstlisting}[language=sltc]
-CEq(IntType,Var("Y13"),Error("x should have type Var("Y13") but has Var("Y13")))
-CEq(IntType,Var("Y15"),Error("x should have type Var("Y15") but has Var("Y15")))
-CEq(Var("Y13"),FunType(Var("Y11"),Var("Y9")),None)
-CEq(Var("Y15"),Var("Y11"),None)
+CEq(IntType,Var(Y13),Error("x should have type Var(Y13)
+                           but has IntType"))
+CEq(IntType,Var(Y15),Error("x should have type Var(Y15)
+                           but has IntType"))
+CEq(Var(Y13),FunType(Var(Y11),Var(Y9)),None)
+CEq(Var(Y15),Var(Y11),None)
 \end{lstlisting}
 }
 
@@ -433,10 +435,12 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 () |- fun x : int (fun y : int (x x)) : int -> int -> int
 \end{lstlisting}
 
-\tiny
+\footnotesize
 \begin{lstlisting}[language=sltc]
-CEq(IntType,Var("Y13"),Error("x should have type Var("Y13") but has Var("Y13")))
-CEq(IntType,Var("Y15"),Error("x should have type Var("Y15") but has Var("Y15")))
+CEq(IntType,Var(Y13),Error("x should have type Var(Y13)
+                           but has IntType"))
+CEq(IntType,Var(Y15),Error("x should have type Var(Y15)
+                           but has IntType"))
 \end{lstlisting}
 }
 
@@ -453,9 +457,10 @@ y:int; x:int |- x : int          y:int; x:int |- x : int
 () |- fun x : int (fun y : int (x x)) : int -> int -> int
 \end{lstlisting}
 
-\tiny
+\footnotesize
 \begin{lstlisting}[language=sltc]
-CEq(IntType,Var("Y13"),Error("x should have type Var("Y13") but has Var("Y13"))
+CEq(IntType,Var(Y13),Error("x should have type Var(Y13)
+                           but has IntType")
 \end{lstlisting}
 }
 
