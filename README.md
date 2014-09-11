@@ -10,12 +10,12 @@ Quick-Start-Guide:
     * Build the project to make sure everything works
     * Restart Eclipse
     * Choose a type system from the folder syntax/specification/
-    * Comment all lines after `rules'
-    * Click on `Generation' -> `Generate SDF'
+    * Comment all lines after `rules`
+    * Click on `Generation` -> `Generate SDF`
     * Build the project again
-    * Uncomment the lines after `rules'
+    * Uncomment the lines after `rules`?
 
-Now you are ready to select actions from the `Typecheck' and
-`Verification' menus, add new typing rules and conjectures. Changes in
+Now you are ready to select actions from the `Typecheck` and
+`Verification` menus, add new typing rules and conjectures. Changes in
 the sections meta-variables, contexts and judgments require the
 regeneration of the sdf file and a rebuild of the project.
