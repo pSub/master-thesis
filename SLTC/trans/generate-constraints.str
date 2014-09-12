@@ -180,7 +180,7 @@ rules
                           switch !call
                           case ?Lookup__(ctx, inputs, outputs, error):
                                 <instantiate-lookup(|pattern', term')> (ctx, inputs);
-                                lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|<replace(|"{}", outputs)> error); instantiate-error(|pattern', term'))> (o, outputs))\
+                                lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|<replace(|"{}", o)> error); instantiate-error(|pattern', term'))> (o, outputs))\
                                            + \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\
                           case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
@@ -205,7 +205,7 @@ rules
                             // Pass the outputs untouched and add the binding constraints to
                             // the resulting constraints.
                             (id, conc(|binding-constraints));
-                            try(\(Some(o), cs) -> (Some(o), <conc(|<zip;map(makeCEq(|<replace(|"{}", outputs)> error); instantiate-error(|pattern', term'))> (o, outputs))> cs)\)
+                            try(\(Some(o), cs) -> (Some(o), <conc(|<zip;map(makeCEq(|<replace(|"{}", o)> error); instantiate-error(|pattern', term'))> (o, outputs))> cs)\)
                             otherwise:
                                 exit-with-error(|"Encountered a maleformed template", 1)
                           end;
