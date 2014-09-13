@@ -40,7 +40,7 @@ ambiguities that violate layout constraints are removed.
 
 \begin{figure}
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 module Bool
 exports
   context-free start-symbols Bool
@@ -51,7 +51,7 @@ exports
     "~" Bool -> Bool {cons("Not")}
     Bool "&" Bool -> Bool {cons("And"),
                            layout("2.first.col < 2.left.col")}
-\end{verbatim}
+\end{lstlisting}
 \label{ex:sdf-grammar}
 \end{example}
 \end{figure}
@@ -101,7 +101,7 @@ applies rule \verb|Eval| repeatedly from bottom to top.
 
 \begin{figure}
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 module Bool
 signature
   sorts Bool
@@ -117,7 +117,7 @@ rules
   Eval : And(x, False)  -> False
 strategies
   eval = bottomup(repeat(Eval))
-\end{verbatim}
+\end{lstlisting}
 \label{ex:stratego-module}
 \end{example}
 \end{figure}

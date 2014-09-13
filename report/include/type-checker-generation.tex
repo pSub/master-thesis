@@ -170,20 +170,20 @@ lookups, equalities and inequalities.
   explanation of the semantics will follow in
   Section~\ref{sec:constr-gener}.
 
-\begin{example}{~}
-\begin{verbatim}
+%\begin{example}{~}
+\begin{lstlisting}[language=sltc]
 Judgment__(
-          1 !callout`judgment:number'
-        , [Var__("X0")] !callout`judgment:inputs'
-        , [ (1, [Var__("X1")], [Var__("X2")]) !callout`judgment:bind'
-          , Reset__(1) !callout`judgment:reset'
-          , Ctx__(2) !callout`judgment:identity'
-          ] !callout`judgment:context'
-        , [Var__("X3")] !callout`judgment:outputs'
+          1 %*\callout{judgment:number}*)
+        , [Var__("X0")] %*\callout{judgment:inputs}*)
+        , [ (1, [Var__("X1")], [Var__("X2")]) %*\callout{judgment:bind}*)
+          , Reset__(1) %*\callout{judgment:reset}*)
+          , Ctx__(2) %*\callout{judgment:identity}*)
+          ] %*\callout{judgment:context}*)
+        , [Var__("X3")] %*\callout{judgment:outputs}*)
         )
-\end{verbatim}
+\end{lstlisting}
 \label{ex:judgment}
-\end{example}
+%\end{example}
 
   In example~\ref{ex:judgment} we have judgment one that has only one input
   position and that leaves context as it is, resets context one and
@@ -194,12 +194,12 @@ Judgment__(
   \refcallout{lookup:ctx} and of the input positions of the context
   lookup \refcallout{lookup:inputs}.
 
-\begin{example}
-\begin{verbatim}
-Lookup__(1 !callout`lookup:ctx', [Var__("X213")] !callout`lookup:inputs')
-\end{verbatim}
+%\begin{example}
+\begin{lstlisting}[language=sltc]
+Lookup__(1 %*\callout{lookup:ctx}*), [Var__("X213")] %*\callout{lookup:inputs}*))
+\end{lstlisting}
 \label{ex:lookup}
-\end{example}
+%\end{example}
 
   In example~\ref{ex:lookup} we look up \verb|Var__("X213")| from
   context one.
@@ -209,12 +209,12 @@ Lookup__(1 !callout`lookup:ctx', [Var__("X213")] !callout`lookup:inputs')
   directly in the premise. Apart from that they behave like normal
   judgments.
 
-\begin{example}
-\begin{verbatim}
+%\begin{example}
+\begin{lstlisting}[language=sltc]
 Neq__(Var__("X241"), Var__("X240"), None())
-\end{verbatim}
+\end{lstlisting}
 \label{ex:neq}
-\end{example}
+%\end{example}
 
   In example~\ref{ex:neq} we compare \verb|Var__("X241")| and
   \verb|Var__("X240")| for inequality and provide no error message.
@@ -228,7 +228,7 @@ illustrate why such dependencies occur and how this is solved in the
 template language.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
@@ -238,7 +238,7 @@ rules
 $C1 | $C2 |- ~e : all %x . ~T 
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
-\end{verbatim}
+\end{lstlisting}
 \label{ex:premise-dependencies}
 \end{example}
 
@@ -265,16 +265,16 @@ judgment \refcallout{conclusion:inputs}, the context modifications
 conclusion \refcallout{conclusion:outputs}.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 Conclusion__(
-      3 !callout`conclusion:number'
-    , None() !callout`conclusion:name'
-    , ( [Var__("X177")] !callout`conclusion:inputs'
-      , [(2, [Var__("X178")], []), Ctx__(2)] !callout`conclusion:ctx'
+      3 %*\callout{conclusion:number}*)
+    , None() %*\callout{conclusion:name}*)
+    , ( [Var__("X177")] %*\callout{conclusion:inputs}*)
+      , [(2, [Var__("X178")], []), Ctx__(2)] %*\callout{conclusion:ctx}*)
       )
-    , [] !callout`conclusion:outputs'
+    , [] %*\callout{conclusion:outputs}*)
     )
-\end{verbatim}
+\end{lstlisting}
 \end{example}
 
 In this example judgment number three is in the conclusion and the
@@ -300,9 +300,9 @@ variable occurs only once as a source an thus, cannot introduce
 different values. Example~\ref{ex:implicit-equalities} shows this for
 a typing rule of the judgment
 
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}
-\end{verbatim}
+\end{lstlisting}
 
 which is used for type substitution in the SystemF specification. On
 the left of example~\ref{ex:implicit-equalities} you see the typing
@@ -312,17 +312,17 @@ without implicit equalities.
 \begin{example}{~}
 \newline
   \begin{minipage}[b]{.45\linewidth}
-    \begin{verbatim}
+    \begin{lstlisting}[language=sltc]
 =====================
 ~S = [ %x -> ~S ] %x
-\end{verbatim}
+\end{lstlisting}
   \end{minipage}
   \begin{minipage}[b]{.45\linewidth}
-    \begin{verbatim}
+    \begin{lstlisting}[language=sltc]
 %y = %z
 =====================
 ~S = [ %y -> ~S ] %z
-\end{verbatim}
+\end{lstlisting}
   \end{minipage}
 \label{ex:implicit-equalities}
 \end{example}
@@ -363,14 +363,14 @@ places in the template.
 \begin{figure}
   \centering
   \begin{minipage}{.45\linewidth}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 %x : ~T in $C1
 =============== T-Var
 $C1 | $C2 |- %x : ~T
-\end{verbatim}
+\end{lstlisting}
   \end{minipage}
   \begin{minipage}{.45\linewidth}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 Template__(
     [[Var__("X212")]]
   , [(Lookup__(
@@ -391,7 +391,7 @@ Template__(
       ]
     )
   )
-\end{verbatim}
+\end{lstlisting}
   \end{minipage}
   \caption{Typing rule and template of T-Var}
   \label{fig:template-example}

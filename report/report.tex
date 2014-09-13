@@ -22,6 +22,7 @@
 \usepackage{syntax}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
+\usepackage{listings}
 
 \usepackage{todonotes}
 
@@ -35,6 +36,31 @@
 \numberwithin{definition}{chapter}
 \bibliographystyle{alphaurl}
 \makeglossaries
+
+% Listings
+%%%%%%%%%%
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  keywordstyle=\color{blue},       % keyword style
+  stringstyle=\color{mymauve},     % string literal style
+  showstringspaces=false,
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+}
+
+\lstdefinelanguage{sltc}
+{
+morekeywords={module,contexts,meta-variables,judgments,rules,conjectures,language},
+alsoletter=-,
+sensitive=false,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]",
+}
 
 %% Definition of the abstract environment
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

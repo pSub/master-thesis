@@ -40,17 +40,17 @@ as an \gls{sdf} module located at the specified path. This language is
 from now on called \textit{target language}.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 language specifications/simply-typed-lambda-calculus/syntax
-\end{verbatim}
+\end{lstlisting}
 \label{ex:language-section}
 \end{example}
 
 In Example~\ref{ex:language-section} the language definition at
 \todo{A better way to typeset that path?}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 specifications/simply-typed-lambda-calculus/syntax.sdf
-\end{verbatim}
+\end{lstlisting}
 
 is used, this path is relative to the syntax folder of the Spoo@fax
 project.
@@ -77,11 +77,11 @@ symbols \verb|~|, \verb|$|, \verb|%|, \verb|&| and \verb|?|.
 is not a prefix of a construct of the target language.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 meta-variables 	Term "~" { Type Exp }
                 Ctx "$" { Context }
                 Id "%" { ID }
-\end{verbatim}
+\end{lstlisting}
 \label{ex:meta-variable-section}
 \end{example}
 
@@ -126,10 +126,10 @@ provided as input parameters to the rule application. Contexts
 currently only support the input tag.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 judgments Context{I} "|-" Exp{I} ":" Type{O}.
           Type{I} "<:" Type{I}.
-\end{verbatim}
+\end{lstlisting}
 \label{ex:judgment-section}
 \end{example}
 
@@ -170,7 +170,7 @@ generator is explained in Section~\ref{sec:constr-gener} and
 Section~\ref{sec:constraint-solving}.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
@@ -186,7 +186,7 @@ $C1 | $C2 |- ~e : all %x . ~T
 @error ~e "should have type all" %x "." %~T "but has type" { }.
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
-\end{verbatim}
+\end{lstlisting}
 \label{ex:rules}
 \end{example}
 
@@ -207,7 +207,7 @@ slash. Marking conjectures not derivable allows to formulate negative
 tests.
 
 \begin{example}{~}
-\begin{verbatim}
+\begin{lstlisting}[language=sltc]
 ============================
 () |- let fac : int -> int = 
   fix f : int -> int (
@@ -220,7 +220,7 @@ tests.
 
 /===========================
 () |- fun x : int (x) : int
-\end{verbatim}
+\end{lstlisting}
 \label{ex:conjecture-section}
 \end{example}
 
