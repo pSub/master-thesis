@@ -38,6 +38,7 @@ insensitive layout constraints are enforced at parse time and context
 sensitive constraints are enforced at disambiguation time, i.e.\ all
 ambiguities that violate layout constraints are removed.
 
+\begin{figure}
 \begin{example}{~}
 \begin{verbatim}
 module Bool
@@ -53,6 +54,7 @@ exports
 \end{verbatim}
 \label{ex:sdf-grammar}
 \end{example}
+\end{figure}
 
 Example~\ref{ex:sdf-grammar} shows a grammar that allows to write
 conjunctions of \verb|true| and \verb|false|. Conjunctions are
@@ -97,6 +99,7 @@ the constructors from Example~\ref{ex:sdf-grammar}. It has one rule
 \verb|Eval| that reduces a term one step. The strategy \verb|eval|
 applies rule \verb|Eval| repeatedly from bottom to top.
 
+\begin{figure}
 \begin{example}{~}
 \begin{verbatim}
 module Bool
@@ -117,6 +120,7 @@ strategies
 \end{verbatim}
 \label{ex:stratego-module}
 \end{example}
+\end{figure}
 
 Stratego interacts well with \gls{sdf} and has facilities to integrate
 nicely into tool-chains. In addition it allows to write abstract and
