@@ -66,6 +66,19 @@ morecomment=[s]{/*}{*/},
 morestring=[b]",
 }
 
+% https://github.com/sebastianbenz/DSLBook/blob/master/book2-DSLImplementation/doc-impl.tex
+\lstdefinelanguage{stratego}{morekeywords={
+with, where, if, else, end, then, module, rules, signature,
+constructors, sorts, strategies
+}}
+
+% https://github.com/sebastianbenz/DSLBook/blob/master/book2-DSLImplementation/doc-impl.tex
+\lstdefinelanguage{sdf}{morekeywords={
+module, context, free, start, symbols, priorities, syntax,
+lexical, left, reject, prefer, restrictions, imports, exports, bracket
+},
+morestring=[b]"}
+
 %% Definition of the abstract environment
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagestyle{empty}
