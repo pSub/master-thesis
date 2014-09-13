@@ -47,6 +47,20 @@ In Example~\ref{ex:language-section} the language definition at
 is used, this path is relative to the syntax folder of the Spoofax
 project.
 
+\paragraph{Contexts} The fifth section declares the contexts that can
+be used in the judgments and rules. Informally these contexts are
+declared as cross-products of non-terminals, i.e.\ an context is a set
+consisting of pairs of terminals that can be produced by the
+non-terminals in the declaration. Every context has a name, which can
+be used in further declarations. Lookups may differ for contexts and
+use cases, therefore one has to annotate the non-terminals with input
+and output tags. Terminals at positions that are tagged with input are
+used to look up terminals tagged with output that are saved in the
+context. An context for which all non-terminals are tagged with input,
+is equivalent to a normal look up in a set and will return whether the
+tuple could be found. An context with only outputs acts as a sink, one
+can put things into it, but never retrieve anything back.
+
 \paragraph{Meta-variables} The fourth section declares
 meta-variables. The declaration of a meta-variable consists of a
 class, a prefix and a set of non-terminals from the target
@@ -84,20 +98,6 @@ meta-variables. The first class is called \verb|Term| and each
 meta-variable of this class has the prefix \verb|"~"|. Productions
 that produce meta-variables of this class are added to the
 non-terminals \verb|Type| and \verb|Exp|.
-
-\paragraph{Contexts} The fifth section declares the contexts that can
-be used in the judgments and rules. Informally these contexts are
-declared as cross-products of non-terminals, i.e.\ an context is a set
-consisting of pairs of terminals that can be produced by the
-non-terminals in the declaration. Every context has a name, which can
-be used in further declarations. Lookups may differ for contexts and
-use cases, therefore one has to annotate the non-terminals with input
-and output tags. Terminals at positions that are tagged with input are
-used to look up terminals tagged with output that are saved in the
-context. An context for which all non-terminals are tagged with input,
-is equivalent to a normal look up in a set and will return whether the
-tuple could be found. An context with only outputs acts as a sink, one
-can put things into it, but never retrieve anything back.
 
 \paragraph{Judgments} The sixth section of the module declares
 judgments. Judgments in our specification language are the basic
