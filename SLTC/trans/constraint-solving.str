@@ -44,6 +44,11 @@ rules
               end
          end>
         where <not(equal)> (t, s)
+    unify' : ([CEq__(t, s, error) | cs], mgu, err) ->
+        <if and(and(<?Var__(_)> t, <?Var__(_)> s), <all(?CEq__(Var__(_), Var__(_), _))> cs)
+        then !(cs, mgu, [CFail__("Only equalities with variables left.") | err])
+        else fail
+        end>
     unify' : ([CEq__(t, Var__(x), error) | cs], mgu, err) ->
          <unify'> (<conc> (cs, <singelton> CEq__(Var__(x), t, error)), mgu, err)
     unify' : ([CEq__(v@Var__(x), t, error) | cs], mgu, err) -> <if <occurs> (v, t)
