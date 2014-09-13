@@ -170,7 +170,7 @@ lookups, equalities and inequalities.
   explanation of the semantics will follow in
   Section~\ref{sec:constr-gener}.
 
-%\begin{example}{~}
+\begin{example}{~}
 \begin{lstlisting}[language=sltc]
 Judgment__(
           1 %*\callout{judgment:number}*)
@@ -183,7 +183,7 @@ Judgment__(
         )
 \end{lstlisting}
 \label{ex:judgment}
-%\end{example}
+\end{example}
 
   In example~\ref{ex:judgment} we have judgment one that has only one input
   position and that leaves context as it is, resets context one and
@@ -194,12 +194,12 @@ Judgment__(
   \refcallout{lookup:ctx} and of the input positions of the context
   lookup \refcallout{lookup:inputs}.
 
-%\begin{example}
+\begin{example}
 \begin{lstlisting}[language=sltc]
 Lookup__(1 %*\callout{lookup:ctx}*), [Var__("X213")] %*\callout{lookup:inputs}*))
 \end{lstlisting}
 \label{ex:lookup}
-%\end{example}
+\end{example}
 
   In example~\ref{ex:lookup} we look up \verb|Var__("X213")| from
   context one.
@@ -209,12 +209,12 @@ Lookup__(1 %*\callout{lookup:ctx}*), [Var__("X213")] %*\callout{lookup:inputs}*)
   directly in the premise. Apart from that they behave like normal
   judgments.
 
-%\begin{example}
+\begin{example}
 \begin{lstlisting}[language=sltc]
 Neq__(Var__("X241"), Var__("X240"), None())
 \end{lstlisting}
 \label{ex:neq}
-%\end{example}
+\end{example}
 
   In example~\ref{ex:neq} we compare \verb|Var__("X241")| and
   \verb|Var__("X240")| for inequality and provide no error message.
