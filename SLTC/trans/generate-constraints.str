@@ -180,8 +180,8 @@ rules
                           switch !call
                           case ?Lookup__(ctx, inputs, outputs, error):
                                 <instantiate-lookup(|pattern', term')> (ctx, inputs);
-                                lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|<replace(|"{}", o)> error); instantiate-error(|pattern', term'))> (o, outputs))\
-                                           + \ (_, o) -> (None(), [CFail__(Error([o, " not found in context"]))])\
+                                (lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|<replace(|"{}", o)> error); instantiate-error(|pattern', term'))> (o, outputs))\
+                                            + \ (_, i) -> (None(), [CFail__(Error([i, " not found in context"]))])\)
                           case ?Eq__(a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> a,
