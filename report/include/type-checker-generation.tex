@@ -150,6 +150,10 @@ the remainder of the section. Note that the template optimization and
 constraint generation phase take advantage of these normalizations and
 therefore expect their inputs to be normalized.
 
+Note: We transform all meta-variables of the specification into the
+variables (\verb|Var(name)|) that we use for constraint
+generation. We describe the rename process in the next section.
+
 \paragraph*{Premisses}
 Premisses in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities. A premise always has a list of
