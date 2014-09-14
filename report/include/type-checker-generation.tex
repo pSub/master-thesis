@@ -245,12 +245,18 @@ Neq(Var("X0"), Var("X1"), None())
   \verb|Var("X1")| for inequality and provide no error message.
 \end{description}
 
-There are cases, in which it is relevant in which order the premisses
-are evaluated. Therefore every premise has a list of premisses on
-which it depends. Essentially this list contains the position of the
-dependency and its output positions. The following example will
-illustrate why such dependencies occur and how this is solved in the
-template language.
+In some cases it is relevant in which order premisses we evaluate
+premisses. We have not talked about evaluation yet, so assume we
+evaluate premisses as functions. We provide terms for input positions
+an retrieve terms for the output positions. If we look at
+Example~\ref{ex:premise-dependencies} we see that rule \verb|T-Tapp|
+has two premisses. When we compare the premisses with the judgment
+definitions, we see that \verb|%x| occurs as an input of the first
+premise and as within an output of the second premise but not at all
+in the conclusion. If we want to evaluate the first premise we
+have to find a term for \verb|%x|, but that term is only provided by
+the output of the second premise. Therefore we have to evaluate the
+second premise first.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -267,45 +273,42 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \label{ex:premise-dependencies}
 \end{example}
 
-Example~\ref{ex:premise-dependencies} shows the type application rule
-of SystemF \todo{Citation} together with the judgment
-declarations. One can easily see, that the first premise has an input
-positions, namely \verb|%x|, that is part of the output position of
-the second premise. Therefore the second premise needs to be evaluated
-first to provide the output for the first premise. In the template
-generation process the premisses are sorted topologically and are
-annotated with the indices and outputs of their dependencies. The
-output positions are to know which terms are actually provided by the
-dependency. For the first premise the dependency would look like
-\verb|(1, [TAll(Var__("X150"), Var__("X149"))])|, where \verb|1|
-refers to the second premise in example~\ref{ex:premise-dependencies}
-because of the topological sort.
+We make those dependencies visible in the template language by
+annotating each premise with a list of dependencies. Those
+dependencies contain the number of the premise on which the premise
+depends and the output of that premise. The outputs are redundant
+information and only added to reduce indirections.
+For the first premise in Example~\ref{ex:premise-dependencies} the
+dependency would look like
+\verb|(1, [TAll(Var("X0"), Var("X1"))])|, where \verb|1| refers to
+the second premise, because we sort premisses of templates topological
+according to the dependencies, as we will describe in the next
+section.
 
 \paragraph{Conclusion}
 Conclusions contain the judgment identifier
-\refcallout{conclusion:number}, the name of the typing rule (which may
-be empty) \refcallout{conclusion:name}, the input positions of the
-judgment \refcallout{conclusion:inputs}, the context modifications
+\refcallout{conclusion:number}, the input positions of the judgment
+\refcallout{conclusion:inputs}, the context modifications
 \refcallout{conclusion:ctx} as well as the output positions of the
 conclusion \refcallout{conclusion:outputs}.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
-Conclusion__(
+Conclusion(
       3 %*\callout{conclusion:number}*)
-    , None() %*\callout{conclusion:name}*)
-    , ( [Var__("X177")] %*\callout{conclusion:inputs}*)
-      , [(2, [Var__("X178")], []), Ctx__(2)] %*\callout{conclusion:ctx}*)
+    , ( [Var("X177")] %*\callout{conclusion:inputs}*)
+      , [(2, [Var("X178")], []), Ctx(2)] %*\callout{conclusion:ctx}*)
       )
     , [] %*\callout{conclusion:outputs}*)
     )
 \end{lstlisting}
+\label{ex:conclusion}
 \end{example}
 
-In this example judgment number three is in the conclusion and the
-typing rule has no name. There is only one input position and there
-has to be at least one element in the second context. The judgment
-three has no outputs.
+Example~\ref{ex:conclusion} shows a conclusion that has judgment
+number three, only one input position and the context pattern
+specifies that there has to be at least one element in the second
+context. In this example judgment three has no outputs.
 
 \subsubsection{Generation}
 Template generation is mainly done by the Stratego rule
