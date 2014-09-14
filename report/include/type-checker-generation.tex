@@ -33,19 +33,20 @@ non-determinism in the type system and therefore reduce the amount of
 backtracking in the type checker. The final product after those two
 phases is a file that contains the optimized templates.
 
-The generate type checker also has two phases, the first of those take
-the optimized templates as input. Instead of generating the type
-checker directly from the specification, we implement a generic
-constraint-based type checker that takes templates as input. The
-generic type checker has two phases: Constraint generation and
-constraint solving. The constraint generation phase has the templates
-and the program expression that shall be type checked as inputs. To
-generate the constraints the program expression is traversed according
-to the templates and the emitted constraints are collected. Those
-constraints are then solved in the constraint solving phase.
+Instead of generating a type checker directly from the specification,
+we implement a generic constraint-based type checker that takes
+templates as input. This generic type checker has two phases:
+Constraint generation and constraint solving. The constraint
+generation phase has the templates and the expression that shall be
+type check as input. We then build a derivation tree according to the
+expression by pattern matching the conclusion of the
+templates. Building and traversing of the derivation tree emits
+constraints. The constraint solving phase then tries unify the emitted
+constraints. If that succeeds it reports the result otherwise it
+reports the errors that occurred during unification.
 
 Figure~\ref{fig:phases} shows the phases and their
-relationships. Nodes are phases and arrows express that data flows
+relationships. Nodes represent phases and arrows express that data flows
 from one node to an other. Labels on arrows describe the data format.
 
 The four phases correspond to modules or tools. Each phase has a
@@ -81,25 +82,37 @@ generator, one section per phase.
 
 \subsection{Template Generation}
 \label{sec:constraint-templates}
-In the first phase type system specifications are translated into
-templates. In this phase not just a simple translation from a human
+The first phase translates type system specifications into
+templates. This phase is not just a simple translation from a human
 readable representation into a representation suitable for programs,
-but also makes first simplifications like resolving implicit
-equalities.
+but also normalizes the resulting templates. Normalization comprises
+the elimination of implicit equalities and resolves dependencies
+between premisses. All following phases assume normalized templates,
+which simplifies parts of them.
 
 \subsubsection{Templates}
 A template is an intermediate representation of a typing rule that is
 more suitable for the constraint generation process and defined as
 following.
 
+Templates serve as the input format for the constraint generation
+phase of the type checker. Besides being better suited for constraint
+generation templates also have the advantage that we can adapt the
+system to other specification languages by translation into
+templates. The structure of the templates is close to the structure of
+the typing rules of the specification language in
+Section~\ref{sec:design--architecture}, but has no hard requirements
+on the specification language other than being declarative.
+
 \begin{definition}{Template}
   \todo[inline]{Complete this grammar and synchronize it with the
-    stratego source code}
-  The syntax of templates in \gls{bnf}. In the Stratego implementation
-  all constructors are appended with two underscores to avoid name
-  collisions with target languages. Those are omitted here for the
-  sake of readability. The non-terminals Inputs, Outputs, Term and
-  Error may contain arbitrary terms.
+    Stratego source code} The syntax of templates in \gls{bnf}. The
+  Stratego implementation appends to all constructors two underscores
+  to avoid name collisions with target languages. This is necessary as
+  the module system of Stratego is not strong enough to avoid those
+  collisions. We omit these here for the sake of readability. The
+  non-terminals Inputs, Outputs, Term and Error may contain arbitrary
+  terms.
   \begin{grammar}
     <Template> ::= `Template' <Premisses> <Conjecture>
 
@@ -120,105 +133,112 @@ following.
   \end{grammar}
 \end{definition}
 
-Templates serve as the input format for the constraint generation
-phase of the type checker and are introduced so that the type checker
-can be used with other specification languages. The structure of the
-templates is close to the structure of the typing rules of the
-specification language in Section~\ref{sec:design--architecture}, but
-has no requirements on the specification language other than being
-declarative.
-
-Before describing the structure of templates in depth, the conceptual
-differences between templates and typing rules are highlighted.
+Before we describe the structure of templates in depth, we highlight
+the conceptual differences between templates and typing rules.
 Templates take advantage of the input/output tags of typing judgments
-by splitting everything up into an input and output part. This will
-become handy in the constraint generation phase, as one can observe
-which positions are given and which need to be computed. An other
-difference is that templates are normalized. That means, implicit
-equalities in the conclusion and premisses of typing rules are
-added as explicit equalities and premisses are sorted by input/output
-position dependencies. The normalizations are described in the
-remainder of this section. Note that the template optimization and
+and context definitions by splitting everything up into an input and
+output part. This will become handy in the constraint generation
+phase. There we can see immediately which are the patterns to match
+against the expressions and which are the output positions that we
+compute. As described in the introduction to that chapter, we
+normalize templates. That means, we add for each implicit equality in
+the conclusion and premisses of typing rules an explicit
+equality. Thus every variable occurs in each judgment only
+once. Further we sort premisses by input/output position
+dependencies. We describe and motivate the normalization process in
+the remainder of the section. Note that the template optimization and
 constraint generation phase take advantage of these normalizations and
 therefore expect their inputs to be normalized.
 
-The structure of a template is close to the structure of a typing
-rule, there are premisses and a conjecture. In addition to those there
-is a list of variables for ever premise. Those variables correspond to
-the output positions of the premisses in the typing rule, for each
-output position there is one variable. Further there is a set of
-constraints. This set contains equalities that bind the variables of
-the premisses to the expected outputs.
-
 \paragraph*{Premisses}
 Premisses in templates have multiple shapes: Judgments, context
-lookups, equalities and inequalities.
+lookups, equalities and inequalities. A premise always has a list of
+dependencies. This dependency list contains the number and the outputs
+of the judgment the premise depends on. We define in the next
+paragraph what it means for premise to have dependencies.
 
 \begin{description}
-\item[Judgments] are the user defined judgments form the
+\item[Judgments] correspond to the user defined judgments form the
   specification. They consist of the judgment number
-  \refcallout{judgment:number}, the positions of the judgment that are
-  marked as inputs \refcallout{judgment:inputs}, context modifications
-  \refcallout{judgment:context} and the output positions of the
-  judgments \refcallout{judgment:outputs}. A context modification can
-  either be an addition to a context \refcallout{judgment:bind} which
-  is a triple of a context identifier, a list of inputs and a list of
-  outputs, a context identity \refcallout{judgment:identity} which
-  corresponds to the context meta-variables in the specification and a
-  reset operation \refcallout{judgment:reset} which resets the given
-  context and corresponds to the empty context. Those context
-  modifications are meant to be read from right to left. A detail
-  explanation of the semantics will follow in
+  \refcallout{judgment:number} which refers to the position in the
+  declaration section of the specification, the positions of the
+  judgment marked as inputs \refcallout{judgment:inputs}, context
+  modifications \refcallout{judgment:bind},
+  \refcallout{judgment:reset}, \refcallout{judgment:identity}, the
+  output positions of the judgments \refcallout{judgment:outputs} and
+  error messages \refcallout{judgment:errors}.
+
+  A context modification can either be an addition to a context
+  \refcallout{judgment:bind} which consists of a context identifier
+  (this identifier refers to the position in the declaration section
+  of the specification), a list of inputs and a list of outputs. It
+  can also be a context identity \refcallout{judgment:identity} which
+  corresponds to the context meta-variables in the specification and
+  do not modify the context and a reset operation
+  \refcallout{judgment:reset} which resets the given context and
+  corresponds to the empty context. Read to context modifications from
+  right to left to obtain a valid context. A detail explanation of the
+  semantics in our type checker will follow in
   Section~\ref{sec:constr-gener}.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
-Judgment__(
-          1 %*\callout{judgment:number}*)
-        , [Var__("X0")] %*\callout{judgment:inputs}*)
-        , [ (1, [Var__("X1")], [Var__("X2")]) %*\callout{judgment:bind}*)
-          , Reset__(1) %*\callout{judgment:reset}*)
-          , Ctx__(2) %*\callout{judgment:identity}*)
-          ] %*\callout{judgment:context}*)
-        , [Var__("X3")] %*\callout{judgment:outputs}*)
-        )
+Judgment(
+        1 %*\callout{judgment:number}*)
+      , [Var("X0")] %*\callout{judgment:inputs}*)
+      , [ Binding(1, [Var("X1")], [Var("X2")]) %*\callout{judgment:bind}*)
+        , Reset(1) %*\callout{judgment:reset}*)
+        , Ctx(2) %*\callout{judgment:identity}*)
+        ]
+      , [Var("X3")] %*\callout{judgment:outputs}*)
+      , Some([Error([Var("X0"), "has type", "{}"])]) %*\callout{judgment:errors}*)
+      )
 \end{lstlisting}
 \label{ex:judgment}
 \end{example}
 
-  In example~\ref{ex:judgment} we have judgment one that has only one input
-  position and that leaves context as it is, resets context one and
-  adds then the input/output pair \verb|Var__("X217")| and
-  \verb|Verb__("X218")| to context one.
+In example~\ref{ex:judgment} we have judgment one that has only one
+input position \verb|Var("X0"| and one output position
+\verb|Var("X3")|. It leaves context two as it is, resets context one
+and then adds the input/output pair \verb|Var("X1")| and
+\verb|Var("X2")| to context one. In addition it has one error message.
 
 \item[Context lookups] consist of the context number
-  \refcallout{lookup:ctx} and of the input positions of the context
-  lookup \refcallout{lookup:inputs}.
+  \refcallout{lookup:ctx}, of the input \refcallout{lookup:inputs} and
+  of the output \refcallout{lookup:outputs} positions of the context
+  lookup from the specification and of error messages
+  \refcallout{lookup:errors}. We treat context lookups separately,
+  because we generate them from the context declaration.
 
-\begin{example}
+\begin{example}{~}
 \begin{lstlisting}[language=sltc]
-Lookup__(1 %*\callout{lookup:ctx}*), [Var__("X213")] %*\callout{lookup:inputs}*))
+Lookup(
+        1 %*\callout{lookup:ctx}*)
+      , [Var("X0")] %*\callout{lookup:inputs}*)
+      , [Var("X1")] %*\callout{lookup:outputs}*)
+      , None() %*\callout{lookup:errors}*)
+      )
 \end{lstlisting}
 \label{ex:lookup}
 \end{example}
 
-  In example~\ref{ex:lookup} we look up \verb|Var__("X213")| from
-  context one.
+  In example~\ref{ex:lookup} we look up \verb|Var("X0")| from
+  context one and bind the result to \verb|Var("X1)"|. This context
+  lookup has no error messages attached.
 
 \item[(In)equalities] are predefined judgments and therefore treated
-  separately. As they have no outputs the error messages are stored
-  directly in the premise. Apart from that they behave like normal
-  judgments.
+  separately. They have two input positions and an potentially an
+  error message. Apart from that they behave like normal judgments.
 
 \begin{example}
 \begin{lstlisting}[language=sltc]
-Neq__(Var__("X241"), Var__("X240"), None())
+Neq(Var("X0"), Var("X1"), None())
 \end{lstlisting}
 \label{ex:neq}
 \end{example}
 
-  In example~\ref{ex:neq} we compare \verb|Var__("X241")| and
-  \verb|Var__("X240")| for inequality and provide no error message.
+  In example~\ref{ex:neq} we compare \verb|Var("X0")| and
+  \verb|Var("X1")| for inequality and provide no error message.
 \end{description}
 
 There are cases, in which it is relevant in which order the premisses
