@@ -2,50 +2,51 @@
 \todo[inline]{Terminology: Type Checker vs. Type Inference}
 \section{Goals}
 This section briefly describes and motivates the design and goals of
-the type check generator.
+the type checker generator.
 
 The first goal is to produce fast type checkers, even if the type
 system specification is not geared towards performance. Mainly this
 means to try to deal with non-syntax directed typing rules without
-backtracking. The motivation for this is, that non-syntax directed
+backtracking. The motivation for this is that non-syntax directed
 typing rules are often more readable and changes have mainly local
 effects.
 
 The second goal is to design a modular type checker generator. A type
 checker generator that can be easily adapted and that facilitates the
 exchange of components. This modularity is desirable because it
-increases the reusability and makes it possible to combine projects.
+increases the reusability and makes it possible to combine previously
+unrelated projects.
 
-The third goal is to generate type checkers emit readable error
+The third goal is to generate type checkers that emit readable error
 messages if a program is not well-typed. This is essential to make the
-type checker usable in any way.
+generated type checker usable in any way.
 \section{Architecture}
 The type checker generator has two phases: Template generation and
-template optimization. In the template generation phase the type
-system specification is transformed with minor modifications into
-templates. A template is a different representation for a typing rule,
-that is better suited for type checking. Templates will be introduced
-in detail in Section~\ref{sec:constraint-templates}. In the template
-optimization phase those templates are optimized. The optimizations
-aim to reduce the amount of non-determinism in the type system and
-therefore reduce the amount of backtracking in the type checker. The
-end product after those two phases, is a file that contains the
-optimized templates.
+template optimization. The template generation phase transforms the
+type system specification with minor modifications into templates. A
+template is a different representation for a typing rule, that is
+better suited for type checking. We introduce templates in detail in
+Section~\ref{sec:constraint-templates}. The template optimization
+phase optimizes checks which optimizations apply to those templates
+and applies them. The optimizations aim to reduce the amount of
+non-determinism in the type system and therefore reduce the amount of
+backtracking in the type checker. The final product after those two
+phases is a file that contains the optimized templates.
 
-The templates are the input for the next two phases, which are located
-in the type checker. Instead of generating the type checker directly
-from the specification, a generic constraint-based type checker is
-implemented that takes templates as input. The generic type checker
-has two phases: Constraint generation and constraint solving. The
-constraint generation phase has the templates and the program
-expression that shall be type checked as inputs. To generate the
-constraints the program expression is traversed according to the
-templates and the emitted constraints are collected. Those constraints
-are then solved in the constraint solving phase.
+The generate type checker also has two phases, the first of those take
+the optimized templates as input. Instead of generating the type
+checker directly from the specification, we implement a generic
+constraint-based type checker that takes templates as input. The
+generic type checker has two phases: Constraint generation and
+constraint solving. The constraint generation phase has the templates
+and the program expression that shall be type checked as inputs. To
+generate the constraints the program expression is traversed according
+to the templates and the emitted constraints are collected. Those
+constraints are then solved in the constraint solving phase.
 
 Figure~\ref{fig:phases} shows the phases and their
-relationships. Nodes are phases and the arrows express that data flows
-from one node to an other. The data format is annotated at the arrows.
+relationships. Nodes are phases and arrows express that data flows
+from one node to an other. Labels on arrows describe the data format.
 
 The four phases correspond to modules or tools. Each phase has a
 well-defined interface, therefore the implementation can be exchanged
