@@ -435,6 +435,50 @@ Template(
 \end{figure}
 \subsection{Constraint Template Optimization}
 \label{sec:constr-templ-optim}
+In this section we describe and motivate the optimization strategies
+we have used. The template optimization phase can do arbitrary
+modifications, we focus here on optimization strategies that reduce
+ambiguities between the templates.
+
+Informally two templates are ambiguous if it is a priori not known
+which (if any) of the templates we have to use to extend the
+derivation tree to create a successful derivation. Therefore we have
+to use the rules according to a heuristic and to backtrack if the
+decision did not worked out. The goal of the optimization strategies
+described in this section, is to rule out some of those ambiguities
+before we even start to create derivations.
+
+Before we introduce the optimization strategies, we define more
+formally what an ambiguity is.
+
+\begin{definition}
+  A template is \textit{when-ambiguous} if there is an other
+  template such that there is at least one term that matches the
+  conclusion of both templates.
+\label{def:when-ambiguous}
+\end{definition}
+
+Definition~\ref{def:when-ambiguous} describes the general case of an
+ambiguity. If there is a template that has an syntactic overlap with
+an other template, then there is an ambiguity. We call those
+ambiguities when-ambiguity, because it is not clear when we have to
+apply an ambiguous template. 
+
+\begin{definition}
+  A template is \textit{which-ambiguous} if there is an other template
+  such that the set of terms matching the conclusion of both templates
+  is equal.
+\label{def:which-ambiguity}
+\end{definition}
+
+Definition~\ref{def:which-ambiguity} aims at a more specialized
+ambiguities. Templates are when ambiguous if they match exactly the
+same terms. There are just two (or more) templates that apply to
+exactly the same terms. Therefore it is not the question \textit{when}
+we have to apply a template, but only \textit{which} one we have to
+apply. The distinction of those two kinds of ambiguities will help to
+implement optimization strategies.
+
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the type checker. The
