@@ -73,8 +73,8 @@ Stratego~\cite{Visser01} is a framework for the development of
 transformation systems. It consists of the transformation language
 Stratego and a set of tools (XT) for tasks like parsing and pretty
 printing. The paradigm of Stratego is to use user-definable strategies
-for rewriting. In Stratego the following abstraction levels can be
-distinguished.
+for rewriting. In Stratego distinguishes the following abstraction
+levels.
 
 \begin{description}
 \item[Transformation rules] are basic rewrite rules on the structure
@@ -82,10 +82,10 @@ distinguished.
 \item[Transformation strategies] are the glue between the
   transformation rules. They combine rules, define the order of
   application and the traversal order of the \gls{ast}. These
-  strategies can be defined generically. Context information are
-  passed using \textit{scoped dynamic rewrite
-    rules}~\cite{Visser01scopeddynamic} during the traversal, because
-  normal rewrite rules are context-free.
+  strategies can be defined generically. \textit{scoped dynamic
+    rewrite rules}~\cite{Visser01scopeddynamic} pass context
+  information during the traversal, because normal rewrite rules are
+  context-free.
 \item[Transformation tools] allow to compile transformation strategies
   into a stand-alone program. The interface between such programs is
   the ATerm format for \glspl{ast}.
@@ -138,14 +138,14 @@ analysis based on live parses, with error recovery and origin
 tracking. Those facilities are implemented language pragmatic, which
 allows developers to focus on language specific parts.
 
-Spoofax is used in this thesis to provide editor support for the
-specification language and as glue between \gls{sdf} and Stratego in the
-development of the specification language, the formula generator and
-the type checker generator.
+We use Spoofax in this thesis to provide editor support for the
+specification language and as glue between \gls{sdf} and Stratego in
+the development of the specification language, the formula generator
+and the type checker generator.
 \subsection{Vampire}
 We use the automatic theorem prover Vampire~\cite{VoronkovVampire} to
 proof classical first-order logic propositions about type system
-specifications. Vampire is able to parse formulas in the \gls{ptpt}
+specifications. Vampire is able to parse formulas in the \gls{tptp}
 format and provides detailed output for the conducted proofs. We use
 this output to extract information about the applied axioms, which are
 in our case typing rules.
