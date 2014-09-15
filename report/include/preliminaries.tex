@@ -142,6 +142,13 @@ Spoofax is used in this thesis to provide editor support for the
 specification language and as glue between \gls{sdf} and Stratego in the
 development of the specification language, the formula generator and
 the type checker generator.
+\subsection{Vampire}
+We use the automatic theorem prover Vampire~\cite{VoronkovVampire} to
+proof classical first-order logic propositions about type system
+specifications. Vampire is able to parse formulas in the \gls{ptpt}
+format and provides detailed output for the conducted proofs. We use
+this output to extract information about the applied axioms, which are
+in our case typing rules.
 \subsection{Alternatives}
 \section{Type Systems}
 \textit{Type theory} started as an attempt by Gottlob Frege to solve Russel's
