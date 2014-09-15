@@ -18,6 +18,11 @@ signature
 
 rules
     
+    /**
+     * Main strategy that optimizes which-ambiguities.
+     * @param context definitions of the specification 
+     * @type List(Template) -> List(Template)
+     */
     solve-which-ambiguities(|context-definitions) : templates -> 
         <conc> (<map(mkFork;
                 optimize-fork(|context-definitions, templates);
@@ -70,6 +75,14 @@ rules
                                       \))> premisses
                                  \); map(Fst)> rulez-premisses
 
+    /**
+     * Main strategy that optimizes when-ambiguities.
+     *
+     * @param judgments of the specification
+     * @param target-language of the specification
+     * @param context definitions of the specification 
+     * @type List(Template) -> List(Template)
+     */
     solve-when-ambiguities(|judgments, target-language, context-definitions) =
         ?templates;
         where(equivalence-classes := <create-classes> templates);
@@ -100,18 +113,49 @@ rules
               <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs;
               base-templates := <zip; filter(\(goal, (VerificationSuccess(_),_)) -> <make-base-template> (judgment-number, goal)\)> (base-cons-product, proofs)
 
+    /**
+     * Creates a template for the judgment corresponding to the judgment number
+     * with the given pattern as a term pattern and no premisses.
+     *
+     * Example template:
+     *
+     * ==========
+     * int <: int
+     * 
+     * @type (Int, ATerm) -> Template
+     */
     make-base-template : (judgment-number, pattern) -> Template__(None(), [], Conclusion__(judgment-number, (pattern, []), []))
 
+    /**
+     * The templates within a fork define a relation if they have no output positions.
+     * Strategy succeeds if the templates define a relation and fails otherwise.
+     */
     is-relation : Fork__([t|ts]) -> Fork__([t|ts])
         where <get-outputs; option(equal(|[]))> t
 
+    /**
+     * Returns all templates of a fork that contain only variables in their conclusion.
+     *
+     * @type Fork(List(Template)) -> List(Template)
+     */
     get-non-syntax-directed-templates : Fork__(ts) -> <filter(where(get-pattern; all(?Var__(_))))> ts
 
+    /**
+     * Strategy that groups all templates that are when-ambiguous to each other.
+     *
+     * @type List(Template) -> List(List(Template))
+     */
     create-classes : [] -> []
     create-classes : [t | ts] -> [class | <create-classes> ts']
         where class := <create-class; nub> (t, ts);
               ts' := <diff> (ts, class)
 
+    /**
+     * Strategy that selects all templates `ts' that are when-ambigous
+     * to the template `t'. 
+     *
+     * @type (Template, List(Template)) -> List(List(Template))
+     */
     create-class =
         ?(t, ts);
         where(subsumed := <filter(where(\t' -> <subsume-mod-var(true)> (t, t')\))> ts;
@@ -122,7 +166,15 @@ rules
         end
 
     /**
-     *  
+     *  Strategy succeeds if template t1 and t2 are chosen such that
+     *
+     *      m(t1) \subseteq m(t2)
+     *
+     * where m(t) computes the set of terms that match the conclusion of t and such
+     * that the judgment numbers are equal. If the strategy `sym' succeeds the strategy
+     * also succeeds if
+     *
+     *      m(t2) \subseteq m(t1)
      *
      * @param strategy that succeeds when the comparison should be symmetric and fails otherwise
      */
@@ -133,11 +185,7 @@ rules
         where(<zip; map(match-constructors(?DummyVar__(), sym))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
 
     /**
-     * Sorts all templates within forks. Templates are sorted according to <
-     *
-     *      t_1 < t_2 \iff m(t_1) \subseteq m(t_2)
-     *
-     * where m(t) computes the set of terms that match the conclusion of t.
+     * Sorts all templates within forks according to subsume-mod-var(false).
      *
      * @type List(Template) -> List(Template)
      */
