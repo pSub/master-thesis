@@ -53,9 +53,9 @@ rules
                  \TypingRule(PremiseBase(), RuleName(type,_), conjecture) ->
                     // Prepare the input and initialize the store.
                     <prepare-generation(|judgments, context-definitions, store);
-                    \input ->
+                    \(inputs, outputs) ->
                         // Generate the constraints.
-                        <generate(true |templates, store, <get-outputs(|judgments)> conjecture)> (<get-judgment-id> conjecture, input)
+                        <generate(true |templates, store, outputs)> (<get-judgment-id> conjecture, inputs)
                     \; \result -> (result, type)\
                     > conjecture
                  \, clear-store(|store))),
@@ -76,8 +76,9 @@ rules
      * @param store - hashtables that store context information
      */
     prepare-generation(|judgments, context-definitions, store) =
-        get-inputs(|judgments); where(initialize-store(|store, context-definitions));
-        remove-all(node-is-ctx)
+        ?conjecture;
+        <get-inputs(|judgments); where(initialize-store(|store, context-definitions))> conjecture;
+        <(get-inputs(|judgments); remove-all(node-is-ctx), get-outputs(|judgments))> (conjecture, conjecture)
 
     /**
      * Generates the set of constraints.
