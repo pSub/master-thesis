@@ -610,12 +610,13 @@ because we do not have a key-value list implementation of contexts.
 
 However implementing contexts using extended hash tables forced us to
 separate context operations from normal inputs. This creates on the
-one hand more exceptional cases (e.g. the matching complex matching
+one hand more exceptional cases (e.g.\ the matching complex matching
 algorithms described in Section~\ref{sec:constr-templ-optim}) it leads
 on the other hand to a modular context implementation with the
 potential to exchange the implementation easily.
 
-We now define the constraint language.
+Before can explain how we generate constraints, we have to define the
+constraint language first.
 
 \begin{definition}{Constraint Language}
   \begin{grammar}
@@ -625,9 +626,13 @@ We now define the constraint language.
   \end{grammar}
 \end{definition}
 
-\verb|CFail| is the constraint that always fails and \verb|CEq| and
-\verb|CNeq| are standard equality and inequality
-constraints. \verb|Term| and \verb|Error| are arbitrary terms.
+We annotate all constraints with error messages. These error messages
+are either generated during the constraints generation or passed
+through from the specification. The constraint solver shows the error
+messages if it cannot solve a constraint. There are three types of
+constraints. The constraint \verb|CFail| corresponds to false and
+cannot be solved. Further \verb|CEq| and \verb|CNeq| are equality
+respectively inequality constraints.
 
 The program expression that is passed to the constraint generator is
 wrapped in the desired typing judgment with initial contexts and
