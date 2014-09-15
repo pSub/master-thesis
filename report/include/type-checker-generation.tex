@@ -481,43 +481,42 @@ implement optimization strategies.
 
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
-Constraint generation is the first phase of the type checker. The
-inputs of this phase are constraint templates and the expressions that
-should be type checked. Currently those expressions are defined in the
-conjecture section of the type system specification. \todo{Change
-  this, at least for benchmarking it is nescessary to pass programs
-  via stdin}
+Constraint generation is the first phase of the generated type
+checker. The inputs of this phase are constraint templates and the
+expressions that should be type checked. The only input method for
+expression we currently support is via the conjectures section of the
+specification. However it should be straightforward to extend this
+phase with support for e.g.\ \verb|stdin|.
 
-The constraint generation phase structured as follows. First, contexts
-are intialized, then constraint are generated according to the
-programs structure and the templates and at the end a constraint is
-added that binds the infered type with the acutal type.
+The constraint generation phase structured as follows. We initialize
+contexts first and then generate constraints according to the programs
+structure and the templates. After generating the constraints we
+annotate whether the expression should have been well-typed or not.
 
-Lets first look on the implementation of the contexts. Contexts are
-stored in a hashtable, with the context id as key. This implies that
-at every point in the derivation, there is only one instance of each
-context. This assumption is true for all type systems we have
-investigated. Further a context is defined as a hashtable which keeps
-track of the insertion order of the elements. The insertion order is
-important for type systems that rely on the ordering of contexts
-\todo{Example}. Keys of the hashtable are the input positions of the
-context and values are the output positions. As we use a hashtable
-rather than a hashmap it is also possible to store multiple values at
-a single key. We decided to use hashtables instead of normal key-value
-lists for the context representation to reduce the lookup time in
-large programs with many identifiers. However we do not have
-experimental evidence on this, because we do not have a key-value list
-implementation of contexts.
+Lets first look at the implementation of contexts. We store all
+contexts in a hash table, with the context id as key. The contexts
+itself are hash tables extended with a list that stores the insertion
+order. Hash tables are a convenient data structure in the Stratego
+standard library to store (multiple) data points at a key. They
+reflect the intuition of the context declarations as cross products of
+the terms corresponding to non-terminals. It is important to track the
+insertion order, because some type systems (e.g.\ ordered type
+systems) might rely on the ordering within contexts.
 
-However implementing contexts using extended hashtables forced us to
+We decided to use hashtables instead of normal key-value lists for the
+context representation to reduce the lookup time in realistic programs
+which declare identifiers much less then they refer to them. However
+we do not have experimental evidence if this speeds up type checking,
+because we do not have a key-value list implementation of contexts.
+
+However implementing contexts using extended hash tables forced us to
 separate context operations from normal inputs. This creates on the
-one hand many exceptional cases (e.g. the matching complex matching
-algorithms described in section~\ref{sec:constr-templ-optim}) it lead
+one hand more exceptional cases (e.g. the matching complex matching
+algorithms described in Section~\ref{sec:constr-templ-optim}) it leads
 on the other hand to a modular context implementation with the
 potential to exchange the implementation easily.
 
-We now define the constraint language. It is a simple language
-consisting of three constraints.
+We now define the constraint language.
 
 \begin{definition}{Constraint Language}
   \begin{grammar}
@@ -527,8 +526,8 @@ consisting of three constraints.
   \end{grammar}
 \end{definition}
 
-\verb|CFail| is the constraint that cannot be unified and \verb|CEq|
-and \verb|CNeq| are ordinary equality and inequality
+\verb|CFail| is the constraint that always fails and \verb|CEq| and
+\verb|CNeq| are standard equality and inequality
 constraints. \verb|Term| and \verb|Error| are arbitrary terms.
 
 The program expression that is passed to the constraint generator is
