@@ -558,6 +558,26 @@ Formula~\ref{formula:which-ambiguity} separately with the vampire
 theorem prover. If vampire succeeds for all conjuncts we remove
 template $t$. 
 
+At the end of the optimization phase we sort the templates in the
+remaining forks. Forks that have a specialized conclusion are before
+forks with a general conclusion. This ordering has the advantage that
+we can evaluate the templates in a fork from left to right, so that no
+general template will catch all terms. More formally, we sort the
+templates within a fork by $<$, which is defined as
+
+\begin{align}
+  t_1 < t_2 \iff m(t_1) \subseteq m(t_2)
+\end{align}
+
+where $m(t)$ computes the set of terms that match the conclusion of
+$t$. We implement the comparison as a Stratego strategy and use the
+quick sort implementation of the Stratego standard library. The
+comparison strategy does the following. It checks whether the judgment
+number is equal, which is always satisfied as we compare templates
+within a fork. Then it checks whether the constructors of the term and
+context pattern of left operand match the constructors of the term and
+context pattern of the right operand modulo variable names.
+
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the generated type
