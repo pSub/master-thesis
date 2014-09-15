@@ -512,6 +512,38 @@ fork. Template $t_1$ subsumes template $t_2$ if all premisses of $t_2$
 imply at least one premise of $t_1$. This is sufficient, because the
 conclusion of all templates within a fork matches the same terms.
 
+In Example~\ref{ex:which-ambiguity} we have the depth and width
+subtyping rules for records. Those two rules are which-ambiguous to
+each other. Their conclusions contain the same judgment, have no
+contexts and exactly the same term pattern.
+
+\begin{example}{~}
+\begin{lstlisting}[language=sltc]
+======== S-Refl
+~T <: ~T
+
+~T <: ~S
+{ $R } <: { $U }
+=============================== S-depth
+{ %l : ~T $R } <: { %l : ~S $U }
+
+~T = ~S
+{ $R } <: { $U }
+=============================== S-width
+{ %l : ~T $R } <: { %l : ~S $U}
+\end{lstlisting}
+\label{ex:which-ambiguity}
+\end{example}
+
+We know that the subtyping relation \verb|<:| is reflexive by the rule
+\verb|S-Refl|. Now we show that all premisses of \verb|S-width| imply
+at least one premise of \verb|S-depth|. \verb|~T = ~S| implies
+\verb|~T <: ~S| because the subtyping relation is reflexive and
+\verb|{ $R } <: { $U }| occurs verbatim as a premise of
+\verb|S-depth|. Therefore the depth subtyping rule subsumes the with
+subtyping rule. 
+
+
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the generated type
