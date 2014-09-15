@@ -479,6 +479,39 @@ we have to apply a template, but only \textit{which} one we have to
 apply. The distinction of those two kinds of ambiguities will help to
 implement optimization strategies.
 
+Before we describe the optimization strategies we implemented, we
+extend the template language to make ambiguities explicit.
+
+\begin{definition}
+    The following grammar defines the extended template language.
+    \begin{grammar}
+    <Template> ::= $\dots$ | `Fork' <Templates>
+
+    <Templates> ::= <Template> | <Template> <Templates>
+    \end{grammar}
+\end{definition}
+
+The new constructor \verb|Fork| has a list that contains at least one
+template. The idea is that templates contained in \verb|Fork|s are all
+which-ambiguous to each other. We later use those groups of ambiguous
+templates to decide at which points in the derivation we have to
+decide which template we apply.
+
+We look now into the optimization of which-ambiguities. First we
+identify all which-ambiguities and create \verb|Fork|s of them. We
+implement using a strategy that groups arbitrary lists according to a
+comparison strategy. Two templates are which-ambiguous if they have
+the same judgment number and if the term pattern and context pattern
+of the conclusion are equal modulo variables. Of the resulting groups
+of templates we wrap all groups with more than one element into a
+\verb|Fork|.
+
+We optimize forks containing which-ambiguities by checking whether a
+template of a fork is subsumed by an other template of the same
+fork. Template $t_1$ subsumes template $t_2$ if all premisses of $t_2$
+imply at least one premise of $t_1$. This is sufficient, because the
+conclusion of all templates within a fork matches the same terms.
+
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the generated type
