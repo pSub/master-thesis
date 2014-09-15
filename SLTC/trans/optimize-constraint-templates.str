@@ -121,14 +121,32 @@ rules
         else <conc> ([t | subsumed], <mapconcat(\t' -> <create-class> (t', ts')\)> subsumed)
         end
 
+    /**
+     *  
+     *
+     * @param strategy that succeeds when the comparison should be symmetric and fails otherwise
+     */
     subsume-mod-var(sym) =
         ?(a, b);
         where(equal(|<get-judgment-number> a, <get-judgment-number> b));
         where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), sym))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
         where(<zip; map(match-constructors(?DummyVar__(), sym))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
 
+    /**
+     * Sorts all templates within forks. Templates are sorted according to <
+     *
+     *      t_1 < t_2 \iff m(t_1) \subseteq m(t_2)
+     *
+     * where m(t) computes the set of terms that match the conclusion of t.
+     *
+     * @type List(Template) -> List(Template)
+     */
     order-forks-by-subsumption = map(try(\Fork__(ts) -> Fork__(<qsort(subsume-mod-var(false))> ts)\))
 
+    /**
+     * Extract templates from singelton forks.
+     * @type List(Template) -> List(Template)
+     */
     remove-forks : [Fork__(ts) | ts'] -> <conc> (ts, <remove-forks> ts')
     remove-forks : [t | ts] ->  [t | <remove-forks> ts]
     remove-forks : [] -> []
@@ -142,6 +160,14 @@ rules
           else !Fork__(ts)
           end>
 
+    /**
+     * Main strategy that composes all optimizations.
+     *
+     * @param judgments of the specification
+     * @param target-language of the specification
+     * @param context definitions of the specification 
+     * @type List(Template) -> List(Template)
+     */
     optimize-templates(|judgments, target-language, context-definitions) =
         solve-which-ambiguities(|context-definitions);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
