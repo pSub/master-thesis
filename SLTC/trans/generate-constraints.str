@@ -38,7 +38,9 @@ rules
      * @type Module -> List(Option(Outputs), List(Constraint))
      */
     generate-constraints(|templates) : Module(_, _, _, _, _, _, _, None()) ->
-         <exit-with-error(|"Not conjectures found", 1)>
+        <exit-with-error(|"Not conjectures found", 1)>
+    generate-constraints(|templates) : Module(_, _, _, _, _, _, Rules([]), _) ->
+        <exit-with-error(|"Not typing rules found", 1)>
     generate-constraints(|templates) :
         Module(ModuleDec(_),
                  imports,
@@ -61,8 +63,6 @@ rules
                  \, clear-store(|store))),
             tidy-up(|store))> conjectures
         where
-            if <[]> typing-rules then exit-with-error(|"No typing rules found", 1) else id end;
-            
             // Initialize the store that contains the contexts
             context-number := <collect-om(is-ctx-modification; get-ctx-id); list-max <+ !0> templates;
             empty-contexts := <inc; range; Tl; map-with-index((id, !([], <new-hashtable>)))> context-number;
