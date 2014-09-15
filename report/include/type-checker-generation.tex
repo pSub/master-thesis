@@ -540,9 +540,23 @@ We know that the subtyping relation \verb|<:| is reflexive by the rule
 at least one premise of \verb|S-depth|. \verb|~T = ~S| implies
 \verb|~T <: ~S| because the subtyping relation is reflexive and
 \verb|{ $R } <: { $U }| occurs verbatim as a premise of
-\verb|S-depth|. Therefore the depth subtyping rule subsumes the with
-subtyping rule. 
+\verb|S-depth|. Therefore the depth subtyping rule subsumes the width
+subtyping rule and we can remove the width subtyping rule.
 
+We implement this check by testing for each template $t$ within a
+fork, if there exists a template $t'$ such that
+
+\begin{align}
+  (p_1 \implies (q_1 \lor \dots \lor q_m)) \land \dots \land (p_n \implies
+  (q_1 \lor \dots \lor q_m))
+\label{formula:which-ambiguity}
+\end{align}
+
+holds, where $p_i$ are the premisses of $t$ and $q_i$ are the
+premisses of $t'$. We verify the conjuncts in
+Formula~\ref{formula:which-ambiguity} separately with the vampire
+theorem prover. If vampire succeeds for all conjuncts we remove
+template $t$. 
 
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
