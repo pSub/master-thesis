@@ -124,8 +124,7 @@ rules
                                       where(\v -> <not(elem)> (v, <collect-om(get-premise-outputs); flatten-list> calls)\))> outputs;
 
             // Retrieve and remove elements from the context according to the context pattern.
-            ctx' := <filter(\Binding__(ctx, i, _) -> <pop(|s)> ctx \ <+
-                            where(\Reset__(ctx) -> <clear-context(|s, ctx)> \); skip)> ctx;
+            ctx' := <filter(\Binding__(ctx, i, _) -> <pop(|s)> ctx \)> ctx;
 
             // Append the context pattern to the input pattern.
             pattern'' := <conc> (pattern, <filter(\Binding__(_, i, o) -> (i, o)\)> ctx, [var]);

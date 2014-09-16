@@ -1,11 +1,6 @@
 module utils
     
 rules
-    
-    /**
-     * Used to skip an element in e.g. filter.
-     */
-    skip = fail
 
     /**
      * Creates the equivalence class defined by `eq'.
