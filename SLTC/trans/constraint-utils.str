@@ -182,7 +182,8 @@ rules
         fetch-elem(find-match(|inputs, store))
     /** @internal */
     find-match(|inputs, store) : Fork__(ts) -> Fork__(ts')
-        where ts' := <filter(find-match(|inputs, store)); where(not(equal(|[])))> ts
+        where ts' := <filter(find-match(|inputs, store)); where(not(equal(|[])))> ts;
+              <not(equal(|[]))> ts'
     find-match(|inputs, store) : t ->
         <let check-constructors = zip; Dupl; (filter(match-constructors(?Var__(_), false)); length, length); equal
              check-contexts(|store) : (i, t) -> <get-ctx-pattern;
