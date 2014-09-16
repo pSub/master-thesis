@@ -22,5 +22,5 @@ sdf2table -i include/Input.def -m Input
 
 # Build a type checker
 strc -i trans/sltc.str -m wrapped-typecheck $FLAGS -o bin/.typecheck
-echo 'sglri -p include/SLTC.tbl -i $1 | bin/.make-templates -t $2' > bin/typecheck
+echo 'sglri -p include/SLTC.tbl -i $1 | bin/.typecheck -t $2' > bin/typecheck
 chmod +x bin/typecheck
