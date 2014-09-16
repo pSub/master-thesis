@@ -616,7 +616,7 @@ on the other hand to a modular context implementation with the
 potential to exchange the implementation easily.
 
 Before can explain how we generate constraints, we have to define the
-constraint language first.
+constraint language.
 
 \begin{definition}{Constraint Language}
   \begin{grammar}
@@ -634,23 +634,53 @@ constraints. The constraint \verb|CFail| corresponds to false and
 cannot be solved. Further \verb|CEq| and \verb|CNeq| are equality
 respectively inequality constraints.
 
-The program expression that is passed to the constraint generator is
-wrapped in the desired typing judgment with initial contexts and
-potentially with expected results. Every conjecture is provided with
-an empty context-store. The context in this store are intialized with
-the context information in the judgment.
+As we read the program expressions from the conjecture section of the
+specification, we already have the initial contexts, the judgment
+number and we can tell which are input and output positions. If we
+would read only the program expression (e.g.\ from \verb|stdin|)
+information about the initial contexts, the judgment number and the
+output positions need to be passed separately. Every conjecture has a
+fresh context store, initialized with the initial contexts provided in
+the conjecture.
+
+We have divided the main logic of constraint generation into three
+Stratego strategies: \verb|generate| selects the template matching the
+current term, \verb|generate'| applies the current term to the
+conclusion of the selected template and \verb|execute| evaluates the
+premisses of the template. All three strategies return a tuple of the
+computed outputs and the generated constraints.
+
+After initializing the contexts we call the strategy \verb|generate|
+with the judgment number and the inputs of the conjecture. We also
+pass the expected outputs and set the parameter \verb|init| to
+\verb|true|. This parameter is \verb|false| for all other cases except
+the initial call to \verb|generate| and used to generate an equality
+constraint for the expected and actual outputs.
+
+Now \verb|generate| calls \verb|find-match| to find a template whose
+conclusion matches the inputs, judgment number and the current state
+of the contexts. First \verb|find-match| filters all templates with the
+correct judgment number and tests only those templates for matches. In
+case of \verb|Fork| only those templates are retained that match. For
+all other templates \verb|find-match| checks whether the constructors
+of the term pattern in the conclusion and of the input term
+match. Those match, if they have the same constructors on all levels,
+where the term pattern can have variables for whole levels. In
+addition the context pattern of the conclusion has to reflect the
+current state of the context.
+
 
 After the context is intialized all terms at input positions of the
 judgment are passed into the \verb|generate| rule, together with the
-judgment number. Now the templates are searched for a template that has the
-correct judgment identifier in its conclusion, matching input
+judgment number. Now the templates are searched for a template that
+has the correct judgment identifier in its conclusion, matching input
 positions and a context description that reflects the current state in
-the store. The first template that matches is taken as we have ensured
-in section~\ref{sec:constr-templ-optim} that there is only one such
-rule. If no template matches those criteria the constraint that always
-fails is return with an appropriate error message. In general
-\verb|generate| returns a pair of the output and a constraint set,
-where the output is optional. \todo{It is not so clear where the
+the store. We take the first template that matches as we have ensured
+in Section~\ref{sec:constr-templ-optim} that there is only one such
+template. If no template matches those criteria, we return the
+constraint that always fails with an appropriate error message. In
+general \verb|generate| returns a pair of the output and a constraint
+set, where the output is optional. \todo{It is not so clear where the
   output comes from}
 
 The rule \verb|generate'| evaluates the selected template according to
