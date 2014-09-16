@@ -11,7 +11,7 @@ sdf2table -i include/SLTC.def -m SLTC
 # Build template generator
 strc -i trans/sltc.str -m wrapped-generate-templates $LIB -o bin/.make-templates
 
-echo "sglri -p include/SLTC.tbl -i syntax/specifications/Subtyping-algorithmic/Typesystem.slt | bin/.make-templates" > bin/make-templates
+echo "sglri -p include/SLTC.tbl -i $1 | bin/.make-templates" > bin/make-templates
 chmod +x bin/make-templates
 
 # Generate def for input terms
