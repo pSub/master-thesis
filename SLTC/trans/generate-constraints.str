@@ -120,6 +120,9 @@ rules
          Template__(name, calls, Conclusion__(judg-name, (pattern, ctx), outputs)) ->
          (Some(outputs'), new-constraints)
         where
+            // If a variable occurs in the inputs of a premise but not in the inputs of the conclusion nor
+            // in the outputs of other premisses but as the output of the conclusion, then we bring it into
+            // scope with the expected outputs.
             var := <filter(?Var__(_); where(\v -> <elem> (v, <collect-om(get-premise-inputs); flatten-list> calls)\);
                                       where(\v -> <not(elem)> (v, <collect-om(get-premise-outputs); flatten-list> calls)\))> outputs;
 
