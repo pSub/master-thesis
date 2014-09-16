@@ -648,7 +648,9 @@ Stratego strategies: \verb|generate| selects the template matching the
 current term, \verb|generate'| applies the current term to the
 conclusion of the selected template and \verb|execute| evaluates the
 premisses of the template. All three strategies return a tuple of the
-computed outputs and the generated constraints.
+computed outputs and the generated constraints. We wrap the computed
+outputs into \verb|Option| to model the absence of outputs in cases of
+errors.
 
 After initializing the contexts we call the strategy \verb|generate|
 with the judgment number and the inputs of the conjecture. We also
@@ -667,63 +669,84 @@ of the term pattern in the conclusion and of the input term
 match. Those match, if they have the same constructors on all levels,
 where the term pattern can have variables for whole levels. In
 addition the context pattern of the conclusion has to reflect the
-current state of the context.
+current state of the contexts. The context pattern reflects the state
+of the contexts if it can be applied from left to right to the context
+without failures.
 
+\verb|find-match| safely takes the first template that matches,
+because we have ensured in Section~\ref{sec:constr-templ-optim} that
+there is only one template that matches. If no template matches, we
+return \verb|None| for the outputs and the singelton list containing
+the constraint that always fails, with an appropriate error
+message. If \verb|find-match| succeeds to find a template it calls
+\verb|generate'| with that template.
 
-After the context is intialized all terms at input positions of the
-judgment are passed into the \verb|generate| rule, together with the
-judgment number. Now the templates are searched for a template that
-has the correct judgment identifier in its conclusion, matching input
-positions and a context description that reflects the current state in
-the store. We take the first template that matches as we have ensured
-in Section~\ref{sec:constr-templ-optim} that there is only one such
-template. If no template matches those criteria, we return the
-constraint that always fails with an appropriate error message. In
-general \verb|generate| returns a pair of the output and a constraint
-set, where the output is optional. \todo{It is not so clear where the
-  output comes from}
+The rule \verb|generate'| now evaluates the selected template
+according to the given input. In \verb|generate'| we use patterns to
+access specific elements of terms. The corresponding element to the
+input term is the term pattern of the templates conclusion. We update
+the terms and patterns if we want to add an other term and pattern to
+the scope. The patterns and terms are later used to instantiate
+variables in premisses or error messages.
 
-The rule \verb|generate'| evaluates the selected template according to
-the given input. In case of \verb|Template__| the evaluation works as
-follows. At first the contexts are updated according to the context
-modifications in the conclusion. This means the description of the
-context modifications is read from left to right. On a context bind,
-the first element of the corresponding context is popped from the
-context. To be able to access this element, it is appended to the
-input. Context variables correspond to identity and \verb|Reset__|
-clears the whole context, without making any element available.
+If the selected rule is no fork, the evaluation works as follows. In
+correspondence to the bindings in the context pattern of the
+conclusion, we pop all terms from the contexts and bring them into
+scope. Also if a variable occurs in the inputs of a premise but not in
+the inputs of the conclusion nor in the outputs of other premisses but
+int the outputs of the conclusion, then we bring it into scope with
+the expected outputs. This allows to deal with typing rules that have
+free variables in their premisses as for instance in the subsumption
+rule for subtyping.
 
-Next all variables in the selected template are replaced by fresh
-ones. This is also indicated visually, as all variables in the
-template generation phase start with \verb|X| and all variables
-generated in the constraint generation phase with \verb|Y|. This
-renaming ensures that now collisions occur if a template is used more
-than once.
+\begin{example}{~}
+\begin{lstlisting}[language=sltc]
+$C |- ~e : ~S
+~S <: ~T
+============= T-Sub
+$C |- ~e : ~T
+\end{lstlisting}
+\label{ex:subsumption}
+\end{example}
 
-Now that all variables are fresh, the context is modified in
-accordance to the premisses the premisses of the template are
-evaluated. A key element in the evaluation is the instantiation of the
-variables in the premise patterns according to the conclusion pattern
-and input term, because we need input terms to call \verb|generate| on
-the premisses.
+Example~\ref{ex:subsumption} shows the subsumption rule from
+\todo{Cite}. In the rule \verb|~T| occurs free in the second
+premise. Binding it to the expected output of \verb|~T| allows to
+still evaluate this premise.
 
-Variables in inputs of a judgment are initialized using a term and a
-pattern which describes the structure of the term. Now every variable
-in the inputs is searched in the pattern, by walking through the
-abstract syntax tree of the pattern and recording the path to the
-variable. As there are no implicit equalities in the templates we can
-take the first and only occurrence of the variable. After a path was
-found for every variable that occurs in the pattern, those paths are
-used to retrieve terms from the corresponding term, by walking along
-the path and fetching the node at its end. The variables in the inputs
-are now replaced by the fetched nodes.
+Now we have to replace all variables introduced by the selected
+template with fresh variables, otherwise applying a template twice
+would lead to collisions. All variables introduces in the previous
+phases have variables names have prefix different from
+\verb|Y|. Therefore we replace all variables that do not have the
+prefix \verb|Y| with a fresh variable with the prefix
+\verb|Y|. Additionally this allows to verify visually to check whether
+all variables are fresh.
+
+Now we evaluate the premisses of the template. A key element in the
+evaluation is the instantiation of the variables in the premise
+patterns according to the conclusion pattern and input term, because
+we need input terms to recursively call \verb|generate| on the
+premisses or to create solvable (in-)equality constraints.
+
+We initialize variables in inputs of a judgment using a term and a
+pattern which describes the structure of the term. To instantiate a
+variable we search it in the pattern, by walking through the abstract
+syntax tree of the pattern and record the path to the variable. As
+every variable is distinct since we resolved every implicit equality i
+the templates and have introduced no new implicit equality we can take
+the first and only occurrence of the variable. If we find a path to
+that variable, we use it to retrieve terms from the corresponding
+term, by walking along the path and fetching the node at its end. We
+ensure that the pattern and term always have the same structure,
+otherwise we would retrieve false positives.
 
 As the premisses were topologically sorted as described in
-Section~\ref{sec:constraint-templates} they are evaluated in the
-correct order. However, to ensure that the terms of all dependencies
-are available during evaluation, we accumulate the outputs of the
-evaluated premisses and add those to the pattern and term used for the
-instantiation.
+Section~\ref{sec:constraint-templates} we can evaluate them in the
+given order. However, to ensure that the terms of all dependencies are
+available during evaluation, we have to accumulate the outputs of the
+evaluated premisses and add those to the patterns and terms used for
+the instantiation.
 
 \begin{description}
 \item[Lookup:] The inputs are instantiated, then the resulting term is
@@ -741,8 +764,6 @@ instantiation.
 For the evaluation of every judgment a copy of the store is passed, to
 ensure that everything that is bound is released at the correct point
 in time.
-
-
 
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
