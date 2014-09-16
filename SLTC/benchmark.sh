@@ -9,8 +9,6 @@ echo "Template file: $templates"
 echo "Specification ATerm: $specification_aterm"
 
 sdf2table -i include/SLTC.def -m SLTC > /dev/null 2>&1
-pack-sdf -i syntax/Input.sdf -o include/Input.def > /dev/null 2>&1
-sdf2table -i include/Input.def -m Input > /dev/null 2>&1
 
 sglri -p include/SLTC.tbl -i $specification -o $specification_aterm
 
