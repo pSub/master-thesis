@@ -748,22 +748,41 @@ available during evaluation, we have to accumulate the outputs of the
 evaluated premisses and add those to the patterns and terms used for
 the instantiation.
 
-\begin{description}
-\item[Lookup:] The inputs are instantiated, then the resulting term is
-  looked up in the context. If the lookup succeeds the result is
-  returned, together with an empty constraint set. Otherwise, no
-  output is returned together with the \verb|CFail| constraint.
-\item[(In)equality:] Equalities and inequalities are initialized and
-  return as constraints.
-\item[Judgment:] Judgments are instantiated, the store is updated
-  according to the context bindings and \verb|generate| is called on
-  the resulting terms. In addition constraints for the context
-  bindings are generated. \todo{Examples}
-\end{description}
+The strategy \verb|execute| does the evaluation of the premisses. We
+call \verb|execute| for each premise with a copy of the contexts to
+ensure that one premise cannot pollute the contexts of an other
+premise. We have implemented a safe version of \verb|hashtable-copy|
+to ensure that after evaluation of the premise all copies are
+destroyed.
 
-For the evaluation of every judgment a copy of the store is passed, to
-ensure that everything that is bound is released at the correct point
-in time.
+We now describe what \verb|execute| does for the different types of
+premisses.
+
+\begin{description}
+\item[Lookup:] The inputs of the lookup are instantiated, then the
+  resulting term is looked up in the corresponding context. If the
+  lookup succeeds the result is returned as an output, together with a
+  constraint set that contains equality constraint between the output
+  pattern and the looked up output. Those constraints are annotated
+  with the corresponding error message, which is instantiated and in
+  which the hole (\verb|{}|) is replaced by the output variables. If
+  the lookup fails \verb|None| is return as output together with the
+  \verb|CFail| constraint and an appropriate error message.
+\item[(In)equality:] Equalities and inequalities are initialized and
+  returned as constraints, together with the output \verb|None| as
+  they have no output positions.
+\item[Judgment:] If the premise is a judgment it is first
+  instantiated. Then we call \verb|generate| on the resulting input
+  term with an version of the store that has been updated according to
+  the context pattern of the judgment. In addition we instantiate the
+  expected outputs of the judgment to make the binding of free
+  variables in premisses more precise. After the call to
+  \verb|generate| returns we generate equality constraints for the
+  bindings in the context pattern of the premise and generate equality
+  constraints between the output pattern and the computed output, with
+  corresponding instantiated error messages. The hole (\verb|{}|) in
+  the error messages is here also replaced by the output variables.
+\end{description}
 
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
