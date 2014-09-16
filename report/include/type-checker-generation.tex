@@ -784,6 +784,16 @@ premisses.
   the error messages is here also replaced by the output variables.
 \end{description}
 
+In the case \verb|generate'| encounters a fork it evaluates all
+templates contained in the fork using \verb|generate'|. It tries to
+solve the resulting constraint set and returns the outputs of the
+first evaluation that succeeds. If no templates can be evaluated to an
+solvable constraint set we return the constraint that always fails
+with an appropriate error message. This procedure ensures, because of
+the ordering of forks in Section~\ref{sec:constr-templ-optim}, that
+potential rules that produce solvable constraint sets but do not make
+real progress are deferred to the end.
+
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
 \todo[inline]{What else should be contained in this section?}
