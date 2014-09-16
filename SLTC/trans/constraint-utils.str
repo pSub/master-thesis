@@ -33,8 +33,6 @@ rules
      * Note: Expects a tuple representation of a judgment as
      *       computed by `to-tuple'.
      *
-     * FIXME: What is about the error?
-     *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms
      * @type (number, input, binding, output) -> (number, input, binding, output)
@@ -60,8 +58,6 @@ rules
      *
      * Note: Expects a tuple representation of a judgment as
      *       computed by `to-tuple'.
-     *
-     * FIXME: What is about outputs?
      *
      * @param pattern - an arbitrary list of terms
      * @param terms - an arbitrary list of terms

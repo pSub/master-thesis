@@ -95,8 +95,6 @@ rules
     /**
      * Rule that transforms a typing rule into a constraint template.
      *
-     * FIXME: This code needs refactoring
-     *
      * @param j - judgment declarations
      * @param c - context declarartions
      */
