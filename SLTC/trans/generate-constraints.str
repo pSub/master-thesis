@@ -157,10 +157,8 @@ rules
     generate'(init | ts, term, s, expected-outputs) : Fork__(rulez) ->
            // Apply all rules until the first one produces a solvable constraint set
            // apply the resulting mgu and return the term as an output.
-           // FIXME: Is this CEq constraint neccessary?
            <until(safe-hashtable-deep-copy(\(s', i) -> <generate'(init | ts, term, s', expected-outputs);
-                   \(Some(o), cs) -> (<conc(|<zip; map(\(a, b) -> <makeCEq(|Some([Error(["Type", a, "does not match annotated type", b])]))> (a, b)\)> (o, expected-outputs));
-                    unify-internal; apply-mgu(|o)> cs, cs)\> i\| s))
+                   \(Some(o), cs) -> (<unify-internal; apply-mgu(|o)> cs, cs)\> i\| s))
                    < \(x, cs) -> (Some(x), cs)\
                    + !(None(), [CFail__(Error(term))])> rulez
 
