@@ -160,7 +160,7 @@ rules
            <until(safe-hashtable-deep-copy(\(s', i) -> <generate'(init | ts, term, s', expected-outputs);
                    \(Some(o), cs) -> (<unify-internal; apply-mgu(|o)> cs, cs)\> i\| s))
                    < \(x, cs) -> (Some(x), cs)\
-                   + !(None(), [CFail__(Error(term))])> rulez
+                   + !(None(), [CFail__(Error(["No derivation found for ", term]))])> rulez
 
     /**
      * Executes the calls specified in the rules.
