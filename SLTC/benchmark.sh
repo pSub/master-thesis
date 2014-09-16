@@ -18,4 +18,4 @@ sglri -p include/SLTC.tbl -i $specification -o $specification_aterm
 
 bin/make-templates -i $specification_aterm -o $templates
 
-time -f '%E' bin/typecheck -i $specification_aterm -t $templates
+time -f '%E' bin/typecheck -i $specification_aterm -t $templates > /dev/null
