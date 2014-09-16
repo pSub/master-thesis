@@ -1,7 +1,5 @@
 #!/bin/sh
-shopt -s expand_aliases
-
-alias time="command time"
+TIMEFORMAT='%3U'
 
 specification=$1
 specification_aterm=$(mktemp)
@@ -18,4 +16,4 @@ sglri -p include/SLTC.tbl -i $specification -o $specification_aterm
 
 bin/make-templates -i $specification_aterm -o $templates
 
-time -f '%E' bin/typecheck -i $specification_aterm -t $templates > /dev/null
+time bin/typecheck -i $specification_aterm -t $templates > /dev/null
