@@ -24,11 +24,11 @@ rules
 $C |- ~X : ~T 
 */
 
-%X : ~T in $C
+%X : ~T in $C @error %X "should have type" ~T "but has" {}.
 =============== T-var
 $C |- %X : ~T
 
-(%X : ~T1 ; $C) |- ~E : ~T2
+(%X : ~T1 ; $C) |- ~E : ~T2 @error ~E "should have type" ~T2 "but has" {}.
 ===================================== T-abs
 $C |- (fun %X : ~T1 (~E)) : ~T1 -> ~T2
  
