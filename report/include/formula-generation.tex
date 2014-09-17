@@ -81,7 +81,7 @@ contained in the context and the look up succeeds.
   \forall e, x_1, \dots, x_n, x_1', \dots, x_n', y_1, \dots, y_m,
   y_1', \dots,
   y_m' . \\
-  (x_1 \neq y_1) \land \dots \land (x_n \neq y_n) \land (lookup(x_1,
+  (x_1 \neq x_1') \land \dots \land (x_n \neq x_n') \land (lookup(x_1,
   \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup(x_1, \dots, x_n,
   y_1, \dots, y_m, bind(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \label{formula:context-step}
@@ -89,13 +89,13 @@ contained in the context and the look up succeeds.
 \caption{Step case of context lookup}
 \end{figure}
 
-Formula~\ref{formula:context-step} models the step case of
-context look-ups. The intuition is that if some input/output pair
-is contained in an context $e$ the it is also contained in an
-context in which in addition a different input/output pair is
-stored. Variables $x_i$ and $x_i'$ are non-terminals from the
-context declaration tagged with input, $y_i$ and $y_i'$ are
-non-terminals tagged with output respectively.
+Formula~\ref{formula:context-step} models the context look up step
+case of context $c$. We introduce for each non-terminal two variables,
+$x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
+$y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
+intuition of the formula is that if some input/output pair is
+contained in an context $e$ then it is also contained in an context
+that contains and additional input/output pair. 
 
 The \gls{ast} nodes of the programming language are translated directly into
 predicates. For the translation the following scheme is used. Assume
