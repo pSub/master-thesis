@@ -33,50 +33,47 @@ well automated theorem provers can check if a program is well-typed.
 \subsection{Tool-Support}
 \section{Translations}
 \label{sec:translations}
-For the generation of first-order formulas not all sections of a
-specification are important. The section that declares the
-meta-variables and the section that declares the judgments are not
-used at all. With regard to formula generation they are only used to
-ensure correct syntax.
-
-The following parts of a type system specification are translated into
-first-order formulas as described below: Contexts, \gls{ast} nodes of
-the programming language, meta-variables and typing rules.
+We translate contexts declarations, rules and conjectures in to
+first-order formulas. The rest of the specification is not directly
+translated into first-order formulas and only needed to ensure that
+the generated formulas are well formed.
 
 \todo[inline]{Implement imports and describe how they are handled.}
 
-Context declarations are translated in a uniform way. For every
-context two formulas are generated. These two formulas model the
-look-up of entries in the context, which is equivalent to how they
-are stored. Those formulas have an inductive nature, one formula
-models the base case and the other one the step case for the lookup.
+We translate context declarations in a uniform way into first-order
+formulas. For every context we generate two formulas, which model the
+look up of entries in the context. We have defined the context look
+up recursively. In the base case the element we lookup is the first
+element of the context and in the step case, the first element is
+different from the element we search, therefore we have to look in the
+rest of the context for it.
 
-%% FIXME: This seems to be no good way to refer to formulas. How is it
-%% done right? Haven't found an example in my bachelor thesis by chance.
 \begin{figure}
 \begin{multline}
   \forall e, x_1, \dots, x_n, y_1, \dots, y_m . \\
-  (lookup_e(x_1,\dots,x_n,y_1,\dots,y_m,
-  bind(x_1,\dots,x_n,y_1,\dots,y_m,e)))
-\end{multline}
+  (lookup_c(x_1,\dots,x_n,y_1,\dots,y_m,
+  bind_c(x_1,\dots,x_n,y_1,\dots,y_m,e)))
 \label{formula:context-base}
+\end{multline}
+\caption{Base case of context lookup}
 \end{figure}
 
-The Formula~\ref{formula:context-base} represents the base case of
-context look-ups. All non-terminals in the context definition
-tagged as input are translated into variables $x_1 \dots x_n$ and all
-tagged as output are translated into variables $y_1 \dots y_m$,
-respectively. The variable $e$ ranges over all possible
-contexts. The $bind$ predicate used in this formula models the
-binding of new input/output pairs to the context. In the
-implementation the order of arguments is a bit different, but this
-difference is for the discussion of the concept negligible. For
-details see Section~\ref{sec:implementation-fof}. The predicate
-$lookup$ models the lookup in the context. It is used to check
-whether some input/output pair exists in the context. In the base
-case the an input/output pair is added to an context $e$ and
-looked-up directly afterwards. Therefore the look-up succeeds as the
-required elements are directly given in the bind predicate.
+The Formula~\ref{formula:context-base} is the context look up base
+case for a context declared as $c$. We translate all non-terminals in
+the context declaration tagged as input into variables $x_1 \dots x_n$
+and all tagged as output into variables $y_1 \dots y_m$,
+respectively. The variable $e$ represents all possible contexts. For
+each context declaration there is a specialized $bind_c$ predicate
+which models the binding of an input/output pair to a context $e$. In
+the implementation the order of arguments differs, but this difference
+is for the discussion of the concept negligible. For details see
+Section~\ref{sec:implementation-fof}. There is also a specialized
+$lookup_c$ predicate for each context declaration which models the
+actual look up in the context. This predicate checks whether some
+input/output pair exists in a context. In the base case we apply
+$lookup_c$ to a context that we extended with $bind_c$ with exactly
+the element we want to look up. Therefore the element is trivially
+contained in the context and the look up succeeds.
 
 \todo[inline]{Format look-up step formula nicely.}
 \begin{figure}
@@ -87,8 +84,9 @@ required elements are directly given in the bind predicate.
   (x_1 \neq y_1) \land \dots \land (x_n \neq y_n) \land (lookup(x_1,
   \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup(x_1, \dots, x_n,
   y_1, \dots, y_m, bind(x_1',\dots,x_n',y_1',\dots,y_m',e))
-\end{multline}
 \label{formula:context-step}
+\end{multline}
+\caption{Step case of context lookup}
 \end{figure}
 
 Formula~\ref{formula:context-step} models the step case of
