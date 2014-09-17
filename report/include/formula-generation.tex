@@ -81,9 +81,9 @@ contained in the context and the look up succeeds.
   \forall e, x_1, \dots, x_n, x_1', \dots, x_n', y_1, \dots, y_m,
   y_1', \dots,
   y_m' . \\
-  (x_1 \neq x_1') \land \dots \land (x_n \neq x_n') \land (lookup(x_1,
-  \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup(x_1, \dots, x_n,
-  y_1, \dots, y_m, bind(x_1',\dots,x_n',y_1',\dots,y_m',e))
+  (x_1 \neq x_1') \land \dots \land (x_n \neq x_n') \land (lookup_c(x_1,
+  \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup_c(x_1, \dots, x_n,
+  y_1, \dots, y_m, bind_c(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \label{formula:context-step}
 \end{multline}
 \caption{Step case of context lookup}
@@ -95,36 +95,38 @@ $x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
 $y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
 intuition of the formula is that if some input/output pair is
 contained in an context $e$ then it is also contained in an context
-that contains and additional input/output pair. 
+that contains and additional input/output pair.
 
-The \gls{ast} nodes of the programming language are translated directly into
-predicates. For the translation the following scheme is used. Assume
-an \gls{ast} node of the following form $Cons(e_1, \dots, e_n)$ is
-translated into a predicate of the form $cons(p_1, \dots, p_n)$, where
-all consituents $e_i$ are translated into predicates $p_i$
-recursively. To help theorem provers for each of those predicates an
-axiom for injectivity and univalence is created. Those hold by
-definition of the \gls{ast} nodes.
+We translate the \gls{ast} nodes of the programming language directly
+into predicates that resemble the program structure. For the
+translation we use following scheme. An \gls{ast} node of the
+following form $Cons(e_1, \dots, e_n)$ is translated into a predicate
+of the form $cons(p_1, \dots, p_n)$, where all consituents $e_i$ are
+translated into predicates $p_i$ recursively. We create for each of
+those predicates injectivity and univalence axioms. Injectivity and
+univalence holds by definition as we create those predicates from
+syntax. These axiom help theorem provers to decide equality of those
+predicates.
 
 The most important part is the translation of the typing
-rules. Depending on whether the typing rules has premises either of
-the following schema is used:
+rules. Depending on whether the typing rules has premises we use
+either of the following schema:
 
 \begin{figure}
-\label{formula:typing-rule}
 \begin{align}
   &\forall FV(c) .& c \\
-  &\forall FV(p_1,\dots, p_n, c) .& p_1 \land \dots \land p_n \implies c
+  &\forall FV(p_1,\dots, p_n, c) .& p_1 \land \dots \land p_n \implies
+  c
+\label{formula:typing-rule}
 \end{align}
+\caption{Formulas representing typing rules}
 \end{figure}
 
-\todo[inline]{In the following free variables are actually free
-  meta-variables.}
-The meta-variables $p_i$ are the premises and $c$ is the conclusion of
-the typing rules. The intuition of a typing rule is that the
-conclusion can be derived if all premises can be derived. In terms of
-first-order logic ``derived'' means for arbitrary formulas that there
-is a proof and for predicates that the predicate holds under the given
+The variables $p_i$ are the premises and $c$ is the conclusion of the
+typing rules. The intuition of a typing rule is that the conclusion
+can be derived if all premises can be derived. In terms of first-order
+logic ``derived'' means for arbitrary formulas that there is a proof
+and for predicates that the predicate holds under the given
 interpretation. Therefore a typing rule without premises is translated
 into a formula that consists of the conclusion and all-quantifies all
 free variables of the conclusion. Free variables are all-quantified,
