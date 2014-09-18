@@ -75,7 +75,6 @@ $lookup_c$ to a context that we extended with $bind_c$ with exactly
 the element we want to look up. Therefore the element is trivially
 contained in the context and the look up succeeds.
 
-\todo[inline]{Format look-up step formula nicely.}
 \begin{figure}
 \begin{multline}
   \forall e, x_1, \dots, x_n, x_1', \dots, x_n', y_1, \dots, y_m,
@@ -93,20 +92,20 @@ Formula~\ref{formula:context-step} models the context look up step
 case of context $c$. We introduce for each non-terminal two variables,
 $x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
 $y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
-intuition of the formula is that if some input/output pair is
-contained in an context $e$ then it is also contained in an context
-that contains and additional input/output pair.
+intuition of the formula is that if we can look up some input/output
+pair in a context $e$ then we can also look it up in an context that
+contains and additional input/output pair.
 
 We translate the \gls{ast} nodes of the programming language directly
 into predicates that resemble the program structure. For the
-translation we use following scheme. An \gls{ast} node of the
-following form $Cons(e_1, \dots, e_n)$ is translated into a predicate
-of the form $cons(p_1, \dots, p_n)$, where all consituents $e_i$ are
-translated into predicates $p_i$ recursively. We create for each of
-those predicates injectivity and univalence axioms. Injectivity and
+translation we use following scheme. We translate a \gls{ast} node of
+the following form $Cons(e_1, \dots, e_n)$ into a predicate of the
+form $cons(p_1, \dots, p_n)$, where we translate all constituents
+$e_i$ into predicates $p_i$ recursively. We create for each of those
+predicates injectivity and univalence axioms. Injectivity and
 univalence holds by definition as we create those predicates from
-syntax. These axiom help theorem provers to decide equality of those
-predicates.
+syntax. These axiom can help theorem provers to conduct proofs, for
+examples see Section~\ref{sec:constr-templ-optim}.
 
 The most important part is the translation of the typing
 rules. Depending on whether the typing rules has premises we use
@@ -122,11 +121,11 @@ either of the following schema:
 \caption{Formulas representing typing rules}
 \end{figure}
 
-The variables $p_i$ are the premises and $c$ is the conclusion of the
-typing rules. The intuition of a typing rule is that the conclusion
-can be derived if all premises can be derived. In terms of first-order
-logic ``derived'' means for arbitrary formulas that there is a proof
-and for predicates that the predicate holds under the given
+The predicates $p_i$ represent the premises and $c$ is the conclusion
+of the typing rules. The intuition of a typing rule is that the
+conclusion can be derived if all premises can be derived. In terms of
+first-order logic ``derived'' means for arbitrary formulas that there
+is a proof and for predicates that the predicate holds under the given
 interpretation. Therefore a typing rule without premises is translated
 into a formula that consists of the conclusion and all-quantifies all
 free variables of the conclusion. Free variables are all-quantified,
