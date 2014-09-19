@@ -122,11 +122,10 @@ either of the following schema:
 \end{figure}
 
 The predicates $p_i$ represent the premises and $c$ is the conclusion
-of the typing rules. The intuition of a typing rule is that the
+of the typing rules. Intuitively a typing rule expresses is that the
 conclusion can be derived if all premises can be derived. In terms of
-first-order logic ``derived'' means for arbitrary formulas that there
-is a proof and for predicates that the predicate holds under the given
-interpretation. Therefore a typing rule without premises is translated
+first-order logic ``derived'' means for that there exists a proof for
+the proposition. Therefore we translate a typing rule without premises
 into a formula that consists of the conclusion and all-quantifies all
 free variables of the conclusion. Free variables are all-quantified,
 because all possible variants of the conclusion have to be derivable.
@@ -144,10 +143,11 @@ Eq'' and ``is Neq'', respectively. Those judgments must have exactly
 two non-terminals.
 \section{Implementation}
 \label{sec:implementation-fof}
-The implementation details of the translation from the specification
-language into first-order formula is described in this section.
+This section describes the implementation details of the translation
+from the specification language into first-order formulas.
 
 \todo[inline]{Extend for imports.}
+
 The implementation is organized in the following steps. Fist, the
 module is split up into its components. Those are: module description,
 imports, programming language, meta-variables, contexts,
