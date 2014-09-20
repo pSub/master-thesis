@@ -64,16 +64,14 @@ the context declaration tagged as input into variables $x_1 \dots x_n$
 and all tagged as output into variables $y_1 \dots y_m$,
 respectively. The variable $e$ represents all possible contexts. For
 each context declaration there is a specialized $bind_c$ predicate
-which models the binding of an input/output pair to a context $e$. In
-the implementation the order of arguments differs, but this difference
-is for the discussion of the concept negligible. For details see
-Section~\ref{sec:implementation-fof}. There is also a specialized
-$lookup_c$ predicate for each context declaration which models the
-actual look up in the context. This predicate checks whether some
-input/output pair exists in a context. In the base case we apply
-$lookup_c$ to a context that we extended with $bind_c$ with exactly
-the element we want to look up. Therefore the element is trivially
-contained in the context and the look up succeeds.
+which models the binding of an input/output pair to a context
+$e$. There is also a specialized $lookup_c$ predicate for each context
+declaration which models the actual look up in the context. This
+predicate checks whether some input/output pair exists in a
+context. In the base case we apply $lookup_c$ to a context that we
+extended with $bind_c$ with exactly the element we want to look
+up. Therefore the element is trivially contained in the context and
+the look up succeeds.
 
 \begin{figure}
 \begin{multline}
@@ -128,19 +126,18 @@ first-order logic ``derived'' means for that there exists a proof for
 the proposition. Therefore we translate a typing rule without premises
 into a formula that consists of the conclusion and all-quantifies all
 free variables of the conclusion. Free variables are all-quantified,
-because all possible variants of the conclusion have to be derivable.
-Typing rules with premises are translated into a single
-implication. The premise of the implication is the conjunction of all
-premises of the typing rule. This ensures that all premises need to be
+because we want that all possible variants of the conclusion are
+derivable. Typing rules with premises translate into a single implication. The
+premise of the implication is the conjunction of all premises of the
+typing rule. This ensures that all premises need to be
 derivable/satisfied. The conclusion of the implication is the
-conclusion of the typing rule. This makes sense as the intuition was,
-that the conclusion of the typing rule is derivable if all premises
-are derivable, which is exactly the semantics of this implication.
+conclusion of the typing rule. This is safe as the intuition was, that
+the conclusion of the typing rule is derivable if all premises are
+derivable, which is exactly the semantics of this implication.
 
-Type judgments are translated into simple predicates. Equality and
-inequality can be expressed via judgments with the annotation ``is
-Eq'' and ``is Neq'', respectively. Those judgments must have exactly
-two non-terminals.
+We translate judgments in rules into predicates. The built-in
+judgments for equality and inequality are translated into the
+primitives of \gls{tptp}.
 \section{Implementation}
 \label{sec:implementation-fof}
 This section describes the implementation details of the translation
@@ -149,76 +146,75 @@ from the specification language into first-order formulas.
 \todo[inline]{Extend for imports.}
 
 The implementation is organized in the following steps. Fist, the
-module is split up into its components. Those are: module description,
-imports, programming language, meta-variables, contexts,
-judgments, typing rules and conjectures. Second, contexts, typing
-rules and conjectures are transformed into first-order
-formulas. Third, for each conjecture a file is created which contains
-all generated formulas. In the following those steps are explained in
-detail.
+module is split up into its components, then we transform contexts,
+typing rules and conjectures into first-order formulas. After that we
+create for each conjecture a file which contains all generated
+formulas. In the following we explain those steps in detail.
 
-The module is split up by pattern matching. For formula generation
-only the context definitions, typing rules and conjectures are
-used.
+The strategy \verb|make-context-formulas| generates axiom formulas for
+each context declaration. For each distinct non-terminal in a context
+definition we create a fresh variable name, to ensure variables names
+are compatible with \gls{tptp}. We transform every context declaration
+into Formula~\ref{formula:context-base} and
+Formula~\ref{formula:context-step} in our internal representation of
+\gls{tptp} formulas. To adhere to the structure of the two formulas,
+we split the non-terminals of a context declaration by its
+input/output tags and put those tagged as input before those tagged as
+outputs. In the generated formulas we replace the non-terminals by the
+fresh variables. In case of Formula~\ref{formula:context-step} we
+create additional fresh variables for input positions.
 
-Formulas for the context definitions are generated for each context
-definition separately and are added to the axioms. The non-terminals
-of an context definition are indexed with fresh names. Those fresh
-names will be used as variables in the first-order formulas. The
-structure of the formulas, as it is defined
-in~\ref{formula:context-base} and~\ref{formula:context-step}, is
-hard-coded in the internal representation for first-order formulas. To
-adhere to this structure the variables representing the non-terminals
-are split up by their input/output attribute. The counter parts for
-the variables needed in the step case are created by appending an
-underscore to the variable name, as a tick is not valid in \gls{tptp}.
+Rewriting typing rules into first-order formulas is a bit more
+involved than the rewriting of context declarations. The strategy
+\verb|make-formula| transforms rules into first-order formulas in the
+\gls{tptp} format. This strategy rewrites premisses and conclusions
+into first-order terms using the strategy \verb|rewrite|. Premises
+are, due to limitations of the \texttt{layout}-rules, not represented
+as ordinary lists after parsing. Therefore premisses are transformed
+into ordinary lists by the generic \texttt{to-list} strategy. Now that
+we have first-order terms for the premisses and the conclusion, we
+collect all free variables that occur in them. In rules variables are
+not bound, thus all variables are free. However it is important to
+collect only free variables as conjectures may contain quantifiers. As
+the last step, we put those pieces together to construct a formula in
+the \gls{tptp} format hat has the structure of
+Formula~\ref{formula:typing-rule}.
 
-Rewriting typing rules into first-order formulas is the most complex
-process in the formula generation. The rewrite process is triggered
-when a typing rule is encountered. When a typing rule with premises is
-encountered the premises and conjectures are rewritten by the strategy
-\texttt{rewrite}. Premises are, due to limitations of the
-\texttt{layout}-rules, not represented as ordinary lists after
-parsing. Therefore these special lists are transformed into an
-ordinary list by the generic \texttt{to-list} strategy. Then the
-free variables of premises and constraints are collected. Now an
-implication is constructed from the list of premises and the
-conclusion and in the case there are free variables, those variables
-are all quantified. By now the constructed formula has the structure
-shown in~\ref{formula:typing-rule}.
+Now we present the details of the \texttt{rewrite} strategy, which
+transforms premisses and conclusions. We defined this strategy as a
+sequence of two top down traversals. The first traversal is the actual
+rewrite of the typing judgments and the second is a special treatment
+for strings. The second traversal is necessary to wrap all target
+language constructs into the \ver|Term| constructor.
 
-Now the details of the \texttt{rewrite} strategy are presented. This
-strategy is defined as a sequence of two top down traversals. The first
-traversal is the actual rewrite of the typing judgments and the second
-is a special treatment for strings. The first traversal is organized
-as follows. An attempt to rewrite the current node into an auxiliary
-constructor is made, if this attempt succeeds the auxiliary
-constructor is rewritten into a term of the first-order formula
-language, if it does not succeed it is wrapped into the \texttt{Term}
-constructor. The reasoning is the following. Some \gls{ast} nodes of the
-specification language are generic, those referring to the context
-formulas, to the typing judgments and to the meta-variables. Those
-consist of some constant string plus some user defined
-string. Therefore it is not possible to use normal pattern matching on
-them. The only chance to cope with them is to use the generic
-\texttt{cons\#(args)} pattern, to access the name of the constructor
-as a string. The auxiliary constructor \texttt{AuxCons} is used to
-abstract over this generic pattern. The rule \texttt{makeAuxCons}
-splits the constructor name into the constant string and the user
-defined one and provides the arguments as they are. After this
-transformation it is possible to use normal pattern matching on
-\texttt{AuxCons}. \texttt{makeAuxCons} only succeeds on the
-constructors mentioned before. If a node can be transformed into an
-auxiliary constructor the constructor is rewritten immediately
-afterwards into a constructor of the first-order logic target
-language. These rewritings are trivial mappings from auxiliary
+The first traversal proceeds as follows. An attempt to rewrite the
+current node into an auxiliary constructor is made, if this attempt
+succeeds the auxiliary constructor is rewritten into a term of the
+first-order formula language, if it does not succeed it is wrapped
+into the \texttt{Term} constructor. The reasoning is the
+following. Some \gls{ast} nodes of the specification language are
+generic, those referring to the context formulas, to the typing
+judgments and to the meta-variables. Those consist of some constant
+string plus some user defined string. Therefore it is not possible to
+use normal pattern matching on them. The only chance to cope with them
+is to use the generic \texttt{cons\#(args)} pattern, to access the
+name of the constructor as a string. The auxiliary constructor
+\texttt{AuxCons} is used to abstract over this generic pattern. The
+rule \texttt{makeAuxCons} splits the constructor name into the
+constant string and the user defined one and provides the arguments as
+they are. After this transformation it is possible to use normal
+pattern matching on \texttt{AuxCons}. \texttt{makeAuxCons} only
+succeeds on the constructors mentioned before. If a node can be
+transformed into an auxiliary constructor the constructor is rewritten
+immediately afterwards into a constructor of the first-order logic
+target language. These rewritings are trivial mappings from auxiliary
 constructors to constructors of the target language. If a
 transformation into an auxiliary constructor is not possible, the
 current node is wrapped into a \texttt{Term} constructor if it is not
 a constructor of the target language. The constructor \texttt{Term}
 indicates that the wrapped constructor is a constructor of the
-programming language, i.e.\ no constructor of the specification, nor of
-the target language. This wrapping is needed for controlled pretty
+programming language, i.e.\ no constructor of the specification, nor
+of the target language. This wrapping is needed for controlled pretty
 printing of programming language constructors. In the second top down
 traversal strings in the arguments of predicates (\texttt{Pred}) and
 term (\texttt{Term}) constructors are wrapped into a \texttt{Term}
