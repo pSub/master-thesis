@@ -185,12 +185,12 @@ transforms premisses and conclusions. We defined this strategy as a
 sequence of two top down traversals. The first traversal is the actual
 rewrite of the typing judgments and the second is a special treatment
 for strings. The second traversal is necessary to wrap all target
-language constructs into the \ver|Term| constructor.
+language constructs into the \verb|Term| constructor.
 
 We translate parts of the specification language into new \gls{sdf}
 syntax definitions as described in
 Section~\ref{sec:generate-sdf}. Therefore not all nodes contained in
-the \gls{AST} of a specification are known at the time of
+the \gls{ast} of a specification are known at the time of
 implementation. However all those nodes have a regular structure. That
 makes it possible to use the \verb|cons#(args)| pattern to extract the
 relevant parts in a generic manner. The rule \verb|make-aux-cons|
@@ -225,8 +225,4 @@ is that we tag the resulting formulas as \verb|goal| and not as
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "../report"
-%%% End: 
-
-
-
-
+%%% End:
