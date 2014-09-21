@@ -10,7 +10,7 @@ the syntax of formal languages in the tradition of
 \gls{bnf}. \gls{sdf} allows to define lexical and context-free
 grammars and is, in contrast to \gls{bnf}, modular. This modularity
 allows to compose \gls{sdf} syntax definitions. There are also parser
-generators for \gls{sdf}, see~\cite{Rekers92parsergeneration}. In
+generators for \gls{sdf} (see~\cite{Rekers92parsergeneration}). In
 contrast to formalisms for traditional parser generators like
 Yacc~\cite{Johnson75yacc:yet}, \gls{sdf} specifications are purely
 declarative, which increases the reusability of the specifications.
@@ -125,12 +125,12 @@ strategies
 
 Stratego interacts well with \gls{sdf} and has facilities to integrate
 into tool-chains. In addition it allows to write abstract and generic
-transformations. That makes it a good choice for the transformation
+transformations, which makes it a good choice for the transformation
 system.
 
 \subsection{Spoofax}
 Spoofax~\cite{KatsV10} started with the goal to provide an \gls{ide}
-for \gls{sdf} and Stratego. It was then developed to a language
+for \gls{sdf} and Stratego. It was then developed into a language
 workbench for Eclipse that allows language development with editor
 support for both, the languages used for development and the developed
 language. Spoofax allows smooth switching between both editor
@@ -147,7 +147,7 @@ and the type checker generator.
 
 \subsection{Vampire}
 We use the automatic theorem prover Vampire~\cite{VoronkovVampire} to
-proof classical first-order logic propositions about type system
+prove classical first-order logic propositions about type system
 specifications. Vampire is able to parse formulas in the \gls{tptp}
 format and provides detailed output for the conducted proofs. We use
 this output to extract information about the applied axioms, which are
@@ -177,11 +177,11 @@ systems are programming languages. Type systems address the problem to
 ensure that programs have meaning, whereas in type theory the problem
 is the ensure the consistency of a logic.
 
-What does it mean to ``ensure that programs have meaning''. First, it
+What does it mean to ``ensure that programs have meaning''? First, it
 means that one wants to filter the useful programs. It is not useful
 to have a syntactically valid program that has no semantics. A type
 system assigns types to the expressions of the programming language. A
-\textit{type checker} can then check, whether the types of the
+\textit{type checker} can then verify, whether the types of the
 programs expressions match according to predefined typing rules. If
 the type checker succeeds the program is \textit{well-typed} and has
 meaning, i.e.\ the program will not exit due to undefined
