@@ -281,17 +281,16 @@ The syntax of the specification language is defined in the module
 \verb|BaseLanguage|, which is parameterized by the non-terminals
 \verb|TypingJudgment| and \verb|MetaVariable|. Those non-terminals
 depend on the actual target language and are therefore defined in
-\verb|Generated|. \todo[inline]{What is interesting of the
-  implementation?}
+\verb|Generated|.
 
 In a fresh project the module \verb|Generated| does not exist in the
-syntax folder, as no specification was activated. If the project is
-build, a dummy module is copied from the resource folder. This module
-contains empty productions for the non-terminals \verb|TypingJudgment|
-and \verb|MetaVariable|. This dummy module ensures that a compilation
-of the whole project is possible, without a specification (e.g.\ to
-run tests). The strategy \verb|toSdf| generates a specification
-specific \verb|Generated| module. 
+syntax folder, as no specification is in use. Building a project
+copies a dummy \verb|Generated| module from the resource folder into
+the syntax folder. This module contains empty productions for the
+non-terminals \verb|TypingJudgment| and \verb|MetaVariable| and
+ensures that a compilation of the whole project is possible, without a
+specification (e.g.\ to run tests). The strategy \verb|toSdf|
+generates a specification specific \verb|Generated| module. 
 
 \todo[inline]{Insert description of the generate-sdf module here}
 
