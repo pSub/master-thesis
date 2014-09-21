@@ -2,16 +2,17 @@
 \label{cha:spec-lang}
 Our type system specification language is a \gls{dsl} for people
 familiar with type systems or type theory. While developing it, we had
-the following goals in mind. The specification language should be
+the following goals in mind, that will be described below. The
+specification language should be
 
 \begin{itemize}
-\item Close to text-book formalisms used in the type system community
-\item Purely declarative
-\item Modular
-\item Usable with existing syntax definitions of programming languages
+\item close to text-book formalisms used in the type system community
+\item purely declarative
+\item modular
+\item usable with existing syntax definitions of programming languages
 \end{itemize}
 
-Those characteristics fit well to the goals of making it easy to
+Those characteristics fit well with the goals of making it easy to
 experiment with type systems and to create type systems from a
 high-level specification.
 \section{Design \& Architecture}
@@ -20,10 +21,10 @@ In this sections we introduce the architecture of the specification
 language with references to a small example specification and argue
 how this architecture reflects the goals mentioned above.
 
-A specification is divided into eight sections, of which two are
-optional.
+A specification of our specification language is divided into eight
+sections, of which two are optional.
 
-\paragraph{Modulename} The first section declares the name of the
+\paragraph{Module name} The first section declares the name of the
 specification module. This name is a unique identifier and used for
 imports.
 
@@ -49,7 +50,7 @@ project.
 
 \paragraph{Contexts} The fifth section declares the contexts that can
 be used in the judgments and rules. Informally these contexts are
-declared as cross-products of non-terminals, i.e.\ an context is a set
+declared as cross-products of non-terminals, i.e.\ a context is a set
 consisting of pairs of terminals that can be produced by the
 non-terminals in the declaration. Every context has a name, which can
 be used in further declarations. Lookups may differ for contexts and
@@ -65,8 +66,8 @@ can put things into it, but never retrieve anything back.
 meta-variables. The declaration of a meta-variable consists of a
 class, a prefix and a set of non-terminals from the target
 language. We use this class to distinguish different kinds of
-meta-variables. Currently we use them only for merging meta-variables
-definitions when resolving imports. For details
+meta-variables. Currently we use them only for merging meta-variable
+declarations when resolving imports. For details
 see~\ref{sec:generate-sdf}.
 
 The set of non-terminals defines the scope of a meta-variable. Every
@@ -97,9 +98,9 @@ meta-variables 	Term "~" { Type Exp }
 
 Example~\ref{ex:meta-variable-section} declares three classes of
 meta-variables. The first class is called \code|Term| and each
-meta-variable of this class has the prefix \code|"~"|. Productions
-that produce meta-variables of this class are added to the
-non-terminals \code|Type| and \code|Exp|.
+meta-variable of this class has the prefix \code|"~"|. Productions for
+meta-variables of this class are added to the non-terminals
+\code|Type| and \code|Exp|.
 
 \paragraph{Judgments} The sixth section of the module declares
 judgments. Judgments in our specification language are the basic
@@ -117,7 +118,7 @@ closed with a dot.
 
 Non-terminals of the target language and context names need to be
 annotated with input/output-tags. Those tags describe which parts of
-the judgment need to be computed by rule application and which are
+the judgment need to be computed by rule applications and which are
 provided as input parameters to the rule application. Contexts
 currently only support the input tag.
 
@@ -143,7 +144,7 @@ declared in the previous section. The syntax of the rules replicates
 the form of inference rules: A (possibly empty) list of premisses
 separated from a conclusion by a horizontal line. Premisses and
 conclusion are instantiated judgments. All meta-variables that occur
-in freely in rules are implicitly all-quantified. This means that all
+free in rules are implicitly all-quantified. This means that all
 meta-variables are all-quantified, as there is not mechanism to bind
 variables in typing rules.
 
@@ -161,9 +162,9 @@ messages can also be annotated on the conclusion. Those errors are
 prefixed with \code|@implicit| and are thrown if an implicit equality
 between two meta-variables cannot be satisfied. The meta-variables are
 distinguished in the error message by \code|@[number]|
-annotations. How error messages are implemented in the type checker
-generator is explained in Section~\ref{sec:constr-gener} and
-Section~\ref{sec:constraint-solving}.
+annotations. Section~\ref{sec:constr-gener} and
+Section~\ref{sec:constraint-solving} explain how error messages are
+implemented in the type checker generator.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
