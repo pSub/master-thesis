@@ -13,7 +13,7 @@
 \subsubsection{The Synthesizer Generator}
 \subsubsection{JavaCOP: Declarative Pluggable Types for Java}
 JavaCOP \cite{Markstrum:2010:JDP:1667048.1667049} is a framework for
-pluggable type systems in Java. It hooks directly into \verb|javac|
+pluggable type systems in Java. It hooks directly into \code|javac|
 and therefore integrates nicely into the normal development cycle. It
 provides three tools. A declarative language to describe structural
 constraints on the AST of Java programs in a flow-insensitive
@@ -67,8 +67,8 @@ verbose and contain redundancies. Type system specifications in Typmix
 are written in two languages. One describes the context modifications,
 they are called scoperules. The other describes typing rules using
 premisses and conclusions. The contexts in the typing rules are
-referred to as \verb|Env| and one concrete context as
-\verb|Env.Ctx|. This separation of concerns increases modularity,
+referred to as \code|Env| and one concrete context as
+\code|Env.Ctx|. This separation of concerns increases modularity,
 e.g.\ adding a context to a judgment requires only changes were it is
 actually used. Typmix used to implement a type system for an ML-like
 language and for FeatherweightJava.

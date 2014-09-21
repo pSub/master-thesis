@@ -56,10 +56,10 @@ exports
 \end{figure}
 
 Example~\ref{ex:sdf-grammar} shows a grammar that allows to write
-conjunctions of \verb|true| and \verb|false|. Conjunctions are
-represented in the \gls{ast} with the constructor \verb|And| and the
+conjunctions of \code|true| and \code|false|. Conjunctions are
+represented in the \gls{ast} with the constructor \code|And| and the
 layout constraint enforces, that if conjunctions span over multiple
-lines, the right-hand side of \verb|&| needs to be indented.
+lines, the right-hand side of \code|&| needs to be indented.
 
 \gls{sdf} is used in this thesis to define the syntax of the
 specification language for type systems and for the target
@@ -97,8 +97,8 @@ levels.
 
 Example~\ref{ex:stratego-module} shows a Stratego module that declares
 the constructors from Example~\ref{ex:sdf-grammar}. It has one rule
-\verb|Eval| that reduces a term one step. The strategy \verb|eval|
-applies rule \verb|Eval| repeatedly from bottom to top.
+\code|Eval| that reduces a term one step. The strategy \code|eval|
+applies rule \code|Eval| repeatedly from bottom to top.
 
 \begin{figure}
 \begin{example}{~}

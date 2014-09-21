@@ -151,7 +151,7 @@ typing rules and conjectures into first-order formulas. After that we
 create for each conjecture a file which contains all generated
 formulas. In the following we explain those steps in detail.
 
-The strategy \verb|make-context-formulas| generates axiom formulas for
+The strategy \code|make-context-formulas| generates axiom formulas for
 each context declaration. For each distinct non-terminal in a context
 definition we create a fresh variable name, to ensure variables names
 are compatible with \gls{tptp}. We transform every context declaration
@@ -166,9 +166,9 @@ create additional fresh variables for input positions.
 
 Rewriting typing rules into first-order formulas is a bit more
 involved than the rewriting of context declarations. The strategy
-\verb|make-formula| transforms rules into first-order formulas in the
+\code|make-formula| transforms rules into first-order formulas in the
 \gls{tptp} format. This strategy rewrites premisses and conclusions
-into first-order terms using the strategy \verb|rewrite|. Premises
+into first-order terms using the strategy \code|rewrite|. Premises
 are, due to limitations of the \texttt{layout}-rules, not represented
 as ordinary lists after parsing. Therefore premisses are transformed
 into ordinary lists by the generic \texttt{to-list} strategy. Now that
@@ -185,42 +185,42 @@ transforms premisses and conclusions. We defined this strategy as a
 sequence of two top down traversals. The first traversal is the actual
 rewrite of the typing judgments and the second is a special treatment
 for strings. The second traversal is necessary to wrap all target
-language constructs into the \verb|Term| constructor.
+language constructs into the \code|Term| constructor.
 
 We translate parts of the specification language into new \gls{sdf}
 syntax definitions as described in
 Section~\ref{sec:generate-sdf}. Therefore not all nodes contained in
 the \gls{ast} of a specification are known at the time of
 implementation. However all those nodes have a regular structure. That
-makes it possible to use the \verb|cons#(args)| pattern to extract the
-relevant parts in a generic manner. The rule \verb|make-aux-cons|
+makes it possible to use the \code|cons#(args)| pattern to extract the
+relevant parts in a generic manner. The rule \code|make-aux-cons|
 wraps all generic nodes (empty context, context binds, context look
 up, typing judgment and meta-variable nodes) into the auxiliary
-constructor \verb|AuxCons| with three parameters, the static part of
+constructor \code|AuxCons| with three parameters, the static part of
 the constructor name, the generic part of the constructor name and the
 arguments. After this transformation normal pattern matching on
-\verb|AuxCons| is possible. The strategy \verb|rewrite-aux-cons|
+\code|AuxCons| is possible. The strategy \code|rewrite-aux-cons|
 transforms those auxiliary constructors in first-order terms.
 
 All nodes in the \gls{ast} of a specification that are not wrapped
 into auxiliary constructors are constructors of the target
 language. Therefore we attempt to transform each node into an
 auxiliary node. If that succeeds, we rewrite the node into a
-first-order term otherwise we wrap the node into the \verb|Term|
+first-order term otherwise we wrap the node into the \code|Term|
 constructor. Wrapping the nodes of the target language is important
 for pretty printing.
 
 The second top down traversal wraps all strings that occur in the
-parameters of nodes into \verb|Term| constructors. It is safe to
+parameters of nodes into \code|Term| constructors. It is safe to
 transform all those strings as the specification language has no
 string nodes. We need this second traversal as a direct transformation
 would lead to infinite recursion because every string within a
-\verb|Term| constructor would we wrapped again in a \verb|Term|
+\code|Term| constructor would we wrapped again in a \code|Term|
 constructor.
 
 Conjectures are essentially transformed as rules, the only difference
-is that we tag the resulting formulas as \verb|goal| and not as
-\verb|axiom|.
+is that we tag the resulting formulas as \code|goal| and not as
+\code|axiom|.
 \section{Performance}
 %%% Local Variables: 
 %%% mode: latex

@@ -151,7 +151,7 @@ constraint generation phase take advantage of these normalizations and
 therefore expect their inputs to be normalized.
 
 Note: We transform all meta-variables of the specification into the
-variables (\verb|Var(name)|) that we use for constraint
+variables (\code|Var(name)|) that we use for constraint
 generation. We describe the rename process in the next section.
 
 \paragraph*{Premisses}
@@ -202,10 +202,10 @@ Judgment(
 \end{example}
 
 In example~\ref{ex:judgment} we have judgment one that has only one
-input position \verb|Var("X0"| and one output position
-\verb|Var("X3")|. It leaves context two as it is, resets context one
-and then adds the input/output pair \verb|Var("X1")| and
-\verb|Var("X2")| to context one. In addition it has one error message.
+input position \code|Var("X0"| and one output position
+\code|Var("X3")|. It leaves context two as it is, resets context one
+and then adds the input/output pair \code|Var("X1")| and
+\code|Var("X2")| to context one. In addition it has one error message.
 
 \item[Context lookups] consist of the context number
   \refcallout{lookup:ctx}, of the input \refcallout{lookup:inputs} and
@@ -226,8 +226,8 @@ Lookup(
 \label{ex:lookup}
 \end{example}
 
-  In example~\ref{ex:lookup} we look up \verb|Var("X0")| from
-  context one and bind the result to \verb|Var("X1)"|. This context
+  In example~\ref{ex:lookup} we look up \code|Var("X0")| from
+  context one and bind the result to \code|Var("X1)"|. This context
   lookup has no error messages attached.
 
 \item[(In)equalities] are predefined judgments and therefore treated
@@ -241,20 +241,20 @@ Neq(Var("X0"), Var("X1"), None())
 \label{ex:neq}
 \end{example}
 
-  In example~\ref{ex:neq} we compare \verb|Var("X0")| and
-  \verb|Var("X1")| for inequality and provide no error message.
+  In example~\ref{ex:neq} we compare \code|Var("X0")| and
+  \code|Var("X1")| for inequality and provide no error message.
 \end{description}
 
 In some cases it is relevant in which order premisses we evaluate
 premisses. We have not talked about evaluation yet, so assume we
 evaluate premisses as functions. We provide terms for input positions
 an retrieve terms for the output positions. If we look at
-Example~\ref{ex:premise-dependencies} we see that rule \verb|T-Tapp|
+Example~\ref{ex:premise-dependencies} we see that rule \code|T-Tapp|
 has two premisses. When we compare the premisses with the judgment
-definitions, we see that \verb|%x| occurs as an input of the first
+definitions, we see that \code|%x| occurs as an input of the first
 premise and as within an output of the second premise but not at all
 in the conclusion. If we want to evaluate the first premise we
-have to find a term for \verb|%x|, but that term is only provided by
+have to find a term for \code|%x|, but that term is only provided by
 the output of the second premise. Therefore we have to evaluate the
 second premise first.
 
@@ -280,7 +280,7 @@ depends and the output of that premise. The outputs are redundant
 information and only added to reduce indirections.
 For the first premise in Example~\ref{ex:premise-dependencies} the
 dependency would look like
-\verb|(1, [TAll(Var("X0"), Var("X1"))])|, where \verb|1| refers to
+\code|(1, [TAll(Var("X0"), Var("X1"))])|, where \code|1| refers to
 the second premise, because we sort premisses of templates topological
 according to the dependencies, as we will describe in the next
 section.
@@ -315,9 +315,9 @@ typing rules for variables in a $\lambda$-calculus style and on the
 right side its representation as a template.
 
 \subsubsection{Generation}
-The Stratego rule \verb|to-template| does the main part of the
+The Stratego rule \code|to-template| does the main part of the
 template generation. It takes a rule from a specification and
-transforms that into a template. The strategy \verb|to-tempaltes| does
+transforms that into a template. The strategy \code|to-tempaltes| does
 that iteratively for every rule in a specification. The first step in
 the conversion is the elimination of implicit equalities in the
 premisses and the conclusion.
@@ -491,20 +491,20 @@ extend the template language to make ambiguities explicit.
     \end{grammar}
 \end{definition}
 
-The new constructor \verb|Fork| has a list that contains at least one
-template. The idea is that templates contained in \verb|Fork|s are all
+The new constructor \code|Fork| has a list that contains at least one
+template. The idea is that templates contained in \code|Fork|s are all
 which-ambiguous to each other. We later use those groups of ambiguous
 templates to decide at which points in the derivation we have to
 decide which template we apply.
 
 We look now into the optimization of which-ambiguities. First we
-identify all which-ambiguities and create \verb|Fork|s of them. We
+identify all which-ambiguities and create \code|Fork|s of them. We
 implement using a strategy that groups arbitrary lists according to a
 comparison strategy. Two templates are which-ambiguous if they have
 the same judgment number and if the term pattern and context pattern
 of the conclusion are equal modulo variables. Of the resulting groups
 of templates we wrap all groups with more than one element into a
-\verb|Fork|.
+\code|Fork|.
 
 We optimize forks containing which-ambiguities by checking whether a
 template of a fork is subsumed by an other template of the same
@@ -535,12 +535,12 @@ contexts and exactly the same term pattern.
 \label{ex:which-ambiguity}
 \end{example}
 
-We know that the subtyping relation \verb|<:| is reflexive by the rule
-\verb|S-Refl|. Now we show that all premisses of \verb|S-width| imply
-at least one premise of \verb|S-depth|. \verb|~T = ~S| implies
-\verb|~T <: ~S| because the subtyping relation is reflexive and
-\verb|{ $R } <: { $U }| occurs verbatim as a premise of
-\verb|S-depth|. Therefore the depth subtyping rule subsumes the width
+We know that the subtyping relation \code|<:| is reflexive by the rule
+\code|S-Refl|. Now we show that all premisses of \code|S-width| imply
+at least one premise of \code|S-depth|. \code|~T = ~S| implies
+\code|~T <: ~S| because the subtyping relation is reflexive and
+\code|{ $R } <: { $U }| occurs verbatim as a premise of
+\code|S-depth|. Therefore the depth subtyping rule subsumes the width
 subtyping rule and we can remove the width subtyping rule.
 
 We implement this check by testing for each template $t$ within a
@@ -585,7 +585,7 @@ checker. The inputs of this phase are constraint templates and the
 expressions that should be type checked. The only input method for
 expression we currently support is via the conjectures section of the
 specification. However it should be straightforward to extend this
-phase with support for e.g.\ \verb|stdin|.
+phase with support for e.g.\ \code|stdin|.
 
 The constraint generation phase structured as follows. We initialize
 contexts first and then generate constraints according to the programs
@@ -630,41 +630,41 @@ We annotate all constraints with error messages. These error messages
 are either generated during the constraints generation or passed
 through from the specification. The constraint solver shows the error
 messages if it cannot solve a constraint. There are three types of
-constraints. The constraint \verb|CFail| corresponds to false and
-cannot be solved. Further \verb|CEq| and \verb|CNeq| are equality
+constraints. The constraint \code|CFail| corresponds to false and
+cannot be solved. Further \code|CEq| and \code|CNeq| are equality
 respectively inequality constraints.
 
 As we read the program expressions from the conjecture section of the
 specification, we already have the initial contexts, the judgment
 number and we can tell which are input and output positions. If we
-would read only the program expression (e.g.\ from \verb|stdin|)
+would read only the program expression (e.g.\ from \code|stdin|)
 information about the initial contexts, the judgment number and the
 output positions need to be passed separately. Every conjecture has a
 fresh context store, initialized with the initial contexts provided in
 the conjecture.
 
 We have divided the main logic of constraint generation into three
-Stratego strategies: \verb|generate| selects the template matching the
-current term, \verb|generate'| applies the current term to the
-conclusion of the selected template and \verb|execute| evaluates the
+Stratego strategies: \code|generate| selects the template matching the
+current term, \code|generate'| applies the current term to the
+conclusion of the selected template and \code|execute| evaluates the
 premisses of the template. All three strategies return a tuple of the
 computed outputs and the generated constraints. We wrap the computed
-outputs into \verb|Option| to model the absence of outputs in cases of
+outputs into \code|Option| to model the absence of outputs in cases of
 errors.
 
-After initializing the contexts we call the strategy \verb|generate|
+After initializing the contexts we call the strategy \code|generate|
 with the judgment number and the inputs of the conjecture. We also
-pass the expected outputs and set the parameter \verb|init| to
-\verb|true|. This parameter is \verb|false| for all other cases except
-the initial call to \verb|generate| and used to generate an equality
+pass the expected outputs and set the parameter \code|init| to
+\code|true|. This parameter is \code|false| for all other cases except
+the initial call to \code|generate| and used to generate an equality
 constraint for the expected and actual outputs.
 
-Now \verb|generate| calls \verb|find-match| to find a template whose
+Now \code|generate| calls \code|find-match| to find a template whose
 conclusion matches the inputs, judgment number and the current state
-of the contexts. First \verb|find-match| filters all templates with the
+of the contexts. First \code|find-match| filters all templates with the
 correct judgment number and tests only those templates for matches. In
-case of \verb|Fork| only those templates are retained that match. For
-all other templates \verb|find-match| checks whether the constructors
+case of \code|Fork| only those templates are retained that match. For
+all other templates \code|find-match| checks whether the constructors
 of the term pattern in the conclusion and of the input term
 match. Those match, if they have the same constructors on all levels,
 where the term pattern can have variables for whole levels. In
@@ -673,16 +673,16 @@ current state of the contexts. The context pattern reflects the state
 of the contexts if it can be applied from left to right to the context
 without failures.
 
-\verb|find-match| safely takes the first template that matches,
+\code|find-match| safely takes the first template that matches,
 because we have ensured in Section~\ref{sec:constr-templ-optim} that
 there is only one template that matches. If no template matches, we
-return \verb|None| for the outputs and the singelton list containing
+return \code|None| for the outputs and the singelton list containing
 the constraint that always fails, with an appropriate error
-message. If \verb|find-match| succeeds to find a template it calls
-\verb|generate'| with that template.
+message. If \code|find-match| succeeds to find a template it calls
+\code|generate'| with that template.
 
-The rule \verb|generate'| now evaluates the selected template
-according to the given input. In \verb|generate'| we use patterns to
+The rule \code|generate'| now evaluates the selected template
+according to the given input. In \code|generate'| we use patterns to
 access specific elements of terms. The corresponding element to the
 input term is the term pattern of the templates conclusion. We update
 the terms and patterns if we want to add an other term and pattern to
@@ -710,23 +710,23 @@ $C |- ~e : ~T
 \end{example}
 
 Example~\ref{ex:subsumption} shows the subsumption rule from
-\todo{Cite}. In the rule \verb|~T| occurs free in the second
-premise. Binding it to the expected output of \verb|~T| allows to
+\todo{Cite}. In the rule \code|~T| occurs free in the second
+premise. Binding it to the expected output of \code|~T| allows to
 still evaluate this premise.
 
 Now we have to replace all variables introduced by the selected
 template with fresh variables, otherwise applying a template twice
 would lead to collisions. All variables introduces in the previous
 phases have variables names have prefix different from
-\verb|Y|. Therefore we replace all variables that do not have the
-prefix \verb|Y| with a fresh variable with the prefix
-\verb|Y|. Additionally this allows to verify visually to check whether
+\code|Y|. Therefore we replace all variables that do not have the
+prefix \code|Y| with a fresh variable with the prefix
+\code|Y|. Additionally this allows to verify visually to check whether
 all variables are fresh.
 
 Now we evaluate the premisses of the template. A key element in the
 evaluation is the instantiation of the variables in the premise
 patterns according to the conclusion pattern and input term, because
-we need input terms to recursively call \verb|generate| on the
+we need input terms to recursively call \code|generate| on the
 premisses or to create solvable (in-)equality constraints.
 
 We initialize variables in inputs of a judgment using a term and a
@@ -748,14 +748,14 @@ available during evaluation, we have to accumulate the outputs of the
 evaluated premisses and add those to the patterns and terms used for
 the instantiation.
 
-The strategy \verb|execute| does the evaluation of the premisses. We
-call \verb|execute| for each premise with a copy of the contexts to
+The strategy \code|execute| does the evaluation of the premisses. We
+call \code|execute| for each premise with a copy of the contexts to
 ensure that one premise cannot pollute the contexts of an other
-premise. We have implemented a safe version of \verb|hashtable-copy|
+premise. We have implemented a safe version of \code|hashtable-copy|
 to ensure that after evaluation of the premise all copies are
 destroyed.
 
-We now describe what \verb|execute| does for the different types of
+We now describe what \code|execute| does for the different types of
 premisses.
 
 \begin{description}
@@ -765,27 +765,27 @@ premisses.
   constraint set that contains equality constraint between the output
   pattern and the looked up output. Those constraints are annotated
   with the corresponding error message, which is instantiated and in
-  which the hole (\verb|{}|) is replaced by the output variables. If
-  the lookup fails \verb|None| is return as output together with the
-  \verb|CFail| constraint and an appropriate error message.
+  which the hole (\code|{}|) is replaced by the output variables. If
+  the lookup fails \code|None| is return as output together with the
+  \code|CFail| constraint and an appropriate error message.
 \item[(In)equality:] Equalities and inequalities are initialized and
-  returned as constraints, together with the output \verb|None| as
+  returned as constraints, together with the output \code|None| as
   they have no output positions.
 \item[Judgment:] If the premise is a judgment it is first
-  instantiated. Then we call \verb|generate| on the resulting input
+  instantiated. Then we call \code|generate| on the resulting input
   term with an version of the store that has been updated according to
   the context pattern of the judgment. In addition we instantiate the
   expected outputs of the judgment to make the binding of free
   variables in premisses more precise. After the call to
-  \verb|generate| returns we generate equality constraints for the
+  \code|generate| returns we generate equality constraints for the
   bindings in the context pattern of the premise and generate equality
   constraints between the output pattern and the computed output, with
-  corresponding instantiated error messages. The hole (\verb|{}|) in
+  corresponding instantiated error messages. The hole (\code|{}|) in
   the error messages is here also replaced by the output variables.
 \end{description}
 
-In the case \verb|generate'| encounters a fork it evaluates all
-templates contained in the fork using \verb|generate'|. It tries to
+In the case \code|generate'| encounters a fork it evaluates all
+templates contained in the fork using \code|generate'|. It tries to
 solve the resulting constraint set and returns the outputs of the
 first evaluation that succeeds. If no templates can be evaluated to an
 solvable constraint set we return the constraint that always fails
