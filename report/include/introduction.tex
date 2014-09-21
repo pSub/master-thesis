@@ -1,15 +1,19 @@
 \chapter{Introduction}
+This chapter motivates the thesis, summarizes the contributions and
+gives and overview of the structure of the thesis.
+
 \section{Motiviation}
 Type systems ensure that programs are well-behaved. In other words,
-they try to ensure that programs have meaning in the sense of the
-semantics of the programming language. The type systems we focus on
-are static type systems and can be thought of as a static
-approximation of the program semantics. Besides ensuring that programs
-are well-behaved, type systems are means to establish abstractions and
-to enforce adherence to these abstractions. They can also serve as
-documentation that cannot become obsolete and give hints for
-optimization to the compiler. All in all type systems can help to
-develop software more efficiently
+they ensure that programs have meaning in the sense of the semantics
+of the programming language. The type systems we focus on are static
+type systems and can be thought of as a static approximation of the
+programs semantics. Besides ensuring that programs are well-behaved,
+type systems are means to establish abstractions and to enforce
+adherence to these abstractions. Type systems can provide explicit
+type annotations that serve as program documentation that cannot
+become obsolete. Type checking can also annotate a program with
+optimization hints for the compiler. All in all type systems can help
+to develop software more efficiently
 (cf.~\cite{Petersen:2014:ECS:2597008.2597152}
 and~\cite{Mayer:2012:ESI:2384616.2384666}).
 
@@ -19,8 +23,8 @@ system fits to a programming language, e.g.\ in the context of a
 \gls{dsl}, it makes sense to adapt and modify existing type systems or
 create new specialized type systems. Those specializations can lead to
 better error messages, more expressive type systems and the detection
-of more errors~\cite{Thiemann02programmabletype}. Currently there are
-no established tools that could help with that by generating type
+of more errors, cf.~\cite{Thiemann02programmabletype}. Currently there
+are no established tools that could help with that by generating type
 checkers from a type system specification. Such generators could make
 the development of type checkers faster and less error prone. Those
 generators would fit well into the language development workbench
@@ -30,10 +34,10 @@ Type checker generators that use a high-level specification language
 can also provide type theorists with a tool, that allows them play
 with new type systems without long development delays. High-level
 specifications that are close to the formalism used by type theorists
-has also the advantage of narrowing the gap between the type system on
-paper and its implementation. Results shown for the paper version can
-easily be adapted for the implementation (depending on the correctness
-of the type checker generator). Such adaptions are not possible with
+has also the advantage of narrowing the gap between type systems on
+paper and their implementation. Results shown for the paper version
+can be adapted for the implementation (depending on the correctness of
+the type checker generator). Such adaptions are not possible with
 traditional implementations. High-level specification languages are
 also suited to specify type systems from other areas, like
 language-based information-flow
@@ -50,32 +54,33 @@ hints for proof search, e.g.\ providing induction hypothesis. This
 establishes a direct connection between the specified type system, the
 proofs and the generated type checker.
 
-The goal of this thesis is to close that gap in the programming
-language development tool chain. A declarative specification language
-is developed, in which type systems can be represented very close to
-the standard formalisms. Two things are generated from those
+The goal of this thesis is to narrow the gap between theory and
+implementation of type systems. A declarative specification language
+is developed, in which type systems are represented close to the
+standard formalisms. Two things are generated from those
 specifications. First, a representation of the type system as
 first-order formulas, intended to support proving properties of the
 type system. Second, an efficient type checker that exploits facts
 proven by automated theorem provers for optimization.
+
 \section{Contributions}
 The main contributions of this thesis are:
 \begin{enumerate}
 \item A declarative specification language for static type systems,
   with support for natural deductive style typing rules and error
-  messages. The specification language implemented in \gls{sdf} and
-  capable of using most \gls{sdf} definitions of programming languages.
+  messages. The specification language is implemented in \gls{sdf} and
+  capable of using most \gls{sdf} definitions of programming
+  languages.
 \item A transformation of type system specifications into equivalent
   first-order formula representations in the \gls{tptp} format. The
   first-order formula representations are suitable for typing
-  checking, theorem proving using theorem provers that support
-  \gls{tptp} and as a reference implementation for the type checker
-  generator.
+  checking, theorem proving and as a reference implementation for the
+  type checker generator.
 \item A generator that creates type checkers from type system
   specifications. This generator uses an intermediate representation
   for typing rules suitable for constraint generation and optimizes
   the intermediate representation using automated proofs, which check
-  the applicability of optimizations.
+  the applicability of an optimization.
 \end{enumerate}
 
 \section{Structure}
