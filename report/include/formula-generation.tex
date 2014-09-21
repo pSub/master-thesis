@@ -187,47 +187,40 @@ rewrite of the typing judgments and the second is a special treatment
 for strings. The second traversal is necessary to wrap all target
 language constructs into the \ver|Term| constructor.
 
-The first traversal proceeds as follows. An attempt to rewrite the
-current node into an auxiliary constructor is made, if this attempt
-succeeds the auxiliary constructor is rewritten into a term of the
-first-order formula language, if it does not succeed it is wrapped
-into the \texttt{Term} constructor. The reasoning is the
-following. Some \gls{ast} nodes of the specification language are
-generic, those referring to the context formulas, to the typing
-judgments and to the meta-variables. Those consist of some constant
-string plus some user defined string. Therefore it is not possible to
-use normal pattern matching on them. The only chance to cope with them
-is to use the generic \texttt{cons\#(args)} pattern, to access the
-name of the constructor as a string. The auxiliary constructor
-\texttt{AuxCons} is used to abstract over this generic pattern. The
-rule \texttt{makeAuxCons} splits the constructor name into the
-constant string and the user defined one and provides the arguments as
-they are. After this transformation it is possible to use normal
-pattern matching on \texttt{AuxCons}. \texttt{makeAuxCons} only
-succeeds on the constructors mentioned before. If a node can be
-transformed into an auxiliary constructor the constructor is rewritten
-immediately afterwards into a constructor of the first-order logic
-target language. These rewritings are trivial mappings from auxiliary
-constructors to constructors of the target language. If a
-transformation into an auxiliary constructor is not possible, the
-current node is wrapped into a \texttt{Term} constructor if it is not
-a constructor of the target language. The constructor \texttt{Term}
-indicates that the wrapped constructor is a constructor of the
-programming language, i.e.\ no constructor of the specification, nor
-of the target language. This wrapping is needed for controlled pretty
-printing of programming language constructors. In the second top down
-traversal strings in the arguments of predicates (\texttt{Pred}) and
-term (\texttt{Term}) constructors are wrapped into a \texttt{Term}
-constructor to handle constructors without parameters. This wrapping
-is needed later on to provide inequalities of constants symbols.
+We translate parts of the specification language into new \gls{sdf}
+syntax definitions as described in
+Section~\ref{sec:generate-sdf}. Therefore not all nodes contained in
+the \gls{AST} of a specification are known at the time of
+implementation. However all those nodes have a regular structure. That
+makes it possible to use the \verb|cons#(args)| pattern to extract the
+relevant parts in a generic manner. The rule \verb|make-aux-cons|
+wraps all generic nodes (empty context, context binds, context look
+up, typing judgment and meta-variable nodes) into the auxiliary
+constructor \verb|AuxCons| with three parameters, the static part of
+the constructor name, the generic part of the constructor name and the
+arguments. After this transformation normal pattern matching on
+\verb|AuxCons| is possible. The strategy \verb|rewrite-aux-cons|
+transforms those auxiliary constructors in first-order terms.
 
-The rewriting of typing rules and conjectures is very similar,
-therefore only the differences to the rewriting of typing rules are
-described. Conjectures are as their name suggests rewritten into
-formulas tagged as conjectures and are therefore also named
-\texttt{goal} if no name is specified. \todo[inline]{Are there more
-  differences}
+All nodes in the \gls{ast} of a specification that are not wrapped
+into auxiliary constructors are constructors of the target
+language. Therefore we attempt to transform each node into an
+auxiliary node. If that succeeds, we rewrite the node into a
+first-order term otherwise we wrap the node into the \verb|Term|
+constructor. Wrapping the nodes of the target language is important
+for pretty printing.
 
+The second top down traversal wraps all strings that occur in the
+parameters of nodes into \verb|Term| constructors. It is safe to
+transform all those strings as the specification language has no
+string nodes. We need this second traversal as a direct transformation
+would lead to infinite recursion because every string within a
+\verb|Term| constructor would we wrapped again in a \verb|Term|
+constructor.
+
+Conjectures are essentially transformed as rules, the only difference
+is that we tag the resulting formulas as \verb|goal| and not as
+\verb|axiom|.
 \section{Performance}
 %%% Local Variables: 
 %%% mode: latex
