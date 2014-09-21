@@ -1,4 +1,3 @@
-
 \chapter{Preliminaries}
 \section{Tools}
 This section introduces the tools used in this thesis. We argue what
@@ -13,29 +12,29 @@ grammars and is, in contrast to \gls{bnf}, modular. This modularity
 allows to compose \gls{sdf} syntax definitions. There are also parser
 generators for \gls{sdf}, see~\cite{Rekers92parsergeneration}. In
 contrast to formalisms for traditional parser generators like
-Yacc\cite{Johnson75yacc:yet}, \gls{sdf} specifications are purely
+Yacc~\cite{Johnson75yacc:yet}, \gls{sdf} specifications are purely
 declarative, which increases the reusability of the specifications.
 
 The modularity of \gls{sdf} is a consequence of the fact that
 \gls{sdf} is \textit{generalized LR
-  parsable}\cite{Rekers92parsergeneration}. Generalized parsing means
+  parsable}~\cite{Rekers92parsergeneration}. Generalized parsing means
 that parsing might be indeterminate, i.e.\ the parser produces all
 possibilities for syntactic ambiguities. This might not seem to be an
 advantage, but generalized parsing has some nice implications. First,
 the class of supported grammars is bigger and therefore enforces less
 restrictions on the programmer and might allow a natural definition of
-languages. Second, it enables the modularity of \gls{sdf}, because
-composition of normal LR grammars is not guaranteed to be an LR
-grammar again, but this is guaranteed for generalized LR grammars.
+languages. Second, it enables the modularity of \gls{sdf}, because the
+composition of generalized LR grammars is a generalized LR
+grammar. This does not hold in general for LR grammars.
 
 An other advantage is that \gls{sdf} is also scannerless
 parsable~\cite{Brand02disambiguationfilters}, that means that
 tokenization and parsing can be done in a single step.
 
 \gls{sdf} also has support to specify layout sensitive
-languages\cite{conf/sle/ErdwegRKO12} like Python or Haskell. Context
-insensitive layout constraints are enforced at parse time and context
-sensitive constraints are enforced at disambiguation time, i.e.\ all
+languages~\cite{conf/sle/ErdwegRKO12} like Python or Haskell. It
+enforces context insensitive layout constraints at parse time and
+context sensitive constraints at disambiguation time, i.e.\ all
 ambiguities that violate layout constraints are removed.
 
 \begin{figure}
@@ -68,12 +67,13 @@ languages. Features like layout constraints make \gls{sdf} a good tool
 for defining complex syntax for natural deduction rules. The
 modularity and composability make it possible to define the syntax of
 the specification language independent of the target language.
+
 \subsection{Stratego/XT}
 Stratego~\cite{Visser01} is a framework for the development of
 transformation systems. It consists of the transformation language
 Stratego and a set of tools (XT) for tasks like parsing and pretty
 printing. The paradigm of Stratego is to use user-definable strategies
-for rewriting. In Stratego distinguishes the following abstraction
+for rewriting. Stratego distinguishes the following abstraction
 levels.
 
 \begin{description}
@@ -90,8 +90,9 @@ levels.
   into a stand-alone program. The interface between such programs is
   the ATerm format for \glspl{ast}.
 \item[Transformation systems] describe a set of programs created by
-  the transformation tools, that form a source-to-source
-  transformation usually including a parser and pretty printer.
+  the transformation tools. A transformation system for a
+  source-to-source transformation usually includes a parser and pretty
+  printer.
 \end{description}
 
 Example~\ref{ex:stratego-module} shows a Stratego module that declares
@@ -123,11 +124,12 @@ strategies
 \end{figure}
 
 Stratego interacts well with \gls{sdf} and has facilities to integrate
-nicely into tool-chains. In addition it allows to write abstract and
-generic transformation. That makes it a good choice for the
-transformation system.
+into tool-chains. In addition it allows to write abstract and generic
+transformations. That makes it a good choice for the transformation
+system.
+
 \subsection{Spoofax}
-Spoofax\cite{KatsV10} started with the goal to provide an \gls{ide}
+Spoofax~\cite{KatsV10} started with the goal to provide an \gls{ide}
 for \gls{sdf} and Stratego. It was then developed to a language
 workbench for Eclipse that allows language development with editor
 support for both, the languages used for development and the developed
@@ -142,6 +144,7 @@ We use Spoofax in this thesis to provide editor support for the
 specification language and as glue between \gls{sdf} and Stratego in
 the development of the specification language, the formula generator
 and the type checker generator.
+
 \subsection{Vampire}
 We use the automatic theorem prover Vampire~\cite{VoronkovVampire} to
 proof classical first-order logic propositions about type system
@@ -149,7 +152,19 @@ specifications. Vampire is able to parse formulas in the \gls{tptp}
 format and provides detailed output for the conducted proofs. We use
 this output to extract information about the applied axioms, which are
 in our case typing rules.
+
 \subsection{Alternatives}
+We chose Spoofax and its components, because its feature set fit well
+to our goals and there was some previous work related work based on
+it. However there are alternative \textit{language workbenches} that
+could have been a good fit as well. For example
+Rascal~\cite{klint2009rascal} a meta-programming language that has
+among others support for context-free grammars, algebraic data-types,
+relations, relational calculus operators, advanced patterns matching,
+generic type-safe traversal, comprehensions, and string templates for
+code generation.~\cite{workbenches} gives an overview of the state of
+the art in language workbenches.
+
 \section{Type Systems}
 \textit{Type theory} started as an attempt by Gottlob Frege to solve Russel's
 paradox, that shows that \naive{} set theory is inconsistent. Frege
