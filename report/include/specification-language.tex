@@ -277,11 +277,11 @@ The module \code|Common| is not particularly interesting therefore we
 will not explain it in detail but mention it when it is used in other
 modules.
 
-The syntax of the specification language is defined in the module
-\code|BaseLanguage|, which is parameterized by the non-terminals
-\code|TypingJudgment| and \code|MetaVariable|. Those non-terminals
-depend on the actual target language and are therefore defined in
-\code|Generated|.
+The target language independent syntax of the specification language
+is defined in the module \code|BaseLanguage|, which is parameterized
+by the non-terminals \code|TypingJudgment| and
+\code|MetaVariable|. Those non-terminals depend on the actual target
+language and are therefore defined in \code|Generated|.
 
 In a fresh project the module \code|Generated| does not exist in the
 syntax folder, as no specification is in use. Building a project
@@ -290,9 +290,65 @@ the syntax folder. This module contains empty productions for the
 non-terminals \code|TypingJudgment| and \code|MetaVariable| and
 ensures that a compilation of the whole project is possible, without a
 specification (e.g.\ to run tests). The strategy \code|toSdf|
-generates a specification specific \code|Generated| module. 
+generates a specification specific \code|Generated| module.
 
-\todo[inline]{Insert description of the generate-sdf module here}
+The strategy \code|toSdf| transforms a specification into a \gls{sdf}
+\gls{ast} which is then pretty printed and saved in the syntax
+folder. The generated module \code|Generated| imports module
+\code|Common| and the \gls{sdf} file of the target language. Module
+\code|Generated| also contains context-free grammars for the context,
+meta-variables and judgment declarations.
+
+The strategy \code|make-contexts| generates for each context
+declaration productions for the empty context, context bindings and
+context look up. Figure~\ref{fig:context-productions} shows the
+resulting productions.
+
+\begin{figure}
+\begin{grammar}
+  <Name> ::= `ContextEmpty-n'
+  \alt `ContextBind-n' <Elem> <Name>
+  \alt `ContextLookup-n' <Elem> <Name>
+  \alt `(' <Name> `)'
+
+  <Elem> ::= <String> | <String> `:' <Elem>
+\end{grammar}
+\caption{Context productions}
+\label{fig:context-productions}
+\end{figure}
+
+\textit{Name} is the name of the context declaration and \code|n| the
+position of the context declaration.
+
+Figure~\ref{fig:meta-variable-productions} shows the productions
+created by \code|make-variable| for meta-variables. A meta-variable
+consists of its prefix, a name and of an optional error
+annotation. There are two productions for meta-variables. The first
+extends the non-terminal \textit{Scope} of the target language and the
+second enables the use of meta-variables in error messages. The
+\code|m| in the constructor of meta-variables is either the context
+number in the case \textit{Scope} is a context and otherwise the
+meta-variable class.
+
+\begin{figure}
+\begin{grammar}
+  <Scope> ::= `MetaVariable-m' <Prefix> <MetaVariableName> <Anno>
+
+  <MetaVariable> ::= `MetaVariable-m' <Prefix> <MetaVariableName>
+  <Anno>
+
+  <Anno> ::= $\epsilon$ | `@' <ErrorNumber>
+\end{grammar}
+\caption{Meta-variable productions}
+\label{fig:meta-variable-productions}
+\end{figure}
+
+Strategy \code|make-judgment| creates productions for judgment
+declarations. We generate for each judgment one production that
+consists of all non-terminals separated by the separators from the
+declaration. The constructor is in case of a built-in judgment the
+name of the built-in, otherwise it is the judgment position append to
+the string \code|TypingJudgment|.
 
 The module \code|SLTC| plugs all modules together. It imports the
 module \code|Generated| and instantiates the parameters of module
