@@ -20,6 +20,11 @@ rules
     gt(|y) : x -> <gt> (x, y)
 
     /**
+     *
+     */
+    zip(|xs) : ys -> <zip> (xs, ys)
+
+    /**
      * String representation for Option values. Some(s) is projected
      * to s and None() is projected to the empty string.
      *
