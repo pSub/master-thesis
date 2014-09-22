@@ -28,5 +28,3 @@ exports
   	"int" -> Type {cons("TInt")}
   	Type "->" Type -> Type {cons("TArrow")}
   	-> TRecordEntries {cons("TRecordEntries")}
-  	ID ":" Type TRecordEntries -> TRecordEntries {cons("TRecordEntries")}
-  	"{" TRecordEntries "}" -> Type {cons("TRecord")}
