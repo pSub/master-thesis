@@ -124,9 +124,16 @@ rules
               
     derive-syntax-directed-rules(|substructures, context-definitions) =
         ?(property, templates);
-        instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property)); debug> substructures;
-        !<conc> (<diff> (templates, [property]), instances)
+        instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures;
+        instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
+        !<conc> (<diff> (templates, [property]), instances')
         
+
+    remove-unsatisfiable-templates(|context-definitions, templates) =
+        remove-all(where(premisses-to-props;
+                     map(\p -> <fof-from-templates(|context-definitions, templates);
+                                verify-vampire(|"2", "neg-premise")> [Formula__("", Not__(p))]\);
+                     all(?VerificationSuccess(_))))
 
     /**
      * Creates a template for the judgment corresponding to the judgment number
