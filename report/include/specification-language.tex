@@ -187,13 +187,13 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \label{ex:rules}
 \end{example}
 
-In Example~\ref{ex:rules} the rules \code|Subst-Eq| and \code|T-Tapp|
-from the SystemF \todo{Reference} implementation are
-shown. \code|Subst-Eq| has no premisses and an implicit equality in
-the conclusion. Rule \code|T-Tapp| show how the expected output is
-used in the error messages and how premisses are annotated with error
-messages. All error message annotation belong to the preceding
-premise.
+Example~\ref{ex:rules} shows the rules \code|Subst-Eq| and
+\code|T-Tapp| from the SystemF \todo{Reference}
+implementation. \code|Subst-Eq| has no premisses and an implicit
+equality in the conclusion. Rule \code|T-Tapp| shows how the expected
+output is used in the error messages and how premisses are annotated
+with error messages. All error message annotations belong to the
+preceding premise.
 
 \paragraph{Conjectures} Tests for a specification are called
 \textit{conjectures}. Their syntax is similar to the syntax of rules,
@@ -221,15 +221,15 @@ tests.
 \label{ex:conjecture-section}
 \end{example}
 
-In Example~\ref{ex:conjecture-section} two conjectures of the PCF
-implementation are shown. They use the judgment shown in
+Example~\ref{ex:conjecture-section} shows two conjectures of the PCF
+implementation. They use the judgment shown in
 Example~\ref{ex:judgment-section}. The first conjecture asserts that
-the type of the faculty function apply to three is \code|int| and the
-second conjecture asserts that \code|fun x : int (x)| does not have
-type \code|int|.
+the type of the faculty function applied to \code|3| is \code|int| and
+the second conjecture asserts that \code|fun x : int (x)| does not
+have type \code|int|.
 
 Line comments (\code|//|) and block comments (\code|/* ... */|) can be
-insert everywhere in the module.
+inserted everywhere in the module.
 
 How does this design reflect the characteristics from the beginning of
 this chapter? We will address this point by point.
@@ -238,11 +238,11 @@ this chapter? We will address this point by point.
 \item[Usage] Formal definitions of type systems usually consist of
   judgment, rules and auxiliary definitions for contexts. All those
   elements can be represented in a natural way in the specification
-  language. Judgments can be defined as an arbitrary, as long as this
-  syntax does not create ambiguities, combination of non-terminals and
-  separation symbols. Rules are written in a natural deduction style,
-  because this is the most common representation for typing rules and
-  acknowledges the deductive nature of typing rules in
+  language. Judgments can be defined as an arbitrary combination of
+  non-terminals and separation symbols, as long as the syntax does not
+  create ambiguities. Rules are written in a natural deduction style,
+  because this is the most common representation of typing rules and
+  it acknowledges the deductive nature of typing rules in
   general. Contexts can be defined using a set like notation. This is
   close to the intuitive semantics of contexts and allows to generate
   commonly used syntax.
@@ -253,12 +253,12 @@ this chapter? We will address this point by point.
 \item[Integration] Type systems can be defined for every programming
   language for which a \gls{sdf} syntax definition exists. These
   definitions can be used in most cases without further
-  modifications. One requirement is that they introduce for every
-  context-free production a constructor. Modifications are also needed
-  if one wants to use a language concept inductively in the type
-  system, but has not implemented this concept with explicit induction
-  in the syntax. An example for this is the implementation of records
-  in the simply typed lambda calculus. \todo{Reference}
+  modifications. One of the requirements is that they introduce a
+  constructor for every context-free production. Modifications are
+  also needed if one wants to use a language concept inductively in
+  the type system, but has not implemented this concept with explicit
+  induction in the syntax. The implementation of records in the simply
+  typed lambda calculus is an example for this. \todo{Reference}
 \end{description}
 \section{Implementation}
 \label{sec:generate-sdf}
@@ -266,44 +266,48 @@ In this section we describe how the specification language is
 implemented and how the new syntactic constructs that can be defined
 in a specification are integrated.
 
-The specification language is itself defined in \gls{sdf} and consists
+The specification language itself is defined in \gls{sdf} and consists
 of four \gls{sdf} modules. The module \code|Common| which consists of
 lexical definitions that are used in multiple modules, the module
 \code|BaseLanguage| which defines the syntax of the specification
 language, the module \code|Generated| which contains new syntax that
-was define in a specification and the main module \code|SLTC| that
+was defined in a specification and the main module \code|SLTC| that
 combines the previous modules.
 
-The module \code|Common| is not particularly interesting therefore we
-will not explain it in detail but mention it when it is used in other
-modules.
+The module \code|Common| only defines character classes and lexical
+restrictions therefore we will not explain it in detail.
 
-The target language independent syntax of the specification language
-is defined in the module \code|BaseLanguage|, which is parameterized
-by the non-terminals \code|TypingJudgment| and
-\code|MetaVariable|. Those non-terminals depend on the actual target
+The syntax of the specification language, which is independent of the
+target language, is defined in the module \code|BaseLanguage|, which
+is parameterized by the non-terminals \code|TypingJudgment| and
+\code|MetaVariable|. These non-terminals depend on the actual target
 language and are therefore defined in \code|Generated|.
 
-In a fresh project the module \code|Generated| does not exist in the
+In a new project the module \code|Generated| does not exist in the
 syntax folder, as no specification is in use. Building a project
 copies a dummy \code|Generated| module from the resource folder into
-the syntax folder. This module contains empty productions for the
-non-terminals \code|TypingJudgment| and \code|MetaVariable| and
-ensures that a compilation of the whole project is possible, without a
-specification (e.g.\ to run tests). The strategy \code|toSdf|
-generates a specification specific \code|Generated| module.
+the syntax folder. Module \code|Generated| contains empty productions
+for the non-terminals \code|TypingJudgment| and \code|MetaVariable|
+and it ensures that a compilation of the whole project is possible
+without a specification (e.g.\ to run tests). The strategy
+\code|toSdf| generates a specification specific \code|Generated|
+module.
 
 The strategy \code|toSdf| transforms a specification into a \gls{sdf}
 \gls{ast} which is then pretty printed and saved in the syntax
 folder. The generated module \code|Generated| imports module
 \code|Common| and the \gls{sdf} file of the target language. Module
-\code|Generated| also contains context-free grammars for the context,
+\code|Generated| also contains context-free grammars for context,
 meta-variables and judgment declarations.
 
-The strategy \code|make-contexts| generates for each context
-declaration productions for the empty context, context bindings and
-context look up. Figure~\ref{fig:context-productions} shows the
-resulting productions.
+For each context declaration the strategy \code|make-contexts|
+generates productions for the empty context, context bindings and
+context look ups. Figure~\ref{fig:context-productions} shows the
+resulting productions. Furthermore \textit{Name} is the name of the
+context declaration and \code|n| the position of the context
+declaration.
+
+\todo{Increase space between figures}
 
 \begin{figure}
 \begin{grammar}
@@ -318,18 +322,15 @@ resulting productions.
 \label{fig:context-productions}
 \end{figure}
 
-\textit{Name} is the name of the context declaration and \code|n| the
-position of the context declaration.
-
 Figure~\ref{fig:meta-variable-productions} shows the productions
 created by \code|make-variable| for meta-variables. A meta-variable
 consists of its prefix, a name and of an optional error
 annotation. There are two productions for meta-variables. The first
 extends the non-terminal \textit{Scope} of the target language and the
-second enables the use of meta-variables in error messages. The
-\code|m| in the constructor of meta-variables is either the context
-number in the case \textit{Scope} is a context and otherwise the
-meta-variable class.
+second enables the use of meta-variables in error messages. In the
+constructor of meta-variables \code|m| is either the context number in
+case \textit{Scope} is a context and otherwise the meta-variable
+class.
 
 \begin{figure}
 \begin{grammar}
@@ -345,11 +346,11 @@ meta-variable class.
 \end{figure}
 
 Strategy \code|make-judgment| creates productions for judgment
-declarations. We generate for each judgment one production that
-consists of all non-terminals separated by the separators from the
-declaration. The constructor is in case of a built-in judgment the
-name of the built-in, otherwise it is the judgment position append to
-the string \code|TypingJudgment|.
+declarations. For each judgment we generate a production that consists
+of all non-terminals separated by the separators from the
+declaration. In case of a built-in the constructor of the constructor
+has the name of the built-in, otherwise it is the judgment position
+append to the string \code|TypingJudgment|.
 
 The module \code|SLTC| plugs all modules together. It imports the
 module \code|Generated| and instantiates the parameters of module
