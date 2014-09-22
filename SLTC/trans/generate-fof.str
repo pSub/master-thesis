@@ -76,7 +76,11 @@ signature
      * different. Those axioms are needed, because as soon as terms get
      * nested those equalities are hard to decide.
      */
-    make-inequalities : ast -> <collect-all(?Term__(_)); nub; tails; mapconcat(make-inequality)> ast
+    make-inequalities : ast ->
+        <{|Fresh:
+           collect-all(?Term__(_) <+ \Term__(n, args) -> Term__(n, <length> args)\);
+           map(try(\Term__(n, args) -> Term__(n, <newnames(|"X"); map(makeVar)> args)\));
+           tails; mapconcat(make-inequality)|}> ast
     make-inequality : [] -> []
     make-inequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <make-neq>(x, y))\)> ys
     
