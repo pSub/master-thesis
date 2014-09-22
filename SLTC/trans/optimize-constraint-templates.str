@@ -8,6 +8,7 @@ imports fof-language
 imports generate-fof
 imports verification
 imports sdf-utils
+imports org/sugarj/languages/Sdf2
 
 imports include/SLTC
 
@@ -125,7 +126,10 @@ rules
     derive-syntax-directed-rules(|substructures, context-definitions) =
         ?(property, templates);
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures;
-        instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
+        instances-with-vars := <collect-om(?sort(_), conc); Dupl;
+                                     (id, length; newnames(|"X"); map(makeVar)); debug;
+                                     zip; replace-once(|instances)> instances;
+        instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances-with-vars;
         !<conc> (<diff> (templates, [property]), instances')
         
 
