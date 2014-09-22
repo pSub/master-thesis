@@ -12,20 +12,21 @@ ensure that the type system has the intended semantics.
 
 Mathematical proofs are used to ensure that a type system has the
 intended semantics. A basic property of type systems is safety, which
-roughly says ``a well-typed term can never reach a stuck state during
-evaluation''\cite{Pierce:2002:TPL:509043}. Those properties can be proven by
-hand or with the help of proof assistants. Both methods require
-substantial manual effort. In accordance to the goal of the automated
-generation of type checkers, we explore how well automated theorem
-provers can solve simple propositions and how this can be exploited in
-the type checker generation. We generate formulas from type system
-specifications to interface with automated theorem provers.
+roughly means ``a well-typed term can never reach a stuck state during
+evaluation''\cite{Pierce:2002:TPL:509043}. Those properties can be
+proven by hand or with the help of proof assistants. Both methods
+require substantial manual effort. In accordance to the goal of the
+automated generation of type checkers, we explore how well automated
+theorem provers can solve simple propositions and how this can be
+exploited in the type checker generation. We generate formulas from
+type system specifications to interface with automated theorem
+provers.
  
 \section{Goals}
-With generation formulas from type system specification we pursue two
-goals. The first goal is to resemble type system specifications
-in formulas suitable for automated theorem provers and to use this as
-a basis to prove simple properties. The second goal is to explore how
+The generation of formulas from type system specifications pursues two
+goals. The first goal is to resemble type system specifications in
+formulas suitable for automated theorem provers and to use this as a
+basis to prove simple properties. The second goal is to explore how
 well automated theorem provers can check if a program is well-typed.
 
 \section{Why First-Order Logic?}
@@ -33,20 +34,19 @@ well automated theorem provers can check if a program is well-typed.
 \subsection{Tool-Support}
 \section{Translations}
 \label{sec:translations}
-We translate contexts declarations, rules and conjectures in to
+We translate context declarations, rules and conjectures into
 first-order formulas. The rest of the specification is not directly
-translated into first-order formulas and only needed to ensure that
-the generated formulas are well formed.
+translated into first-order formulas and it is only needed to ensure
+that the generated formulas are well formed.
 
 \todo[inline]{Implement imports and describe how they are handled.}
 
 We translate context declarations in a uniform way into first-order
 formulas. For every context we generate two formulas, which model the
-look up of entries in the context. We have defined the context look
-up recursively. In the base case the element we lookup is the first
-element of the context and in the step case, the first element is
-different from the element we search, therefore we have to look in the
-rest of the context for it.
+look up of entries in the context recursively. In the base case the
+element lookup to look up is the first element of the context. In the
+step case the first element is different from the element we search,
+therefore we have to search in the rest of the context for it.
 
 \begin{figure}
 \begin{multline}
@@ -67,11 +67,11 @@ each context declaration there is a specialized $bind_c$ predicate
 which models the binding of an input/output pair to a context
 $e$. There is also a specialized $lookup_c$ predicate for each context
 declaration which models the actual look up in the context. This
-predicate checks whether some input/output pair exists in a
-context. In the base case we apply $lookup_c$ to a context that we
-extended with $bind_c$ with exactly the element we want to look
-up. Therefore the element is trivially contained in the context and
-the look up succeeds.
+predicate checks whether an input/output pair exists in a context. In
+the base case we apply $lookup_c$ to a context that we extended with
+$bind_c$ with exactly the element we want to look up. Therefore the
+element is trivially contained in the context and the look up
+succeeds.
 
 \begin{figure}
 \begin{multline}
@@ -90,24 +90,25 @@ Formula~\ref{formula:context-step} models the context look up step
 case of context $c$. We introduce for each non-terminal two variables,
 $x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
 $y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
-intuition of the formula is that if we can look up some input/output
-pair in a context $e$ then we can also look it up in an context that
-contains and additional input/output pair.
+intuition of the formula is that if it is possible look up an
+input/output pair in a context $e$ then we can also look it up in an
+context that contains and additional input/output pair.
 
 We translate the \gls{ast} nodes of the programming language directly
 into predicates that resemble the program structure. For the
-translation we use following scheme. We translate a \gls{ast} node of
-the following form $Cons(e_1, \dots, e_n)$ into a predicate of the
-form $cons(p_1, \dots, p_n)$, where we translate all constituents
-$e_i$ into predicates $p_i$ recursively. We create for each of those
-predicates injectivity and univalence axioms. Injectivity and
-univalence holds by definition as we create those predicates from
-syntax. These axiom can help theorem provers to conduct proofs, for
-examples see Section~\ref{sec:constr-templ-optim}.
+translation we use the following scheme. \gls{ast} nodes of the
+following form $Cons(e_1, \dots, e_n)$ are translated into a predicate
+of the form $cons(p_1, \dots, p_n)$, where we translate all
+constituents $e_i$ into predicates $p_i$ recursively. We create for
+each of those predicates injectivity and univalence
+axioms. Injectivity and univalence holds by definition for those
+predicates as we create those predicates from syntax. These axiom can
+help theorem provers to conduct proofs, for examples see
+Section~\ref{sec:constr-templ-optim}.
 
 The most important part is the translation of the typing
-rules. Depending on whether the typing rules has premises we use
-either of the following schema:
+rules. Depending on whether the typing rule has premises we use either
+of the following schema:
 
 \begin{figure}
 \begin{align}
@@ -120,19 +121,19 @@ either of the following schema:
 \end{figure}
 
 The predicates $p_i$ represent the premises and $c$ is the conclusion
-of the typing rules. Intuitively a typing rule expresses is that the
-conclusion can be derived if all premises can be derived. In terms of
-first-order logic ``derived'' means for that there exists a proof for
+of the typing rules. What a typing rule intuitively expresses is that
+the conclusion can be derived if all premises can be derived. In terms
+of first-order logic ``derived'' means that there exists a proof for
 the proposition. Therefore we translate a typing rule without premises
 into a formula that consists of the conclusion and all-quantifies all
 free variables of the conclusion. Free variables are all-quantified,
 because we want that all possible variants of the conclusion are
-derivable. Typing rules with premises translate into a single implication. The
-premise of the implication is the conjunction of all premises of the
-typing rule. This ensures that all premises need to be
+derivable. Typing rules with premises translate into a single
+implication. The premise of the implication is the conjunction of all
+premises of the typing rule. This ensures that all premises need to be
 derivable/satisfied. The conclusion of the implication is the
-conclusion of the typing rule. This is safe as the intuition was, that
-the conclusion of the typing rule is derivable if all premises are
+conclusion of the typing rule. This is a safe fact, because the
+conclusion of the typing rule is derivable if all premises are
 derivable, which is exactly the semantics of this implication.
 
 We translate judgments in rules into predicates. The built-in
