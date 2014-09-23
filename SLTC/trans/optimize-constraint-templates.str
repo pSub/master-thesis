@@ -67,15 +67,16 @@ rules
               // Make the conclusions of the rules equal.
               rulez' := <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> rulez;
               rulez-premisses := <zip> (rulez', <map(\r -> <filter(not(?r); premisses-to-props)> rulez'\)> rulez');
-              rulez'' := <remove-all(\(rule, premisses) ->
-                                    <fetch-elem(where(
-                                      \ps -> <premisses-to-props; map(\p' -> Formula__("", Impl__(p', Or__(ps)))\);
-                                              fof-from-templates(|context-definitions, templates);
-                                              verify-vampire(|"2", <get-template-name; option-to-string-newname(|"Goal")> rule);
-                                              all(?VerificationSuccess(_))> rule
-                                      \))> premisses
-                                 \); map(Fst)> rulez-premisses
+              rulez'' := <remove-all(is-subsumed(|context-definitions, templates)); map(Fst)> rulez-premisses
 
+    is-subsumed(|context-definitions, templates) =
+        ?(rule, premisses);
+        <fetch-elem(where(
+          \ps -> <premisses-to-props; map(\p' -> Formula__("", Impl__(p', Or__(ps)))\);
+                  fof-from-templates(|context-definitions, templates);
+                  verify-vampire(|"2", <get-template-name; option-to-string-newname(|"Goal")> rule);
+                  all(?VerificationSuccess(_))> rule
+          \))> premisses
     /**
      * Main strategy that optimizes when-ambiguities.
      *
