@@ -146,15 +146,15 @@ from the specification language into first-order formulas.
 
 \todo[inline]{Extend for imports.}
 
-The implementation is organized in the following steps. Fist, the
+The implementation is organized in the following steps. At fist, the
 module is split up into its components, then we transform contexts,
 typing rules and conjectures into first-order formulas. After that we
-create for each conjecture a file which contains all generated
-formulas. In the following we explain those steps in detail.
+create a file for each conjecture which contains all generated
+formulas. In the following those steps will be explained in detail.
 
 The strategy \code|make-context-formulas| generates axiom formulas for
 each context declaration. For each distinct non-terminal in a context
-definition we create a fresh variable name, to ensure variables names
+definition we create a fresh variable name to ensure variable names
 are compatible with \gls{tptp}. We transform every context declaration
 into Formula~\ref{formula:context-base} and
 Formula~\ref{formula:context-step} in our internal representation of
@@ -165,7 +165,7 @@ outputs. In the generated formulas we replace the non-terminals by the
 fresh variables. In case of Formula~\ref{formula:context-step} we
 create additional fresh variables for input positions.
 
-Rewriting typing rules into first-order formulas is a bit more
+To rewrite typing rules into first-order formulas is a bit more
 involved than the rewriting of context declarations. The strategy
 \code|make-formula| transforms rules into first-order formulas in the
 \gls{tptp} format. This strategy rewrites premisses and conclusions
@@ -176,13 +176,13 @@ into ordinary lists by the generic \texttt{to-list} strategy. Now that
 we have first-order terms for the premisses and the conclusion, we
 collect all free variables that occur in them. In rules variables are
 not bound, thus all variables are free. However it is important to
-collect only free variables as conjectures may contain quantifiers. As
-the last step, we put those pieces together to construct a formula in
-the \gls{tptp} format hat has the structure of
-Formula~\ref{formula:typing-rule}.
+collect only free variables, as conjectures may contain
+quantifiers. At last, we put premisses, conjecture and quantification
+together to construct a formula in the \gls{tptp} format which has the
+structure of Formula~\ref{formula:typing-rule}.
 
 Now we present the details of the \texttt{rewrite} strategy, which
-transforms premisses and conclusions. We defined this strategy as a
+transforms premisses and conclusions. We this strategy is defined as a
 sequence of two top down traversals. The first traversal is the actual
 rewrite of the typing judgments and the second is a special treatment
 for strings. The second traversal is necessary to wrap all target
@@ -193,35 +193,36 @@ syntax definitions as described in
 Section~\ref{sec:generate-sdf}. Therefore not all nodes contained in
 the \gls{ast} of a specification are known at the time of
 implementation. However all those nodes have a regular structure. That
-makes it possible to use the \code|cons#(args)| pattern to extract the
-relevant parts in a generic manner. The rule \code|make-aux-cons|
-wraps all generic nodes (empty context, context binds, context look
-up, typing judgment and meta-variable nodes) into the auxiliary
+is why it is possible to use the \code|cons#(args)| pattern to extract
+the relevant parts in a generic manner. The rule \code|make-aux-cons|
+wraps all generic nodes\footnote{Generic nodes of the specification
+  language, i.e\ empty context, context binds, context look ups,
+  typing judgment and meta-variable nodes.} into the auxiliary
 constructor \code|AuxCons| with three parameters, the static part of
 the constructor name, the generic part of the constructor name and the
 arguments. After this transformation normal pattern matching on
 \code|AuxCons| is possible. The strategy \code|rewrite-aux-cons|
-transforms those auxiliary constructors in first-order terms.
+transforms those auxiliary constructors into first-order terms.
 
 All nodes in the \gls{ast} of a specification that are not wrapped
 into auxiliary constructors are constructors of the target
 language. Therefore we attempt to transform each node into an
-auxiliary node. If that succeeds, we rewrite the node into a
+auxiliary node, in case that succeeds, we rewrite the node into a
 first-order term otherwise we wrap the node into the \code|Term|
-constructor. Wrapping the nodes of the target language is important
-for pretty printing.
+constructor. It is important to wrap the nodes of the target language
+to implement pretty printing.
 
 The second top down traversal wraps all strings that occur in the
-parameters of nodes into \code|Term| constructors. It is safe to
-transform all those strings as the specification language has no
-string nodes. We need this second traversal as a direct transformation
-would lead to infinite recursion because every string within a
-\code|Term| constructor would we wrapped again in a \code|Term|
-constructor.
+parameters of nodes into \code|Term| constructors. As the
+specification language has no string nodes, it is safe to transform
+all those strings into \code|Term| nodes. If there is no second
+traversal a direct transformation leads to infinite recursion as every
+string within a \code|Term| constructor would be wrapped again in a
+\code|Term| constructor, therefore we need a second traversal.
 
-Conjectures are essentially transformed as rules, the only difference
-is that we tag the resulting formulas as \code|goal| and not as
-\code|axiom|.
+Conjectures are essentially transformed following the same scheme as
+rules, the only difference is that we tag the resulting formulas as
+\code|conjecture| and not as \code|axiom|.
 \section{Performance}
 %%% Local Variables: 
 %%% mode: latex
