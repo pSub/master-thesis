@@ -61,8 +61,7 @@ rules
      *
      * @type Fork__(Template) -> Fork__(Template)
      */
-    optimize-fork(|context-definitions, templates) = {|Fresh: optimize-fork'(|context-definitions, templates)|}
-    optimize-fork'(|context-definitions, templates) : Fork__(ts) -> Fork__(ts'')
+    optimize-fork(|context-definitions, templates) : Fork__(ts) -> Fork__(ts'')
         where ts' := <make-conclusions-equal(newnames(|"Z"); map(makeVar))> ts;
               rulez-premisses := <zip> (ts', <map(\r -> <filter(not(?r); premisses-to-props)> ts'\)> ts');
               ts'' := <remove-all(is-subsumed(|context-definitions, templates)); map(Fst)> rulez-premisses
@@ -129,9 +128,9 @@ rules
               
     derive-syntax-directed-rules(|substructures, non-terminals, context-definitions) =
         ?(property, templates);
-        substructures-with-vars := <{|Fresh: collect-om(?sort(_), conc); Dupl;
+        substructures-with-vars := <collect-om(?sort(_), conc); Dupl;
                                              (id, length; newnames(|"Z"); map(makeVar));
-                                             zip; replace-once(|substructures)|}> substructures;
+                                             zip; replace-once(|substructures)> substructures;
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
         instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
         templates' := <conc> (<diff> (templates, [property]), instances');
@@ -271,6 +270,7 @@ rules
      * @type List(Template) -> List(Template)
      */
     optimize-templates(|judgments, target-language, context-definitions) =
+        {|Fresh:
         solve-which-ambiguities(|context-definitions);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
-        order-forks-by-subsumption
+        order-forks-by-subsumption |}
