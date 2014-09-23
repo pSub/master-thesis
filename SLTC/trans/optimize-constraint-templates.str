@@ -62,12 +62,15 @@ rules
      * @type Fork__(Template) -> Fork__(Template)
      */
     optimize-fork(|context-definitions, templates) = {|Fresh: optimize-fork'(|context-definitions, templates)|}
-    optimize-fork'(|context-definitions, templates) : Fork__(rulez) -> Fork__(rulez'')
-        where vars := <Hd; get-pattern; collect-om(?Var__(_)); length; newnames(|"Z"); map(makeVar)> rulez;
-              // Make the conclusions of the rules equal.
-              rulez' := <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> rulez;
-              rulez-premisses := <zip> (rulez', <map(\r -> <filter(not(?r); premisses-to-props)> rulez'\)> rulez');
-              rulez'' := <remove-all(is-subsumed(|context-definitions, templates)); map(Fst)> rulez-premisses
+    optimize-fork'(|context-definitions, templates) : Fork__(ts) -> Fork__(ts'')
+        where ts' := <make-conclusions-equal> ts;
+              rulez-premisses := <zip> (ts', <map(\r -> <filter(not(?r); premisses-to-props)> ts'\)> ts');
+              ts'' := <remove-all(is-subsumed(|context-definitions, templates)); map(Fst)> rulez-premisses
+
+    make-conclusions-equal =
+        ?templates;
+        vars := <Hd; get-pattern; collect-om(?Var__(_)); length; newnames(|"Z"); map(makeVar)> templates;
+        <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> templates
 
     is-subsumed(|context-definitions, templates) =
         ?(rule, premisses);
