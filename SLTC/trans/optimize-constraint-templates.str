@@ -136,8 +136,8 @@ rules
         instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
         templates' := <conc> (<diff> (templates, [property]), instances');
         which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1)))> templates';
-        ab := <map(solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property)); debug> which-ambiguities;
-        !<conc> (<diff> (templates, [property]), instances')
+        subsumed-templates := <mapconcat(solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property))> which-ambiguities;
+        !<conc> (<diff> (templates, [property]), <diff> (instances', subsumed-templates))
 
     remove-unsatisfiable-templates(|context-definitions, templates) =
         remove-all(where(premisses-to-props;
@@ -164,7 +164,7 @@ rules
                                                      map(\t -> <replace(|property)> (<get-pattern; index(|i)> property, t) \)> pattern
                                                 \); concat> (step-pattern, conclusion);
         ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r); premisses-to-props)> which-ambiguities'\)> which-ambiguities');
-        ambiguities := <filter(where(is-subsumed(|context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis)))); map(Fst)> ambiguities-premisses 
+        ambiguities := <zip; filter(where(Snd; is-subsumed(|context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis))); Fst)> (which-ambiguities, ambiguities-premisses)
 
 
     /**
