@@ -142,7 +142,12 @@ rules
                          map(\(pattern, term) ->
                                 <fetch-elem(where(\p -> <match-constructors(?sort(_), false)> (term, p)\))> pattern
                              \);
-                         zip(|non-terminals)> which-ambiguities';
+                         zip(|non-terminals);
+                         {|Fresh: map(\(nt, pattern) ->
+                                        <collect-om(?sort(nt), conc); Dupl;
+                                             (id, length; newnames(|"Z"); map(makeVar));
+                                             zip; replace-once(|pattern)> pattern
+                                      \) |}> which-ambiguities';
          !<conc> (<diff> (templates, [property]), instances')
 
     remove-unsatisfiable-templates(|context-definitions, templates) =
