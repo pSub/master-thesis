@@ -129,13 +129,15 @@ rules
               
     derive-syntax-directed-rules(|substructures, context-definitions) =
         ?(property, templates);
-        instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures;
-        instances-with-vars := <collect-om(?sort(_), conc); Dupl;
-                                     (id, length; newnames(|"X"); map(makeVar)); debug;
-                                     zip; replace-once(|instances)> instances;
-        instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances-with-vars;
-        !<conc> (<diff> (templates, [property]), instances')
-        
+        substructures-with-vars := <{|Fresh: collect-om(?sort(_), conc); Dupl;
+                                             (id, length; newnames(|"Z"); map(makeVar));
+                                             zip; replace-once(|substructures)|}> substructures;
+        instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
+        instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
+        templates' := <conc> (<diff> (templates, [property]), instances');
+        which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1))); flatten-list> templates';
+        which-ambiguities' := <debug; make-conclusions-equal(newnames(|"c"))> which-ambiguities;
+         !<conc> (<diff> (templates, [property]), instances')
 
     remove-unsatisfiable-templates(|context-definitions, templates) =
         remove-all(where(premisses-to-props;
