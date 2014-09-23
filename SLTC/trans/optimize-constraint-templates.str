@@ -135,8 +135,18 @@ rules
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
         instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
         templates' := <conc> (<diff> (templates, [property]), instances');
-        // FIXME: Remove flatten-list; it is possible to have more than one group as a result
-        which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1))); flatten-list> templates';
+        which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1)))> templates';
+        ab := <map(solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property)); debug> which-ambiguities;
+        !<conc> (<diff> (templates, [property]), instances')
+
+    remove-unsatisfiable-templates(|context-definitions, templates) =
+        remove-all(where(premisses-to-props;
+                     map(\p -> Formula__("", Not__(p))\);
+                     fof-from-templates(|context-definitions, templates); verify-vampire(|"2", "neg-premise");
+                     all(?VerificationSuccess(_))))
+                     
+    solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
+        ?which-ambiguities;
         which-ambiguities' := <make-conclusions-equal(newnames(|"c"))> which-ambiguities;
         conclusion := <Hd; get-pattern> which-ambiguities';
         step-pattern := <Hd; get-pattern; zip(|substructures);
@@ -153,13 +163,9 @@ rules
                                                     <collect-om(?Var__(_)); instantiate(|[pattern], [term]);
                                                      map(\t -> <replace(|property)> (<get-pattern; index(|i)> property, t) \)> pattern
                                                 \); concat> (step-pattern, conclusion);
-        !<conc> (<diff> (templates, [property]), instances')
+        ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r); premisses-to-props)> which-ambiguities'\)> which-ambiguities');
+        ambiguities := <filter(where(is-subsumed(|context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis)))); map(Fst)> ambiguities-premisses 
 
-    remove-unsatisfiable-templates(|context-definitions, templates) =
-        remove-all(where(premisses-to-props;
-                     map(\p -> Formula__("", Not__(p))\);
-                     fof-from-templates(|context-definitions, templates); verify-vampire(|"2", "neg-premise");
-                     all(?VerificationSuccess(_))))
 
     /**
      * Creates a template for the judgment corresponding to the judgment number
