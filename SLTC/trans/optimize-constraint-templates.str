@@ -137,7 +137,11 @@ rules
         templates' := <conc> (<diff> (templates, [property]), instances');
         // FIXME: Remove flatten-list; it is possible to have more than one group as a result
         which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1))); flatten-list> templates';
-        which-ambiguities' := <debug; make-conclusions-equal(newnames(|"c"))> which-ambiguities;
+        which-ambiguities' := <make-conclusions-equal(newnames(|"c"))> which-ambiguities;
+        step-pattern := <Hd; get-pattern; zip(|substructures);
+                         map(\(pattern, term) ->
+                                <fetch-elem(where(\p -> <match-constructors(?sort(_), false)> (term, p)\))> pattern
+                             \)> which-ambiguities';
          !<conc> (<diff> (templates, [property]), instances')
 
     remove-unsatisfiable-templates(|context-definitions, templates) =
