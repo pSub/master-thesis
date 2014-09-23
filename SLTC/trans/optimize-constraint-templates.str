@@ -114,7 +114,7 @@ rules
               judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
               non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal, conc)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
-              ts' := <foldl(derive-syntax-directed-rules(|substructures, context-definitions))> (non-syntax-directed-ts, ts)
+              ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))> (non-syntax-directed-ts, ts)
               
               // ;
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
@@ -127,7 +127,7 @@ rules
               // <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs;
               // base-templates := <zip; filter(\(goal, (VerificationSuccess(_),_)) -> <make-base-template> (judgment-number, goal)\)> (base-cons-product, proofs)
               
-    derive-syntax-directed-rules(|substructures, context-definitions) =
+    derive-syntax-directed-rules(|substructures, non-terminals, context-definitions) =
         ?(property, templates);
         substructures-with-vars := <{|Fresh: collect-om(?sort(_), conc); Dupl;
                                              (id, length; newnames(|"Z"); map(makeVar));
@@ -141,7 +141,8 @@ rules
         step-pattern := <Hd; get-pattern; zip(|substructures);
                          map(\(pattern, term) ->
                                 <fetch-elem(where(\p -> <match-constructors(?sort(_), false)> (term, p)\))> pattern
-                             \)> which-ambiguities';
+                             \);
+                         zip(|non-terminals)> which-ambiguities';
          !<conc> (<diff> (templates, [property]), instances')
 
     remove-unsatisfiable-templates(|context-definitions, templates) =
