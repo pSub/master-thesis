@@ -132,7 +132,8 @@ rules
                                              (id, length; newnames(|"Z"); map(makeVar));
                                              zip; replace-once(|substructures)> substructures;
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
-        instances' := <remove-unsatisfiable-templates(|context-definitions, templates)> instances;
+        instances' := <remove-unsatisfiable-templates(|context-definitions, templates);
+                       map(remove-valid-premisses(|context-definitions, templates))> instances;
         templates' := <conc> (<diff> (templates, [property]), instances');
         which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1)))> templates';
         subsumed-templates := <mapconcat(solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property))> which-ambiguities;
@@ -143,6 +144,14 @@ rules
                      map(\p -> Formula__("", Not__(p))\);
                      fof-from-templates(|context-definitions, templates); verify-vampire(|"2", "neg-premise");
                      all(?VerificationSuccess(_))))
+                     
+    remove-valid-premisses(|context-definitions, templates) =
+        ?template;
+        indices := <premisses-to-props; map(\p -> Formula__("", p)\); fof-from-templates(|context-definitions, templates);
+                    verify-vampire(|"2", "valid-premise"); add-indices; debug; remove-all(Snd;?VerificationSuccess(_)); map(Fst)> template;
+        premisses := <get-premisses> template;
+        <set-premisses(|<map(\i -> <index(|i)> premisses\)> indices)> template
+        
                      
     solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
         ?which-ambiguities;

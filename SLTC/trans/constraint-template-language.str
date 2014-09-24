@@ -26,6 +26,21 @@ signature
 rules
 
     /**
+     * Extracts the premisses from a template.
+     *
+     * @type Template -> List((PRemise, Dependency))
+     */
+    get-premisses : Template__(_, premisses, _) -> premisses
+
+    /**
+     * Updates the premisses of a template
+     *
+     * @param List((Premise, Dependency))
+     * @type Template -> Template
+     */
+    set-premisses(|premisses) : Template__(name, _, conclusion) -> Template__(name, premisses, conclusion)
+
+    /**
      * Extracts the inputs from a premise.
      *
      * @type Premise -> Inputs
