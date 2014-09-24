@@ -8,20 +8,23 @@
 - Make syntax of typing rules more flexible (e.g. dot notation)
 - Modular context descriptions like in Typmix
 - contexts in error messsages
+- Better caching techniques for proofs
 \section{Related Work}
 \subsubsection{Ott}
 \subsubsection{The Synthesizer Generator}
 \subsubsection{JavaCOP: Declarative Pluggable Types for Java}
 JavaCOP \cite{Markstrum:2010:JDP:1667048.1667049} is a framework for
 pluggable type systems in Java. It hooks directly into \code|javac|
-and therefore integrates nicely into the normal development cycle. It
-provides three tools. A declarative language to describe structural
-constraints on the AST of Java programs in a flow-insensitive
-manner, an API is provided to use the declarative language for
-flow-sensitive data flow analysis and a test harness is provided which
-helps to test that a program that is well-typed actually satisfies the
+and therefore integrates nicely into the normal development
+cycle. JavaCOP provides three tools: A declarative language to
+describe structural constraints on the \gls{ast} of Java programs in a
+flow-insensitive manner, an API to use the declarative language for
+flow-sensitive data flow analysis and a test harness which helps to
+test that a program that is well-typed actually satisfies the
 invariants of the type system. In contrast to~\cite{bergan2007typmix}
 the syntax of Java cannot be extended.
+
+\todo[inline]{Compare with my work}
 
 \subsubsection{A Generator for Type Checkers}
 Gast introduces in~\cite{gast2005generator} a type checker generator
