@@ -94,8 +94,8 @@ phases.
 
 \subsubsection{Templates}
 A template is an intermediate representation of a typing rule that is
-more suitable for the constraint generation process and defined as
-follows.
+more suitable for the constraint generation process and defined in
+Definition~\ref{def:template}.
 
 Templates serve as the input format for the constraint generation
 phase of the type checker. Besides being better suited for constraint
@@ -106,6 +106,7 @@ the typing rules of the specification language in
 Section~\ref{sec:design--architecture}, but has no hard requirements
 on the specification language other than being declarative.
 
+\begin{figure}
 \begin{definition}{Template}
   \todo[inline]{Complete this grammar and synchronize it with the
     Stratego source code} The syntax of templates in \gls{bnf}. The
@@ -133,7 +134,10 @@ on the specification language other than being declarative.
 
     <Judg> ::= <Int>
   \end{grammar}
+\label{def:template}
 \end{definition}
+\end{figure}
+
 
 Before we describe the structure of templates in depth, we highlight
 the conceptual differences between templates and typing rules.
