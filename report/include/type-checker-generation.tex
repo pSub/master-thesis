@@ -8,11 +8,11 @@ The first goal is to produce fast type checkers, even if the type
 system specification is not geared towards performance. Mainly this
 means to try to deal with non-syntax directed typing rules without
 backtracking. The motivation for this is that non-syntax directed
-typing rules are often more readable and changes have mainly local
-effects.
+typing rules are often more readable and that changes have mainly
+local effects.
 
-The second goal is to design a modular type checker generator. A type
-checker generator that can be easily adapted and that facilitates the
+The second goal is to design a modular type checker generator,
+particularly one that can be easily adapted and that facilitates the
 exchange of components. This modularity is desirable because it
 increases the reusability and makes it possible to combine previously
 unrelated projects.
@@ -27,31 +27,32 @@ type system specification with minor modifications into templates. A
 template is a different representation for a typing rule, that is
 better suited for type checking. We introduce templates in detail in
 Section~\ref{sec:constraint-templates}. The template optimization
-phase optimizes checks which optimizations apply to those templates
-and applies them. The optimizations aim to reduce the amount of
-non-determinism in the type system and therefore reduce the amount of
-backtracking in the type checker. The final product after those two
-phases is a file that contains the optimized templates.
+phase checks which optimizations apply to those templates and applies
+them. The optimizations aim to reduce the amount of non-determinism in
+the type system and therefore reduce the amount of backtracking in the
+type checker. The final product after those two phases is a file that
+contains the optimized templates.
 
 Instead of generating a type checker directly from the specification,
 we implement a generic constraint-based type checker that takes
 templates as input. This generic type checker has two phases:
 Constraint generation and constraint solving. The constraint
-generation phase has the templates and the expression that shall be
-type check as input. We then build a derivation tree according to the
-expression by pattern matching the conclusion of the
+generation phase takes the templates and the expression that shall be
+type checked as input. We then build a derivation tree according to
+the expression by pattern matching the conclusion of the
 templates. Building and traversing of the derivation tree emits
-constraints. The constraint solving phase then tries unify the emitted
-constraints. If that succeeds it reports the result otherwise it
-reports the errors that occurred during unification.
+constraints. In the constraint solving phase we then try to unify the
+emitted constraints. If that succeeds it reports the result otherwise
+it reports the errors that occurred during unification.
 
 Figure~\ref{fig:phases} shows the phases and their
-relationships. Nodes represent phases and arrows express that data flows
-from one node to an other. Labels on arrows describe the data format.
+relationships. Nodes represent phases and arrows express that data
+flows from one node to another. Labels on arrows describe the data
+format.
 
 The four phases correspond to modules or tools. Each phase has a
 well-defined interface, therefore the implementation can be exchanged
-freely. This makes it possible to use different constraint solvers,
+freely. This facilitates the use of different constraint solvers,
 constraint generators or template optimizers.
 
 \begin{figure}
@@ -78,7 +79,7 @@ constraint generators or template optimizers.
 \section{Implementation}
 \label{sec:implementation}
 The following sections describe the implementation of the type checker
-generator, one section per phase.
+generator. Each section focuses on one of the phases.
 
 \subsection{Template Generation}
 \label{sec:constraint-templates}
@@ -87,13 +88,14 @@ templates. This phase is not just a simple translation from a human
 readable representation into a representation suitable for programs,
 but also normalizes the resulting templates. Normalization comprises
 the elimination of implicit equalities and resolves dependencies
-between premisses. All following phases assume normalized templates,
-which simplifies parts of them.
+between premisses. All following phases assume normalized templates.
+The normalization allows simplifications in the implementations of the
+phases.
 
 \subsubsection{Templates}
 A template is an intermediate representation of a typing rule that is
 more suitable for the constraint generation process and defined as
-following.
+follows.
 
 Templates serve as the input format for the constraint generation
 phase of the type checker. Besides being better suited for constraint
