@@ -440,9 +440,9 @@ Template(
 \subsection{Constraint Template Optimization}
 \label{sec:constr-templ-optim}
 In this section we describe and motivate the optimization strategies
-we have used. The template optimization phase can do arbitrary
-modifications. We focus here on optimization strategies that reduce
-ambiguities between the templates.
+we have used. The template optimization phase can potentially do
+arbitrary modifications. We focus here on optimization strategies that
+reduce ambiguities between the templates.
 
 Informally two templates are ambiguous if it is not known a priori
 which (if any) of the templates we have to use to extend the
@@ -498,17 +498,17 @@ extend the template language to make ambiguities explicit.
 The new constructor \code|Fork| has a list that contains at least one
 template. The idea is that templates contained in \code|Fork|s are all
 which-ambiguous to each other. We later use those groups of ambiguous
-templates to decide at which points in the derivation we have to
+templates to decide at which point in the derivation we have to
 decide which template we apply.
 
-We look now into the optimization of which-ambiguities. First we
+Now we look now into the optimization of which-ambiguities. First we
 identify all which-ambiguities and create \code|Fork|s of them. We
 implement using a strategy that groups arbitrary lists according to a
-comparison strategy. Two templates are which-ambiguous if they have
-the same judgment number and if the term pattern and context pattern
-of the conclusion are equal modulo variables. Of the resulting groups
-of templates we wrap all groups with more than one element into a
-\code|Fork|.
+comparison strategy.\todo{context} Two templates are which-ambiguous
+if they have the same judgment number and if the term pattern and
+context pattern of the conclusion are equal modulo variables. Of the
+resulting template groups we wrap all groups with more than one
+element into a \code|Fork|.
 
 We optimize forks containing which-ambiguities by checking whether a
 template of a fork is subsumed by an other template of the same
@@ -518,7 +518,7 @@ conclusion of all templates within a fork matches the same terms.
 
 In Example~\ref{ex:which-ambiguity} we have the depth and width
 subtyping rules for records. Those two rules are which-ambiguous to
-each other. Their conclusions contain the same judgment, have no
+each other. Their conclusions contain the same judgment. They have no
 contexts and exactly the same term pattern.
 
 \begin{example}{~}
@@ -547,8 +547,8 @@ at least one premise of \code|S-depth|. \code|~T = ~S| implies
 \code|S-depth|. Therefore the depth subtyping rule subsumes the width
 subtyping rule and we can remove the width subtyping rule.
 
-We implement this check by testing for each template $t$ within a
-fork, if there exists a template $t'$ such that
+We implement this checking whether there exists for each template $t$
+within a fork a template $t'$ such that
 
 \begin{align}
   (p_1 \implies (q_1 \lor \dots \lor q_m)) \land \dots \land (p_n \implies
@@ -556,18 +556,18 @@ fork, if there exists a template $t'$ such that
 \label{formula:which-ambiguity}
 \end{align}
 
-holds, where $p_i$ are the premisses of $t$ and $q_i$ are the
-premisses of $t'$. We verify the conjuncts in
-Formula~\ref{formula:which-ambiguity} separately with the vampire
-theorem prover. If vampire succeeds for all conjuncts we remove
-template $t$. 
+holds. In Formula~\ref{formula:which-ambiguity} $p_i$ are the
+premisses of $t$ and $q_i$ are the premisses of $t'$. We verify the
+conjuncts in Formula~\ref{formula:which-ambiguity} separately with the
+vampire theorem prover. If vampire succeeds for all conjuncts we
+remove template $t$. 
 
 At the end of the optimization phase we sort the templates in the
-remaining forks. Forks that have a specialized conclusion are before
-forks with a general conclusion. This ordering has the advantage that
-we can evaluate the templates in a fork from left to right, so that no
-general template will catch all terms. More formally, we sort the
-templates within a fork by $<$, which is defined as
+remaining forks. Forks that have a specialized conclusion are in front
+of forks with a general conclusion. This ordering has the advantage
+that we can evaluate the templates in a fork from left to right, so
+that no general template will catch all terms. More formally, we sort
+the templates within a fork by $<$, which is defined as
 
 \begin{align}
   t_1 < t_2 \iff m(t_1) \subseteq m(t_2)
@@ -576,28 +576,28 @@ templates within a fork by $<$, which is defined as
 where $m(t)$ computes the set of terms that match the conclusion of
 $t$. We implement the comparison as a Stratego strategy and use the
 quick sort implementation of the Stratego standard library. The
-comparison strategy does the following. It checks whether the judgment
+comparison strategy does the following: It checks whether the judgment
 number is equal, which is always satisfied as we compare templates
 within a fork. Then it checks whether the constructors of the term and
-context pattern of left operand match the constructors of the term and
-context pattern of the right operand modulo variable names.
+context pattern of the left operand match the constructors of the term
+and context pattern of the right operand modulo variable names.
 
 \subsection{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the generated type
 checker. The inputs of this phase are constraint templates and the
 expressions that should be type checked. The only input method for
-expression we currently support is via the conjectures section of the
-specification. However it should be straightforward to extend this
+expression we currently support is via the conjecture section of the
+specification. However it should be straight forward to extend this
 phase with support for e.g.\ \code|stdin|.
 
-The constraint generation phase structured as follows. We initialize
-contexts first and then generate constraints according to the programs
-structure and the templates. After generating the constraints we
-annotate whether the expression should have been well-typed or not.
+The constraint generation phase is structured as follows. First we
+initialize contexts and then generate constraints according to the
+program's structure and the templates. After generating the constraints
+we annotate whether the expression should have been well-typed or not.
 
 Lets first look at the implementation of contexts. We store all
-contexts in a hash table, with the context id as key. The contexts
+contexts in a hash table, with the context ID as key. The contexts
 itself are hash tables extended with a list that stores the insertion
 order. Hash tables are a convenient data structure in the Stratego
 standard library to store (multiple) data points at a key. They
@@ -606,21 +606,22 @@ the terms corresponding to non-terminals. It is important to track the
 insertion order, because some type systems (e.g.\ ordered type
 systems) might rely on the ordering within contexts.
 
-We decided to use hashtables instead of normal key-value lists for the
-context representation to reduce the lookup time in realistic programs
+For the context representation we decided to use hashtables instead of
+normal key-value lists to reduce the lookup time in realistic programs
 which declare identifiers much less then they refer to them. However
-we do not have experimental evidence if this speeds up type checking,
-because we do not have a key-value list implementation of contexts.
+we do not have experimental evidence if this actually speeds up type
+checking, because we do not have a key-value list implementation of
+contexts.
 
-However implementing contexts using extended hash tables forced us to
-separate context operations from normal inputs. This creates on the
-one hand more exceptional cases (e.g.\ the matching complex matching
-algorithms described in Section~\ref{sec:constr-templ-optim}) it leads
-on the other hand to a modular context implementation with the
-potential to exchange the implementation easily.
+Implementing contexts using extended hash tables forced us to separate
+context operations from normal inputs. On the one hand this creates
+more exceptional cases (e.g.\ the matching complex matching algorithms
+described in Section~\ref{sec:constr-templ-optim}) and on the other
+hand it leads to a modular context implementation with the potential
+to exchange the implementation easily.
 
-Before can explain how we generate constraints, we have to define the
-constraint language.
+Before we can explain how we generate constraints, we have to define
+the constraint language.
 
 \begin{definition}{Constraint Language}
   \begin{grammar}
@@ -678,7 +679,7 @@ context pattern reflects the state of the contexts if it can be
 applied from left to right to the context without failures.
 
 \code|find-match| safely takes the first template that matches,
-because we have ensured in Section~\ref{sec:constr-templ-optim} that
+because in Section~\ref{sec:constr-templ-optim} we have ensured that
 there is only one template that matches. If no template matches, we
 return \code|None| for the outputs and the singelton list containing
 the constraint that always fails, with an appropriate error
@@ -689,19 +690,19 @@ The rule \code|generate'| now evaluates the selected template
 according to the given input. In \code|generate'| we use patterns to
 access specific elements of terms. The corresponding element to the
 input term is the term pattern of the templates conclusion. We update
-the terms and patterns if we want to add an other term and pattern to
+the terms and patterns if we want to add another term and pattern to
 the scope. The patterns and terms are later used to instantiate
 variables in premisses or error messages.
 
-If the selected rule is no fork, the evaluation works as follows. In
-correspondence to the bindings in the context pattern of the
-conclusion, we pop all terms from the contexts and bring them into
-scope. Also if a variable occurs in the inputs of a premise but not in
-the inputs of the conclusion nor in the outputs of other premisses but
-int the outputs of the conclusion, then we bring it into scope with
-the expected outputs. This allows to deal with typing rules that have
-free variables in their premisses as for instance in the subsumption
-rule for subtyping.
+Unless the selected rule is no fork, the evaluation works as
+follows. In correspondence to the bindings in the context pattern of
+the conclusion, we pop all terms from the contexts and bring them into
+scope. Also if a variable occurs in the inputs of a premise but
+neither in the inputs of the conclusion nor in the outputs of other
+premisses but int the outputs of the conclusion, then we bring it into
+scope with the expected outputs. \todo{restructure sentence} This
+allows to deal with typing rules that have free variables in their
+premisses as for instance in the subsumption rule for subtyping.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -720,43 +721,44 @@ still evaluate this premise.
 
 Now we have to replace all variables introduced by the selected
 template with fresh variables, otherwise applying a template twice
-would lead to collisions. All variables introduces in the previous
-phases have variables names have prefix different from
-\code|Y|. Therefore we replace all variables that do not have the
-prefix \code|Y| with a fresh variable with the prefix
-\code|Y|. Additionally this allows to verify visually to check whether
-all variables are fresh.
+would lead to collisions. All variables introduced in the previous
+phases have a prefix different from \code|Y|. Therefore we replace all
+variables that do not have the prefix \code|Y| with a fresh variable
+with the prefix \code|Y|. Additionally this allows to verify visually
+whether all variables are fresh.
 
 Now we evaluate the premisses of the template. A key element in the
 evaluation is the instantiation of the variables in the premise
 patterns according to the conclusion pattern and input term, because
 we need input terms to recursively call \code|generate| on the
-premisses or to create solvable (in-)equality constraints.
+premisses or to create solvable (in-)equality
+constraints. \todo{split sentence up}
 
 We initialize variables in inputs of a judgment using a term and a
-pattern which describes the structure of the term. To instantiate a
-variable we search it in the pattern, by walking through the abstract
-syntax tree of the pattern and record the path to the variable. As
-every variable is distinct since we resolved every implicit equality i
-the templates and have introduced no new implicit equality we can take
-the first and only occurrence of the variable. If we find a path to
-that variable, we use it to retrieve terms from the corresponding
-term, by walking along the path and fetching the node at its end. We
-ensure that the pattern and term always have the same structure,
-otherwise we would retrieve false positives.
+pattern which describes the structure of the term. We search a
+variable in the pattern to instantiate it, by walking through the
+abstract syntax tree of the pattern and record the path to the
+variable. Every variable is distinct as we resolved every implicit
+equality in the templates and have introduced no new implicit
+equality. Therefore we can take the first and only occurrence of the
+variable that matches. If we find a path to that variable, we use it
+to retrieve terms from the corresponding term, by walking along the
+path and fetching the node at its end. We ensure that the pattern and
+term always have the same structure, otherwise we would retrieve false
+positives.
 
-As the premisses were topologically sorted as described in
-Section~\ref{sec:constraint-templates} we can evaluate them in the
-given order. However, to ensure that the terms of all dependencies are
+As described in Section~\ref{sec:constraint-templates} the premisses
+were topologically sorted we can evaluate them in the given
+order. However, to ensure that the terms of all dependencies are
 available during evaluation, we have to accumulate the outputs of the
 evaluated premisses and add those to the patterns and terms used for
 the instantiation.
 
 The strategy \code|execute| does the evaluation of the premisses. We
 call \code|execute| for each premise with a copy of the contexts to
-ensure that one premise cannot pollute the contexts of an other
+ensure that one premise cannot pollute the contexts of another
 premise. We have implemented a safe version of \code|hashtable-copy|
-to ensure that after evaluation of the premise all copies are
+to ensure that after the evaluation of the premise all copies are
 destroyed.
 
 We now describe what \code|execute| does for the different types of
@@ -777,44 +779,46 @@ premisses.
   they have no output positions.
 \item[Judgment:] If the premise is a judgment it is first
   instantiated. Then we call \code|generate| on the resulting input
-  term with an version of the store that has been updated according to
+  term with a version of the store that has been updated according to
   the context pattern of the judgment. In addition we instantiate the
   expected outputs of the judgment to make the binding of free
   variables in premisses more precise. After the call to
   \code|generate| returns we generate equality constraints for the
   bindings in the context pattern of the premise and generate equality
   constraints between the output pattern and the computed output, with
-  corresponding instantiated error messages. The hole (\code|{}|) in
-  the error messages is here also replaced by the output variables.
+  corresponding instantiated error messages. \todo{split up sentence}
+  The hole (\code|{}|) in the error messages is here also replaced by
+  the output variables.
 \end{description}
 
 In the case \code|generate'| encounters a fork it evaluates all
-templates contained in the fork using \code|generate'|. It tries to
-solve the resulting constraint set and returns the outputs of the
-first evaluation that succeeds. If no templates can be evaluated to an
+templates contained in the fork by calling \code|generate'|. It tries
+to solve the resulting constraint set and returns the outputs of the
+first evaluation that succeeds. If no templates can be evaluated to a
 solvable constraint set we return the constraint that always fails
-with an appropriate error message. This procedure ensures, because of
-the ordering of forks in Section~\ref{sec:constr-templ-optim}, that
-potential rules that produce solvable constraint sets but do not make
+with an appropriate error message. Because of the ordering of forks in
+Section~\ref{sec:constr-templ-optim} this procedure ensures that rules
+that potentially that produce solvable constraint sets but do not make
 real progress are deferred to the end.
 
 \subsection{Constraint Solving}
 \label{sec:constraint-solving}
-Constraint solving is the last phase of the type checker. As the
-constraint language is with only three constructs simple, the
-algorithm to solve a constraint set is simple as well.
+Constraint solving is the last phase of the type checker. The
+constraint language is simple because it only consists of three
+constructs, the algorithm to solve a constraint set is simple as well.
 
-We use unification to solve the constraint sets. Precisely we use a
-variant of Robinson unificiation \todo{Citation}. During the
-unification we compute a \gls{mgu} to instantiate the variables in the
-outputs and (in case of ill-typed programs) in the error messages that
-we collect every time a constraint cannot be solved.
+We use unification to solve the constraint sets. To be even more
+precise we use a variant of Robinson unificiation
+\todo{Citation}. During the unification we compute a \gls{mgu} to
+instantiate the variables in the outputs and (in case of ill-typed
+programs) in the error messages that we collect every time a
+constraint cannot be solved.
 
-During unification we ensure that certain kind of malformed constraint
-sets do not lead to infinite loops in the unification. We abort
-unification if there are only inequalities left that contain at least
-one variable. As inequality is not transitive, we can never solve
-those constraint sets.
+During unification we ensure that a certain kind of malformed
+constraint set does not lead to infinite loops in the unification. If
+there are only inequalities left that contain at least one variable,
+we abort unification. As inequality is not transitive, we can never
+solve those constraint sets.
 \section{Performance}
 \label{sec:performance}
 
