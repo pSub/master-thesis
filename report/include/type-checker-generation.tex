@@ -101,21 +101,20 @@ Templates serve as the input format for the constraint generation
 phase of the type checker. Besides being better suited for constraint
 generation templates also have the advantage that we can adapt the
 system to other specification languages by translation into
-templates. The structure of the templates is close to the structure of
-the typing rules of the specification language in
-Section~\ref{sec:design--architecture}, but has no hard requirements
-on the specification language other than being declarative.
+templates. The structure of the templates has no hard requirements on
+the specification language, although it has to be declarative. In
+general the structure of the templates is similar to the structure of
+the typing rules of the specification language.
 
 \begin{figure}
-\begin{definition}{Template}
+\begin{definition}{Definition of the syntax of templates}
   \todo[inline]{Complete this grammar and synchronize it with the
-    Stratego source code} The syntax of templates in \gls{bnf}. The
-  Stratego implementation appends to all constructors two underscores
-  to avoid name collisions with target languages. This is necessary as
-  the module system of Stratego is not strong enough to avoid those
-  collisions. We omit these here for the sake of readability. The
-  non-terminals Inputs, Outputs, Term and Error may contain arbitrary
-  terms.
+    Stratego source code} The Stratego implementation appends to all
+  constructors two underscores to avoid name collisions with target
+  languages. This is necessary as the module system of Stratego is not
+  strong enough to avoid those collisions. We omit these here for the
+  sake of readability. The non-terminals Inputs, Outputs, Term and
+  Error may contain arbitrary terms.
   \begin{grammar}
     <Template> ::= `Template' <Premisses> <Conjecture>
 
@@ -139,43 +138,42 @@ on the specification language other than being declarative.
 \end{figure}
 
 
-Before we describe the structure of templates in depth, we highlight
-the conceptual differences between templates and typing rules.
-Templates take advantage of the input/output tags of typing judgments
-and context definitions by splitting everything up into an input and
-output part. This will become handy in the constraint generation
-phase. There we can see immediately which are the patterns to match
-against the expressions and which are the output positions that we
-compute. As described in the introduction to that chapter, we
-normalize templates. That means, we add for each implicit equality in
-the conclusion and premisses of typing rules an explicit
-equality. Thus every variable occurs in each judgment only
-once. Further we sort premisses by input/output position
-dependencies. We describe and motivate the normalization process in
-the remainder of the section. Note that the template optimization and
-constraint generation phase take advantage of these normalizations and
-therefore expect their inputs to be normalized.
+Before we are going to describe the structure of templates in depth,
+we highlight the conceptual differences between templates and typing
+rules. Templates take advantage of the input/output tags of typing
+judgments and context definitions by splitting everything up into an
+input and output part. This will become handy in the constraint
+generation phase, where we can see immediately which are the patterns
+to match against the expressions and which are the output positions
+that we compute. As described in the introduction to this chapter, we
+normalize templates. For each implicit equality in the conclusion and
+premisses of typing rules we add an explicit equality. Thus every
+variable occurs in each judgment only once. Further we sort premisses
+by input/output position dependencies. We describe and motivate the
+normalization process in the remainder of the section. The template
+optimization and constraint generation phase take advantage of these
+normalizations and therefore expect their inputs to be normalized.
 
 Note: We transform all meta-variables of the specification into the
-variables (\code|Var(name)|) that we use for constraint
-generation. We describe the rename process in the next section.
+variables (\code|Var(name)|) that we use for constraint generation. In
+the next section we describe the rename process.
 
 \paragraph*{Premisses}
 Premisses in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities. A premise always has a list of
-dependencies. This dependency list contains the number and the outputs
-of the judgment the premise depends on. We define in the next
-paragraph what it means for premise to have dependencies.
+dependencies. This list contains the number and the outputs of the
+judgment the premise depends on. Later on in this section we define
+what it means for premise to have dependencies.
 
 \begin{description}
-\item[Judgments] correspond to the user defined judgments form the
+\item[Judgments] correspond to the user defined judgments of the
   specification. They consist of the judgment number
   \refcallout{judgment:number} which refers to the position in the
   declaration section of the specification, the positions of the
   judgment marked as inputs \refcallout{judgment:inputs}, context
   modifications \refcallout{judgment:bind},
   \refcallout{judgment:reset}, \refcallout{judgment:identity}, the
-  output positions of the judgments \refcallout{judgment:outputs} and
+  output positions of the judgments \refcallout{judgment:outputs} or
   error messages \refcallout{judgment:errors}.
 
   A context modification can either be an addition to a context
@@ -183,8 +181,8 @@ paragraph what it means for premise to have dependencies.
   (this identifier refers to the position in the declaration section
   of the specification), a list of inputs and a list of outputs. It
   can also be a context identity \refcallout{judgment:identity} which
-  corresponds to the context meta-variables in the specification and
-  do not modify the context and a reset operation
+  corresponds to a context meta-variable in the specification and
+  context identities do not modify the context and a reset operation
   \refcallout{judgment:reset} which resets the given context and
   corresponds to the empty context. Read to context modifications from
   right to left to obtain a valid context. A detail explanation of the
@@ -211,7 +209,7 @@ In example~\ref{ex:judgment} we have judgment one that has only one
 input position \code|Var("X0"| and one output position
 \code|Var("X3")|. It leaves context two as it is, resets context one
 and then adds the input/output pair \code|Var("X1")| and
-\code|Var("X2")| to context one. In addition it has one error message.
+\code|Var("X2")| to context one. In addition it has an error message.
 
 \item[Context lookups] consist of the context number
   \refcallout{lookup:ctx}, of the input \refcallout{lookup:inputs} and
@@ -237,8 +235,8 @@ Lookup(
   lookup has no error messages attached.
 
 \item[(In)equalities] are predefined judgments and therefore treated
-  separately. They have two input positions and an potentially an
-  error message. Apart from that they behave like normal judgments.
+  separately. They have two input positions and potentially an error
+  message. Apart from that they behave like normal judgments.
 
 \begin{example}
 \begin{lstlisting}[language=sltc]
@@ -247,20 +245,20 @@ Neq(Var("X0"), Var("X1"), None())
 \label{ex:neq}
 \end{example}
 
-  In example~\ref{ex:neq} we compare \code|Var("X0")| and
-  \code|Var("X1")| for inequality and provide no error message.
+  In example~\ref{ex:neq} we compare if \code|Var("X0")| and
+  \code|Var("X1")| are not equal and provide no error message.
 \end{description}
 
-In some cases it is relevant in which order premisses we evaluate
-premisses. We have not talked about evaluation yet, so assume we
-evaluate premisses as functions. We provide terms for input positions
-an retrieve terms for the output positions. If we look at
+In some cases it is relevant in which order we evaluate premisses. As
+we have not talked about evaluation yet, we assume premisses are
+evaluated like functions. We provide terms for input positions an
+retrieve terms for the output positions. If we look at
 Example~\ref{ex:premise-dependencies} we see that rule \code|T-Tapp|
 has two premisses. When we compare the premisses with the judgment
 definitions, we see that \code|%x| occurs as an input of the first
 premise and as within an output of the second premise but not at all
-in the conclusion. If we want to evaluate the first premise we
-have to find a term for \code|%x|, but that term is only provided by
+in the conclusion. If we want to evaluate the first premise we have to
+find a term for \code|%x|, but that term is only provided by
 the output of the second premise. Therefore we have to evaluate the
 second premise first.
 
@@ -284,10 +282,10 @@ annotating each premise with a list of dependencies. Those
 dependencies contain the number of the premise on which the premise
 depends and the output of that premise. The outputs are redundant
 information and only added to reduce indirections.
-For the first premise in Example~\ref{ex:premise-dependencies} the
-dependency would look like
-\code|(1, [TAll(Var("X0"), Var("X1"))])|, where \code|1| refers to
-the second premise, because we sort premisses of templates topological
+The dependency for the first premise in
+Example~\ref{ex:premise-dependencies} the would look like
+\code|(1,[TAll(Var("X0"), Var("X1"))])|. In this example \code|1| refers to the
+second premise, because we sort premisses of templates topological
 according to the dependencies, as we will describe in the next
 section.
 
@@ -312,23 +310,23 @@ Conclusion(
 \end{example}
 
 Example~\ref{ex:conclusion} shows a conclusion that has judgment
-number three, only one input position and the context pattern
-specifies that there has to be at least one element in the second
-context. In this example judgment three has no outputs.
+number three and only one input position. The context pattern specifies
+that there has to be at least one element in the second context. In
+this example judgment three has no outputs.
 
-Figure~\ref{fig:template-example} shows on the left side a simple
-typing rules for variables in a $\lambda$-calculus style and on the
+On the left side of Figure~\ref{fig:template-example} a simple typing
+rule for variables in a $\lambda$-calculus style is shown and on the
 right side its representation as a template.
 
 \subsubsection{Generation}
 The Stratego rule \code|to-template| does the main part of the
 template generation. It takes a rule from a specification and
-transforms that into a template. The strategy \code|to-tempaltes| does
+transforms that rule into a template. The strategy \code|to-templates| does
 that iteratively for every rule in a specification. The first step in
 the conversion is the elimination of implicit equalities in the
 premisses and the conclusion.
 
-We create for each implicit equality an explicit equality, by
+For each implicit equality we create an explicit equality, by
 collecting all variables that occur more than once in an input
 position of a premise or conclusion. After that we create fresh names
 for the collect variables and create premisses that state the equality
@@ -337,7 +335,7 @@ transformed into explicit equalities if the meta-variables also occur
 in the conclusion. These equalities are either ensured by explicit
 equalities from the conclusion or if there are no implicit equalities
 in the conclusion for this meta-variable, by the fact that this
-variable occurs only once as a source an thus, cannot introduce
+variable occurs only once as a source and thus, cannot introduce
 different values. If a meta-variable occurs more than twice we define
 the equalities for the new variables transitively.
 
@@ -349,9 +347,9 @@ Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}
 \end{lstlisting}
 
 which could model type substitution in a SystemF specification. On the
-left of example~\ref{ex:implicit-equalities} you see the typing rule
-with an implicit equality and on the right the transformed version
-without the implicit equality.
+left side of example~\ref{ex:implicit-equalities} you see the typing
+rule with an implicit equality and on the right hand side the
+transformed version without the implicit equality.
 
 \begin{example}{~}
 \newline
@@ -372,7 +370,7 @@ without the implicit equality.
 \end{example}
 
 If there are error messages for implicit equalities, we associate
-those error messages with the implicit equalities. Then we replace the
+those error messages with the implicit equalities. Then we replace them
 by the fresh meta-variables of the explicit equality and add the error
 message as a normal error to the explicit equality.
 
@@ -381,15 +379,15 @@ message as a normal error to the explicit equality.
 
 After this step, there are no implicit equalities left, i.e. all
 meta-variables within a judgment are different. As a next step we
-analyze the premisses of the typing rule for dependencies. A premise
-depends on an other, if it uses meta-variables in input positions that
-occur in an output position of an other premise and not as an input
-position in the conclusion. As we need to supply the input positions
-with concrete terms to check if a premise holds, we can evaluate a
-dependency only if we evaluate first all its dependencies. In the
-generation process we do two things, sort the premisses according to
-their dependencies and annotate them with the output positions of the
-dependencies, as described in the previous paragraph. The
+analyze the premisses of the typing rule for dependencies. One premise
+depends on the other, if it uses meta-variables in input positions
+that occur in an output position of another premise and not as an
+input position in the conclusion. As we need to supply the input
+positions with concrete terms to check if a premise holds, we can only
+evaluate a dependency if we first evaluate all its dependencies. In
+the generation process we do two things: Sort the premisses according
+to their dependencies and annotate them with the output positions of
+the dependencies, as described in the previous paragraph. The
 implementation of this ordering is standard. First we collect all
 premisses and their dependencies in a graph. Due to the nature of the
 dependency it is more natural to create edges from a premise to the
@@ -443,49 +441,49 @@ Template(
 \label{sec:constr-templ-optim}
 In this section we describe and motivate the optimization strategies
 we have used. The template optimization phase can do arbitrary
-modifications, we focus here on optimization strategies that reduce
+modifications. We focus here on optimization strategies that reduce
 ambiguities between the templates.
 
-Informally two templates are ambiguous if it is a priori not known
+Informally two templates are ambiguous if it is not known a priori
 which (if any) of the templates we have to use to extend the
 derivation tree to create a successful derivation. Therefore we have
 to use the rules according to a heuristic and to backtrack if the
-decision did not worked out. The goal of the optimization strategies
+decision did not work out. The goal of the optimization strategies
 described in this section, is to rule out some of those ambiguities
 before we even start to create derivations.
 
-Before we introduce the optimization strategies, we define more
+Before introducing the optimization strategies, we define more
 formally what an ambiguity is.
 
 \begin{definition}
-  A template is \textit{when-ambiguous} if there is an other
-  template such that there is at least one term that matches the
-  conclusion of both templates.
+  A template is \textit{when-ambiguous} if there is another template
+  such that there is at least one term that matches the conclusion of
+  both templates.
 \label{def:when-ambiguous}
 \end{definition}
 
 Definition~\ref{def:when-ambiguous} describes the general case of an
-ambiguity. If there is a template that has an syntactic overlap with
-an other template, then there is an ambiguity. We call those
-ambiguities when-ambiguity, because it is not clear when we have to
-apply an ambiguous template. 
+ambiguity. There is an ambiguity if there is a template that has an
+syntactic overlap with another template. We call those ambiguities
+when-ambiguity, because it is not clear when we have to apply an
+ambiguous template. 
 
 \begin{definition}
-  A template is \textit{which-ambiguous} if there is an other template
+  A template is \textit{which-ambiguous} if there is another template
   such that the set of terms matching the conclusion of both templates
   is equal.
 \label{def:which-ambiguity}
 \end{definition}
 
-Definition~\ref{def:which-ambiguity} aims at a more specialized
-ambiguities. Templates are when ambiguous if they match exactly the
-same terms. There are just two (or more) templates that apply to
-exactly the same terms. Therefore it is not the question \textit{when}
-we have to apply a template, but only \textit{which} one we have to
-apply. The distinction of those two kinds of ambiguities will help to
-implement optimization strategies.
+Definition~\ref{def:which-ambiguity} aims at more specialized
+ambiguities. Templates are when-ambiguous if they match exactly the
+same terms. As there are two (or more) templates that apply to exactly
+the same terms, it is not the question \textit{when} we have to apply
+a template, but only \textit{which} one we have to apply. The
+distinction of those two kinds of ambiguities will help to implement
+optimization strategies.
 
-Before we describe the optimization strategies we implemented, we
+Before describing the optimization strategies we implemented, we
 extend the template language to make ambiguities explicit.
 
 \begin{definition}
@@ -633,7 +631,7 @@ constraint language.
 \end{definition}
 
 We annotate all constraints with error messages. These error messages
-are either generated during the constraints generation or passed
+are either generated during the constraint generation or passed
 through from the specification. The constraint solver shows the error
 messages if it cannot solve a constraint. There are three types of
 constraints. The constraint \code|CFail| corresponds to false and
@@ -643,11 +641,11 @@ respectively inequality constraints.
 As we read the program expressions from the conjecture section of the
 specification, we already have the initial contexts, the judgment
 number and we can tell which are input and output positions. If we
-would read only the program expression (e.g.\ from \code|stdin|)
-information about the initial contexts, the judgment number and the
-output positions need to be passed separately. Every conjecture has a
-fresh context store, initialized with the initial contexts provided in
-the conjecture.
+would only read the program expression (e.g.\ from \code|stdin|) we
+would need to pass information about the initial contexts, the
+judgment number and the output positions separately. Every conjecture
+has a fresh context store, initialized with the initial contexts
+provided in the conjecture.
 
 We have divided the main logic of constraint generation into three
 Stratego strategies: \code|generate| selects the template matching the
@@ -667,17 +665,17 @@ constraint for the expected and actual outputs.
 
 Now \code|generate| calls \code|find-match| to find a template whose
 conclusion matches the inputs, judgment number and the current state
-of the contexts. First \code|find-match| filters all templates with the
-correct judgment number and tests only those templates for matches. In
-case of \code|Fork| only those templates are retained that match. For
-all other templates \code|find-match| checks whether the constructors
-of the term pattern in the conclusion and of the input term
-match. Those match, if they have the same constructors on all levels,
-where the term pattern can have variables for whole levels. In
-addition the context pattern of the conclusion has to reflect the
-current state of the contexts. The context pattern reflects the state
-of the contexts if it can be applied from left to right to the context
-without failures.
+of the contexts. First \code|find-match| filters all templates with
+the correct judgment number and tests only those templates for
+matches. \todo{Restructure sentence, First is misleading} In case of
+\code|Fork| only those templates are retained that match. For all
+other templates \code|find-match| checks whether the constructors of
+the term pattern in the conclusion and of the input term match. They
+can have variables for whole levels and match if they have the same
+constructors on all levels. In addition the context pattern of the
+conclusion has to reflect the current state of the contexts. The
+context pattern reflects the state of the contexts if it can be
+applied from left to right to the context without failures.
 
 \code|find-match| safely takes the first template that matches,
 because we have ensured in Section~\ref{sec:constr-templ-optim} that
