@@ -28,31 +28,30 @@ the syntax of Java cannot be extended.
 
 \subsubsection{A Generator for Type Checkers}
 Gast introduces in~\cite{gast2005generator} a type checker generator
-that can produce from declarative type system specifications type
-checkers for functional as well as imperative and object-oriented
-programming languages. Type checking is done by a specialized proof
-search, which is based on unification and backtracking. A
-distinguishing feature of Gasts work is the possibility to annotate
-the typing rules with optimizations. For example it is possible to
-reuse (potentially incomplete) proofs using subproof extraction. Gast
-also provides a formal foundation for his proof search. However the
-resulting type checkers do not report specialized error messages on
-ill-typed  programs.
+that can produce type checkers from declarative type system
+specifications for functional as well as imperative and
+object-oriented programming languages. Type checking is done by a
+specialized proof search, which is based on unification and
+backtracking. A distinguishing feature of Gast's work is the
+possibility to annotate the typing rules with optimizations. For
+example it is possible to reuse (potentially incomplete) proofs using
+subproof extraction. Gast also provides a formal foundation for his
+proof search. However the resulting type checkers do not report
+specialized error messages on ill-typed programs.
 
 \subsubsection{Automatic Generation of Object-Oriented Type Checkers}
 Ortin et al.\ present in~\cite{ortin2014automatic} the framework TyS
 for the implementation of type checkers for object-oriented
 programming languages. TyS provides a type checker constructor TyCC
-which produces a type checker given a file that specifies the types
-together with the subtyping relation and operations on these
+which produces a type checker when given a file that specifies the
+types together with the subtyping relation and operations on these
 types. Operations on types correspond to typing rules and are
 implemented using an API that is provided by TyS. Currently only Java
-is supported for the implementation of the operations and the addition
-of new languages requires the replication of the API in that
-language.
+is supported for the implementation of the operations. The addition of
+new languages requires the replication of the API in that language.
 
 TyS can be used in conjunction with different parser generator tools
-and has been tested with flex, bison, yacc and ANTLR. It does support
+and has been tested with flex, bison, yacc and ANTLR. It supports
 the generation of static and dynamic type checkers and was applied
 (among others) to the object-oriented language Drill and the
 imperative language Frog. TyS does not support polymorphic types.
@@ -64,17 +63,17 @@ that has been successfully integrated in existing tool chains.
 \subsubsection{Typmix: A Framework for Implementing Modular Extensible Type
   Systems}
 Typmix~\cite{bergan2007typmix} is a framework for implementing type
-systems in for the extensible compiler xoc. Although type systems can
-be implemented in xoc directly, the author claims that they are often
+systems for the extensible compiler xoc. Although type systems can be
+implemented in xoc directly, the author claims that they are often
 verbose and contain redundancies. Type system specifications in Typmix
 are written in two languages. One describes the context modifications,
-they are called scoperules. The other describes typing rules using
+which are called scoperules. The other describes typing rules using
 premisses and conclusions. The contexts in the typing rules are
-referred to as \code|Env| and one concrete context as
+referred to as \code|Env| and concrete contexts as
 \code|Env.Ctx|. This separation of concerns increases modularity,
 e.g.\ adding a context to a judgment requires only changes were it is
-actually used. Typmix used to implement a type system for an ML-like
-language and for FeatherweightJava.
+actually used. Typmix is used to implement a type system for an
+ML-like language and for FeatherweightJava.
 
 As typmix is integrated in an extensible compiler, its focus is on
 extending type systems. Although the scope and type language are
@@ -91,19 +90,19 @@ approach. In the first phase some Prolog clauses are evaluated, which
 is determined by a partitioning parameter. This parameter is usually
 set such that relations that depend on types associated with type
 variables are delayed into the second phase. These two phases resemble
-a constraint generation and constraint solving phase. The result of
+a constraint generation and a constraint solving phase. The result of
 the first phase may contain arbitrary Prolog terms, but the authors
 claim that for common cases, the result is simple and can be
 efficiently solved by e.g. Datalog. This approach also applies to
 non-syntax directed typing rules but might be less efficient.
 
-Just as the present work~\cite{tomb2005automatic} generates from a
-high-level specification a two-phase constraint-based type inference
-system. The advantage of choosing a logic language like Prolog is that
-the correctness of the type inference algorithms follows from the
-correctness of the partial evaluator. However the current approach
-does only works for language definitions in Prolog and does not
-attempt to reduce the non-determinism that is introduced from
+Just as the present work~\cite{tomb2005automatic} generates a
+two-phase constraint-based type inference system from a high-level
+specification. The advantage of choosing a logic language like Prolog
+is that the correctness of the type inference algorithms is entailed
+by the correctness of the partial evaluator. However the current
+approach does only work for language definitions in Prolog and does
+not attempt to reduce the non-determinism that is introduced from
 non-syntax directed rules.
 
 %%% Local Variables: 
