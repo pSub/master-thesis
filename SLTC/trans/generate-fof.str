@@ -84,8 +84,6 @@ signature
     make-inequality : [] -> []
     make-inequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <make-neq>(x, y))\)> ys
     
-    //TODO: Is the formulation important? What about using the contraposition?
-    //FIXME: It seems those are not used at all. Check why that is and remove if they are superfluous.
     make-injectivity : (name, n) -> [Formula__(<conc-strings> (name, "-injective-contraposition"),
                                              Axiom__(),
                                              All__(<conc>(Xs, Ys), Impl__(<zip; map(make-neq)> (Xs, Ys),
