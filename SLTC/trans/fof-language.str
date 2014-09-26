@@ -53,3 +53,13 @@ rules
      */
     type-to-string : Axiom__() -> "formula"
     type-to-string : Conjecture__() -> "goal"
+
+    /**
+     * Auxilary function that allows 'pointfree' notation.
+     */
+    make-eq : (a, b) -> Eq__(a, b)
+
+    /**
+     * Auxilary function that allows 'pointfree' notation.
+     */
+    make-and : (a, b) -> And__(a, b)

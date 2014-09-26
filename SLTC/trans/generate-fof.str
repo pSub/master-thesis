@@ -46,8 +46,8 @@ signature
         where context-formulas := <make-context-formulas> context-definitions;
               typing-rule-formulas := <map(cleanup; rewrite-typing-rule)> typing-rules
              ; helper := <collect-om(?Term__(_,_));
-                         mapconcat(\Term__(name, args@[_|_]) -> [<make-injectivity> (name, <length> args),
-                                                                 <make-univalence> (name, <length> args)]\)> typing-rule-formulas
+                         mapconcat(\Term__(name, args@[_|_]) -> [<make-univalence> (name, <length> args)|
+                                                                 <make-injectivity> (name, <length> args)]\)> typing-rule-formulas
 
     fof-from-templates(|context-definitions, typing-rules) =
         ?conjectures;
@@ -86,11 +86,15 @@ signature
     
     //TODO: Is the formulation important? What about using the contraposition?
     //FIXME: It seems those are not used at all. Check why that is and remove if they are superfluous.
-    make-injectivity : (name, n) -> Formula__(<conc-strings> (name, "-injective"),
+    make-injectivity : (name, n) -> [Formula__(<conc-strings> (name, "-injective-contraposition"),
                                              Axiom__(),
                                              All__(<conc>(Xs, Ys), Impl__(<zip; map(make-neq)> (Xs, Ys),
                                                                           Neq__(Term__(name, Xs), Term__(name, Ys))))
-                                             )
+                                             ),
+                                     Formula__(<conc-strings> (name, "-injective"),
+                                             Axiom__(),
+                                             All__(<conc>(Xs, Ys), Impl__(Eq__(Term__(name, Xs), Term__(name, Ys)),
+                                                                          <zip; map(make-eq); list-accum(make-and)> (Xs, Ys))))]
         where Xs := <newnames(|"X")> n;
               Ys := <newnames(|"Y")> n
     make-univalence : (name, n) -> Formula__(<conc-strings> (name, "-univalent"),
