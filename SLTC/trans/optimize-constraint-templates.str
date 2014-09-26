@@ -105,10 +105,6 @@ rules
         < optimize-relation'(|judgments, context-definitions, target-language) + id
     optimize-relation'(|judgments, context-definitions, target-language) :
         f@Fork__(ts) -> Fork__(ts')
-        // <if <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs
-        //                  then !Fork__(<conc> (ts, base-templates))
-        //                  else !f
-        //                  end>
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
               judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
               non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal, conc)> judgments;
@@ -117,7 +113,6 @@ rules
                       remove-unsatisfiable-templates(|context-definitions);
                       remove-valid-premisses(|context-definitions)> (non-syntax-directed-ts, ts)
               
-              // ;
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
               // base-cons-product := <cartesian-product> base-constructors;
               // pos-base-goals := <map(\args -> Formula__("", Pred__(<conc-strings> ("tcheck", <int-to-string> judgment-number), args))\)> base-cons-product;
