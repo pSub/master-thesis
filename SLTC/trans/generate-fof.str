@@ -64,11 +64,6 @@ signature
      */
     cleanup = innermost(cleanup')
     cleanup' : ErrorTypingJudgment(j, e) -> j
-
-    /**
-     * Auxilary function that allows 'pointfree' notation.
-     */
-    make-neq : (x,y) -> Neq__(x,y)
     
     /** Collects all Terms of the programming language that will result
      * in constants in the first-order representation and generates axioms

@@ -63,3 +63,8 @@ rules
      * Auxilary function that allows 'pointfree' notation.
      */
     make-and : (a, b) -> And__(a, b)
+
+    /**
+     * Auxilary function that allows 'pointfree' notation.
+     */
+    make-neq : (x,y) -> Neq__(x,y)
