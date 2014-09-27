@@ -158,9 +158,11 @@ rules
      * @param context definitions
      * @type Formula -> Formula
      */
-    direct-proof(|name, templates, context-definitions) = where(
+    direct-proof(|name, templates, context-definitions) =
+        direct-proof(|"2", name, templates, context-definitions)
+    direct-proof(|timeout, name, templates, context-definitions) = where(
         fof-from-templates(|context-definitions, templates);
-        verify-vampire(|"2", <option-to-string-newname(|"Goal")> name);
+        verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name);
         all(?VerificationSuccess(_)))
                      
     solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
