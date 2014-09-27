@@ -136,8 +136,8 @@ rules
         ?templates;
         <remove-all(where(premisses-to-props;
                      map(\p -> Formula__("", Not__(p))\);
-                     fof-from-templates(|context-definitions, templates); verify-vampire(|"2", "neg-premise");
-                     all(?VerificationSuccess(_))))> templates
+                     direct-proof(|Some("neg-premise"), templates, context-definitions)
+                   ))> templates
                      
     remove-valid-premisses(|context-definitions) =
         ?templates; <map(remove-valid-premisses(|context-definitions, templates))> templates
