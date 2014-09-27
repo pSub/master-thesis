@@ -75,9 +75,7 @@ rules
         ?(rule, premisses);
         <fetch-elem(where(
           \ps -> <premisses-to-props; map(\p' -> Formula__("", Impl__(p', Or__(ps)))\);
-                  fof-from-templates(|context-definitions, templates);
-                  verify-vampire(|"2", <get-template-name; option-to-string-newname(|"Goal")> rule);
-                  all(?VerificationSuccess(_))> rule
+                  direct-proof(|<get-template-name> rule, templates, context-definitions)> rule
           \))> premisses
     /**
      * Main strategy that optimizes when-ambiguities.
@@ -151,6 +149,19 @@ rules
         premisses := <get-premisses> template;
         <set-premisses(|<map(\i -> <index(|i)> premisses\)> indices)> template
         
+    /**
+     * Attempts a direct proofs of the given formula
+     * given the template and context-definitions
+     *
+     * @param name of the goal
+     * @param templates
+     * @param context definitions
+     * @type Formula -> Formula
+     */
+    direct-proof(|name, templates, context-definitions) = where(
+        fof-from-templates(|context-definitions, templates);
+        verify-vampire(|"2", <option-to-string-newname(|"Goal")> name);
+        all(?VerificationSuccess(_)))
                      
     solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
         ?which-ambiguities;
