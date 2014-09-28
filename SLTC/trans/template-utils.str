@@ -1,0 +1,10 @@
+module template-utils
+
+imports include/SLTC
+
+rules
+    get-judgment-types(|judgment) = get-judgment-types(id | judgment)
+        
+    get-judgment-types(type | judgment) =
+        index(|judgment);
+        collect-om(\Hole(non-terminal, type) -> non-terminal\, conc)

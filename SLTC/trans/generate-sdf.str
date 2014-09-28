@@ -70,7 +70,7 @@ rules
     make-judgment : (num, Judgment(s1, pos, s2, built-in))
            -> prod(<names; separate-by(|" "); concat-strings> merged,
                    "TypingJudgment",
-                   <maybe(\BuiltIn(s) -> <conc-strings> (typing-judgment, s)\
+                   <maybe(\BuiltIn(s) -> <conc-strings> (s, "-", <int-to-string> num)\
                          | <conc-strings> (typing-judgment, <int-to-string> num));
                     make-cons> built-in)
             where

@@ -27,7 +27,7 @@ rules
                                   Rules(typing-rules), _) -> <generate-constraints(|templates)>
         where
             // Generate the constraint templates from the type system specification
-            templates := <to-templates(|judgments, context-definitions);
+            templates := <to-templates(|judgments, context-definitions, target-language);
                           optimize-templates(|judgments, target-language, context-definitions)> typing-rules
 
     /**

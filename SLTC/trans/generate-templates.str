@@ -2,7 +2,11 @@ module generate-templates
 
 imports constraint-language
 imports constraint-template-language
+imports template-utils
+imports sdf-utils
 imports utils
+
+imports org/sugarj/languages/Sdf2
 imports include/SLTC
 imports lib/editor-common.generated
 
@@ -21,7 +25,7 @@ rules
                Judgments(judgments),
                Rules(typing-rules),
                conjectures)
-        -> <to-templates(|judgments, context-definitions);
+        -> <to-templates(|judgments, context-definitions, target-language);
             optimize-templates(|judgments, target-language, context-definitions)> typing-rules
 
     /**
@@ -39,22 +43,13 @@ rules
     get-error-message = proj(ErrorTypingJudgment|2)
 
     /**
-     *
-     */
-    eq-inputs = where(get-generic-name; equal(|"Eq")); get-arguments
-    eq-outputs = where(get-generic-name; equal(|"Eq")); ![]
-    neq-inputs = where(get-generic-name; equal(|"Neq")); get-arguments
-    neq-outputs = where(get-generic-name; equal(|"Neq")); ![]
-
-
-    /**
      * Extacts all consituents from the given term that are marked
      * as inputs in the declaration.
      *
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-inputs(|declarations) = eq-inputs <+ neq-inputs <+ filter-hole-positions(?(_, "I") | declarations)
+    get-inputs(|declarations) = filter-hole-positions(?(_, "I") | declarations)
 
     /**
      * Extacts all consituents from the given term that are marked
@@ -63,7 +58,7 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    get-outputs(|declarations) = eq-outputs <+ neq-outputs <+ filter-hole-positions(?(_, "O") | declarations)
+    get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations)
 
     /**
      * Extracts all consituents from a given term that satisfy the given
@@ -98,7 +93,7 @@ rules
      * @param j - judgment declarations
      * @param c - context declarartions
      */
-    to-template(|j, c) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
+    to-template(|j, c, l) : TypingRule(premisses-struct, RuleName(_, name), conclusion) ->
         <{|Fresh: replace-meta-variables|}>
           Template__(name,
                      <map(switch (get-typing-judgment, id)
@@ -131,11 +126,14 @@ rules
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
 
+            judgment-types := <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> conclusion)> j;
+
             // Transform implicit equalities in the conclusion into explicit equalities. Implicit
             // equalities are removed by introducing fresh variables and equality constraints
             // between them. This results in a list of variable substitutions and a list of premisses.
-            (substitutions, equalities) := <get-typing-judgment; get-inputs(|j);
-                                            make-implicit-equalities-explicit(true | <get-error-message> conclusion, conclusion)> conclusion;
+            (substitutions, (equalities, judgment-definitions)) :=
+                    <get-typing-judgment; get-inputs(|j);
+                     make-implicit-equalities-explicit(true | <get-error-message> conclusion, conclusion, judgment-types, l)> conclusion;
 
             // Replace each occurence with the corresponding new meta-variable.
             conclusion' := <concat; replace-once(|conclusion)> substitutions;
@@ -145,13 +143,16 @@ rules
 
             // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
-                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion')> premise\)> premisses-list';
+                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', [], l)> premise\)> premisses-list';
 
             // Replace every occurence with only one representative of the new meta-variables.
             premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
 
             // Add the explicit equalities to the list of premisses.
-            premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd)> premisses-impl-eq);
+            premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd; Fst)> premisses-impl-eq);
+
+            // Add new judgment definitions for the implicit equaltities
+            j' := <conc; nub> (j, judgment-definitions, <mapconcat(Snd; Snd));
 
             // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities;
@@ -216,22 +217,43 @@ rules
     /**
      * Generates from implicit equalities equality premisses.
      */
-    make-implicit-equalities-explicit(is-conclusion | errors, conclusion) =
-        collect-om(and(node-is-meta-variable, is-conclusion <+ \ n -> <collect(?n); equal(|[])> conclusion\), conc);
-        group(meta-variable-equal); filter(where(length; gt(|1)));
+    make-implicit-equalities-explicit(is-conclusion | errors, conclusion, types, l) =
+        ?inputs; <zip> (inputs, types);
+        mapconcat(where(Snd; resolvable(is-conclusion | conclusion))
+                  < singelton
+                  + Snd; collect-meta-variables(is-conclusion | conclusion, l));
+        group(Snd; meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
-        Dupl; (map(zip), mapconcat(make-eq-judgments(|errors)))
+        Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); partition(Fst, Snd))
+
+    collect-meta-variables(is-conclusion | conclusion, language) : cons#([]) -> []
+    collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
+        <conc> (vars-types, <collect-meta-variables(is-conclusion | conclusion, language)> nodes)
+        where arg-count := <length> args;
+              (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
+                                          not(resolvable(is-conclusion | conclusion)))> args;
+              productions := <get-productions-for-constructor(|language)> cons;
+              productions' := <filter(to-tuple; Fst; filter(?sort(_)))> productions;
+              matching-productions := <filter(where(length; equal(|arg-count)))>;
+              transposed-matching-productions := <transpose> matching-productions;
+              vars-types := <zip; map(where(Snd; length; equal(|1))
+                                 < (id, Hd; ?sort(type); !type)
+                                 + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
+
+
+    resolvable(is-conclusion | conclusion) =
+        and(node-is-meta-variable, is-conclusion <+ \n -> <collect(?n); equal(|[])> conclusion\)
 
     /**
      * Creates a new meta-variable of the same class.
      */
-    make-new-meta-variable : meta-variable -> <mkterm> (<get-constructor> meta-variable,
-                                                        [<newname> "X", None()])
+    make-new-meta-variable : (meta-variable, type) -> <mkterm> (<get-constructor> meta-variable,
+                                                                [<newname> "X", None()])
 
     /**
      * Creates from a given list of meta-variables a list of equality judgments.
      */
-    make-eq-judgments(|errors) : (old, new) -> <make-eq-judgments'(|relevant-errors)> new
+    make-eq-judgments(|errors) : ((old, type), new) -> <zip; make-eq-judgments'(|relevant-errors)> (new, type)
         where relevant-errors := <option(filter(where(\error ->
                                                         <subseteq> (<collect-om(node-is-meta-variable)> error,
                                                                   old)
@@ -240,10 +262,12 @@ rules
                                                   Error(<zip; replace-all(|error)> (old, new))
                                                 \))> errors
     make-eq-judgments'(|errors) : [] -> []
-    make-eq-judgments'(|errors) : [x] -> []
-    make-eq-judgments'(|errors) : [x, y | xs] -> [eq-judgment | <make-eq-judgments'(|errors)> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> ("TypingJudgment-Eq", [x, y]), errors)
+    make-eq-judgments'(|errors) : [(x, type)] -> []
+    make-eq-judgments'(|errors) : [(x, t), (y, s) | xs] ->
+        [(eq-judgment, judgment-definition) | <make-eq-judgments'(|errors)> [y | xs]]
+        where eq-judgment := ErrorTypingJudgment(<mkterm> ("Eq-", [x, y]), errors);
+              judgment-definition := Judgment(None(), [Hole(t, "I"), Hole(s, "I")], None(), Some(BuiltIn("Eq")))
     
 strategies
-    to-templates(|judgments, context-definitions) =
-         innermost(to-template(|judgments, context-definitions))
+    to-templates(|judgments, context-definitions, target-language) =
+         innermost(to-template(|judgments, context-definitions, target-language))

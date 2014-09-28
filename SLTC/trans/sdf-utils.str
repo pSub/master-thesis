@@ -48,3 +48,8 @@ rules
      * @type attrs(_) -> String
      */
     fetch-constructor = ?attrs(attributes); <fetch-elem(?term(cons(constructor)); !constructor)> attributes
+    
+    get-productions-for-constructor(|language) =
+        ?constructor;
+        parse-sdf-definition(|language);
+        collect-all(where(?prod(_, _, attrs(<id>)); \attributes -> <elem> (term(cons(constructor)), attributes)\))

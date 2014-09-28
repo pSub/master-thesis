@@ -385,6 +385,12 @@ rules
      * @type a -> a
      */
     node-is-ctx-var = and(node-is-meta-variable, get-context-id)
+    
+    /**
+     *
+     */
+    node-is-judgment = is-generic(|"TypingJudgment") <+ is-generic(|"Eq") <+
+                       is-generic(|"Neq")
 
     /**
      * Checks whether the given node is some form of context.

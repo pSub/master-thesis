@@ -146,7 +146,10 @@ signature
                          "ContextBind" <+
                          "ContextLookup" <+
                          "TypingJudgment" <+
-                         "MetaVariable"
+                         "MetaVariable" <+
+                         "Eq" <+
+                         "Neq" <+
+                         "Not"
     
     /**
      * Wraps meta-variables into an auxiliary constructor.
@@ -165,9 +168,9 @@ signature
      * Wraps typing judgment in an auxiliary constructor.
      */
     rewrite-typing-judgment : AuxCons__("TypingJudgment", "False", []) -> Eq__(1, 0)
-    rewrite-typing-judgment : AuxCons__("TypingJudgment", "Neq", [arg1, arg2]) -> Neq__(arg1, arg2)
-    rewrite-typing-judgment : AuxCons__("TypingJudgment", "Eq", [arg1, arg2]) -> Eq__(arg1, arg2)
-    rewrite-typing-judgment : AuxCons__("TypingJudgment", "Not", [arg]) -> Not__(arg)
+    rewrite-typing-judgment : AuxCons__("Neq", _, [arg1, arg2]) -> Neq__(arg1, arg2)
+    rewrite-typing-judgment : AuxCons__("Eq", _, [arg1, arg2]) -> Eq__(arg1, arg2)
+    rewrite-typing-judgment : AuxCons__("Not", _, [arg]) -> Not__(arg)
     rewrite-typing-judgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
 
     /**
