@@ -11,6 +11,10 @@ imports include/SLTC
 imports lib/editor-common.generated
 
 imports optimize-constraint-templates
+
+signature
+    constructors
+        UndefinedEq : term * List(term) -> term
        
 rules
     
@@ -44,25 +48,25 @@ rules
                                           <get-typing-judgment; get-inputs(|c)> lookup,
                                           <get-typing-judgment; get-outputs(|c)> lookup,
                                           <get-error-message> lookup)
-                                 , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps)\
+                                 , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j')))> deps)\
                          case where((get-generic-name; equal(|"Eq"), id)):
-                              \(j, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message; option(filter(?Error(_)))> j)> j, dep) \
+                              \(judg, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message; option(filter(?Error(_)))> judg)> judg, dep) \
                          case where((get-generic-name; equal(|"Neq"), id)):
-                              \(j, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> j)> j, dep) \
+                              \(judg, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> judg)> judg, dep) \
                          otherwise:
                               \(judgment, deps) ->
                                  (Judgment__(<get-typing-judgment; get-judgment-id> judgment,
-                                            <get-typing-judgment; get-inputs(|j); filter(not(node-is-ctx))> judgment,
-                                            <get-typing-judgment; get-inputs(|j); filter(node-is-ctx); mapconcat(ctx-bind-to-kv-list(|c))> judgment,
-                                            <get-typing-judgment; get-outputs(|j)> judgment,
+                                            <get-typing-judgment; get-inputs(|j'); filter(not(node-is-ctx))> judgment,
+                                            <get-typing-judgment; get-inputs(|j'); filter(node-is-ctx); mapconcat(ctx-bind-to-kv-list(|c))> judgment,
+                                            <get-typing-judgment; get-outputs(|j')> judgment,
                                             <get-error-message> judgment)
-                                 , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j)))> deps) \
+                                 , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j')))> deps) \
                          end)> sorted-premisses,
                      Conclusion__(
                          <get-typing-judgment; get-judgment-id> conclusion,
-                         <get-typing-judgment; get-inputs(|j); partition(not(node-is-ctx), node-is-ctx);
+                         <get-typing-judgment; get-inputs(|j'); partition(not(node-is-ctx), node-is-ctx);
                          (id, mapconcat(ctx-bind-to-kv-list(|c)))> conclusion',
-                         <get-typing-judgment; get-outputs(|j)> conclusion'))
+                         <get-typing-judgment; get-outputs(|j')> conclusion'))
         where
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
@@ -84,7 +88,7 @@ rules
 
             // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
-                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> premise)> j, l)> premise\); debug> premisses-list';
+                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> premise)> j, l)> premise\)> premisses-list';
 
             // Replace every occurence with only one representative of the new meta-variables.
             premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
@@ -96,27 +100,32 @@ rules
             
             new-judgment-defs := <conc> (judgment-definitions, <mapconcat(Snd; Snd)> premisses-impl-eq);
             
-            new-judgment-defs' := <map-with-index(\(i, d) -> <replace(|d)> (<conc-strings> ("J", <int-to-string> i), <add; int-to-string> (i, number-of-judgments))\)> new-judgment-defs;
+            eq-judg-subst := <map-with-index(\(i, d) -> (<conc-strings> ("J", <dec; int-to-string> i), <add; int-to-string> (i, number-of-judgments))\)> new-judgment-defs;
+            
+            premisses-with-equalities' := <replace-all(|premisses-with-equalities);
+                                           innermost(\UndefinedEq(n, args) ->
+                                                        <mkterm> (<conc-strings> ("Eq-", n),
+                                                                  args)\)> eq-judg-subst;
             
             // Add new judgment definitions for the implicit equaltities
-            j' := <conc> (j, judgment-definitions, new-judgment-defs');
+            j' := <conc> (j, judgment-definitions, new-judgment-defs);
 
             // Enumerate the premisses.
-            enum-premisses := <add-indices> premisses-with-equalities;
+            enum-premisses := <add-indices; debug> premisses-with-equalities';
 
             // Compute the dependencies between the premisses.
-            dependencies := <map((id, get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j)));
-                                 (id, compute-dependencies(|enum-premisses, conclusion', j, c)))> enum-premisses;
+            dependencies := <map((id, get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j')));
+                                 (id, compute-dependencies(|enum-premisses, conclusion', j', c))); debug> enum-premisses;
 
             // Create a topological order of the premisses according to their dependencies.
-            eval-order := <zip> (<map(Fst)> enum-premisses, <top-sort <+ exit-with-error(|<conc-strings> ("Cyclic dependencies in rule ", <option-to-string> name), 1)> dependencies);
+            eval-order := <zip; debug> (<map(Fst)> enum-premisses, <top-sort <+ exit-with-error(|<conc-strings> ("Cyclic dependencies in rule ", <option-to-string> name), 1)> dependencies);
             
             // Assign the dependencies to the premisses.
-            premisses := <zip> (premisses-with-equalities, <map(Snd)> dependencies);
+            premisses := <zip; debug> (premisses-with-equalities', <map(Snd)> dependencies);
             
             // Sort the premisses according to the topological order. This includes updating references
             // to premisses in the dependencies.
-            sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order
+            sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\); debug> eval-order
 
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
@@ -218,7 +227,7 @@ rules
     make-eq-judgments'(|errors) : [(x, type)] -> []
     make-eq-judgments'(|errors) : [(x, t), (y, s) | xs] ->
         [(eq-judgment, judgment-definition) | <make-eq-judgments'(|errors)> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> (<conc-strings> ("Eq-", <make-fresh> "J"), [x, y]), errors);
+        where eq-judgment := ErrorTypingJudgment(UndefinedEq(<make-fresh> "J", [x, y]), errors);
               judgment-definition := Judgment(None(), [Hole(t, "I"), Hole(s, "I")], None(), Some(BuiltIn("Eq")))
     
 strategies
