@@ -166,9 +166,9 @@ rules
      */
     make-implicit-equalities-explicit(is-conclusion | errors, conclusion, types, l) =
         ?inputs; <zip> (inputs, types);
-        mapconcat(where(Snd; resolvable(is-conclusion | conclusion))
+        mapconcat(where(Fst; resolvable(is-conclusion | conclusion))
                   < singelton 
-                  + Snd; collect-meta-variables(is-conclusion | conclusion, l));
+                  + Fst; collect-meta-variables(is-conclusion | conclusion, l));
         group(Snd; meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); partition(Fst, Snd))
