@@ -150,9 +150,15 @@ rules
 
             // Add the explicit equalities to the list of premisses.
             premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd; Fst)> premisses-impl-eq);
-
+            
+            number-of-judgments := <length> j;
+            
+            new-judgment-defs := <conc> (judgment-definitions, <mapconcat(Snd; Snd)> premisses-impl-eq);
+            
+            new-judgment-defs' := <map-with-index(\(i, d) -> <replace(|d)> (<conc-strings> ("J", <int-to-string> i), <add; int-to-string> (i, number-of-judgments))\)> new-judgment-defs;
+            
             // Add new judgment definitions for the implicit equaltities
-            j' := <conc; nub> (j, judgment-definitions, <mapconcat(Snd; Snd));
+            j' := <conc> (j, judgment-definitions, new-judgment-defs');
 
             // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities;
@@ -220,12 +226,12 @@ rules
     make-implicit-equalities-explicit(is-conclusion | errors, conclusion, types, l) =
         ?inputs; <zip> (inputs, types);
         mapconcat(where(Snd; resolvable(is-conclusion | conclusion))
-                  < singelton
+                  < singelton 
                   + Snd; collect-meta-variables(is-conclusion | conclusion, l));
         group(Snd; meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); partition(Fst, Snd))
-
+        
     collect-meta-variables(is-conclusion | conclusion, language) : cons#([]) -> []
     collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
         <conc> (vars-types, <collect-meta-variables(is-conclusion | conclusion, language)> nodes)
@@ -239,8 +245,8 @@ rules
               vars-types := <zip; map(where(Snd; length; equal(|1))
                                  < (id, Hd; ?sort(type); !type)
                                  + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
-
-
+              
+        
     resolvable(is-conclusion | conclusion) =
         and(node-is-meta-variable, is-conclusion <+ \n -> <collect(?n); equal(|[])> conclusion\)
 
@@ -265,7 +271,7 @@ rules
     make-eq-judgments'(|errors) : [(x, type)] -> []
     make-eq-judgments'(|errors) : [(x, t), (y, s) | xs] ->
         [(eq-judgment, judgment-definition) | <make-eq-judgments'(|errors)> [y | xs]]
-        where eq-judgment := ErrorTypingJudgment(<mkterm> ("Eq-", [x, y]), errors);
+        where eq-judgment := ErrorTypingJudgment(<mkterm> (<conc-strings> ("Eq-", <make-fresh> "J"), [x, y]), errors);
               judgment-definition := Judgment(None(), [Hole(t, "I"), Hole(s, "I")], None(), Some(BuiltIn("Eq")))
     
 strategies
