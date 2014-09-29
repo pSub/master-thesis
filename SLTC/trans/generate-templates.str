@@ -184,7 +184,7 @@ rules
               matching-productions := <filter(where(length; equal(|arg-count)))>;
               transposed-matching-productions := <matrix-transpose> matching-productions;
               vars-types := <zip; map(where(Snd; length; equal(|1))
-                                 < (id, Hd; ?sort(type); !type)
+                                 < (id, \[sort(type)] -> type\)
                                  + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
               
         
