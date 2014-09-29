@@ -169,7 +169,7 @@ rules
         mapconcat(where(Fst; resolvable(is-conclusion | conclusion))
                   < singelton 
                   + Fst; collect-meta-variables(is-conclusion | conclusion, l));
-        group(Snd; meta-variable-equal); filter(where(length; gt(|1)));
+        group((Fst, Fst); meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); partition(Fst, Snd))
         
