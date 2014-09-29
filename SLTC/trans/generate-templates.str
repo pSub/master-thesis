@@ -182,7 +182,7 @@ rules
               productions := <get-productions-for-constructor(|language)> cons;
               productions' := <filter(to-tuple; Fst; filter(?sort(_)))> productions;
               matching-productions := <filter(where(length; equal(|arg-count)))>;
-              transposed-matching-productions := <transpose> matching-productions;
+              transposed-matching-productions := <matrix-transpose> matching-productions;
               vars-types := <zip; map(where(Snd; length; equal(|1))
                                  < (id, Hd; ?sort(type); !type)
                                  + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
