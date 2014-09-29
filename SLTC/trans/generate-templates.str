@@ -168,17 +168,22 @@ rules
         ?inputs; <zip> (inputs, types);
         mapconcat(where(Fst; resolvable(is-conclusion | conclusion))
                   < singelton 
-                  + Fst; collect-meta-variables(is-conclusion | conclusion, l));
+                  + (Fst; collect-meta-variables(is-conclusion | conclusion, l)));
         group((Fst, Fst); meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); unzip)
         
-    collect-meta-variables(is-conclusion | conclusion, language) : cons#([]) -> []
+    collect-meta-variables(is-conclusion | conclusion, language) : v -> []
+        where <or(is-string, get-arguments; equal(|[]))> v
     collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
-        <conc> (vars-types, <collect-meta-variables(is-conclusion | conclusion, language)> nodes)
+        <conc> (<if <equal(|[])> vars then [] else <compute-types(|language, cons, arg-count)> vars end>,
+                <collect-meta-variables(is-conclusion | conclusion, language)> nodes)
         where arg-count := <length> args;
               (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
-                                          not(resolvable(is-conclusion | conclusion)))> args;
+                                          not(resolvable(is-conclusion | conclusion)))> args
+
+    compute-types(|language, cons, arg-count) : vars -> vars-types
+        where
               productions := <get-productions-for-constructor(|language)> cons;
               productions' := <filter(to-tuple; Fst; filter(?sort(_)))> productions;
               matching-productions := <filter(where(length; equal(|arg-count)))>;
