@@ -171,7 +171,7 @@ rules
                   + Fst; collect-meta-variables(is-conclusion | conclusion, l));
         group((Fst, Fst); meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
-        Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); partition(Fst, Snd))
+        Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); unzip)
         
     collect-meta-variables(is-conclusion | conclusion, language) : cons#([]) -> []
     collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
@@ -200,8 +200,9 @@ rules
     /**
      * Creates from a given list of meta-variables a list of equality judgments.
      */
-    make-eq-judgments(|errors) : ((old, type), new) -> <zip; make-eq-judgments'(|relevant-errors)> (new, type)
-        where relevant-errors := <option(filter(where(\error ->
+    make-eq-judgments(|errors) : (old, new) -> <zip; make-eq-judgments'(|relevant-errors)> (new, types)
+        where (_, types) := <unzip> old;
+              relevant-errors := <option(filter(where(\error ->
                                                         <subseteq> (<collect-om(node-is-meta-variable)> error,
                                                                   old)
                                                       \);
