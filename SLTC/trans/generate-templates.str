@@ -29,65 +29,6 @@ rules
             optimize-templates(|judgments, target-language, context-definitions)> typing-rules
 
     /**
-     * Extracts the typing judgment.
-     *
-     * @type ErrorTypingJudgment -> TypingJudgment
-     */
-    get-typing-judgment = proj(ErrorTypingJudgment|1)
-
-    /**
-     * Extracts the error message.
-     *
-     * @type ErrorTypingJudgment -> List(MessagePart)
-     */
-    get-error-message = proj(ErrorTypingJudgment|2)
-
-    /**
-     * Extacts all consituents from the given term that are marked
-     * as inputs in the declaration.
-     *
-     * @param declarations - either a list of context of judgment declarations
-     *                       or something of equivalent structure
-     */
-    get-inputs(|declarations) = filter-hole-positions(?(_, "I") | declarations)
-
-    /**
-     * Extacts all consituents from the given term that are marked
-     * as outputs in the declaration.
-     *
-     * @param declarations - either a list of context of judgment declarations
-     *                       or something of equivalent structure
-     */
-    get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations)
-
-    /**
-     * Extracts all consituents from a given term that satisfy the given
-     * condition `cond`.
-     *
-     * @param cond - an arbitrary strategy
-     * @param declarations - either a list of context of judgment declarations
-     *                       or something of equivalent structure
-     */
-    filter-hole-positions(cond|declarations) : node -> consituents
-        where
-            args := <get-arguments> node;
-            positions := <get-hole-positions(|declarations); filter(cond); map(Fst)> node;
-            consituents := <map(\n -> <index(|n)> args\)> positions
-
-    /**
-     * Fetches the declaration for the given node and provides a list of
-     * holes together with their positions.
-     *
-     * @param declarations - either a list of context of judgment declarations
-     *                       or something of equivalent structure
-     */
-    get-hole-positions(|declarations) : node -> <add-indices> holes
-        where
-            declaration-number := <get-judgment-id> node;
-            declaration := <index(|declaration-number)> declarations;
-            holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
-
-    /**
      * Rule that transforms a typing rule into a constraint template.
      *
      * @param j - judgment declarations
