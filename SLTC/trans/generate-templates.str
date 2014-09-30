@@ -111,6 +111,9 @@ rules
             // Add new judgment definitions for the implicit equaltities
             j' := <conc> (j, judgment-definitions, new-judgment-defs);
 
+            previous-judgments := <Judgments> 1;
+            rules(Judgments :+ 1 -> <conc> (previous-judgments, judgment-definitions, new-judgment-defs));
+
             // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities';
 
@@ -234,4 +237,5 @@ rules
     
 strategies
     to-templates(|judgments, context-definitions, target-language) =
-         innermost(to-template(|judgments, context-definitions, target-language))
+         ?typing-rules; {|Judgments: rules(Judgments :+ 1 -> judgments);
+         !(<innermost(to-template(|judgments, context-definitions, target-language))> typing-rules, <Judgments> 1) |}
