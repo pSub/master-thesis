@@ -53,7 +53,7 @@ rules
                               \(judg, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message; option(filter(?Error(_)))> judg)> judg, dep) \
                          case where((node-is-generic(|"Neq"), id)):
                               \(judg, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> judg)> judg, dep) \
-                         otherwise:
+                         case where((node-is-generic(|"TypingJudgment"), id)):
                               \(judgment, deps) ->
                                  (Judgment__(<get-typing-judgment; get-judgment-id> judgment,
                                             <get-typing-judgment; get-inputs(|j'); filter(not(node-is-ctx))> judgment,
@@ -61,6 +61,7 @@ rules
                                             <get-typing-judgment; get-outputs(|j')> judgment,
                                             <get-error-message> judgment)
                                  , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j')))> deps) \
+                         otherwise: exit-with-error(|1, "Unkown constructor encountered.")
                          end)> sorted-premisses,
                      Conclusion__(
                          <get-typing-judgment; get-judgment-id> conclusion,
