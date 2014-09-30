@@ -97,7 +97,9 @@ rules
             // Add the explicit equalities to the list of premisses.
             premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd; Fst)> premisses-impl-eq);
             
-            number-of-judgments := <length> j;
+            // Determine the number of judgments to generate names for the newly created judgments
+            previous-judgments := <Judgments> 1;
+            number-of-judgments := <length> previous-judgments;
             
             // Collect all new judgment definitions
             new-judgment-defs := <conc> (judgment-definitions, <mapconcat(Snd; Snd)> premisses-impl-eq);
@@ -115,7 +117,6 @@ rules
             j' := <conc> (j, judgment-definitions, new-judgment-defs);
 
             // Collect all newly generated judgments and propagate them outwards using dynamic rules
-            previous-judgments := <Judgments> 1;
             rules(Judgments :+ 1 -> <conc> (previous-judgments, judgment-definitions, new-judgment-defs));
 
             // Enumerate the premisses.
