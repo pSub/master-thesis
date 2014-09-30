@@ -25,9 +25,9 @@ rules
      * @param context definitions of the specification 
      * @type List(Template) -> List(Template)
      */
-    solve-which-ambiguities(|context-definitions) : templates -> 
+    solve-which-ambiguities(|judgments, context-definitions) : templates ->
         <conc> (<map(mkFork;
-                optimize-fork(|context-definitions, templates);
+                optimize-fork(|judgments, context-definitions, templates);
                 remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
         where equivalence-classes := <group(equal-mod-var); filter(where(length; gt(|1)))> templates
@@ -85,7 +85,7 @@ rules
      *
      * @param judgments of the specification
      * @param target-language of the specification
-     * @param context definitions of the specification 
+     * @param context definitions of the specification
      * @type List(Template) -> List(Template)
      */
     solve-when-ambiguities(|judgments, target-language, context-definitions) =
@@ -139,7 +139,7 @@ rules
         ?templates;
         <remove-all(where(premisses-to-props;
                      map(\p -> Formula__("", Not__(p))\);
-                     direct-proof(|Some("neg-premise"), templates, context-definitions)
+                     direct-proof(|Some("neg-premise"), templates, context-definitions); all(?VerificationSuccess(_))
                    ))> templates
                      
     remove-valid-premisses(|context-definitions) =
@@ -163,10 +163,9 @@ rules
      */
     direct-proof(|name, templates, context-definitions) =
         direct-proof(|"2", name, templates, context-definitions)
-    direct-proof(|timeout, name, templates, context-definitions) = where(
+    direct-proof(|timeout, name, templates, context-definitions) =
         fof-from-templates(|context-definitions, templates);
-        verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name);
-        all(?VerificationSuccess(_)))
+        verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name)
                      
     solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
         ?which-ambiguities;
@@ -186,8 +185,8 @@ rules
                                                     <collect-om(?Var__(_)); instantiate(|[pattern], [term]);
                                                      map(\t -> <replace(|property)> (<get-pattern; index(|i)> property, t) \)> pattern
                                                 \); concat> (step-pattern, conclusion);
-        ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r); premisses-to-props)> which-ambiguities'\)> which-ambiguities');
-        ambiguities := <zip; filter(where(Snd; is-subsumed(|context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis))); Fst)> (which-ambiguities, ambiguities-premisses)
+        ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r))> which-ambiguities'\)> which-ambiguities');
+        ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis))); Fst)> (which-ambiguities, ambiguities-premisses)
 
 
     /**
@@ -296,6 +295,6 @@ rules
     optimize-templates(|target-language, context-definitions) =
         ?(templates, judgments);
         {|Fresh:
-        <solve-which-ambiguities(|context-definitions);
+        <solve-which-ambiguities(|judgments, context-definitions);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
         order-forks-by-subsumption> templates |}
