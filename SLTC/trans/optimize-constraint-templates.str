@@ -72,12 +72,14 @@ rules
         vars := <Hd; get-pattern; collect-om(?Var__(_)); length; wrap> templates;
         <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> templates
 
-    is-subsumed(|context-definitions, templates) =
-        ?(rule, premisses);
-        <fetch-elem(where(
-          \ps -> <premisses-to-props; map(\p' -> Formula__("", Impl__(p', Or__(ps)))\);
-                  direct-proof(|<get-template-name> rule, templates, context-definitions)> rule
-          \))> premisses
+    is-subsumed(|judgments, context-definitions, templates) =
+        ?(rule, templates);
+        premisses := <map(premisses-to-props)> templates;
+        rule-premisses := <premisses-to-props> rule;
+        map(\ps -> Formula__("", Impl__(And__(rule-premisses), And__(ps)))\);
+        direct-proof(|<get-template-name> rule, templates, context-definitions);
+        some(?VerificationSuccess)
+
     /**
      * Main strategy that optimizes when-ambiguities.
      *
