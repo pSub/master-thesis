@@ -185,12 +185,13 @@ rules
     collect-meta-variables(is-conclusion | conclusion, language) : v -> []
         where <or(is-string, get-arguments; equal(|[]))> v
     collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
-        <conc> (<if <equal(|[])> vars then [] else <compute-types(|language, cons, arg-count)> vars end>,
+        <conc> (<compute-types(|language, cons, arg-count)> vars,
                 <collect-meta-variables(is-conclusion | conclusion, language)> nodes)
         where arg-count := <length> args;
               (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
                                           not(resolvable(is-conclusion | conclusion)))> args
 
+    compute-types(|langauge, cons, arg-count) : [] -> []
     compute-types(|language, cons, arg-count) : vars -> vars-types
         where
               productions := <get-productions-for-constructor(|language)> cons;
