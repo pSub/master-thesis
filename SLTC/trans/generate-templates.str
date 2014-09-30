@@ -49,9 +49,9 @@ rules
                                           <get-typing-judgment; get-outputs(|c)> lookup,
                                           <get-error-message> lookup)
                                  , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j')))> deps)\
-                         case where((get-generic-name; equal(|"Eq"), id)):
+                         case where((node-is-generic(|"Eq"), id)):
                               \(judg, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message; option(filter(?Error(_)))> judg)> judg, dep) \
-                         case where((get-generic-name; equal(|"Neq"), id)):
+                         case where((node-is-generic(|"Neq"), id)):
                               \(judg, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> judg)> judg, dep) \
                          otherwise:
                               \(judgment, deps) ->
