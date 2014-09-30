@@ -132,10 +132,7 @@ rules
                                              (id, length; newnames(|"Z"); map(makeVar));
                                              zip; replace-once(|substructures)> substructures;
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
-        templates' := <conc> (<diff> (templates, [property]), instances);
-        which-ambiguities := <group(equal-mod-var); filter(where(length; gt(|1)))> templates';
-        subsumed-templates := <mapconcat(solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property))> which-ambiguities;
-        !<conc> (<diff> (templates, [property]), <diff> (instances, subsumed-templates))
+        !<conc> (<diff> (templates, [property]), instances)
 
     remove-unsatisfiable-templates(|context-definitions) =
         ?templates;
