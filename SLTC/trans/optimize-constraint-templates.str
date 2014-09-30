@@ -146,7 +146,7 @@ rules
     remove-valid-premisses(|context-definitions, templates) =
         ?template;
         indices := <premisses-to-props; map(\p -> Formula__("", p)\); fof-from-templates(|context-definitions, templates);
-                    verify-vampire(|"2", "valid-premise"); add-indices; debug; remove-all(Snd;?VerificationSuccess(_)); map(Fst)> template;
+                    verify-vampire(|"2", "valid-premise"); add-indices; remove-all(Snd;?VerificationSuccess(_)); map(Fst)> template;
         premisses := <get-premisses> template;
         <set-premisses(|<map(\i -> <index(|i)> premisses\)> indices)> template
         
