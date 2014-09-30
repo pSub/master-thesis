@@ -29,7 +29,7 @@ rules
         where
             // Generate the constraint templates from the type system specification
             templates := <to-templates(|judgments, context-definitions, target-language);
-                          optimize-templates(|judgments, target-language, context-definitions)> typing-rules
+                          optimize-templates(|target-language, context-definitions)> typing-rules
 
     /**
      * Generates constraints from the given specification module

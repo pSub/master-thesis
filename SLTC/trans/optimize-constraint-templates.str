@@ -291,8 +291,9 @@ rules
      * @param context definitions of the specification 
      * @type List(Template) -> List(Template)
      */
-    optimize-templates(|judgments, target-language, context-definitions) =
+    optimize-templates(|target-language, context-definitions) =
+        ?(templates, judgments);
         {|Fresh:
-        solve-which-ambiguities(|context-definitions);
+        <solve-which-ambiguities(|context-definitions);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
-        order-forks-by-subsumption |}
+        order-forks-by-subsumption> templates |}
