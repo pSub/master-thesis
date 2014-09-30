@@ -8,6 +8,7 @@ imports fof-language
 imports generate-fof
 imports verification
 imports sdf-utils
+imports template-utils
 imports org/sugarj/languages/Sdf2
 
 imports include/SLTC
@@ -105,7 +106,7 @@ rules
         f@Fork__(ts) -> Fork__(ts')
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
               judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
-              non-terminals := <index(|judgment-number); collect-om(?Hole(non-terminal, _); !non-terminal, conc)> judgments;
+              non-terminals := <get-judgment-types(|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
               ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions));
                       remove-unsatisfiable-templates(|context-definitions);
