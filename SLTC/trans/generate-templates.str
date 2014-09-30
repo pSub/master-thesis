@@ -99,10 +99,13 @@ rules
             
             number-of-judgments := <length> j;
             
+            // Collect all new judgment definitions
             new-judgment-defs := <conc> (judgment-definitions, <mapconcat(Snd; Snd)> premisses-impl-eq);
             
+            // Create substitutions for the tentative equality judgments
             eq-judg-subst := <map-with-index(\(i, d) -> (<conc-strings> ("J", <dec; int-to-string> i), <add; int-to-string> (i, number-of-judgments))\)> new-judgment-defs;
             
+            // Replace tentative equality judgments with real equality judgments
             premisses-with-equalities' := <replace-all(|premisses-with-equalities);
                                            innermost(\UndefinedEq(n, args) ->
                                                         <mkterm> (<conc-strings> ("Eq-", n),
@@ -111,6 +114,7 @@ rules
             // Add new judgment definitions for the implicit equaltities
             j' := <conc> (j, judgment-definitions, new-judgment-defs);
 
+            // Collect all newly generated judgments and propagate them outwards using dynamic rules
             previous-judgments := <Judgments> 1;
             rules(Judgments :+ 1 -> <conc> (previous-judgments, judgment-definitions, new-judgment-defs));
 
@@ -195,6 +199,15 @@ rules
               (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
                                           not(resolvable(is-conclusion | conclusion)))> args
 
+    /**
+     * Computes the types of the passed meta-variables according to the surrounding
+     * constructor and the scope of the meta-variable.
+     *
+     * @param target language
+     * @param constructor that surrounds the variables
+     * @param number of arguments of the constructor
+     * @type List(MetaVariable) -> List(String)
+     */
     compute-types(|language, cons, arg-count) : [] -> []
     compute-types(|language, cons, arg-count) : vars -> vars-types
         where
@@ -206,7 +219,13 @@ rules
                                  < (id, \[sort(type)] -> type\)
                                  + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
               
-        
+    /**
+     * A node is resolvable (in the context of implicit equalities) if it is a meta-variable
+     * and it either is in the conclusion or if it is in a premise it must not occur in the conclusion.
+     *
+     * @param succeeds if the passed node is in the conclusion, fails otherwise
+     * @param conclusion of the typing rule
+     */
     resolvable(is-conclusion | conclusion) =
         and(node-is-meta-variable, is-conclusion <+ \n -> <collect(?n); equal(|[])> conclusion\)
 
