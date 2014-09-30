@@ -30,7 +30,7 @@ rules
                Rules(typing-rules),
                conjectures)
         -> <to-templates(|judgments, context-definitions, target-language);
-            optimize-templates(|judgments, target-language, context-definitions)> typing-rules
+            optimize-templates(|target-language, context-definitions)> typing-rules
 
     /**
      * Rule that transforms a typing rule into a constraint template.
