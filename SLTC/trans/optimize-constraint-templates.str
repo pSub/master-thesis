@@ -66,7 +66,7 @@ rules
         where ts' := <make-conclusions-equal(newnames(|"Z"); map(makeVar))> ts;
               rulez-premisses := <zip> (ts', <map(\r -> <filter(not(?r))> ts'\)> ts');
               ts'' := <remove-all(\(rule, premisses) ->
-                                        <is-subsumed(|judgments, context-definitions, <diff> (templates, [rule]))> (rule, premisses)
+                                        <is-subsumed(|judgments, context-definitions, templates, language)> (rule, premisses)
                                   \); map(Fst)> rulez-premisses
 
     make-conclusions-equal(wrap) =
@@ -76,10 +76,11 @@ rules
 
     is-subsumed(|judgments, context-definitions, templates) =
         ?(rule, templates);
-        premisses := <map(premisses-to-props)> templates;
+        templates-without-rule := <diff> (templates, [rule]);
+        premisses := <map(premisses-to-props)> templates-without-rule;
         rule-premisses := <premisses-to-props> rule;
         map(\ps -> Formula__("", Impl__(And__(rule-premisses), And__(ps)))\);
-        direct-proof(|<get-template-name> rule, templates, context-definitions);
+        direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
         some(?VerificationSuccess)
 
     /**
