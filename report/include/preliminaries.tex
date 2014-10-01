@@ -6,7 +6,7 @@ give a short overview of the alternatives.
 
 \subsection{SDF}
 \gls{sdf}~\cite{Heering:1989:SDF:71605.71607} is a formalism to define
-the syntax of formal languages in the tradition of
+the syntax of formal languages in the tradition of the
 \gls{bnf}. \gls{sdf} allows to define lexical and context-free
 grammars and is, in contrast to \gls{bnf}, modular. This modularity
 allows to compose \gls{sdf} syntax definitions. There are also parser
@@ -17,19 +17,22 @@ declarative, which increases the reusability of the specifications.
 
 The modularity of \gls{sdf} is a consequence of the fact that
 \gls{sdf} is \textit{generalized LR
-  parsable}~\cite{Rekers92parsergeneration}. Generalized parsing means
-that parsing might be indeterminate, i.e.\ the parser produces all
-possibilities for syntactic ambiguities. This might not seem to be an
-advantage, but generalized parsing has some nice implications. First,
-the class of supported grammars is bigger and therefore enforces less
-restrictions on the programmer and might allow a natural definition of
+  parsable}~\cite{Rekers92parsergeneration}. Generalized parsable
+means that parsing might be indeterminate, i.e.\ the parser produces
+all possibilities for syntactic ambiguities. This might not seem to be
+an advantage as we have to deal with ambiguities now, but generalized
+parsing has some nice implications. First, the class of supported
+grammars is larger and therefore enforces less restrictions on the
+programmer and might allow more natural definitions of formal
 languages. Second, it enables the modularity of \gls{sdf}, because the
 composition of generalized LR grammars is a generalized LR
 grammar. This does not hold in general for LR grammars.
 
-An other advantage is that \gls{sdf} is also scannerless
-parsable~\cite{Brand02disambiguationfilters}, that means that
-tokenization and parsing can be done in a single step.
+An other property of \gls{sdf} is that it is scannerless
+parsable~\cite{Brand02disambiguationfilters}, i.e.\ tokenization and
+parsing can be done in a single step. The advantages are that only one
+meta-language is needed and non-regular lexical structure are handled
+easily.
 
 \gls{sdf} also has support to specify layout sensitive
 languages~\cite{conf/sle/ErdwegRKO12} like Python or Haskell. It
@@ -56,25 +59,32 @@ exports
 \end{figure}
 
 Example~\ref{ex:sdf-grammar} shows a grammar that allows to write
-conjunctions of \code|true| and \code|false|. Conjunctions are
-represented in the \gls{ast} with the constructor \code|And| and the
+boolean expressions. Conjunctions are represented in the \gls{ast}
+with the constructor \code|And|, written as and infix \code|&| and the
 layout constraint enforces, that if conjunctions span over multiple
-lines, the right-hand side of \code|&| needs to be indented.
+lines, the right-hand side of \code|&| needs to be indented. Negation
+is represented in the \gls{ast} with the constructor \code|Not| and
+written as a prefix \code|~|. True and false are written as
+\code|true| and \code|false| respectively. In this example all
+expressions belong to the same syntactic sort \code|Bool|. Sorts
+represent non-terminals in \gls{sdf}. The start symbol is \code|Bool|
+as we only have a single sort.
 
-\gls{sdf} is used in this thesis to define the syntax of the
-specification language for type systems and for the target
-languages. Features like layout constraints make \gls{sdf} a good tool
-for defining complex syntax for natural deduction rules. The
-modularity and composability make it possible to define the syntax of
-the specification language independent of the target language.
+\gls{sdf} is used in this thesis to define the syntax of the type
+system specification language and for the target languages. \todo{We
+  haven't introduced the term target language yet} Features like
+layout constraints make \gls{sdf} a good tool for defining complex
+syntax for natural deduction rules. Further modularity and
+composability make it possible to define the syntax of the
+specification language independent of the target language.
 
 \subsection{Stratego/XT}
 Stratego~\cite{Visser01} is a framework for the development of
 transformation systems. It consists of the transformation language
-Stratego and a set of tools (XT) for tasks like parsing and pretty
-printing. The paradigm of Stratego is to use user-definable strategies
-for rewriting. Stratego distinguishes the following abstraction
-levels.
+Stratego and a set of tools (called XT) for tasks like parsing and
+pretty printing. The paradigm of Stratego is to use user-definable
+strategies for rewriting. Stratego distinguishes the following
+abstraction levels.
 
 \begin{description}
 \item[Transformation rules] are basic rewrite rules on the structure
@@ -83,12 +93,13 @@ levels.
   transformation rules. They combine rules, define the order of
   application and the traversal order of the \gls{ast}. These
   strategies can be defined generically. \textit{scoped dynamic
-    rewrite rules}~\cite{Visser01scopeddynamic} pass context
-  information during the traversal, because normal rewrite rules are
-  context-free.
+    rewrite rules}~\cite{Visser01scopeddynamic} allow to pass context
+  information during the traversal, because transformation rules and
+  strategies are context-free.
 \item[Transformation tools] allow to compile transformation strategies
   into a stand-alone program. The interface between such programs is
-  the ATerm format for \glspl{ast}.
+  the ATerm format~\cite{VandenBrand:2000:EAT:343460.343468} for
+  \glspl{ast}.
 \item[Transformation systems] describe a set of programs created by
   the transformation tools. A transformation system for a
   source-to-source transformation usually includes a parser and pretty
@@ -96,7 +107,7 @@ levels.
 \end{description}
 
 Example~\ref{ex:stratego-module} shows a Stratego module that declares
-the constructors from Example~\ref{ex:sdf-grammar}. It has one rule
+the constructors from Example~\ref{ex:sdf-grammar}. It has a rule
 \code|Eval| that reduces a term one step. The strategy \code|eval|
 applies rule \code|Eval| repeatedly from bottom to top.
 
@@ -123,19 +134,19 @@ strategies
 \end{example}
 \end{figure}
 
-Stratego interacts well with \gls{sdf} and has facilities to integrate
-into tool-chains. In addition it allows to write abstract and generic
-transformations, which makes it a good choice for the transformation
-system.
+We choose Stratego to implement the transformation into first-order
+formulas and the type checker generator as interacts well with
+\gls{sdf}, has facilities to integrate into tool-chains and it allows
+to write abstract and generic transformations.
 
 \subsection{Spoofax}
 Spoofax~\cite{KatsV10} started with the goal to provide an \gls{ide}
 for \gls{sdf} and Stratego. It was then developed into a language
 workbench for Eclipse that allows language development with editor
-support for both, the languages used for development and the developed
-language. Spoofax allows smooth switching between both editor
-services. The editor for the developed language can be deployed
-standalone. Those editor services can provide syntactic and semantic
+support for both, the meta-languages and the developed
+language. Spoofax allows smooth switching between both editor services
+and allows to deploy the editor for the developed language
+standalone. The editor services provide syntactic and semantic
 analysis based on live parses, with error recovery and origin
 tracking. Those facilities are implemented language pragmatic, which
 allows developers to focus on language specific parts.
@@ -151,42 +162,46 @@ prove classical first-order logic propositions about type system
 specifications. Vampire is able to parse formulas in the \gls{tptp}
 format and provides detailed output for the conducted proofs. We use
 this output to extract information about the applied axioms, which are
-in our case typing rules.
+in our case typing rules. However the choice of Vampire was rather
+arbitrary every first order theorem prover that has support for
+\gls{tptp} can will do the job. Of course the results might vary
+depending on the performance of the theorem prover.
 
 \subsection{Alternatives}
-We chose Spoofax and its components, because its feature set fit well
-to our goals and there was some previous work related work based on
-it. However there are alternative \textit{language workbenches} that
+We chose Spoofax and its components, because its feature set fits well
+to our goals and there was some previous related work based on
+it. However there are alternative \emph{language workbenches} that
 could have been a good fit as well. For example
 Rascal~\cite{klint2009rascal} a meta-programming language that has
 among others support for context-free grammars, algebraic data-types,
 relations, relational calculus operators, advanced patterns matching,
 generic type-safe traversal, comprehensions, and string templates for
-code generation.~\cite{workbenches} gives an overview of the state of
-the art in language workbenches.
+code generation. The paper~\cite{workbenches} gives an overview of the
+state of the art in language workbenches.
 
 \section{Type Systems}
 \textit{Type theory} started as an attempt by Gottlob Frege to solve
-Russel's paradox, that shows that \naive{} set theory is
+Russel's paradox, which shows that \naive{} set theory is
 inconsistent. Frege argued that a predicate requires an object as
 argument and cannot have itself as an argument, as it is the
 subject. So the initial motivation for type theory was to avoid
 paradoxes and contradictions in logics and rewrite systems. The term
-\textit{type system} refers to type theories whose logics rewrite
-systems are programming languages. Type systems address the problem to
-ensure that programs have meaning, whereas in type theory the problem
-is the ensure the consistency of a logic.
+\textit{type system} refers to type theories whose rewrite systems are
+programming languages. Type systems address the problem to ensure that
+programs have meaning, whereas in type theory the problem is the
+ensure the consistency of a logic.
 
 What does it mean to ``ensure that programs have meaning''? First, it
 means that one wants to filter the useful programs. It is not useful
-to have a syntactically valid program that has no semantics. A type
-system assigns types to the expressions of the programming language. A
-\textit{type checker} can then verify, whether the types of the
-programs expressions match according to predefined typing rules. If
-the type checker succeeds the program is \textit{well-typed} and has
-meaning, i.e.\ the program will not exit due to undefined
-semantics. Depending on the expressiveness of the type system also the
-correctness of the computation that the program performs can be shown.
+to have a syntactically valid program that has no semantics as this
+program will behave unexpectedly at some point. A type system assigns
+types to the expressions of a programming language. A \textit{type
+  checker} can then verify, whether the types of the programs
+expressions match according to predefined typing rules. If the type
+checker succeeds the program is \textit{well-typed} and has meaning,
+i.e.\ the program will not misbehave due to undefined semantics. Depending
+on the expressiveness of the type system also the correctness of the
+computation that the program performs can be shown.
 
 \section{First-Order Logic}
 
