@@ -59,6 +59,12 @@ give hints for proof search, e.g.\ by providing induction
 hypothesis. This establishes a direct connection between the specified
 type system, the proofs and the generated type checker.
 
+The translation of type system specifications into first-order formula
+representations also enables to provably check for and remove
+redundancies in the type system specification. As redundancies have a
+potential to slow down the generated type checker, the removal leads
+to different optimization strategies for the resulting type checker.
+
 The goal of this thesis is to narrow the gap between theory and
 implementation of type systems. A declarative specification language
 is developed, in which type systems are represented close to the
