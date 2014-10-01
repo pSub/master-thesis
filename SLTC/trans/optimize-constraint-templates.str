@@ -30,7 +30,7 @@ rules
                 optimize-fork(|judgments, context-definitions, templates);
                 remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
-        where equivalence-classes := <group(equal-mod-var); filter(where(length; gt(|1)))> templates
+        where equivalence-classes := <group(equal-mod-var); filter(where(or(length; gt(|1), some(?Fork__(_)))))> templates
     
     /**
      * Extracts the pattern from the rules and compares the results modulo
