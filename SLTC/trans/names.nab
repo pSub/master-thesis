@@ -19,6 +19,3 @@ binding rules
         
     ContextDefinition(c,_):
         defines Context c
-        
-    RuleName(_,r):
-        defines Rule r
