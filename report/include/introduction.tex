@@ -7,13 +7,13 @@ Type systems ensure that programs are well-behaved. In other words,
 they ensure that programs have meaning in the sense of the semantics
 of the programming language. The type systems we focus on are static
 type systems and can be thought of as a static approximation of the
-programs semantics. Besides ensuring that programs are well-behaved,
+program semantics. Besides ensuring that programs are well-behaved,
 type systems are means to establish abstractions and to enforce
 adherence to these abstractions. Type systems can provide explicit
-type annotations that serve as program documentation that cannot
-become obsolete. Type checking can also annotate a program with
-optimization hints for the compiler. All in all type systems can help
-to develop software more efficiently
+type annotations that serve as program documentation, which cannot
+become obsolete. During type checking the program under consideration
+can also be annotated with optimization hints for the compiler. All in
+all type systems can help to develop software more efficiently
 (cf.~\cite{Petersen:2014:ECS:2597008.2597152}
 and~\cite{Mayer:2012:ESI:2384616.2384666}).
 
@@ -21,39 +21,43 @@ Type systems are useful tools, particularly if they fit to the
 programming language and the application scenario. To ensure a type
 system fits to a programming language, e.g.\ in the context of a
 \gls{dsl}, it makes sense to adapt and modify existing type systems or
-create new specialized type systems. Those specializations can lead to
-better error messages, more expressive type systems and the detection
-of more errors, cf.~\cite{Thiemann02programmabletype}. Currently there
-are no established tools that could support the creation and adaption
-of type systems by generating type checkers from a type system
-specification. Such generators could accelerate the development of
-type checkers and make development less error prone. Those generators
-would fit well into the language development workbench besides the
-long established lexer and parser generators.
+to create new specialized type systems. Those specializations can lead
+to better error messages, more expressive type systems and the
+detection of more errors
+(cf.~\cite{Thiemann02programmabletype}). Currently there are only some
+tools that support the creation and adaption of type systems by
+generating type checkers from a type system specification
+(\cite{Markstrum:2010:JDP:1667048.1667049}, \cite{ortin2014automatic},
+\cite{gast2005generator}, \cite{tomb2005automatic} and
+\cite{bergan2007typmix}), but they are not established. Such
+generators accelerate the development of type checkers, make
+development less error prone and fit well into the language
+development workbench besides the long established lexer and parser
+generators.
 
 Type checker generators that use a high-level specification language
-can also provide type theorists with a tool, that allows them play
-with new type systems without long development delays. High-level
-specifications that are close to the formalism used by type theorists
-have also the advantage of narrowing the gap between type systems on
-paper and their implementation. Results shown for the paper version
-can be adapted for the implementation (depending on the correctness of
-the type checker generator). Such adaptions are not possible with
-traditional implementations. High-level specification languages are
-also suited to specify type systems from other areas, like
-language-based information-flow
+can also provide type theorists with a tool that allows them
+experiment with new type systems without long development
+delays. High-level specifications that are close to the formalism used
+by type theorists have also the advantage of narrowing the gap between
+type systems on paper and their implementation. Results shown for the
+paper version can be adapted for the implementation (depending on the
+correctness of the type checker generator). Such adaptions are not
+possible with handcrafted implementations. High-level specification
+languages are also suited to specify type systems from other areas,
+like language-based information-flow
 security~\cite{Sabelfeld:2006:LIS:2312191.2314769}.
 
-To have more confidence into properties of a type system the
-declarative specification can be translated into first-order formula
+To have more confidence into the properties of a type system, a
+declarative specification can be translated into a first-order formula
 representation, which can be used to conduct proofs of these
-properties. As the proofs of propositions about type systems change
-when the type system changes, it is desirable to make most of these
-changes automatically. Automated theorem provers can try to conduct
-those proves automatically. If the proof search fails one can give
-hints for proof search, e.g.\ providing induction hypothesis. This
-establishes a direct connection between the specified type system, the
-proofs and the generated type checker.
+properties. As the proofs of propositions about type systems have to
+change when the type system changes, it is desirable to make most of
+these changes automatically. Automated theorem provers can try to
+conduct those proves automatically. If the proof search fails one can
+give hints for proof search, e.g.\ by providing induction
+hypothesis. This establishes a direct connection between the specified
+type system, the proofs and the generated type checker.
 
 The goal of this thesis is to narrow the gap between theory and
 implementation of type systems. A declarative specification language
