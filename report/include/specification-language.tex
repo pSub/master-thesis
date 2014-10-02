@@ -2,7 +2,7 @@
 \label{cha:spec-lang}
 Our type system specification language is a \gls{dsl} for people
 familiar with type systems or type theory. While developing it, we had
-the following goals in mind, that will be described below. The
+the following goals in mind that will be described below. The
 specification language should be
 
 \begin{itemize}
@@ -18,11 +18,12 @@ high-level specification.
 \section{Design \& Architecture}
 \label{sec:design--architecture}
 In this sections we introduce the architecture of the specification
-language with references to a small example specification and argue
-how this architecture reflects the goals mentioned above.
+language with references to a small examples and argue how this
+architecture reflects the goals mentioned above.
 
-A specification of our specification language is divided into eight
-sections, of which two are optional.
+Specifications in our specification language are divided into eight
+sections, of which two are optional. The sections have to be present
+in the order they are introduced.
 
 \paragraph{Module name} The first section declares the name of the
 specification module. This name is a unique identifier and used for
@@ -34,7 +35,7 @@ specifications are imported and is optional.
 \paragraph{Language} The third section declares the language for which
 a type system should be specified. This language needs to be present
 as an \gls{sdf} module located at the specified path. We call this
-language from now on \textit{target language}.
+language from now on \emph{target language}.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -45,22 +46,48 @@ language specifications/simply-typed-lambda-calculus/syntax
 
 In Example~\ref{ex:language-section} the language definition at
 \code|specifications/simply-typed-lambda-calculus/syntax.sdf|
-is used, this path is relative to the syntax folder of the Spoofax
+is used, this path is relative to the \code|syntax| folder of the Spoofax
 project.
 
 \paragraph{Contexts} The fifth section declares the contexts that can
 be used in the judgments and rules. Informally these contexts are
 declared as cross-products of non-terminals, i.e.\ a context is a set
-consisting of pairs of terminals that can be produced by the
+consisting of tuples of terminals that can be produced by the
 non-terminals in the declaration. Every context has a name, which can
-be used in further declarations. Lookups may differ for contexts and
-use cases, therefore one has to annotate the non-terminals with input
-and output tags. Terminals at positions that are tagged with input are
-used to look up terminals tagged with output that are saved in the
-context. An context for which all non-terminals are tagged with input,
-is equivalent to a normal look up in a set and will return whether the
-tuple could be found. An context with only outputs acts as a sink, one
-can put things into it, but never retrieve anything back.
+be used as a non-terminal in the specification.
+
+Contexts serve in most use cases as bindings for variables. Therefore
+it is necessary to be able to look up terminals in a context. In the
+context declaration each non-terminal is annotated with an input
+(\code|{I}|) and output \code|{O}| tag. Those tags specify the key and
+value positions of the context. Depending on those annotations we
+generate look up functions. If all non-terminals are tagged as inputs
+the generated look up function will perform a normal membership
+test. However a context with only output tags is not useful as it is
+not possible to add elements to it.
+
+Given a context declaration \code|Z := A{I} x B{I} x C{O} x D{O}| an
+instance of this context looks like \code|(a : b : c : d) ; z| where
+\code|a|, \code|b|, \code|c| and \code|d| are terminals produced from
+the non-terminals \code|A|, \code|B|, \code|C|, \code|D|,
+respectively. \code|z| is an other instance of context \code|Z| or the
+empty context, which is written \code|()|.
+
+\begin{example}
+\begin{lstlisting}[language=sltc]
+contexts Binding := ID{I} x Type{O}
+\end{lstlisting}
+\label{ex:context-section}
+\end{example}
+
+Example~\ref{ex:context-section} shows a context called \code|Binding|
+that consists of a non-terminal \code|ID| tagged as input and a
+non-terminal \code|Type| tagged as output. This contexts models a type
+binding for identifiers. We generate from this context declaration a
+look up function of the form \code|i : t in c| where \code|i|
+represents a terminal produced from \code|ID|, \code|t| a terminal
+produced from \code|Type| and \code|c| represents an instance of
+context \code|Binding|. 
 
 \paragraph{Meta-variables} The fourth section declares
 meta-variables. The declaration of a meta-variable consists of a
