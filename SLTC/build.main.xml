@@ -18,7 +18,9 @@
     <property name="dist" location="bin/dist"/>
 	<property name="syntax.rel" location="${syntax}" relative="yes"/>
 	<property name="include.rel" location="${include}" relative="yes"/>
-    
+    <property name="lib-gen.rel" location="${lib-gen}" relative="yes"/>
+    <property name="trans.rel" location="trans" relative="yes"/>
+
     <!-- Imports -->
     <property name="build.sdf.imports" value=""/>
     <property name="build.stratego.args" value="
