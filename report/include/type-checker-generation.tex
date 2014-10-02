@@ -88,7 +88,7 @@ templates. This phase is not just a simple translation from a human
 readable representation into a representation suitable for programs,
 but also normalizes the resulting templates. Normalization comprises
 the elimination of implicit equalities and resolves dependencies
-between premisses. All following phases assume normalized templates.
+between premises. All following phases assume normalized templates.
 The normalization allows simplifications in the implementations of the
 phases.
 
@@ -147,8 +147,8 @@ generation phase, where we can see immediately which are the patterns
 to match against the expressions and which are the output positions
 that we compute. As described in the introduction to this chapter, we
 normalize templates. For each implicit equality in the conclusion and
-premisses of typing rules we add an explicit equality. Thus every
-variable occurs in each judgment only once. Further we sort premisses
+premises of typing rules we add an explicit equality. Thus every
+variable occurs in each judgment only once. Further we sort premises
 by input/output position dependencies. We describe and motivate the
 normalization process in the remainder of the section. The template
 optimization and constraint generation phase take advantage of these
@@ -249,12 +249,12 @@ Neq(Var("X0"), Var("X1"), None())
   \code|Var("X1")| are not equal and provide no error message.
 \end{description}
 
-In some cases it is relevant in which order we evaluate premisses. As
-we have not talked about evaluation yet, we assume premisses are
+In some cases it is relevant in which order we evaluate premises. As
+we have not talked about evaluation yet, we assume premises are
 evaluated like functions. We provide terms for input positions an
 retrieve terms for the output positions. If we look at
 Example~\ref{ex:premise-dependencies} we see that rule \code|T-Tapp|
-has two premisses. When we compare the premisses with the judgment
+has two premises. When we compare the premises with the judgment
 definitions, we see that \code|%x| occurs as an input of the first
 premise and as within an output of the second premise but not at all
 in the conclusion. If we want to evaluate the first premise we have to
@@ -285,7 +285,7 @@ information and only added to reduce indirections.
 The dependency for the first premise in
 Example~\ref{ex:premise-dependencies} the would look like
 \code|(1,[TAll(Var("X0"), Var("X1"))])|. In this example \code|1| refers to the
-second premise, because we sort premisses of templates topological
+second premise, because we sort premises of templates topological
 according to the dependencies, as we will describe in the next
 section.
 
@@ -324,13 +324,13 @@ template generation. It takes a rule from a specification and
 transforms that rule into a template. The strategy \code|to-templates| does
 that iteratively for every rule in a specification. The first step in
 the conversion is the elimination of implicit equalities in the
-premisses and the conclusion.
+premises and the conclusion.
 
 For each implicit equality we create an explicit equality, by
 collecting all variables that occur more than once in an input
 position of a premise or conclusion. After that we create fresh names
-for the collect variables and create premisses that state the equality
-of the fresh meta-variables. Implicit equalities in premisses are not
+for the collect variables and create premises that state the equality
+of the fresh meta-variables. Implicit equalities in premises are not
 transformed into explicit equalities if the meta-variables also occur
 in the conclusion. These equalities are either ensured by explicit
 equalities from the conclusion or if there are no implicit equalities
@@ -379,19 +379,19 @@ message as a normal error to the explicit equality.
 
 After this step, there are no implicit equalities left, i.e. all
 meta-variables within a judgment are different. As a next step we
-analyze the premisses of the typing rule for dependencies. One premise
+analyze the premises of the typing rule for dependencies. One premise
 depends on the other, if it uses meta-variables in input positions
 that occur in an output position of another premise and not as an
 input position in the conclusion. As we need to supply the input
 positions with concrete terms to check if a premise holds, we can only
 evaluate a dependency if we first evaluate all its dependencies. In
-the generation process we do two things: Sort the premisses according
+the generation process we do two things: Sort the premises according
 to their dependencies and annotate them with the output positions of
 the dependencies, as described in the previous paragraph. The
 implementation of this ordering is standard. First we collect all
-premisses and their dependencies in a graph. Due to the nature of the
+premises and their dependencies in a graph. Due to the nature of the
 dependency it is more natural to create edges from a premise to the
-premisses it depends on. Therefore the resulting dependency graph is a
+premises it depends on. Therefore the resulting dependency graph is a
 transposed dependency graph. We sort this graph topologically with the
 algorithm by Kahn~\cite{Kahn:1962:TSL:368996.369025}. The result is
 the reversed order, as we used the transposed dependency
@@ -512,7 +512,7 @@ element into a \code|Fork|.
 
 We optimize forks containing which-ambiguities by checking whether a
 template of a fork is subsumed by an other template of the same
-fork. Template $t_1$ subsumes template $t_2$ if all premisses of $t_2$
+fork. Template $t_1$ subsumes template $t_2$ if all premises of $t_2$
 imply at least one premise of $t_1$. This is sufficient, because the
 conclusion of all templates within a fork matches the same terms.
 
@@ -540,7 +540,7 @@ contexts and exactly the same term pattern.
 \end{example}
 
 We know that the subtyping relation \code|<:| is reflexive by the rule
-\code|S-Refl|. Now we show that all premisses of \code|S-width| imply
+\code|S-Refl|. Now we show that all premises of \code|S-width| imply
 at least one premise of \code|S-depth|. \code|~T = ~S| implies
 \code|~T <: ~S| because the subtyping relation is reflexive and
 \code|{ $R } <: { $U }| occurs verbatim as a premise of
@@ -557,7 +557,7 @@ within a fork a template $t'$ such that
 \end{align}
 
 holds. In Formula~\ref{formula:which-ambiguity} $p_i$ are the
-premisses of $t$ and $q_i$ are the premisses of $t'$. We verify the
+premises of $t$ and $q_i$ are the premises of $t'$. We verify the
 conjuncts in Formula~\ref{formula:which-ambiguity} separately with the
 vampire theorem prover. If vampire succeeds for all conjuncts we
 remove template $t$. 
@@ -652,7 +652,7 @@ We have divided the main logic of constraint generation into three
 Stratego strategies: \code|generate| selects the template matching the
 current term, \code|generate'| applies the current term to the
 conclusion of the selected template and \code|execute| evaluates the
-premisses of the template. All three strategies return a tuple of the
+premises of the template. All three strategies return a tuple of the
 computed outputs and the generated constraints. We wrap the computed
 outputs into \code|Option| to model the absence of outputs in cases of
 errors.
@@ -692,17 +692,17 @@ access specific elements of terms. The corresponding element to the
 input term is the term pattern of the templates conclusion. We update
 the terms and patterns if we want to add another term and pattern to
 the scope. The patterns and terms are later used to instantiate
-variables in premisses or error messages.
+variables in premises or error messages.
 
 Unless the selected rule is no fork, the evaluation works as
 follows. In correspondence to the bindings in the context pattern of
 the conclusion, we pop all terms from the contexts and bring them into
 scope. Also if a variable occurs in the inputs of a premise but
 neither in the inputs of the conclusion nor in the outputs of other
-premisses but int the outputs of the conclusion, then we bring it into
+premises but int the outputs of the conclusion, then we bring it into
 scope with the expected outputs. \todo{restructure sentence} This
 allows to deal with typing rules that have free variables in their
-premisses as for instance in the subsumption rule for subtyping.
+premises as for instance in the subsumption rule for subtyping.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -727,11 +727,11 @@ variables that do not have the prefix \code|Y| with a fresh variable
 with the prefix \code|Y|. Additionally this allows to verify visually
 whether all variables are fresh.
 
-Now we evaluate the premisses of the template. A key element in the
+Now we evaluate the premises of the template. A key element in the
 evaluation is the instantiation of the variables in the premise
 patterns according to the conclusion pattern and input term, because
 we need input terms to recursively call \code|generate| on the
-premisses or to create solvable (in-)equality
+premises or to create solvable (in-)equality
 constraints. \todo{split sentence up}
 
 We initialize variables in inputs of a judgment using a term and a
@@ -747,14 +747,14 @@ path and fetching the node at its end. We ensure that the pattern and
 term always have the same structure, otherwise we would retrieve false
 positives.
 
-As described in Section~\ref{sec:constraint-templates} the premisses
+As described in Section~\ref{sec:constraint-templates} the premises
 were topologically sorted we can evaluate them in the given
 order. However, to ensure that the terms of all dependencies are
 available during evaluation, we have to accumulate the outputs of the
-evaluated premisses and add those to the patterns and terms used for
+evaluated premises and add those to the patterns and terms used for
 the instantiation.
 
-The strategy \code|execute| does the evaluation of the premisses. We
+The strategy \code|execute| does the evaluation of the premises. We
 call \code|execute| for each premise with a copy of the contexts to
 ensure that one premise cannot pollute the contexts of another
 premise. We have implemented a safe version of \code|hashtable-copy|
@@ -762,7 +762,7 @@ to ensure that after the evaluation of the premise all copies are
 destroyed.
 
 We now describe what \code|execute| does for the different types of
-premisses.
+premises.
 
 \begin{description}
 \item[Lookup:] The inputs of the lookup are instantiated, then the
@@ -782,7 +782,7 @@ premisses.
   term with a version of the store that has been updated according to
   the context pattern of the judgment. In addition we instantiate the
   expected outputs of the judgment to make the binding of free
-  variables in premisses more precise. After the call to
+  variables in premises more precise. After the call to
   \code|generate| returns we generate equality constraints for the
   bindings in the context pattern of the premise and generate equality
   constraints between the output pattern and the computed output, with

@@ -168,21 +168,21 @@ create additional fresh variables for input positions.
 To rewrite typing rules into first-order formulas is a bit more
 involved than the rewriting of context declarations. The strategy
 \code|make-formula| transforms rules into first-order formulas in the
-\gls{tptp} format. This strategy rewrites premisses and conclusions
+\gls{tptp} format. This strategy rewrites premises and conclusions
 into first-order terms using the strategy \code|rewrite|. Premises
 are, due to limitations of the \texttt{layout}-rules, not represented
-as ordinary lists after parsing. Therefore premisses are transformed
+as ordinary lists after parsing. Therefore premises are transformed
 into ordinary lists by the generic \texttt{to-list} strategy. Now that
-we have first-order terms for the premisses and the conclusion, we
+we have first-order terms for the premises and the conclusion, we
 collect all free variables that occur in them. In rules variables are
 not bound, thus all variables are free. However it is important to
 collect only free variables, as conjectures may contain
-quantifiers. At last, we put premisses, conjecture and quantification
+quantifiers. At last, we put premises, conjecture and quantification
 together to construct a formula in the \gls{tptp} format which has the
 structure of Formula~\ref{formula:typing-rule}.
 
 Now we present the details of the \texttt{rewrite} strategy, which
-transforms premisses and conclusions. We this strategy is defined as a
+transforms premises and conclusions. We this strategy is defined as a
 sequence of two top down traversals. The first traversal is the actual
 rewrite of the typing judgments and the second is a special treatment
 for strings. The second traversal is necessary to wrap all target

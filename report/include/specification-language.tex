@@ -168,7 +168,7 @@ relation.
 \paragraph{Rules} The seventh section of the module declares the
 (typing) rules. These rules define the semantics for the judgments
 declared in the previous section. The syntax of the rules replicates
-the form of inference rules: A (possibly empty) list of premisses
+the form of inference rules: A (possibly empty) list of premises
 separated from a conclusion by a horizontal line. Premisses and
 conclusion are instantiated judgments. All meta-variables that occur
 free in rules are implicitly all-quantified. This means that all
@@ -216,15 +216,15 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 
 Example~\ref{ex:rules} shows the rules \code|Subst-Eq| and
 \code|T-Tapp| from the SystemF \todo{Reference}
-implementation. \code|Subst-Eq| has no premisses and an implicit
+implementation. \code|Subst-Eq| has no premises and an implicit
 equality in the conclusion. Rule \code|T-Tapp| shows how the expected
-output is used in the error messages and how premisses are annotated
+output is used in the error messages and how premises are annotated
 with error messages. All error message annotations belong to the
 preceding premise.
 
 \paragraph{Conjectures} Tests for a specification are called
 \textit{conjectures}. Their syntax is similar to the syntax of rules,
-with two exceptions. It is not possible to annotate premisses or
+with two exceptions. It is not possible to annotate premises or
 conclusions with error messages and a conjecture can be marked as
 \textit{not derivable} by prepending the separating line with a
 slash. Marking conjectures not derivable allows to formulate negative
