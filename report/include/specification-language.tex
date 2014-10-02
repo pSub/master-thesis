@@ -92,9 +92,9 @@ context \code|Binding|.
 \paragraph{Meta-variables} The fourth section declares
 meta-variables. The declaration of a meta-variable consists of a
 class, a prefix and a set of non-terminals from the target
-language. We use this class to distinguish different kinds of
-meta-variables. Currently we use them only for merging meta-variable
-declarations when resolving imports. For details
+language. We use the class to distinguish different kinds of
+meta-variables. Currently we use classes only for merging
+meta-variable declarations when resolving imports. For details
 see~\ref{sec:generate-sdf}.
 
 The set of non-terminals defines the scope of a meta-variable. Every
@@ -109,10 +109,10 @@ is prefixed with the prefix of the meta-variable definition. The sole
 purpose of the prefix is to avoid syntactic ambiguities. The prefix
 itself can consist of numbers, letters and the following symbols
 \code|~|, \code|$|, \code|%|, \code|&| and \code|?|. %% $
-\todo{Is this list complete?} There is currently no way to add new
-symbols to that list, but editing the syntax definition of the
-specification language.  Usually a prefix is chosen such that it
-is not a prefix of a construct of the target language.
+There is currently no way to add new symbols to that list, but editing
+the syntax definition of the specification language. Usually a prefix
+is chosen such that it is not a prefix of a construct of the target
+language.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
