@@ -5,7 +5,7 @@ Quick-Start-Guide:
 
     * Clone repository
     * Install vampire and make sure it is in PATH
-    * Install Eclipse plugin Spoofax (http://download.spoofax.org/update/nightly)
+    * Install Eclipse plugin Spoofax (http://download.spoofax.org/update/stable)
     * Import project into Eclipse
     * Build the project to make sure everything works
     * Restart Eclipse
