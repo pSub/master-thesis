@@ -90,12 +90,13 @@ produced from \code|Type| and \code|c| represents an instance of
 context \code|Binding|. 
 
 \paragraph{Meta-variables} The fourth section declares
-meta-variables. The declaration of a meta-variable consists of a
-class, a prefix and a set of non-terminals from the target
-language. We use the class to distinguish different kinds of
-meta-variables. Currently we use classes only for merging
-meta-variable declarations when resolving imports. For details
-see~\ref{sec:generate-sdf}.
+meta-variables. In specifications meta-variables are used to refer to
+expressions of the target language and to contexts. The declaration of
+a meta-variable consists of a class, a prefix and a set of
+non-terminals from the target language. We use the class to
+distinguish different kinds of meta-variables. Currently we use
+classes only for merging meta-variable declarations when resolving
+imports. For details see~\ref{sec:generate-sdf}.
 
 The set of non-terminals defines the scope of a meta-variable. Every
 non-terminal from the target language contained in this set is
