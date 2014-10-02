@@ -16,6 +16,8 @@
     <property name="lib" location="lib"/>
     <property name="build" location="bin"/>
     <property name="dist" location="bin/dist"/>
+	<property name="syntax.rel" location="${syntax}" relative="yes"/>
+	<property name="include.rel" location="${include}" relative="yes"/>
     
     <!-- Imports -->
     <property name="build.sdf.imports" value=""/>
