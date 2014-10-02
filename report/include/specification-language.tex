@@ -175,24 +175,25 @@ the form of inference rules: A (possibly empty) list of premises
 separated from a conclusion by a horizontal line. Premises and
 conclusion are instantiated judgments. All meta-variables that occur
 free in rules are implicitly all-quantified. This means that all
-meta-variables are all-quantified, as there is not mechanism to bind
+meta-variables are all-quantified, as there is no mechanism to bind
 variables in typing rules.
 
-Rules can be annotated with a name. This increases the readability of
-the specification and allows to create human readable derivation
+Rules can be annotated with a name. The names increase the readability
+of the specification and allow to create human readable derivation
 traces. The rules have also support for custom error messages. There
-are two kinds of error annotation. Premises can be annotated with
-\code|@error msg|, where \code|msg| can contain meta-variables and the
-special symbol \code|INFTYPE| interleaved with arbitrary
-strings. Those errors are thrown if the premise could not be derived
-or if the calculated output does not match the expected output. The
-meta-variables are instantiated with the appropriate terms and
-\code|INFTYPE| with the expected output. The other kind of error
-messages can also be annotated on the conclusion. Those errors are
-prefixed with \code|@implicit| and are thrown if an implicit equality
-between two meta-variables cannot be satisfied. The meta-variables are
-distinguished in the error message by \code|@[number]|
-annotations. Section~\ref{sec:constr-gener} and
+are two kinds of error annotations. Premises can be annotated with
+\code|@error msg|, where \code|msg| can contain meta-variables and
+holes (written \code|{}|) interleaved with arbitrary strings. Those
+errors are thrown if the premise could not be derived or if the
+calculated output does not match the expected output. The
+meta-variables are instantiated with the appropriate terms and the
+hole with the expected output. The other kind of errors are prefixed
+with \code|@implicit| and are thrown if an implicit equality between
+two meta-variables cannot be satisfied. The meta-variables are
+distinguished in the error message by \code|@[number]| annotations,
+where \code|number| is a natural number. The conclusion can also be
+annotated with error messages for implicit
+equalities. Section~\ref{sec:constr-gener} and
 Section~\ref{sec:constraint-solving} explain how error messages are
 implemented in the type checker generator.
 
@@ -206,6 +207,7 @@ rules
 
 ===================== Subst-Eq
 ~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
+
 
 ~U = [ %x -> ~S ] ~T @error ~U "is not" ~T "where" %x "is
                             replaced by" ~S.
@@ -255,8 +257,8 @@ Example~\ref{ex:conjecture-section} shows two conjectures of the PCF
 implementation. They use the judgment shown in
 Example~\ref{ex:judgment-section}. The first conjecture asserts that
 the type of the faculty function applied to \code|3| is \code|int| and
-the second conjecture asserts that \code|fun x : int (x)| does not
-have type \code|int|.
+the second conjecture asserts that \code|fun x : int (x)| has type
+\code|int| is not derivable.
 
 Line comments (\code|//|) and block comments (\code|/* ... */|) can be
 inserted everywhere in the module.
