@@ -130,10 +130,11 @@ meta-variable of this class has the prefix \code|"~"|. Productions for
 meta-variables of this class are added to the non-terminals
 \code|Type| and \code|Exp|.
 
-\paragraph{Judgments} The sixth section of the module declares
-judgments. Judgments in our specification language are the basic
-building blocks of the rules defined in the next section, as it is
-common in deduction systems. They are the ``syntax'' of the type
+\paragraph{Judgments} The sixth section of a type system specification
+module declares judgments. In our specification language judgments are
+the basic building blocks of the rules defined in the next
+section. This is common in the specification of deduction systems in
+general. Judgments can be thought of as the ``syntax'' of the type
 system, the semantics is defined by the rules.
 
 A judgment can be defined rather arbitrarily from a combination of
@@ -141,8 +142,9 @@ strings of letters and numbers, non-terminals of the target language
 and the names of the contexts. Those can be mixed freely, as long as a
 string separates the non-terminals and context names. This restriction
 is only needed to reduce the number of syntactic ambiguities in the
-language. Judgments do not have a name and each judgment must be
-closed with a dot.
+language. Judgments do not have a name as it is not possible to
+quantify over them. To separate judgment declarations from each other,
+each declaration must be finalized with a dot.
 
 Non-terminals of the target language and context names need to be
 annotated with input/output-tags. Those tags describe which parts of
@@ -170,7 +172,7 @@ relation.
 (typing) rules. These rules define the semantics for the judgments
 declared in the previous section. The syntax of the rules replicates
 the form of inference rules: A (possibly empty) list of premises
-separated from a conclusion by a horizontal line. Premisses and
+separated from a conclusion by a horizontal line. Premises and
 conclusion are instantiated judgments. All meta-variables that occur
 free in rules are implicitly all-quantified. This means that all
 meta-variables are all-quantified, as there is not mechanism to bind
@@ -179,7 +181,7 @@ variables in typing rules.
 Rules can be annotated with a name. This increases the readability of
 the specification and allows to create human readable derivation
 traces. The rules have also support for custom error messages. There
-are two kinds of error annotation. Premisses can be annotated with
+are two kinds of error annotation. Premises can be annotated with
 \code|@error msg|, where \code|msg| can contain meta-variables and the
 special symbol \code|INFTYPE| interleaved with arbitrary
 strings. Those errors are thrown if the premise could not be derived

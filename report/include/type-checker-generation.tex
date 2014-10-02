@@ -116,11 +116,11 @@ the typing rules of the specification language.
   sake of readability. The non-terminals Inputs, Outputs, Term and
   Error may contain arbitrary terms.
   \begin{grammar}
-    <Template> ::= `Template' <Premisses> <Conjecture>
+    <Template> ::= `Template' <Premises> <Conjecture>
 
     <Conjecture> ::= `Conjecture' <Judg> <Name> <Pattern> <Outputs>
 
-    <Premisses> ::= $\epsilon$ | <Premise> <Dependencies> <Premisses>
+    <Premises> ::= $\epsilon$ | <Premise> <Dependencies> <Premises>
 
     <Premise> ::= `Lookup' <Ctx> <Inputs> <Outputs> <Error>
     \alt `Judgment' <Judg> <Inputs> <Binding> <Outputs> <Error>
@@ -158,8 +158,8 @@ Note: We transform all meta-variables of the specification into the
 variables (\code|Var(name)|) that we use for constraint generation. In
 the next section we describe the rename process.
 
-\paragraph*{Premisses}
-Premisses in templates have multiple shapes: Judgments, context
+\paragraph*{Premises}
+Premises in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities. A premise always has a list of
 dependencies. This list contains the number and the outputs of the
 judgment the premise depends on. Later on in this section we define
