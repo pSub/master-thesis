@@ -1,0 +1,18 @@
+module module-utils
+
+imports names
+imports utils
+imports include/SLTC
+
+rules
+    
+    resolve-imports : mod -> <fetch-imported-modules> mod
+
+    fetch-imported-modules : mod -> []
+        where <get-imports; equal(|None())> mod
+    // FIXME: Somehow transitive imports do not work.
+    fetch-imported-modules : mod -> <conc> ([mod], modules) //, <fetch-imported-modules> modules)
+        where Some(Imports(imports)) := <get-imports> mod;
+        	  modules := <map(\Import(m) -> <get-module-ref> m\)> imports
+
+    get-imports = proj(Module|2)
