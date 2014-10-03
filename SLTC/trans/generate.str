@@ -14,7 +14,7 @@ imports
     trans/optimize-constraint-templates
     trans/typecheck
     trans/verification
-
+    trans/module-utils
     trans/tests
 
 rules
@@ -47,21 +47,21 @@ rules
     box2text-string(|100)
     
   typecheck :
-    (selected, position, ast, path, project-path) -> (filename, <typecheck-editor> ast)
+    (selected, position, ast, path, project-path) -> (filename, <resolve-imports; typecheck-editor> ast)
   where
     index-setup(|<language>, project-path);
     task-setup(|project-path);
     filename := <guarantee-extension(|"check")> path
 
   generate-constraints :
-    (selected, position, ast, path, project-path) -> (filename, <generate-constraints> ast)
+    (selected, position, ast, path, project-path) -> (filename, <resolve-imports; generate-constraints> ast)
   where
     index-setup(|<language>, project-path);
     task-setup(|project-path);
     filename := <guarantee-extension(|"constraints")> path
 
   generate-templates :
-    (selected, position, ast, path, project-path) -> (filename, <generate-templates> ast)
+    (selected, position, ast, path, project-path) -> (filename, <resolve-imports; generate-templates> ast)
   where
     index-setup(|<language>, project-path);
     task-setup(|project-path);
