@@ -12,8 +12,7 @@ exports
   %% The sections of a specification.
   context-free syntax
     "module" MID                             -> ModuleDec      {cons("ModuleDec")}
-    "import" MID							 -> Import         {cons("Import")}
-    Import+                                  -> Imports        {cons("Imports")}
+    "imports" Import+                        -> Imports        {cons("Imports")}
     "language" MID							 -> Language       {cons("Language")}
     "meta-variables" MetaVariableDefinition* -> MetaVariables  {cons("MetaVariables")}
     "contexts" ContextDefinition*		     -> Contexts       {cons("Contexts")}
@@ -38,6 +37,10 @@ exports
   context-free syntax
     %% Used for variables in declarations. Name is a SDF non-terminal.
 	Name "{" Mode "}" -> Hole {cons("Hole")}
+
+  %% Imports
+  MID                           -> Import         {cons("Import")}
+
 
   %% Meta-variables
   context-free syntax
