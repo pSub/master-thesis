@@ -45,6 +45,19 @@ rules
     // FIXME: Somehow transitive imports do not work.
     fetch-imported-modules : mod -> modules //, <fetch-imported-modules> modules)
         where Some(Imports(imports)) := <get-imports> mod;
-        	  modules := <map(\Import(m) -> <get-module-ref> m\)> imports
+        	  modules := <map(\Import(m, excluded-sections) ->
+        	                       <get-module-ref; debug; reset-sections(|excluded-sections)> m
+        	                  \)> imports
 
     get-imports = proj(Module|2)
+    
+    reset-sections(|maybe-sections) : m -> m
+        where <equal(|None())> maybe-sections
+    reset-sections(|maybe-sections) : mod -> <debug; foldl(reset-section)> (sections, mod)
+        where Some(ExcludedSections(sections)) := maybe-sections
+    reset-section : ("language", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,None(),d,e,f,g,h)
+    reset-section : ("meta-variables", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,c,MetaVariables([]),f,g,h)
+    reset-section : ("judgments", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,Judgments([]),g,h)
+    reset-section : ("conjectures", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,f,g,None())
+    reset-section : ("contexts", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,Contexts([]),e,f,g,h)
+    reset-section : ("rules", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,f,Rules([]),h)

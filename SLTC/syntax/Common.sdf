@@ -14,15 +14,17 @@ exports
                                        -> EOF
 
     "module"                           -> ReservedWord
-    "language"                         -> ReservedWord
+    "language"                         -> Section
     "imports"						   -> ReservedWord
-    "meta-variables"                   -> ReservedWord
+    "meta-variables"                   -> Section
     "definitions"                      -> ReservedWord
-    "judgments"                        -> ReservedWord
-    "rules"                            -> ReservedWord
-    "conjectures"                      -> ReservedWord
+    "judgments"                        -> Section
+    "rules"                            -> Section
+    "conjectures"                      -> Section
+    "contexts"                         -> Section
     "@error"                           -> ReservedWord
     "@implicit"                        -> ReservedWord
+    Section                            -> ReservedWord
     ReservedWord                       -> Name {reject}
 
   lexical restrictions

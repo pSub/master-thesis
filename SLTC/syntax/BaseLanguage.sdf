@@ -39,7 +39,9 @@ exports
 	Name "{" Mode "}" -> Hole {cons("Hole")}
 
   %% Imports
-  MID                           -> Import         {cons("Import")}
+  context-free syntax
+  "(" Section+ ")" -> ExcludedSections {cons("ExcludedSections")}
+  MID ExcludedSections? -> Import         {cons("Import")}
 
 
   %% Meta-variables
