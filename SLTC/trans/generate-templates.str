@@ -23,7 +23,7 @@ rules
     generate-templates :
         Module(ModuleDec(_),
                imports,
-               Language(target-language),
+               Some(Language(target-language)),
                Contexts(context-definitions),
                MetaVariables(meta-variables),
                Judgments(judgments),

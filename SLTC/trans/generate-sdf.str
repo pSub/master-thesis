@@ -13,7 +13,7 @@ rules
     make-nodes : 
         Module(ModuleDec(_),
                imports,
-               Language(t),
+               Some(Language(t)),
                Contexts(contexts),
                MetaVariables(meta-variables),
                Judgments(judgments),
