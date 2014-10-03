@@ -30,17 +30,20 @@ specification module. This name is a unique identifier and used for
 imports.
 
 \paragraph{Imports} The second section declares which other type
-system specifications are imported and is optional.
+system specifications are imported and is optional. It is possible to
+prevent sections of a module from being imported. Sections that shall
+be excluded have to be listed in parenthesis after the module name.
 
 \begin{example}{}
 \begin{lstlisting}[language=sltc]    
-import some-specification
+import some-specification (language contexts)
 \end{lstlisting}
 \label{ex:import-section}
 \end{example}
 
 Example~\ref{ex:import-section} imports the specification module
-\code|some-specification|.
+\code|some-specification| without the sections \code|language| and
+\code|contexts|.
 
 \paragraph{Language} The third section declares the language for which
 a type system should be specified. This language needs to be present
@@ -292,7 +295,7 @@ this chapter? We will address this point by point.
 \item[Declarative] Everything that can be defined in the specification
   language has no side effects or possibilities to embed executable
   code.
-\item[Modularity] \todo[inline]{Imports are not implemented yet.}
+\item[Modularity] \todo{}
 \item[Integration] Type systems can be defined for every programming
   language for which a \gls{sdf} syntax definition exists. These
   definitions can be used in most cases without further
