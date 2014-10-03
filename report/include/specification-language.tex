@@ -29,13 +29,24 @@ in the order they are introduced.
 specification module. This name is a unique identifier and used for
 imports.
 
-\paragraph{Imports} The second section declares which other
-specifications are imported and is optional.
+\paragraph{Imports} The second section declares which other type
+system specifications are imported and is optional.
+
+\begin{example}{}
+\begin{lstlisting}[language=sltc]    
+import some-specification
+\end{lstlisting}
+\label{ex:import-section}
+\end{example}
+
+Example~\ref{ex:import-section} imports the specification module
+\code|some-specification|.
 
 \paragraph{Language} The third section declares the language for which
 a type system should be specified. This language needs to be present
 as an \gls{sdf} module located at the specified path. We call this
-language from now on \emph{target language}.
+language from now on \emph{target language}. If other modules are
+imported the target language must be defined only once.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
