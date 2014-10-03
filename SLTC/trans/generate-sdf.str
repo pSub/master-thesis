@@ -1,6 +1,8 @@
 module generate-sdf
 
+imports module-utils
 imports utils
+
 imports include/SLTC
 imports org/sugarj/languages/Sdf2
 
@@ -108,4 +110,4 @@ rules
     make-attr : str  -> <concat-strings> ["{", str, "}"]
 
 strategies
-    toSdf = make-nodes
+    toSdf = resolve-imports; make-nodes
