@@ -6,54 +6,119 @@ imports include/SLTC
 
 rules
     
+    /**
+     * Resolves all imports from the given module and merges
+     * them into a singel module.
+     *
+     * @type Module -> Module
+     */
     resolve-imports : mod -> <fetch-imported-modules;
                               strip-annos;
                               merge-imported-modules(|<strip-annos> mod)> mod
-    
-    merge-imported-modules(|mod) : modules -> <foldl(debug; merge-imported-module)> (modules, mod)
+
+    /**
+     * Merges modules into the module `mod`.
+     *
+     * @param Module
+     * @type List(Module) -> Module
+     */
+    merge-imported-modules(|mod) : modules -> <foldl(merge-imported-module)> (modules, mod)
+
+    /**
+     * Merges two modules into one.
+     *
+     * @type (Module, Module) -> Module
+     */
     merge-imported-module : (Module(_,_,l1,c1,m1,j1,r1,t1),
                              Module(module-dec,imps,l2,c2,m2,j2,r2,t2)) ->
                              Module( module-dec
                                    , imps
-                                   , <debug; merge-target-language; debug> (l1, l2)
-                                   , <debug; merge-contexts> (c1, c2)
+                                   , <merge-target-language> (l1, l2)
+                                   , <merge-contexts> (c1, c2)
                                    , <merge-meta-variables> (m1, m2)
                                    , <merge-judgments> (j1, j2)
                                    , <merge-rules> (r1, r2)
                                    , <merge-conjectures> (t1, t2))
 
-    // TODO: Extend to support multiple target languages            
+    /**
+     * Merges target language sections.
+     *
+     * TODO: Extend to support multiple target languages
+     *
+     * @type (Option(Language), Option(Language)) -> Option(Language)
+     */            
     merge-target-language : (Some(_), Some(_)) -> <exit-with-error(|1, "Currently only one traget language is supported")>
     merge-target-language : (Some(l1), _) -> Some(l1)
     merge-target-language : (None(), l2) -> l2
-    merge-target-language = <debug> "Failed"
 
+    /**
+     * Merges context sections.
+     *
+     * @type (Contexts, Contexts) -> Contexts
+     */
     merge-contexts : (Contexts(c1), Contexts(c2)) -> Contexts(<conc> (c1, c2))
 
+    /**
+     * Merges meta-variable sections.
+     *
+     * @type (MetaVariables, MetaVariables) -> MetaVariables
+     */
     merge-meta-variables : (MetaVariables(m1), MetaVariables(m2)) -> MetaVariables(<conc> (m1, m2))
 
+    /**
+     * Merges judgment sections.
+     *
+     * @type (Judgments, Jugments) -> Judgments
+     */
     merge-judgments : (Judgments(j1), Judgments(j2)) -> Judgments(<conc> (j1, j2))
 
+    /**
+     * Merges rules sections.
+     *
+     * @type (Rules, Rules) -> Rules
+     */
     merge-rules : (Rules(r1), Rules(r2)) -> Rules(<conc> (r1, r2))
 
+    /**
+     * Merges conjeture sections.
+     *
+     * @type (Conjectures, Conjectures) -> Conjectures
+     */
     merge-conjectures : (Some(Conjectures(t1)), Some(Conjectures(t2))) -> Some(Conjectures(<conc> (t1, t2)))
     merge-conjectures : (None(), t2) -> t2
     merge-conjectures : (t1, None()) -> t1
 
+    /**
+     * Resolves the imported modules and returns them as a list.
+     *
+     * FIXME: Somehow transitive imports do not work.
+     *
+     * @type Module -> List(Module)
+     */
     fetch-imported-modules : mod -> []
         where <get-imports; equal(|None())> mod
-    // FIXME: Somehow transitive imports do not work.
     fetch-imported-modules : mod -> modules //, <fetch-imported-modules> modules)
         where Some(Imports(imports)) := <get-imports> mod;
         	  modules := <map(\Import(m, excluded-sections) ->
-        	                       <get-module-ref; debug; reset-sections(|excluded-sections)> m
+        	                       <get-module-ref; reset-sections(|excluded-sections)> m
         	                  \)> imports
 
+    /**
+     * Auxiliary strategy.
+     *
+     * @type Module -> Option(Imports)
+     */
     get-imports = proj(Module|2)
     
+    /**
+     * Resets all sections of a module listed in `maybe-sections`.
+     *
+     * @param sections that should be resetted
+     * @type Module -> Module
+     */
     reset-sections(|maybe-sections) : m -> m
         where <equal(|None())> maybe-sections
-    reset-sections(|maybe-sections) : mod -> <debug; foldl(reset-section)> (sections, mod)
+    reset-sections(|maybe-sections) : mod -> <foldl(reset-section)> (sections, mod)
         where Some(ExcludedSections(sections)) := maybe-sections
     reset-section : ("language", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,None(),d,e,f,g,h)
     reset-section : ("meta-variables", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,c,MetaVariables([]),f,g,h)
