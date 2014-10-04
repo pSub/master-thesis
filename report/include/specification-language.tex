@@ -295,7 +295,10 @@ this chapter? We will address this point by point.
 \item[Declarative] Everything that can be defined in the specification
   language has no side effects or possibilities to embed executable
   code.
-\item[Modularity] \todo{}
+\item[Modularity] Type system specifications are organized in
+  composeable modules. A module can import other modules or even only
+  parts of other modules. This enables the reuse of existing type
+  specifications and the separation of orthogonal features.
 \item[Integration] Type systems can be defined for every programming
   language for which a \gls{sdf} syntax definition exists. These
   definitions can be used in most cases without further
