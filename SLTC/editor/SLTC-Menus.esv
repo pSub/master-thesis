@@ -41,7 +41,7 @@ menus
     
   menu: "Typecheck"
     
-    action: "Generate Templates"   = generate-templates (openeditor) (realtime)
+    action: "Generate Templates"   = generate-templates-editor (openeditor) (realtime)
     action: "Generate Constraint"  = generate-constraints (openeditor) (realtime)
     action: "Typecheck"            = typecheck (openeditor) (realtime)
     
