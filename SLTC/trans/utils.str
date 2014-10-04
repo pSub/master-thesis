@@ -449,7 +449,10 @@ rules
      * Note: The stacktrace might not contain all strategies due to e.g. inlining. See
      * the documentation of lang/stacktrace for details.
      */
-    failed = debug(!"Current Term: "); stacktrace-get-all-frame-names; report-failure
+    failed(|parameters) = debug(!"Current Term: ");
+                          <where(length; gt(|0)) <+ debug(!"Parameters: ")> parameters;
+                          stacktrace-get-all-frame-names; report-failure
+    failed = failed(|[])
 
     /**
      * Stops the execution. Only for unrecoverable errors.
