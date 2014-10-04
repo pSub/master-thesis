@@ -137,8 +137,6 @@ rules
             // to premisses in the dependencies.
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order
 
-    to-template(|j, c, l) = failed(|[j, c, l])
-
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
      * This way the unification has to deal only with one kind of variables.
