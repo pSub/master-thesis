@@ -106,7 +106,7 @@ rules
             new-judgment-defs := <conc> (judgment-definitions, <mapconcat(Snd; Snd)> premisses-impl-eq);
             
             // Create substitutions for the tentative equality judgments
-            eq-judg-subst := <map-with-index(\(i, d) -> (<conc-strings> ("J", <dec; int-to-string> i), <add; int-to-string> (i, number-of-judgments))\)> new-judgment-defs;
+            eq-judg-subst := <collect(?UndefinedEq(<id>,_)); map-with-index(\(i, j) -> (j, <add; int-to-string> (i, number-of-judgments))\)> premisses-with-equalities;
             
             // Replace tentative equality judgments with real equality judgments
             premisses-with-equalities' := <replace-all(|premisses-with-equalities);
