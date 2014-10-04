@@ -99,7 +99,7 @@ rules
             premisses-with-equalities := <conc> (premisses-list'', equalities, <mapconcat(Snd; Fst)> premisses-impl-eq);
             
             // Determine the number of judgments to generate names for the newly created judgments
-            previous-judgments := <Judgments> 1;
+            previous-judgments := <CollectedJudgments>;
             number-of-judgments := <length> previous-judgments;
             
             // Collect all new judgment definitions
@@ -118,7 +118,7 @@ rules
             j' := <conc> (j, judgment-definitions, new-judgment-defs);
 
             // Collect all newly generated judgments and propagate them outwards using dynamic rules
-            rules(Judgments :+ 1 -> <conc> (previous-judgments, judgment-definitions, new-judgment-defs));
+            rules(CollectedJudgments :+ _ -> <conc> (previous-judgments, judgment-definitions, new-judgment-defs));
 
             // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities';
@@ -272,7 +272,8 @@ rules
     
 strategies
     to-templates(|judgments, context-definitions, target-language) =
-         ?typing-rules; {|Judgments: rules(Judgments :+ 1 -> judgments);
-         !(<innermost(to-template(|judgments, context-definitions, target-language))> typing-rules, <Judgments> 1) |}
+         ?typing-rules; {|CollectedJudgments: rules(CollectedJudgments :+ _ -> judgments);
+         !(<innermost(to-template(|judgments, context-definitions, target-language))> typing-rules,
+           <CollectedJudgments>) |}
     to-templates(|judgments, context-definitions, target-language) =
         failed(|[judgments, context-definitions, target-language])
