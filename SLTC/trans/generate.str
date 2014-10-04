@@ -53,7 +53,7 @@ rules
     task-setup(|project-path);
     filename := <guarantee-extension(|"check")> path
 
-  generate-constraints :
+  generate-constraints-editor :
     (selected, position, ast, path, project-path) -> (filename, <resolve-imports; generate-constraints> ast)
   where
     index-setup(|<language>, project-path);
