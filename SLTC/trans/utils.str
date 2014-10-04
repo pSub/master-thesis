@@ -450,7 +450,7 @@ rules
      * the documentation of lang/stacktrace for details.
      */
     failed(|parameters) = debug(!"Current Term: ");
-                          <where(length; gt(|0)) <+ debug(!"Parameters: ")> parameters;
+                          <if(length; gt(|0), debug(!"Parameters: "))> parameters;
                           stacktrace-get-all-frame-names; report-failure
     failed = failed(|[])
 
