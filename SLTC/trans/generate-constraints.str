@@ -30,6 +30,7 @@ rules
             // Generate the constraint templates from the type system specification
             templates := <to-templates(|judgments, context-definitions, target-language);
                           optimize-templates(|target-language, context-definitions)> typing-rules
+    generate-constraints = failed
 
     /**
      * Generates constraints from the given specification module
@@ -68,6 +69,7 @@ rules
             context-number := <collect-om(is-ctx-modification; get-ctx-id); list-max <+ !0> templates;
             empty-contexts := <inc; range; Tl; map-with-index((id, !([], <new-hashtable>)))> context-number;
             store := <new-hashtable(|context-number, 100); hashtable-putlist(|empty-contexts)>
+    generate-constraints(|templates) = failed(|[templates])
 
     /**
      * Pepares the inputs for the constraint generation and initializes the store.
@@ -80,6 +82,8 @@ rules
         ?conjecture;
         <get-inputs(|judgments); where(initialize-store(|store, context-definitions))> conjecture;
         <(get-inputs(|judgments); remove-all(node-is-ctx), get-outputs(|judgments))> (conjecture, conjecture)
+    prepare-generation(|judgments, context-definitions, store) =
+        failed(|[judgments, context-definitions, store])
 
     /**
      * Generates the set of constraints.
@@ -90,6 +94,7 @@ rules
      * @type (judgment-number, inputs) -> (Option(Outputs), List(Constraints))
      */
     generate(|templates, store, expected-outputs) = generate(false | templates, store, expected-outputs)
+    generate(|templates, store, expected-outputs) = failed(|[templates, store, expected-outputs])
 
     /**
      * Generates the set of constraints.
@@ -105,6 +110,8 @@ rules
              // if a matching rule could be found evaluate that, otherwise return an error.
              <find-match(|inputs, judg-number, store) < generate'(init | templates, inputs, store, expected-outputs)
                                                       + !(None(), [CFail__(Error(["No rule found that matches", inputs]))])> templates
+    generate(init | templates, store, expected-outputs) = failed(|[templates, store, expected-outputs])
+
 
     /**
      * Helper rule for constraint generation. It pattern matches against the matching
@@ -163,6 +170,8 @@ rules
                    < \(x, cs) -> (Some(x), cs)\
                    + !(None(), [CFail__(Error(["No derivation found for ", term]))])> rulez
 
+    generate'(init | t, term, s, expected-outputs) = failed(|[t, term, s, expected-outputs])
+
     /**
      * Executes the calls specified in the rules.
      *
@@ -213,6 +222,9 @@ rules
                           end;
                           singelton; conc(|accu)> // Book keeping.
 
+   execute(|t, s, pattern, term, name, o, e) = failed(|[t, s, pattern, term, name, o, e])
+                          
+
     /**
      * Extracts the patterns out of the dependencies and appends those
      * to the pattern of the conclusion.
@@ -228,6 +240,7 @@ rules
                                                 \(Some(o), cs) -> <unify-internal; apply-mgu(|o)> cs\,
                                                 Snd)
                                           ); unzip; (conc(|term), conc(|pattern))
+    update(|pattern, term, accu) = failed(|[pattern, term, accu])
 
     /**
      * Initialized the given store with the context bindings.
@@ -240,6 +253,7 @@ rules
                                filter(node-is-ctx-bind);
                                mapconcat(ctx-bind-to-kv-list(|context-definitions));
                                update-store(|store)
+    initialize-store(|store, context-definitions) = failed(|[store, context-definitions])
 
 
     /**
@@ -251,3 +265,4 @@ rules
      * @param store - a hashtable containing hashtables
      */
     tidy-up(|store) = destroy-store(|store)
+    tidy-up(|store) = failed(|[store])

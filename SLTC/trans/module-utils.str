@@ -15,6 +15,7 @@ rules
     resolve-imports : mod -> <fetch-imported-modules;
                               strip-annos;
                               merge-imported-modules(|<strip-annos> mod)> mod
+    resolve-imports = failed
 
     /**
      * Merges modules into the module `mod`.
@@ -23,6 +24,7 @@ rules
      * @type List(Module) -> Module
      */
     merge-imported-modules(|mod) : modules -> <foldl(merge-imported-module)> (modules, mod)
+    merge-imported-modules = failed
 
     /**
      * Merges two modules into one.
@@ -39,6 +41,7 @@ rules
                                    , <merge-judgments> (j1, j2)
                                    , <merge-rules> (r1, r2)
                                    , <merge-conjectures> (t1, t2))
+    merge-imported-module = failed
 
     /**
      * Merges target language sections.
@@ -50,6 +53,7 @@ rules
     merge-target-language : (Some(_), Some(_)) -> <exit-with-error(|1, "Currently only one traget language is supported")>
     merge-target-language : (Some(l1), _) -> Some(l1)
     merge-target-language : (None(), l2) -> l2
+    merge-target-language = failed
 
     /**
      * Merges context sections.
@@ -57,6 +61,7 @@ rules
      * @type (Contexts, Contexts) -> Contexts
      */
     merge-contexts : (Contexts(c1), Contexts(c2)) -> Contexts(<conc> (c1, c2))
+    merge-contexts = failed
 
     /**
      * Merges meta-variable sections.
@@ -64,6 +69,7 @@ rules
      * @type (MetaVariables, MetaVariables) -> MetaVariables
      */
     merge-meta-variables : (MetaVariables(m1), MetaVariables(m2)) -> MetaVariables(<conc> (m1, m2))
+    merge-meta-variables = failed
 
     /**
      * Merges judgment sections.
@@ -71,6 +77,7 @@ rules
      * @type (Judgments, Jugments) -> Judgments
      */
     merge-judgments : (Judgments(j1), Judgments(j2)) -> Judgments(<conc> (j1, j2))
+    merge-judgments = failed
 
     /**
      * Merges rules sections.
@@ -78,6 +85,7 @@ rules
      * @type (Rules, Rules) -> Rules
      */
     merge-rules : (Rules(r1), Rules(r2)) -> Rules(<conc> (r1, r2))
+    merge-rules = failed
 
     /**
      * Merges conjeture sections.
@@ -87,6 +95,7 @@ rules
     merge-conjectures : (Some(Conjectures(t1)), Some(Conjectures(t2))) -> Some(Conjectures(<conc> (t1, t2)))
     merge-conjectures : (None(), t2) -> t2
     merge-conjectures : (t1, None()) -> t1
+    merge-conjectures = failed
 
     /**
      * Resolves the imported modules and returns them as a list.
@@ -102,6 +111,7 @@ rules
         	  modules := <map(\Import(m, excluded-sections) ->
         	                       <get-module-ref; reset-sections(|excluded-sections)> m
         	                  \)> imports
+    fetch-imported-modules = failed
 
     /**
      * Auxiliary strategy.
@@ -109,6 +119,7 @@ rules
      * @type Module -> Option(Imports)
      */
     get-imports = proj(Module|2)
+    get-imports = failed
     
     /**
      * Resets all sections of a module listed in `maybe-sections`.
@@ -120,9 +131,12 @@ rules
         where <equal(|None())> maybe-sections
     reset-sections(|maybe-sections) : mod -> <foldl(reset-section)> (sections, mod)
         where Some(ExcludedSections(sections)) := maybe-sections
+    reset-sections = failed
+
     reset-section : ("language", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,None(),d,e,f,g,h)
     reset-section : ("meta-variables", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,c,MetaVariables([]),f,g,h)
     reset-section : ("judgments", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,Judgments([]),g,h)
     reset-section : ("conjectures", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,f,g,None())
     reset-section : ("contexts", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,Contexts([]),e,f,g,h)
     reset-section : ("rules", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,f,Rules([]),h)
+    reset-section = failed

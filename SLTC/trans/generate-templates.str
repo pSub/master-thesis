@@ -31,6 +31,7 @@ rules
                conjectures)
         -> <to-templates(|judgments, context-definitions, target-language);
             optimize-templates(|target-language, context-definitions)> typing-rules
+    generate-templates = failed
 
     /**
      * Rule that transforms a typing rule into a constraint template.
@@ -136,6 +137,8 @@ rules
             // to premisses in the dependencies.
             sorted-premisses := <map(\ (i, k) -> <index(|k); (id, replace(|i, k))> premisses\)> eval-order
 
+    to-template(|j, c, l) = failed(|[j, c, l])
+
     /**
      * Replaces all meta-variables with fresh variables of the constraint language.
      * This way the unification has to deal only with one kind of variables.
@@ -143,6 +146,7 @@ rules
     replace-meta-variables : ast -> <collect-om(node-is-meta-variable); Dupl;
                                      (id, length; newnames(|"X"); map(makeVar));
                                      zip; replace-all(|ast)> ast
+    replace-meta-variables = failed
 
     /**
      * Transforms context bindings as they occur in the specification language into
@@ -163,6 +167,7 @@ rules
               inputs := <get-inputs(|c)> node;
               outputs := <get-outputs(|c)> node;
               tail := <get-arguments; last> node
+    ctx-bind-to-kv-list(|c) = failed(|[c])
               
     /**
      * Returns the subset of the passed judgments that contain
@@ -178,6 +183,8 @@ rules
                 \; diff(|conclusion-meta-variables); not(equal([]))); Fst)> terms
         where input-meta-variables := <collect-om(node-is-meta-variable)> inputs;
               conclusion-meta-variables := <get-typing-judgment; get-inputs(|judgments); collect-om(node-is-meta-variable)> conclusion
+    compute-dependencies(|terms, conclusion, judgments, contexts) =
+        failed(|[terms, conclusion, judgments, contexts])
 
     /**
      * Generates from implicit equalities equality premisses.
@@ -191,6 +198,8 @@ rules
         group((Fst, Fst); meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); unzip)
+    make-implicit-equalities-explicit(is-conclusion | errors, conclusion, types, language) =
+        failed(|[errors, conclusion, types, language])
         
     collect-meta-variables(is-conclusion | conclusion, language) : v -> []
         where <or(is-string, get-arguments; equal(|[]))> v
@@ -200,6 +209,8 @@ rules
         where arg-count := <length> args;
               (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
                                           not(resolvable(is-conclusion | conclusion)))> args
+    collect-meta-variables(is-conclusion | conclusion, language) =
+        failed(|[conclusion, language])
 
     /**
      * Computes the types of the passed meta-variables according to the surrounding
@@ -220,6 +231,7 @@ rules
               vars-types := <zip; map(where(Snd; length; equal(|1))
                                  < (id, \[sort(type)] -> type\)
                                  + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
+    compute-types(|language, cons, arg-count) = failed(|[language, cons, arg-count])
               
     /**
      * A node is resolvable (in the context of implicit equalities) if it is a meta-variable
@@ -236,6 +248,7 @@ rules
      */
     make-new-meta-variable : (meta-variable, type) -> <mkterm> (<get-constructor> meta-variable,
                                                                 [<newname> "X", None()])
+    make-new-meta-variable = failed
 
     /**
      * Creates from a given list of meta-variables a list of equality judgments.
@@ -249,14 +262,19 @@ rules
                                                 \Implicit(error) ->
                                                   Error(<zip; replace-all(|error)> (old, new))
                                                 \))> errors
+    make-eq-judgments(|errors) = failed(|[errors])
+    
     make-eq-judgments'(|errors) : [] -> []
     make-eq-judgments'(|errors) : [(x, type)] -> []
     make-eq-judgments'(|errors) : [(x, t), (y, s) | xs] ->
         [(eq-judgment, judgment-definition) | <make-eq-judgments'(|errors)> [y | xs]]
         where eq-judgment := ErrorTypingJudgment(UndefinedEq(<make-fresh> "J", [x, y]), errors);
               judgment-definition := Judgment(None(), [Hole(t, "I"), Hole(s, "I")], None(), Some(BuiltIn("Eq")))
+    make-eq-judgments'(|errors) = failed(|[errors])
     
 strategies
     to-templates(|judgments, context-definitions, target-language) =
          ?typing-rules; {|Judgments: rules(Judgments :+ 1 -> judgments);
          !(<innermost(to-template(|judgments, context-definitions, target-language))> typing-rules, <Judgments> 1) |}
+    to-templates(|judgments, context-definitions, target-language) =
+        failed(|[judgments, context-definitions, target-language])

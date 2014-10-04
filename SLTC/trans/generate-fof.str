@@ -26,6 +26,7 @@ signature
                               Rules(typing-rules),
                               some-conjectures)
         -> <fof-from-specification(|context-definitions, typing-rules)> some-conjectures
+    make-conjecture = failed
 
     /**
      * Rule to convert specifications to first-order formulas.
@@ -48,22 +49,29 @@ signature
              ; helper := <collect-om(?Term__(_,_));
                          mapconcat(\Term__(name, args@[_|_]) -> [<make-univalence> (name, <length> args)|
                                                                  <make-injectivity> (name, <length> args)]\)> typing-rule-formulas
+    fof-from-specification(|context-definitions, typing-rules) =
+        failed(|[context-definitions, typing-rules])
 
     fof-from-templates(|context-definitions, typing-rules) =
         ?conjectures;
         <fof-from-specification(|context-definitions, typing-rules)> Some(Conjectures(conjectures))
+    fof-from-templates(|context-definitions, typing-rules) =
+        failed(|[context-definitions, typing-rules])
     
     /**
      * Helper strategy to create context formulas.
      * @internal
      */
     make-context-formulas = map-with-index(make-contexts); flatten-list
+    make-context-formulas = failed
 
     /**
      * Remove nodes that are not relevant for first-order formular generation.
      */
     cleanup = innermost(cleanup')
+    cleanup = failed
     cleanup' : ErrorTypingJudgment(j, e) -> j
+    cleanup' = failed
     
     /** Collects all Terms of the programming language that will result
      * in constants in the first-order representation and generates axioms
@@ -76,8 +84,11 @@ signature
            collect-all(?Term__(_) <+ \Term__(n, args) -> Term__(n, <length> args)\);
            map(try(\Term__(n, args) -> Term__(n, <newnames(|"X"); map(makeVar)> args)\));
            tails; mapconcat(make-inequality)|}> ast
+    make-inequalities = failed
+    
     make-inequality : [] -> []
     make-inequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <make-neq>(x, y))\)> ys
+    make-inequality = failed
     
     make-injectivity : (name, n) -> [Formula__(<conc-strings> (name, "-injective-contraposition"),
                                              Axiom__(),
@@ -90,12 +101,15 @@ signature
                                                                           <zip; map(make-eq); list-accum(make-and)> (Xs, Ys))))]
         where Xs := <newnames(|"X")> n;
               Ys := <newnames(|"Y")> n
+    make-injectivity = failed
+
     make-univalence : (name, n) -> Formula__(<conc-strings> (name, "-univalent"),
                                             Axiom__(),
                                             All__(["Y" | ["Z" | Xs]], Impl__([Eq__(Term__(name, Xs), Var__("Y")), Eq__(Term__(name, Xs), Var__("Z"))],
                                                   Eq__(Var__("Y"), Var__("Z"))))
                                             )
         where Xs := <newnames(|"X")> n
+    make-univalence = failed
 
     
     /**
@@ -133,6 +147,7 @@ signature
            bind := <conc-strings> ("bind", <int-to-string> i);
            NAME := Var__(<make-fresh> "X")
            append(|p) = \ Var__(s) -> Var__(<conc-strings> (s, p)) \
+    make-contexts' = failed
 
            
     /**
@@ -150,11 +165,13 @@ signature
                          "Eq" <+
                          "Neq" <+
                          "Not"
+    make-aux-cons = failed
     
     /**
      * Wraps meta-variables into an auxiliary constructor.
      */
     rewrite-meta-variable : AuxCons__("MetaVariable", scope, [name, _]) -> Var__(name, scope)
+    rewrite-meta-variable = failed
     
     /**
      * Wraps contexts in an auxiliary constructor.
@@ -163,6 +180,7 @@ signature
     rewrite-context-bind : AuxCons__("ContextBind", name, args) -> Pred__(<concat-strings> ["bind", name], args)
     rewrite-context-lookup : AuxCons__("ContextLookup", name, args) -> Pred__(<concat-strings> ["lookup", name], args)
     rewrite-context = rewrite-context-empty <+ rewrite-context-bind <+ rewrite-context-lookup
+    rewrite-context = failed
 
     /**
      * Wraps typing judgment in an auxiliary constructor.
@@ -172,16 +190,19 @@ signature
     rewrite-typing-judgment : AuxCons__("Eq", _, [arg1, arg2]) -> Eq__(arg1, arg2)
     rewrite-typing-judgment : AuxCons__("Not", _, [arg]) -> Not__(arg)
     rewrite-typing-judgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
+    rewrite-typing-judgment = failed
 
     /**
      * `make-formula' for axioms.
      */
     rewrite-typing-rule = make-formula(|Axiom__())
+    rewrite-typing-rule = failed
 
     /**
      * `make-formula' for conjectures.
      */
     make-conjecture = make-formula(|Conjecture__())
+    make-conjecture = failed
 
     /**
      * Transforms typing rules, templates and formuals with raw terms into first-order formulas.
@@ -213,21 +234,26 @@ signature
             free-vars-in-rule := <free-vars> prop';
             prop'' := <if <[]> free-vars-in-rule then !prop' else !All__(free-vars-in-rule, prop') end>
 
+    make-formula(|type) = failed(|[type])
+
     /**
      * Helper rule to transform premisses of templates into first-order predicates.
      */
     premisses-to-props : Template__(_, calls, _) -> <map(rewrite-call)> calls
+    premisses-to-props = failed
 
     /**
      * Transforms a term that is not a context into a first-order term.
      */
     rewrite-pattern = topdown(try(make-term)); topdown(try(rewrite-string))
+    rewrite-pattern = failed
 
     /**
      * Rewrite whole context modification descriptions of templates into first-order terms
      */
     rewrite-ctx = group(\(c1, c2) -> <equal> (<get-ctx-id> c1, <get-ctx-id> c2)\);
                   map(reverse; \l -> <foldl(\(Binding__(ctx, i, o), b) -> Pred__(<concat-strings> ["bind", <int-to-string> ctx], <conc> (i, o, [b])) \)> (<Tl> l, <Hd; convert-ctx> l)\)
+    rewrite-ctx = failed
 
 
     /**
@@ -236,6 +262,7 @@ signature
      */
     convert-ctx : Reset__(ctx) -> Pred__(<concat-strings> ["empty", <int-to-string> ctx])
     convert-ctx : Ctx__(ctx) -> Var__(<concat-strings> ["C", <int-to-string> ctx])
+    convert-ctx = failed
     
     /**
      * Rewrites a premisse of a template into a proposition.
@@ -251,6 +278,7 @@ signature
                        <rewrite-pattern> outputs))
     rewrite-call : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
     rewrite-call : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call = failed
 
     /**
      * Wrap strings into terms.
@@ -312,6 +340,7 @@ strategies
         collect-all(?Var__(_,_)); Dupl;
         (id, length; newnames(|"X"); map(\x -> Var__(x)\));
         zip; replace-all(|ast)
+    make-variables-unique = failed
                                   
     /**
      * Dashes in predicate names are not valid in TPTP.
@@ -321,3 +350,4 @@ strategies
      */
     remove-dashes = topdown(try(\Term__(name, args) -> Term__(<string-replace(|"-", "")> name, args)\ <+
                                \Term__(name) -> Term__(<string-replace(|"-", "")> name)\))
+    remove-dashes = failed

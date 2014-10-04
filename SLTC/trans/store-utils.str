@@ -20,6 +20,7 @@ rules
                                  \(Reset__(ctx), s') ->
                                     <clear-context(|s', ctx)> s'
                                  \ <+ Snd)
+    upate-store(|s) = failed(|[s])
 
     /**
      * Looks up the context `ctx` at `key`.
@@ -36,6 +37,7 @@ rules
                         <!(x, <lookup(|s)> (ctx, x));
                         where(<hashtable-put(|ctx, (xs, <hashtable-remove(|x)> context))> s) >
                      \> s
+    pop(|s) = failed(|[s])
 
     /**
      * Clears all contexts in the store.
@@ -46,6 +48,7 @@ rules
                                                             <<hashtable-clear> c;
                                                             <hashtable-put(|k, ([], c))> store>
                                                         \)> store)
+    clear-store(|store) = failed(|[store])
 
     /**
      * Removes all elements from the given context in the `store'.
@@ -55,6 +58,7 @@ rules
                                             <<hashtable-clear> c;
                                              <hashtable-put(|ctx, ([], c))> store>
                                        \)
+    clear-context(|store, ctx) = failed(|[store, ctx])
 
     /**
      * Destroys the store and all containing Hashtables for contexts.
@@ -62,3 +66,4 @@ rules
      * @param store - a hashtable containing hashtables
      */
     destroy-store(|store) = where(<hashtable-deep-destroy> store)
+    destroy-store(|store) = failed(|[store])

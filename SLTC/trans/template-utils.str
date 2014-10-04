@@ -9,6 +9,7 @@ rules
     get-judgment-types(type | judgment) =
         index(|judgment);
         collect-om(\Hole(non-terminal, type) -> non-terminal\, conc)
+    get-judgment-types(type | judgment) = failed(|[judgment])
 
     /**
      * Extracts the typing judgment.
@@ -16,6 +17,7 @@ rules
      * @type ErrorTypingJudgment -> TypingJudgment
      */
     get-typing-judgment = proj(ErrorTypingJudgment|1)
+    get-typing-judgment = failed
 
     /**
      * Extracts the error message.
@@ -23,6 +25,7 @@ rules
      * @type ErrorTypingJudgment -> List(MessagePart)
      */
     get-error-message = proj(ErrorTypingJudgment|2)
+    get-error-message = failed
 
     /**
      * Extacts all consituents from the given term that are marked
@@ -32,6 +35,7 @@ rules
      *                       or something of equivalent structure
      */
     get-inputs(|declarations) = filter-hole-positions(?(_, "I") | declarations)
+    get-inputs(|declarations) = failed(|[declarations])
 
     /**
      * Extacts all consituents from the given term that are marked
@@ -41,6 +45,7 @@ rules
      *                       or something of equivalent structure
      */
     get-outputs(|declarations) = filter-hole-positions(?(_, "O") | declarations)
+    get-outputs(|declarations) = failed(|declarations)
 
     /**
      * Extracts all consituents from a given term that satisfy the given
@@ -50,11 +55,12 @@ rules
      * @param declarations - either a list of context of judgment declarations
      *                       or something of equivalent structure
      */
-    filter-hole-positions(cond|declarations) : node -> consituents
+    filter-hole-positions(cond | declarations) : node -> consituents
         where
             args := <get-arguments> node;
             positions := <get-hole-positions(|declarations); filter(cond); map(Fst)> node;
             consituents := <map(\n -> <index(|n)> args\)> positions
+    filter-hole-positions(cond | declarations) = failed(|[declarations])
 
     /**
      * Fetches the declaration for the given node and provides a list of
@@ -68,3 +74,4 @@ rules
             declaration-number := <get-judgment-id> node;
             declaration := <index(|declaration-number)> declarations;
             holes := <collect-all(?Hole(_,_), conc); map(proj(Hole|2))> declaration
+    get-hole-positions(|declarations) = failed(|[declarations])

@@ -31,6 +31,7 @@ rules
      * @type Template -> List((PRemise, Dependency))
      */
     get-premisses : Template__(_, premisses, _) -> premisses
+    get-premisses = failed
 
     /**
      * Updates the premisses of a template
@@ -39,6 +40,7 @@ rules
      * @type Template -> Template
      */
     set-premisses(|premisses) : Template__(name, _, conclusion) -> Template__(name, premisses, conclusion)
+    set-premisses(|premisses) = failed(|[premisses])
 
     /**
      * Extracts the inputs from a premise.
@@ -51,6 +53,7 @@ rules
     get-premise-inputs : Lookup__(_, inputs, _, _) -> inputs
     get-premise-inputs : Eq__(a, b, _) -> [a, b]
     get-premise-inputs : Neq__(a, b, _) -> [a, b]
+    get-premise-inputs = failed
 
     /**
      * Extracts the outputs from a premise.
@@ -63,6 +66,7 @@ rules
     get-premise-outputs : Lookup__(_, _, outputs, _) -> outputs
     get-premise-outputs : Eq__(_, _, _) -> []
     get-premise-outputs : Neq__(_, _, _) -> []
+    get-premise-outputs = failed
 
     /**
      * Succeeds if the input is a premise and fails otherwise.
@@ -79,6 +83,7 @@ rules
     get-pattern : Conclusion__(_, (pattern, _), _) -> pattern
     get-pattern : Template__(_, _, template) -> <get-pattern> template
     get-pattern : Fork__([template | _]) -> <get-pattern> template
+    get-pattern = failed
 
     /**
      * Extracts the context pattern of the conclusion from a template.
@@ -88,6 +93,7 @@ rules
     get-ctx-pattern : Conclusion__(_, (_, ctx), _) -> ctx
     get-ctx-pattern : Template__(_, _, template) -> <get-ctx-pattern> template
     get-ctx-pattern : Fork__([template | _]) -> <get-ctx-pattern> template
+    get-ctx-pattern = failed
 
     /**
      * Extracts the judgment number of the conclusion from a template.
@@ -97,6 +103,7 @@ rules
     get-judgment-number : Conclusion__(judg-number, _, _) -> judg-number
     get-judgment-number : Template__(_, _, template) -> <get-judgment-number> template
     get-judgment-number : Fork__([template | _]) -> <get-judgment-number> template
+    get-judgment-number = failed
 
     /**
      * Extracts the name of the template.
@@ -104,6 +111,7 @@ rules
      * @type Template -> Option(String)
      */
     get-template-name : Template__(name, _, template) -> name
+    get-template-name = failed
     
     /**
      * Extract the outputs of the conclusion from the template.
@@ -113,6 +121,7 @@ rules
     get-outputs : Conclusion__(_, _, outputs) -> Some(outputs)
     get-outputs : Template__(_, _, template) -> <get-outputs> template
     get-outputs : Fork__(_) -> None()
+    get-outputs = failed
     
     /**
      * Transforms a list of templates into a fork node. Forks created
@@ -122,6 +131,7 @@ rules
      * @type List(Template) -> Fork(List(Template))
      */
     mkFork : ts -> Fork__(<map(try(\Fork__(ts') -> ts'\)); flatten-list> ts)
+    mkFork = failed
 
     /**
      * Transforms a tuple into a equality node.
@@ -130,6 +140,7 @@ rules
      * @type (a, b) -> Eq(a, b)
      */
     makeEq(|error) : (a, b) -> Eq__(a, b, error)
+    makeEq(|error) = failed(|[error])
 
     /**
      * Transforms a tuple into a inequality node.
@@ -138,6 +149,7 @@ rules
      * @type (a, b) -> Neq(a, b)
      */
     makeNeq(|error) : (a, b) -> Neq__(a, b, error)
+    makeNeq(|error) = failed(|[error])
 
     /**
      * Extracts the context id from a context modification.
@@ -145,6 +157,7 @@ rules
      * @type Ctx -> Int
      */
     get-ctx-id = proj(Reset__|1) <+ proj(Ctx__|1) <+ proj(Binding__|1)
+    get-ctx-id = failed
 
     /**
      * Succeeds if the node is a context modification and fails otherwise.

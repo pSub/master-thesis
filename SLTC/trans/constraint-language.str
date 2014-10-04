@@ -23,6 +23,7 @@ rules
      * @type a -> Var__(a)
      */
     makeVar : v -> Var__(v)
+    makeVar = failed
 
     /**
      * Helper rule to creae CEq__ nodes.
@@ -31,6 +32,7 @@ rules
      * @type (a, b) -> CEq__(a, b, Error)
      */
     makeCEq(|error) : (a, b) -> CEq__(a, b, error)
+    makeCEq(|error) = failed(|[error])
 
     /**
      * Helper rule to creae CNeq__ nodes.
@@ -39,6 +41,7 @@ rules
      * @type (a, b) -> CNeq__(a, b, Error)
      */
     makeCNeq(|error) : (a, b) -> CNeq__(a, b, error)
+    makeCNeq(|error) = failed(|[error])
 
     /**
      * Retrieves the error of a constraint.
@@ -46,6 +49,7 @@ rules
      * @type Constraint -> Error
      */
     get-error = proj(CEq__|3) <+ proj(CNeq__|3) <+ proj(CFail__|1)
+    get-error = failed
     
     /**
      * Replaces the error of a constraint with new error.
@@ -56,3 +60,4 @@ rules
     put-error(|error) : CEq__(a, b, _) -> CEq__(a, b, error)
     put-error(|error) : CNeq__(a, b, _) -> CNeq__(a, b, error)
     put-error(|error) : CFail__(_) -> CFail__(error)
+    put-error(|error) = failed(|[error])

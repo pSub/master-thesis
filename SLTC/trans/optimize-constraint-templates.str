@@ -31,6 +31,8 @@ rules
                 remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
         where equivalence-classes := <group(equal-mod-var); filter(where(or(length; gt(|1), some(?Fork__(_)))))> templates
+    solve-which-ambiguities(|judgments, context-definitions) =
+        failed(|[judgments, context-definitions])
     
     /**
      * Extracts the pattern from the rules and compares the results modulo
@@ -52,6 +54,7 @@ rules
      * @type a -> a
      */
     make-dummy-vars = innermost(?Var__(_); !DummyVar__())
+    make-dummy-vars = failed
 
     /**
      * Checks whether a template in a Fork is redundant. Only applicable to Forks in which
@@ -66,13 +69,16 @@ rules
         where ts' := <make-conclusions-equal(newnames(|"Z"); map(makeVar))> ts;
               rulez-premisses := <zip> (ts', <map(\r -> <filter(not(?r))> ts'\)> ts');
               ts'' := <remove-all(\(rule, premisses) ->
-                                        <is-subsumed(|judgments, context-definitions, templates, language)> (rule, premisses)
+                                        <id>// <is-subsumed(|judgments, context-definitions, templates, language)> (rule, premisses)
                                   \); map(Fst)> rulez-premisses
+    optimize-fork(|judgments, context-definitions, templates) =
+        failed(|[judgments, context-definitions, templates])
 
     make-conclusions-equal(wrap) =
         ?templates;
         vars := <Hd; get-pattern; collect-om(?Var__(_)); length; wrap> templates;
         <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> templates
+    make-conclusions-equal(wrap) = failed
 
     is-subsumed(|judgments, context-definitions, templates) =
         ?(rule, templates);
@@ -96,6 +102,8 @@ rules
         where(equivalence-classes := <create-classes> templates);
         <conc> (<map(mkFork; optimize-relation(|judgments, context-definitions, target-language); remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
+    solve-when-ambiguities(|judgments, target-language, context-definitions) =
+        failed(|[judgments, target-language, context-definitions])
 
     /**
      * Optimize relations. A relation is a set of templates that define
@@ -107,6 +115,9 @@ rules
         is-relation; where(get-non-syntax-directed-templates; not(equal(|[])));
         where(get-ctx-pattern; equal(|[]))
         < optimize-relation'(|judgments, context-definitions, target-language) + id
+    optimize-relation(|judgments, context-definitions, target-language) =
+        failed(|[judgments, context-definitions, target-language])
+
     optimize-relation'(|judgments, context-definitions, target-language) :
         f@Fork__(ts) -> Fork__(ts')
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
@@ -134,6 +145,8 @@ rules
                                              zip; replace-once(|substructures)> substructures;
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
         !<conc> (<diff> (templates, [property]), instances)
+    derive-syntax-directed-rules(|substructures, non-terminals, context-definitions) =
+        failed(|[substructures, non-terminals, context-definitions])
 
     remove-unsatisfiable-templates(|context-definitions) =
         ?templates;
@@ -141,9 +154,11 @@ rules
                      map(\p -> Formula__("", Not__(p))\);
                      direct-proof(|Some("neg-premise"), templates, context-definitions); all(?VerificationSuccess(_))
                    ))> templates
+    remove-unsatisfiable-templates(|context-definitions) = failed(|[context-definitions])
                      
     remove-valid-premisses(|context-definitions) =
         ?templates; <map(remove-valid-premisses(|context-definitions, templates))> templates
+    remove-valid-premisses(|context-definitions) = failed(|[context-definitions])
         
     remove-valid-premisses(|context-definitions, templates) =
         ?template;
@@ -152,6 +167,7 @@ rules
                     add-indices; remove-all(Snd;?VerificationSuccess(_)); map(Fst)> template;
         premisses := <get-premisses> template;
         <set-premisses(|<map(\i -> <index(|i)> premisses\)> indices)> template
+    remove-valid-premisses(|context-definitions, templates) = failed(|[context-definitions, templates])
         
     /**
      * Attempts a direct proofs of the given formula
@@ -167,6 +183,8 @@ rules
     direct-proof(|timeout, name, templates, context-definitions) =
         fof-from-templates(|context-definitions, templates);
         verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name)
+    direct-proof(|timeout, name, templates, context-definitions) =
+        failed(|[timeout, name, templates, context-definitions])
                      
     solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
         ?which-ambiguities;
@@ -216,6 +234,7 @@ rules
      * @type Fork(List(Template)) -> List(Template)
      */
     get-non-syntax-directed-templates : Fork__(ts) -> <filter(where(get-pattern; all(?Var__(_))))> ts
+    get-non-syntax-directed-templates = failed
 
     /**
      * Strategy that groups all templates that are when-ambiguous to each other.
@@ -226,6 +245,7 @@ rules
     create-classes : [t | ts] -> [class | <create-classes> ts']
         where class := <create-class; nub> (t, ts);
               ts' := <diff> (ts, class)
+    create-classes = failed
 
     /**
      * Strategy that selects all templates `ts' that are when-ambigous
@@ -241,6 +261,7 @@ rules
         then ![t]
         else <conc> ([t | subsumed], <mapconcat(\t' -> <create-class> (t', ts')\)> subsumed)
         end
+    create-class = failed
 
     /**
      *  Strategy succeeds if template t1 and t2 are chosen such that
@@ -267,6 +288,7 @@ rules
      * @type List(Template) -> List(Template)
      */
     order-forks-by-subsumption = map(try(\Fork__(ts) -> Fork__(<qsort(subsume-mod-var(false))> ts)\))
+    order-forks-by-subsumption = failed
 
     /**
      * Extract templates from singelton forks.
@@ -275,6 +297,7 @@ rules
     remove-forks : [Fork__(ts) | ts'] -> <conc> (ts, <remove-forks> ts')
     remove-forks : [t | ts] ->  [t | <remove-forks> ts]
     remove-forks : [] -> []
+    remove-forks = failed
 
     /**
      * Unpacks a Fork if it only contains a single template.
@@ -284,6 +307,7 @@ rules
           then <Hd> ts
           else !Fork__(ts)
           end>
+    remove-trivial-fork = failed
 
     /**
      * Main strategy that composes all optimizations.
@@ -299,3 +323,5 @@ rules
         <solve-which-ambiguities(|judgments, context-definitions);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
         order-forks-by-subsumption> templates |}
+    optimize-templates(|target-language, context-definitions) = 
+        failed(|[target-language, context-definitions])
