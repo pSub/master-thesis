@@ -46,7 +46,7 @@ rules
     generate-constraints(|templates) :
         Module(ModuleDec(_),
                  imports,
-                 Language(l),
+                 Some(Language(l)),
                  Contexts(context-definitions),
                  MetaVariables(meta-variables),
                  Judgments(judgments),
