@@ -443,6 +443,15 @@ rules
     get-judgment-id = get-generic-name; string-to-int
 
     /**
+     * Auxiliary strategy to detect failures of strategies/rules. It prints the current
+     * term and a stacktrace.
+     *
+     * Note: The stacktrace might not contain all strategies due to e.g. inlining. See
+     * the documentation of lang/stacktrace for details.
+     */
+    failed = debug(!"Current Term: "); stacktrace-get-all-frame-names; report-failure
+
+    /**
      * Stops the execution. Only for unrecoverable errors.
      */
     exit-with-error(|error-msg, error-number) = <debug> error-msg; <exit> error-number
