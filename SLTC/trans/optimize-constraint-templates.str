@@ -144,11 +144,15 @@ rules
     derive-syntax-directed-rules(|substructures, non-terminals, context-definitions) =
         failed(|[substructures, non-terminals, context-definitions])
 
+    apply-to-each-template(s) =
+        ?templates;
+        <partition(?Fork__(_), not(?Fork__(_)));
+        (map(\Fork__(ts) -> Fork__(<s> ts)\), s); conc> templates
+
     remove-unsatisfiable-templates(|context-definitions) =
         ?templates;
-        <partition(?Fork__(_), not(?Fork__(_))); debug;
-         (map(\Fork__(ts) -> Fork__(<remove-unsatisfiable-templates(|context-definitions, <mapconcat(?Fork__(<id>))> templates)> ts)\),
-          remove-unsatisfiable-templates(|context-definitions, templates)); conc> templates
+        apply-to-each-template(remove-unsatisfiable-templates(|context-definitions, templates))
+
     remove-unsatisfiable-templates(|context-definitions) = failed(|[context-definitions])
 
     remove-unsatisfiable-templates(|context-definitions, templates) =

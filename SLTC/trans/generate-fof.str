@@ -54,7 +54,7 @@ signature
 
     fof-from-templates(|context-definitions, typing-rules) =
         ?conjectures;
-        <fof-from-specification(|context-definitions, typing-rules)> Some(Conjectures(conjectures))
+        <fof-from-specification(|context-definitions, <mapconcat(?Fork__(<id>) <+ singelton)> typing-rules)> Some(Conjectures(conjectures))
     fof-from-templates(|context-definitions, typing-rules) =
         failed(|[context-definitions, typing-rules])
     
