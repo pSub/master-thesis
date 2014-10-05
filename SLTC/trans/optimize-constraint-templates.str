@@ -25,9 +25,9 @@ rules
      * @param context definitions of the specification 
      * @type List(Template) -> List(Template)
      */
-    solve-which-ambiguities(|judgments, context-definitions) : templates ->
+    solve-which-ambiguities(|judgments, context-definitions, language) : templates ->
         <conc> (<map(mkFork;
-                optimize-fork(|judgments, context-definitions, templates);
+                optimize-fork(|judgments, context-definitions, templates, language);
                 remove-trivial-fork)> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
         where equivalence-classes := <group(equal-mod-var); filter(where(or(length; gt(|1), some(?Fork__(_)))))> templates
@@ -65,14 +65,11 @@ rules
      *
      * @type Fork__(Template) -> Fork__(Template)
      */
-    optimize-fork(|judgments, context-definitions, templates) : Fork__(ts) -> Fork__(ts'')
+    optimize-fork(|judgments, context-definitions, templates, language) : Fork__(ts) -> Fork__(ts'')
         where ts' := <make-conclusions-equal(newnames(|"Z"); map(makeVar))> ts;
-              rulez-premisses := <zip> (ts', <map(\r -> <filter(not(?r))> ts'\)> ts');
-              ts'' := <remove-all(\(rule, premisses) ->
-                                        <id>// <is-subsumed(|judgments, context-definitions, templates, language)> (rule, premisses)
-                                  \); map(Fst)> rulez-premisses
-    optimize-fork(|judgments, context-definitions, templates) =
-        failed(|[judgments, context-definitions, templates])
+              ts'' := <remove-all(\rule ->
+                                        <is-subsumed(|judgments, context-definitions, templates, language)> rule
+                                  \)> ts'
 
     make-conclusions-equal(wrap) =
         ?templates;
@@ -80,8 +77,8 @@ rules
         <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> templates
     make-conclusions-equal(wrap) = failed
 
-    is-subsumed(|judgments, context-definitions, templates) =
-        ?(rule, templates);
+    is-subsumed(|judgments, context-definitions, templates, language) =
+        ?rule;
         templates-without-rule := <diff> (templates, [rule]);
         premisses := <map(premisses-to-props)> templates-without-rule;
         rule-premisses := <premisses-to-props> rule;
@@ -125,7 +122,6 @@ rules
               non-terminals := <get-judgment-types(|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
               ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions));
-                      remove-unsatisfiable-templates(|context-definitions);
                       remove-valid-premisses(|context-definitions)> (non-syntax-directed-ts, ts)
               
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
@@ -150,11 +146,16 @@ rules
 
     remove-unsatisfiable-templates(|context-definitions) =
         ?templates;
-        <remove-all(where(premisses-to-props;
-                     map(\p -> Formula__("", Not__(p))\);
-                     direct-proof(|Some("neg-premise"), templates, context-definitions); all(?VerificationSuccess(_))
-                   ))> templates
+        <partition(?Fork__(_), not(?Fork__(_))); debug;
+         (map(\Fork__(ts) -> Fork__(<remove-unsatisfiable-templates(|context-definitions, <mapconcat(?Fork__(<id>))> templates)> ts)\),
+          remove-unsatisfiable-templates(|context-definitions, templates)); conc> templates
     remove-unsatisfiable-templates(|context-definitions) = failed(|[context-definitions])
+
+    remove-unsatisfiable-templates(|context-definitions, templates) =
+        remove-all(where(premisses-to-props;
+                   map(\p -> Formula__("unsatisfiable-premise", Not__(p))\);
+                   direct-proof(|Some("neg-premise"), templates, context-definitions); all(?VerificationSuccess(_))
+                   ))
                      
     remove-valid-premisses(|context-definitions) =
         ?templates; <map(remove-valid-premisses(|context-definitions, templates))> templates
@@ -162,7 +163,7 @@ rules
         
     remove-valid-premisses(|context-definitions, templates) =
         ?template;
-        indices := <premisses-to-props; map(\p -> Formula__("", p)\);
+        indices := <premisses-to-props; map(\p -> Formula__("valid-premise", p)\);
                     direct-proof(|Some("valid-premise"), templates, context-definitions);
                     add-indices; remove-all(Snd;?VerificationSuccess(_)); map(Fst)> template;
         premisses := <get-premisses> template;
@@ -186,7 +187,7 @@ rules
     direct-proof(|timeout, name, templates, context-definitions) =
         failed(|[timeout, name, templates, context-definitions])
                      
-    solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property) =
+    solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property, language) =
         ?which-ambiguities;
         which-ambiguities' := <make-conclusions-equal(newnames(|"c"))> which-ambiguities;
         conclusion := <Hd; get-pattern> which-ambiguities';
@@ -205,7 +206,7 @@ rules
                                                      map(\t -> <replace(|property)> (<get-pattern; index(|i)> property, t) \)> pattern
                                                 \); concat> (step-pattern, conclusion);
         ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r))> which-ambiguities'\)> which-ambiguities');
-        ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis))); Fst)> (which-ambiguities, ambiguities-premisses)
+        ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis), language)); Fst)> (which-ambiguities, ambiguities-premisses)
 
 
     /**
@@ -320,8 +321,9 @@ rules
     optimize-templates(|target-language, context-definitions) =
         ?(templates, judgments);
         {|Fresh:
-        <solve-which-ambiguities(|judgments, context-definitions);
+        <solve-which-ambiguities(|judgments, context-definitions, target-language);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
+        remove-unsatisfiable-templates(|context-definitions);
         order-forks-by-subsumption> templates |}
     optimize-templates(|target-language, context-definitions) = 
         failed(|[target-language, context-definitions])
