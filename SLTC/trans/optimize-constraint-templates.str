@@ -152,7 +152,7 @@ rules
     remove-unsatisfiable-templates(|context-definitions) = failed(|[context-definitions])
 
     remove-unsatisfiable-templates(|context-definitions, templates) =
-        remove-all(where(premisses-to-props;
+        remove-all(where(premisses-to-props; where(not(equal(|[])));
                    map(\p -> Formula__("unsatisfiable-premise", Not__(p))\);
                    direct-proof(|Some("neg-premise"), templates, context-definitions); all(?VerificationSuccess(_))
                    ))
