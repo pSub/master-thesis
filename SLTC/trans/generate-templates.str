@@ -203,7 +203,9 @@ rules
     collect-meta-variables(is-conclusion | conclusion, language) : v -> []
         where <or(is-string, get-arguments; equal(|[]))> v
     collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
-        <conc> (<compute-types(|language, cons, arg-count)> vars,
+        <conc> (<compute-types(map(where(Snd; length; equal(|1))
+                                 < (id, \[sort(type)] -> type\)
+                                 + exit-with-error(|999, "not implemented")) | language, cons, arg-count)> vars,
                 <map(collect-meta-variables(is-conclusion | conclusion, language))> nodes)
         where arg-count := <length> args;
               (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
@@ -220,16 +222,14 @@ rules
      * @param number of arguments of the constructor
      * @type List(MetaVariable) -> List(String)
      */
-    compute-types(|language, cons, arg-count) : [] -> []
-    compute-types(|language, cons, arg-count) : vars -> vars-types
+    compute-types(disambiguate | language, cons, arg-count) : [] -> []
+    compute-types(disambiguate | language, cons, arg-count) : vars -> vars-types
         where
               productions := <get-productions-for-constructor(|language)> cons;
               productions' := <filter(to-tuple; Fst; filter(?sort(_)))> productions;
               matching-productions := <filter(where(length; equal(|arg-count)))>;
               transposed-matching-productions := <matrix-transpose> matching-productions;
-              vars-types := <zip; map(where(Snd; length; equal(|1))
-                                 < (id, \[sort(type)] -> type\)
-                                 + exit-with-error(|999, "not implemented"))> (vars, transposed-matching-productions)
+              vars-types := <zip; disambiguate> (vars, transposed-matching-productions)
     compute-types(|language, cons, arg-count) = failed(|[language, cons, arg-count])
               
     /**
