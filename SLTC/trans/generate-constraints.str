@@ -193,12 +193,12 @@ rules
                                 <instantiate-lookup(|pattern', term')> (ctx, inputs);
                                 (lookup(|s) < \ o -> (Some(o), <zip; map(makeCEq(|<replace(|"{}", o)> error); instantiate-error(|pattern', term'))> (o, outputs))\
                                             + \ (_, i) -> (None(), [CFail__(Error([i, " not found in context"]))])\)
-                          case ?Eq__(a, b, error):
+                          case ?Eq__(num, a, b, error):
                               !(None(), [<instantiate-error(|pattern', term')>
                                         CEq__(<instantiate(|pattern', term')> a,
                                               <instantiate(|pattern', term')> b,
                                               error) ])
-                          case ?Neq__(a, b, error):
+                          case ?Neq__(num, a, b, error):
                               !(None(), [ <instantiate-error(|pattern', term')>
                                         CNeq__(<instantiate(|pattern', term')> a,
                                                <instantiate(|pattern', term')> b,

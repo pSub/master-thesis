@@ -14,8 +14,8 @@ signature
        Conclusion__ : judg-number * Pattern * Outputs -> Conclusion
        Judgment__ : judg-number * term * binding * outputs * error -> Premise
        Lookup__  : ctx * inputs * outputs * error -> Premise
-       Eq__ : term * term * error -> Premise
-       Neq__ : term * term * error -> Premise
+       Eq__ : judg-number * term * term * error -> Premise
+       Neq__ : judgment-number * term * term * error -> Premise
        Reset__ : ctx -> Ctx
        Ctx__ : ctx -> Ctx
        Binding__ : ctx * inputs * outputs -> Ctx
@@ -51,8 +51,8 @@ rules
     get-premise-inputs : Judgment__(_, inputs, bindings, _, _) ->
         <conc> (inputs, <mapconcat(get-premise-inputs)> bindings)
     get-premise-inputs : Lookup__(_, inputs, _, _) -> inputs
-    get-premise-inputs : Eq__(a, b, _) -> [a, b]
-    get-premise-inputs : Neq__(a, b, _) -> [a, b]
+    get-premise-inputs : Eq__(_, a, b, _) -> [a, b]
+    get-premise-inputs : Neq__(_, a, b, _) -> [a, b]
     get-premise-inputs = failed
 
     /**
@@ -64,8 +64,8 @@ rules
     get-premise-outputs : Judgment__(_, _, bindings, outputs, _) ->
         <conc> (outputs, <mapconcat(get-premise-outputs)> bindings)
     get-premise-outputs : Lookup__(_, _, outputs, _) -> outputs
-    get-premise-outputs : Eq__(_, _, _) -> []
-    get-premise-outputs : Neq__(_, _, _) -> []
+    get-premise-outputs : Eq__(_, _, _, _) -> []
+    get-premise-outputs : Neq__(_, _, _, _) -> []
     get-premise-outputs = failed
 
     /**
@@ -73,7 +73,7 @@ rules
      *
      * @type Premise -> Premise
      */
-    is-premise = ?Judgment__(_,_,_,_,_) <+ ?Lookup__(_,_,_,_) <+ ?Eq__(_,_,_) <+ ?Neq__(_,_,_)
+    is-premise = ?Judgment__(_,_,_,_,_) <+ ?Lookup__(_,_,_,_) <+ ?Eq__(_,_,_,_) <+ ?Neq__(_,_,_,_)
 
     /**
      * Extracts the pattern of the conclusion from a template.
@@ -139,8 +139,8 @@ rules
      * @param error - Error
      * @type (a, b) -> Eq(a, b)
      */
-    makeEq(|error) : (a, b) -> Eq__(a, b, error)
-    makeEq(|error) = failed(|[error])
+    makeEq(|error, number) : (a, b) -> Eq__(number, a, b, error)
+    makeEq(|error, number) = failed(|[error])
 
     /**
      * Transforms a tuple into a inequality node.
@@ -148,8 +148,8 @@ rules
      * @param error - Error
      * @type (a, b) -> Neq(a, b)
      */
-    makeNeq(|error) : (a, b) -> Neq__(a, b, error)
-    makeNeq(|error) = failed(|[error])
+    makeNeq(|error, number) : (a, b) -> Neq__(number, a, b, error)
+    makeNeq(|error, number) = failed(|[error])
 
     /**
      * Extracts the context id from a context modification.

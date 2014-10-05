@@ -275,8 +275,8 @@ signature
                <conc> (<rewrite-pattern> t,
                        <rewrite-ctx> binding,
                        <rewrite-pattern> outputs))
-    rewrite-call : (Eq__(a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
-    rewrite-call : (Neq__(a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call : (Eq__(num, a, b, _), _) -> Eq__(<rewrite-pattern> a, <rewrite-pattern> b)
+    rewrite-call : (Neq__(num, a, b, _), _) -> Neq__(<rewrite-pattern> a, <rewrite-pattern> b)
     rewrite-call = failed
 
     /**

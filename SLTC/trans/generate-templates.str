@@ -51,9 +51,11 @@ rules
                                           <get-error-message> lookup)
                                  , <map(Dupl; (id, \i -> <index(|i)> sorted-premisses\; Fst; get-typing-judgment; get-outputs(|j')))> deps)\
                          case where((node-is-generic(|"Eq"), id)):
-                              \(judg, dep) -> (<get-typing-judgment; to-tuple; makeEq(|<get-error-message; option(filter(?Error(_)))> judg)> judg, dep) \
+                              \(judg, dep) -> (<get-typing-judgment; to-tuple;
+                                                makeEq(|<get-error-message; option(filter(?Error(_)))> judg, <get-typing-judgment; get-judgment-id> judg)> judg, dep) \
                          case where((node-is-generic(|"Neq"), id)):
-                              \(judg, dep) -> (<get-typing-judgment; to-tuple; makeNeq(|<get-error-message> judg)> judg, dep) \
+                              \(judg, dep) -> (<get-typing-judgment; to-tuple;
+                                                makeNeq(|<get-error-message> judg, <get-typing-judgment; get-judgment-id> judg)> judg, dep) \
                          case where((node-is-generic(|"TypingJudgment"), id)):
                               \(judgment, deps) ->
                                  (Judgment__(<get-typing-judgment; get-judgment-id> judgment,
