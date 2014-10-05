@@ -212,20 +212,6 @@ rules
         ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r))> which-ambiguities'\)> which-ambiguities');
         ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis), language)); Fst)> (which-ambiguities, ambiguities-premisses)
 
-
-    /**
-     * Creates a template for the judgment corresponding to the judgment number
-     * with the given pattern as a term pattern and no premisses.
-     *
-     * Example template:
-     *
-     * ==========
-     * int <: int
-     * 
-     * @type (Int, ATerm) -> Template
-     */
-    make-base-template : (judgment-number, pattern) -> Template__(None(), [], Conclusion__(judgment-number, (pattern, []), []))
-
     /**
      * The templates within a fork define a relation if they have no output positions.
      * Strategy succeeds if the templates define a relation and fails otherwise.
