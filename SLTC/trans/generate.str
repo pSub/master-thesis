@@ -78,9 +78,14 @@ rules
   generate-file-names(|base, i) : [] -> []
   generate-file-names(|base, i) : [output | rest] -> [outfile | <generate-file-names(|base, <inc> i)> rest]
   where
+    (tmp-output,_) := <new-temp-file>;
+    (tmp-hash,_) := <new-temp-file>;
+    <write-file> (tmp-output, output);
+    <call> (<hash-command>, <conc>(<hash-options(|tmp-hash)>, [tmp-output]));
+    hash := <read-text-file; string-tokenize(|[' ', '\n']); last> tmp-hash;
     <get-extension> base => ext;
     <remove-extension> base => basename;
-    <conc-strings> (basename, "-", <int-to-string> i) => filename;
+    <conc-strings> (basename, "-", hash) => filename;
     <add-extension> (filename, ext) => outfile
   
   write-file : (file, output) -> <id>
