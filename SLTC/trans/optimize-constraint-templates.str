@@ -121,8 +121,7 @@ rules
               judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
               non-terminals := <get-judgment-types(|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
-              ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions));
-                      remove-valid-premisses(|context-definitions)> (non-syntax-directed-ts, ts)
+              ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))> (non-syntax-directed-ts, ts)
               
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
               // base-cons-product := <cartesian-product> base-constructors;
@@ -162,7 +161,8 @@ rules
                    ))
                      
     remove-valid-premisses(|context-definitions) =
-        ?templates; <map(remove-valid-premisses(|context-definitions, templates))> templates
+        ?templates;
+        <apply-to-each-template(map(remove-valid-premisses(|context-definitions, templates)))> templates
     remove-valid-premisses(|context-definitions) = failed(|[context-definitions])
         
     remove-valid-premisses(|context-definitions, templates) =
@@ -328,6 +328,7 @@ rules
         <solve-which-ambiguities(|judgments, context-definitions, target-language);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
         remove-unsatisfiable-templates(|context-definitions);
+        remove-valid-premisses(|context-definitions);
         order-forks-by-subsumption> templates |}
     optimize-templates(|target-language, context-definitions) = 
         failed(|[target-language, context-definitions])
