@@ -2,7 +2,6 @@ module generate-templates
 
 imports constraint-language
 imports constraint-template-language
-imports template-utils
 imports sdf-utils
 imports utils
 

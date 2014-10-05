@@ -8,7 +8,6 @@ imports fof-language
 imports generate-fof
 imports verification
 imports sdf-utils
-imports template-utils
 imports org/sugarj/languages/Sdf2
 
 imports include/SLTC
