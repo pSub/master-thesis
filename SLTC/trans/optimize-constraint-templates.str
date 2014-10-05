@@ -42,8 +42,8 @@ rules
      */
     equal-mod-var =
         ?(a, b);
-        where(equal(|<Trpl; (get-pattern, get-ctx-pattern, get-judgment-number); make-dummy-vars> a,
-                     <Trpl; (get-pattern, get-ctx-pattern, get-judgment-number); make-dummy-vars> b))
+        where(equal(|<Trpl; (get-pattern, get-ctx-pattern, get-conclusion-judgment-number); make-dummy-vars> a,
+                     <Trpl; (get-pattern, get-ctx-pattern, get-conclusion-judgment-number); make-dummy-vars> b))
     
     /**
      * Replaces all occurences of Var(_) with DummyVar(). This strategy
@@ -117,7 +117,7 @@ rules
     optimize-relation'(|judgments, context-definitions, target-language) :
         f@Fork__(ts) -> Fork__(ts')
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
-              judgment-number := <Hd; get-judgment-number> non-syntax-directed-ts;
+              judgment-number := <Hd; get-conclusion-judgment-number> non-syntax-directed-ts;
               non-terminals := <get-judgment-types(|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
               ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))> (non-syntax-directed-ts, ts)
@@ -268,7 +268,7 @@ rules
      */
     subsume-mod-var(sym) =
         ?(a, b);
-        where(equal(|<get-judgment-number> a, <get-judgment-number> b));
+        where(equal(|<get-conclusion-judgment-number> a, <get-conclusion-judgment-number> b));
         where(<zip; map(match-constructors(?Ctx__(_) <+ ?DummyVar__(), sym))> (<make-dummy-vars; get-ctx-pattern> a, <make-dummy-vars; get-ctx-pattern> b));
         where(<zip; map(match-constructors(?DummyVar__(), sym))> (<make-dummy-vars;get-pattern> a, <make-dummy-vars; get-pattern> b))
 

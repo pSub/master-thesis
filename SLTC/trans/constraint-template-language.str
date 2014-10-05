@@ -101,10 +101,10 @@ rules
      *
      * @type Template -> Int
      */
-    get-judgment-number : Conclusion__(judg-number, _, _) -> judg-number
-    get-judgment-number : Template__(_, _, template) -> <get-judgment-number> template
-    get-judgment-number : Fork__([template | _]) -> <get-judgment-number> template
-    get-judgment-number = failed
+    get-conclusion-judgment-number : Conclusion__(judg-number, _, _) -> judg-number
+    get-conclusion-judgment-number : Template__(_, _, template) -> <get-conclusion-judgment-number> template
+    get-conclusion-judgment-number : Fork__([template | _]) -> <get-conclusion-judgment-number> template
+    get-conclusion-judgment-number = failed
 
     /**
      * Extracts the name of the template.

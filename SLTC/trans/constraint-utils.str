@@ -188,7 +188,7 @@ rules
      * @type List(Rule) -> Rule
      */
     find-match(|inputs, judg-number, store) =
-        filter(where(get-judgment-number; equal(|judg-number)));
+        filter(where(get-conclusion-judgment-number; equal(|judg-number)));
         fetch-elem(find-match(|inputs, store))
     /** @internal */
     find-match(|inputs, store) : Fork__(ts) -> Fork__(ts')
