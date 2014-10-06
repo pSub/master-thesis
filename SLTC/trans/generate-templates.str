@@ -2,7 +2,6 @@ module generate-templates
 
 imports constraint-language
 imports constraint-template-language
-imports sdf-utils
 imports utils
 
 imports org/sugarj/languages/Sdf2
@@ -212,25 +211,6 @@ rules
                                           not(resolvable(is-conclusion | conclusion)))> args
     collect-meta-variables(is-conclusion | conclusion, language) =
         failed(|[conclusion, language])
-
-    /**
-     * Computes the types of the passed meta-variables according to the surrounding
-     * constructor and the scope of the meta-variable.
-     *
-     * @param target language
-     * @param constructor that surrounds the variables
-     * @param number of arguments of the constructor
-     * @type List(MetaVariable) -> List(String)
-     */
-    compute-types(disambiguate | language, cons, arg-count) : [] -> []
-    compute-types(disambiguate | language, cons, arg-count) : vars -> vars-types
-        where
-              productions := <get-productions-for-constructor(|language)> cons;
-              productions' := <filter(to-tuple; Fst; filter(?sort(_)))> productions;
-              matching-productions := <filter(where(length; equal(|arg-count)))>;
-              transposed-matching-productions := <matrix-transpose> matching-productions;
-              vars-types := <zip; disambiguate> (vars, transposed-matching-productions)
-    compute-types(|language, cons, arg-count) = failed(|[language, cons, arg-count])
               
     /**
      * A node is resolvable (in the context of implicit equalities) if it is a meta-variable
