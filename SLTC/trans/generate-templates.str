@@ -92,7 +92,9 @@ rules
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
                                       make-implicit-equalities-explicit(false | <get-error-message> premise
                                                                               , conclusion'
-                                                                              , <get-judgment-types("I" | <node-is-ctx-lookup < !c + !j; get-typing-judgment; get-judgment-id> premise)> premise, l)> premise
+                                                                              , <get-typing-judgment; node-is-ctx-lookup < !c + !j;
+                                                                                 get-judgment-types("I" | <get-typing-judgment; get-judgment-id> premise)> premise, l
+                                                                        )> premise
                                       \)> premisses-list;
 
             // Replace every occurence with only one representative of the new meta-variables.
