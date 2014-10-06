@@ -169,7 +169,6 @@ signature
      * Wraps meta-variables into an auxiliary constructor.
      */
     rewrite-meta-variable : AuxCons__("MetaVariable", scope, [name, _]) -> Var__(name, scope)
-    rewrite-meta-variable = failed
     
     /**
      * Wraps contexts in an auxiliary constructor.
@@ -178,7 +177,6 @@ signature
     rewrite-context-bind : AuxCons__("ContextBind", name, args) -> Pred__(<concat-strings> ["bind", name], args)
     rewrite-context-lookup : AuxCons__("ContextLookup", name, args) -> Pred__(<concat-strings> ["lookup", name], args)
     rewrite-context = rewrite-context-empty <+ rewrite-context-bind <+ rewrite-context-lookup
-    rewrite-context = failed
 
     /**
      * Wraps typing judgment in an auxiliary constructor.
@@ -188,7 +186,6 @@ signature
     rewrite-typing-judgment : AuxCons__("Eq", _, [arg1, arg2]) -> Eq__(arg1, arg2)
     rewrite-typing-judgment : AuxCons__("Not", _, [arg]) -> Not__(arg)
     rewrite-typing-judgment : AuxCons__("TypingJudgment", name, args) -> Pred__(<conc-strings>("'tcheck", name, "'"), args)
-    rewrite-typing-judgment = failed
 
     /**
      * `make-formula' for axioms.
