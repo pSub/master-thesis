@@ -192,7 +192,9 @@ rules
 
     proof-by-induction(|timeout, name, templates, context-definitions, language, judgments) =
         ?property;
-        <collect-variables-with-types(|language, judgments); debug> property
+        (vars, types) := <collect-variables-with-types(|language, judgments); unzip> property;
+        substructures := <map(map(get-immediate-substructures(|language)); concat)> types;
+        instances := <cartesian-product> substructures
 
     collect-variables-with-types(|langauge, judgments) : cons#([]) -> []
     collect-variables-with-types(|language, judgments) : node ->
