@@ -108,6 +108,11 @@ rules
     get-conclusion-judgment-number : Fork__([template | _]) -> <get-conclusion-judgment-number> template
     get-conclusion-judgment-number = failed
 
+    get-judgment-number : Judgment__(num, _, _, _, _) -> num
+    get-judgment-number : Eq__(num, _, _, _) -> num
+    get-judgment-number : Neq__(num, _, _, _) -> num
+    get-judgment-number = failed
+
     /**
      * Extracts the name of the template.
      *
