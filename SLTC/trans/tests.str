@@ -8,7 +8,8 @@ imports tests/tests-sdf-utils
 
 strategies
 
-    tests = test-suite(!"tests", tests-constraint-solving;
+    tests = rules(ProductionMode :+ _ -> <id>);
+            test-suite(!"tests", tests-constraint-solving;
                                  tests-constraint-utils;
                                  tests-utils;
                                  tests-generate-constraints;

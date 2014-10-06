@@ -449,9 +449,13 @@ rules
      * Note: The stacktrace might not contain all strategies due to e.g. inlining. See
      * the documentation of lang/stacktrace for details.
      */
-    failed(|parameters) = debug(!"Current Term: ");
-                          <if(where(length; gt(|0)), debug(!"Parameters: "))> parameters;
-                          stacktrace-get-all-frame-names; report-failure
+    failed(|parameters) = ProductionMode; rules(ProductionMode :+ _ -> <fail>); fail
+    failed(|parameters) =
+        if ProductionMode then fail
+        else debug(!"Current Term: ");
+             <if(where(length; gt(|0)), debug(!"Parameters: "))> parameters;
+             stacktrace-get-all-frame-names; report-failure
+        end
     failed = failed(|[])
 
     /**
