@@ -5,6 +5,7 @@ imports tests/tests-constraint-utils
 imports tests/tests-utils
 imports tests/tests-generate-constraints
 imports tests/tests-sdf-utils
+imports tests/tests-optimize-templates
 
 strategies
 
@@ -13,4 +14,5 @@ strategies
                                  tests-constraint-utils;
                                  tests-utils;
                                  tests-generate-constraints;
-                                 tests-sdf-utils)
+                                 tests-sdf-utils;
+                                 tests-optimize-templates)

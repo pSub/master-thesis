@@ -1,0 +1,25 @@
+module tests-optimize-templates
+
+imports constraint-language
+imports constraint-template-language
+imports optimize-constraint-templates
+imports include/SLTC
+
+rules
+    
+    collect-variables-with-types-test =
+        apply-test(!"collect-variables-with-types",
+                   collect-variables-with-types(|"tests/SimplyTypedLambdaCalculus",
+                                                 [Judgment(None(),[Hole("Type","I"),"\"<:\"",Hole("Type","I")],None(),None()),
+                                                  Judgment(None(),[Hole("Type","I"),Hole("Type","I")],None(),Some(BuiltIn("Eq")))]),
+                   ![],
+                   ![]);
+        apply-test(!"collect-variables-with-types",
+                   collect-variables-with-types(|"tests/SimplyTypedLambdaCalculus",
+                                                 [Judgment(None(),[Hole("Type","I"),"\"<:\"",Hole("Type","I")],None(),None()),
+                                                  Judgment(None(),[Hole("Type","I"),Hole("Type","I")],None(),Some(BuiltIn("Eq")))]),
+                   !Eq__(2, Var__("X1"), Var__("X1"), None()),
+                   ![(Var__("X1"), "Type"),(Var__("X1"), "Type")])
+    
+    tests-optimize-templates =
+        collect-variables-with-types-test
