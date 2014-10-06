@@ -73,14 +73,14 @@ rules
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
 
-            judgment-types := <get-judgment-types("I" | <get-typing-judgment; get-judgment-id> conclusion)> j;
+            judgment-types := <get-judgment-types(fail, "I" | <get-typing-judgment; get-judgment-id> conclusion)> j;
 
             // Transform implicit equalities in the conclusion into explicit equalities. Implicit
             // equalities are removed by introducing fresh variables and equality constraints
             // between them. This results in a list of variable substitutions and a list of premisses.
             (substitutions, (equalities, judgment-definitions)) :=
                     <get-typing-judgment; get-inputs(|j);
-                     make-implicit-equalities-explicit(true | <get-error-message> conclusion, conclusion, judgment-types, l)> conclusion;
+                     make-implicit-equalities-explicit(true | <get-error-message> conclusion, c, conclusion, judgment-types, l)> conclusion;
 
             // Replace each occurence with the corresponding new meta-variable.
             conclusion' := <concat; replace-once(|conclusion)> substitutions;
@@ -91,9 +91,10 @@ rules
             // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
                                       make-implicit-equalities-explicit(false | <get-error-message> premise
+                                                                              , c
                                                                               , conclusion'
                                                                               , <get-typing-judgment; node-is-ctx-lookup < !c + !j;
-                                                                                 get-judgment-types("I" | <get-typing-judgment; get-judgment-id> premise)> premise, l
+                                                                                 get-judgment-types(<get-typing-judgment; node-is-ctx-lookup> premise, "I" | <get-typing-judgment; get-judgment-id> premise)> premise, l
                                                                         )> premise
                                       \)> premisses-list;
 
@@ -192,29 +193,35 @@ rules
     /**
      * Generates from implicit equalities equality premisses.
      */
-    make-implicit-equalities-explicit(is-conclusion | errors, conclusion, types, language) =
+    make-implicit-equalities-explicit(is-conclusion | errors, context-definitions, conclusion, types, language) =
         ?inputs; <zip> (inputs, types);
         mapconcat(where(Fst; resolvable(is-conclusion | conclusion))
                   < singelton 
-                  + (Fst; collect-meta-variables(is-conclusion | conclusion, language)));
+                  + (Fst; collect-meta-variables(is-conclusion | context-definitions, conclusion, language)));
         flatten-list;
         group((Fst, Fst); meta-variable-equal); filter(where(length; gt(|1)));
         Dupl; (id, map(map(make-new-meta-variable))); zip;
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); unzip)
-    make-implicit-equalities-explicit(is-conclusion | errors, conclusion, types, language) =
+    make-implicit-equalities-explicit(is-conclusion | errors, context-definitions, conclusion, types, language) =
         failed(|[errors, conclusion, types, language])
         
-    collect-meta-variables(is-conclusion | conclusion, language) : v -> []
-        where <or(is-string, get-arguments; equal(|[]))> v
-    collect-meta-variables(is-conclusion | conclusion, language) : n@cons#(args) ->
-        <conc> (vars-types, <map(Fst; collect-meta-variables(is-conclusion | conclusion, language))> nodes-types')
+    collect-meta-variables(is-conclusion | context-definitions, conclusion, language) : v -> []
+        where <or(node-is-meta-variable, or(is-string, get-arguments; equal(|[])))> v
+    collect-meta-variables(is-conclusion | context-definitions, conclusion, language) : v@cons#(args) ->
+        <conc> (vars-types, <map(Fst; collect-meta-variables(is-conclusion | context-definitions, conclusion, language))> nodes-types)
+        where <node-is-ctx> v;
+              types := <get-judgment-types(id | <get-context-id> v)> context-definitions;
+              (vars-types, nodes-types) := <zip; partition((resolvable(is-conclusion | conclusion), id),
+                                            not((resolvable(is-conclusion | conclusion), id)))> (args, types)
+    collect-meta-variables(is-conclusion | context-definitions, conclusion, language) : cons#(args) ->
+         <conc> (vars-types, <map(Fst; collect-meta-variables(is-conclusion | context-definitions, conclusion, language))> nodes-types')
         where arg-count := <length> args;
               nodes-types := <compute-types(map(where(Snd; length; equal(|1))
                                  < (id, \[sort(type)] -> type\)
                                  + exit-with-error(|999, "not implemented")) | language, cons, arg-count)> args;
               (vars-types, nodes-types') := <partition((resolvable(is-conclusion | conclusion), id),
                                           not((resolvable(is-conclusion | conclusion), id)))> nodes-types
-    collect-meta-variables(is-conclusion | conclusion, language) =
+    collect-meta-variables(is-conclusion | context-definitions, conclusion, language) =
         failed(|[conclusion, language])
               
     /**

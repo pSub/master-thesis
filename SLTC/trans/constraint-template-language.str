@@ -174,12 +174,18 @@ rules
      */
     is-ctx-modification = ?Reset__(_) <+ ?Ctx__(_) <+ ?Binding__(_, _, _)
 
-    get-judgment-types(|judgment) = get-judgment-types(id | judgment)
+    get-judgment-types(is-ctx | judgment) = get-judgment-types(is-ctx, id | judgment)
 
-    get-judgment-types(type-check | judgment) =
+    get-judgment-types(is-ctx, type-check | judgment) =
         index(|judgment);
-        collect-om(\Hole(non-terminal, type) -> <where(<type-check> type)> non-terminal\, conc)
-    get-judgment-types(type-check | judgment) = failed(|[judgment])
+        \decl -> <conc> (<collect-om(\Hole(non-terminal, type) ->
+                                 <where(<type-check> type)> non-terminal
+                                     \, conc)> decl,
+                         <if is-ctx
+                           then <to-tuple; Fst; singelton> decl
+                           else ![]
+                           end> )\
+    get-judgment-types(is-ctx, type-check | judgment) = failed(|[judgment])
 
     /**
      * Extracts the typing judgment.
