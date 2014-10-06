@@ -73,7 +73,7 @@ rules
             // Convert premisses into a list.
             premisses-list := <to-list(PremiseBase, PremiseCons)> premisses-struct;
 
-            judgment-types := <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> conclusion)> j;
+            judgment-types := <get-judgment-types("I" | <get-typing-judgment; get-judgment-id> conclusion)> j;
 
             // Transform implicit equalities in the conclusion into explicit equalities. Implicit
             // equalities are removed by introducing fresh variables and equality constraints
@@ -90,7 +90,7 @@ rules
 
             // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
-                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> premise)> j, l)> premise\)> premisses-list;
+                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', <get-judgment-types("I" | <get-typing-judgment; get-judgment-id> premise)> j, l)> premise\)> premisses-list;
 
             // Replace every occurence with only one representative of the new meta-variables.
             premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
