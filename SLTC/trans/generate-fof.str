@@ -19,7 +19,7 @@ signature
      */
     make-conjectures : Module(ModuleDec(_),
                               imports,
-                              Language(_),
+                              Some(Language(_)),
                               Contexts(context-definitions),
                               MetaVariables(_),
                               Judgments(_),
