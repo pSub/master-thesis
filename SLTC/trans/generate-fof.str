@@ -164,7 +164,6 @@ signature
                          "Eq" <+
                          "Neq" <+
                          "Not"
-    make-aux-cons = failed
     
     /**
      * Wraps meta-variables into an auxiliary constructor.
