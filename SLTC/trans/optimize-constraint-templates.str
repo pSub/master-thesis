@@ -66,9 +66,7 @@ rules
      */
     optimize-fork(|judgments, context-definitions, templates, language) : Fork__(ts) -> Fork__(ts'')
         where ts' := <make-conclusions-equal(newnames(|"Z"); map(makeVar))> ts;
-              ts'' := <remove-all(\rule ->
-                                        <is-subsumed(|judgments, context-definitions, templates, language)> rule
-                                  \)> ts'
+              ts'' := <zip; remove-all(is-subsumed(|judgments, context-definitions, templates, language, ts')); map(Fst)> (ts, ts')
 
     make-conclusions-equal(wrap) =
         ?templates;
@@ -76,12 +74,12 @@ rules
         <map(\rule -> <zip; replace-all(|rule)> (<get-pattern; collect-om(?Var__(_))> rule, vars)\); nub> templates
     make-conclusions-equal(wrap) = failed
 
-    is-subsumed(|judgments, context-definitions, templates, language) =
-        ?rule;
+    is-subsumed(|judgments, context-definitions, templates, language, ambiguous-templates) =
+        ?(rule, rule');
         templates-without-rule := <diff> (templates, [rule]);
-        premisses := <map(premisses-to-props)> templates-without-rule;
-        rule-premisses := <premisses-to-props> rule;
-        <map(\ps -> Formula__("", Impl__(And__(rule-premisses), And__(ps)))\)> premisses;
+        premisses := <diff; map(premisses-to-props)> (ambiguous-templates, [rule']);
+        rule-premisses := <premisses-to-props> rule';
+        <map(\ps -> Formula__("subsumption", Impl__(And__(rule-premisses), And__(ps)))\)> premisses;
         direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
         some(?VerificationSuccess(_))
 
