@@ -81,9 +81,9 @@ rules
         templates-without-rule := <diff> (templates, [rule]);
         premisses := <map(premisses-to-props)> templates-without-rule;
         rule-premisses := <premisses-to-props> rule;
-        map(\ps -> Formula__("", Impl__(And__(rule-premisses), And__(ps)))\);
+        <map(\ps -> Formula__("", Impl__(And__(rule-premisses), And__(ps)))\)> premisses;
         direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
-        some(?VerificationSuccess)
+        some(?VerificationSuccess(_))
 
     /**
      * Main strategy that optimizes when-ambiguities.
