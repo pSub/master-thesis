@@ -263,4 +263,4 @@ rules
               matching-productions := <filter(where(length; equal(|arg-count)))>;
               transposed-matching-productions := <matrix-transpose> matching-productions;
               vars-types := <zip; disambiguate> (vars, transposed-matching-productions)
-    compute-types(|language, cons, arg-count) = failed(|[language, cons, arg-count])
+    compute-types(disambigutate | language, cons, arg-count) = failed(|[language, cons, arg-count])
