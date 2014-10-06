@@ -206,14 +206,14 @@ rules
         
     collect-meta-variables(is-conclusion | conclusion, language) : v -> []
         where <or(is-string, get-arguments; equal(|[]))> v
-    collect-meta-variables(is-conclusion | conclusion, language) : cons#(args) ->
-        <conc> (<compute-types(map(where(Snd; length; equal(|1))
-                                 < (id, \[sort(type)] -> type\)
-                                 + exit-with-error(|999, "not implemented")) | language, cons, arg-count)> vars,
-                <map(collect-meta-variables(is-conclusion | conclusion, language))> nodes)
+    collect-meta-variables(is-conclusion | conclusion, language) : n@cons#(args) ->
+        <conc> (vars-types, <map(Fst; collect-meta-variables(is-conclusion | conclusion, language))> nodes-types')
         where arg-count := <length> args;
-              (vars, nodes) := <partition(resolvable(is-conclusion | conclusion),
-                                          not(resolvable(is-conclusion | conclusion)))> args
+              nodes-types := <compute-types(map(where(Snd; length; equal(|1))
+                                 < (id, \[sort(type)] -> type\)
+                                 + exit-with-error(|999, "not implemented")) | language, cons, arg-count)> args;
+              (vars-types, nodes-types') := <partition((resolvable(is-conclusion | conclusion), id),
+                                          not((resolvable(is-conclusion | conclusion), id)))> nodes-types
     collect-meta-variables(is-conclusion | conclusion, language) =
         failed(|[conclusion, language])
               
