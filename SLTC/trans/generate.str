@@ -74,9 +74,8 @@ rules
     map(write-file);
     !names
 
-  generate-file-names(|base) = generate-file-names(|base, 0)
-  generate-file-names(|base, i) : [] -> []
-  generate-file-names(|base, i) : [output | rest] -> [outfile | <generate-file-names(|base, <inc> i)> rest]
+  generate-file-names(|base) = map(generate-file-name(|base))
+  generate-file-name(|base) : output -> outfile
   where
     (tmp-output, tmp-output-descr) := <new-temp-file>;
     (tmp-hash, tmp-hash-descr) := <new-temp-file>;
