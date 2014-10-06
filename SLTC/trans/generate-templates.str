@@ -90,7 +90,7 @@ rules
 
             // Transform implicit equalities in the premisses into explicit equalities.
             premisses-impl-eq := <map(\premise -> <get-typing-judgment; (node-is-ctx-lookup < get-inputs(|c) + get-inputs(|j));
-                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> premise)> j, l)> premise\)> premisses-list';
+                                      make-implicit-equalities-explicit(false | <get-error-message> premise, conclusion', <get-judgment-types(!"I" | <get-typing-judgment; get-judgment-id> premise)> j, l)> premise\)> premisses-list;
 
             // Replace every occurence with only one representative of the new meta-variables.
             premisses-list'' := <zip; map(\(premise, subst) -> <concat; replace-once(|premise)> subst\)> (premisses-list', <map(Fst)> premisses-impl-eq);
@@ -115,10 +115,10 @@ rules
                                                                   args)\)> eq-judg-subst;
             
             // Add new judgment definitions for the implicit equaltities
-            j' := <conc> (j, judgment-definitions, new-judgment-defs);
+            j' := <conc> (previous-judgments, judgment-definitions, new-judgment-defs);
 
             // Collect all newly generated judgments and propagate them outwards using dynamic rules
-            rules(CollectedJudgments :+ _ -> <conc> (previous-judgments, judgment-definitions, new-judgment-defs));
+            rules(CollectedJudgments :+ _ -> j');
 
             // Enumerate the premisses.
             enum-premisses := <add-indices> premisses-with-equalities';
