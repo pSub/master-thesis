@@ -176,10 +176,10 @@ rules
 
     get-judgment-types(|judgment) = get-judgment-types(id | judgment)
 
-    get-judgment-types(type | judgment) =
+    get-judgment-types(type-check | judgment) =
         index(|judgment);
-        collect-om(\Hole(non-terminal, type) -> non-terminal\, conc)
-    get-judgment-types(type | judgment) = failed(|[judgment])
+        collect-om(\Hole(non-terminal, type) -> <where(<type-check> type)> non-terminal\, conc)
+    get-judgment-types(type-check | judgment) = failed(|[judgment])
 
     /**
      * Extracts the typing judgment.
