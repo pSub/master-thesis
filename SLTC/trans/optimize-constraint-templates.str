@@ -305,7 +305,7 @@ rules
     order-forks-by-subsumption = failed
 
     /**
-     * Extract templates from singelton forks.
+     * Extract templates from forks.
      * @type List(Template) -> List(Template)
      */
     remove-forks : [Fork__(ts) | ts'] -> <conc> (ts, <remove-forks> ts')
