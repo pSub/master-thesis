@@ -26,8 +26,8 @@ rules
      */
     solve-which-ambiguities(|judgments, context-definitions, language) : templates ->
         <conc> (<map(mkFork;
-                optimize-fork(|judgments, context-definitions, templates, language);
-                remove-trivial-fork)> equivalence-classes,
+                optimize-fork(|judgments, context-definitions, templates, language)
+                ); remove-trivial-forks> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
         where equivalence-classes := <group(equal-mod-var); filter(where(or(length; gt(|1), some(?Fork__(_)))))> templates
     solve-which-ambiguities(|judgments, context-definitions) =
@@ -95,8 +95,9 @@ rules
      */
     solve-when-ambiguities(|judgments, target-language, context-definitions) =
         ?templates;
-        where(equivalence-classes := <create-classes> templates);
-        <conc> (<map(mkFork; optimize-relation(|judgments, context-definitions, target-language); remove-trivial-fork)> equivalence-classes,
+        where(equivalence-classes := <debug; create-classes> templates);
+        <conc> (<map(mkFork; optimize-relation(|judgments, context-definitions, target-language));
+                 remove-trivial-forks> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
     solve-when-ambiguities(|judgments, target-language, context-definitions) =
         failed(|[judgments, target-language, context-definitions])
@@ -315,12 +316,14 @@ rules
     /**
      * Unpacks a Fork if it only contains a single template.
      */
-    remove-trivial-fork : Fork__(ts) ->
-         <if <equal> (<length> ts, 1)
-          then <Hd> ts
-          else !Fork__(ts)
-          end>
-    remove-trivial-fork = failed
+    remove-trivial-forks = filter(?Template__(_,_,_) <+
+                                  \Fork__(ts) ->
+                                    <switch <length> ts
+                                     case 0: fail
+                                     case 1: <Hd> ts
+                                     end>
+                                   \)
+    remove-trivial-forks = failed
 
     /**
      * Main strategy that composes all optimizations.
