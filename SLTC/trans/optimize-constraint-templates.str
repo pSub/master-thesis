@@ -321,6 +321,7 @@ rules
                                     <switch <length> ts
                                      case 0: fail
                                      case 1: <Hd> ts
+                                     otherwise: !Fork__(ts)
                                      end>
                                    \)
     remove-trivial-forks = failed
