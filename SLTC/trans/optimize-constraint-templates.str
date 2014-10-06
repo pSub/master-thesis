@@ -202,11 +202,11 @@ rules
               num := <get-judgment-number> node;
               input-types := <get-judgment-types("I" | num)> judgments;
               output-types := <get-judgment-types("O" | num)> judgments;
-              types := <conc> (input-types, output-types);
+              types := <conc; map(singelton)> (input-types, output-types);
               terms := <conc> (<get-premise-inputs> node, <get-premise-outputs> node)
     collect-variables-with-types(|language, judgments) : cons#(args) ->
         <conc> (<compute-types(map((id, map(?sort(<id>)))) | language, cons, arg-count )> vars,
-                <collect-variables-with-types(|language, judgments)> rest)
+                <mapconcat(collect-variables-with-types(|language, judgments))> rest)
         where arg-count := <length> args;
               (vars, rest) := <partition(?Var__(_), not(?Var__(_)))> args
     collect-variables-with-types(|language, judgments) = failed(|[language, judgments])
