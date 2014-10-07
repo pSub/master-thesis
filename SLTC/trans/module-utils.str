@@ -50,7 +50,7 @@ rules
      *
      * @type (Option(Language), Option(Language)) -> Option(Language)
      */            
-    merge-target-language : (Some(_), Some(_)) -> <exit-with-error(|1, "Currently only one traget language is supported")>
+    merge-target-language : (Some(_), Some(_)) -> <exit-with-error(|"Currently only one traget language is supported", 1)>
     merge-target-language : (Some(l1), _) -> Some(l1)
     merge-target-language : (None(), l2) -> l2
     merge-target-language = failed
