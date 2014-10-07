@@ -323,6 +323,9 @@ rules
         rules ( Fresh :+ v -> 0);
         w := <make-fresh> v
 
+    reset-fresh =
+        ?v; rules ( Fresh :+ v -> 0)
+
     /**
      * Meta-variables are equal independent of the error annotation.
      */

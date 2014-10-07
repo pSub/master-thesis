@@ -89,7 +89,8 @@ signature
     make-inequality : [y | ys] -> <map(\x -> Formula__("ineq", Axiom__(), <make-neq>(x, y))\)> ys
     make-inequality = failed
     
-    make-injectivity : (name, n) -> [Formula__(<conc-strings> (name, "-injective-contraposition"),
+    make-injectivity = {|Fresh: where(<reset-fresh> "X"; <reset-fresh> "Y"); make-injectivity'|}
+    make-injectivity' : (name, n) -> [Formula__(<conc-strings> (name, "-injective-contraposition"),
                                              Axiom__(),
                                              All__(<conc>(Xs, Ys), Impl__(<zip; map(make-neq)> (Xs, Ys),
                                                                           Neq__(Term__(name, Xs), Term__(name, Ys))))
@@ -100,7 +101,7 @@ signature
                                                                           <zip; map(make-eq); list-accum(make-and)> (Xs, Ys))))]
         where Xs := <newnames(|"X")> n;
               Ys := <newnames(|"Y")> n
-    make-injectivity = failed
+    make-injectivity' = failed
 
     make-univalence : (name, n) -> Formula__(<conc-strings> (name, "-univalent"),
                                             Axiom__(),
