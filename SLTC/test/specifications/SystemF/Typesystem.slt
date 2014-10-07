@@ -1,4 +1,4 @@
-module Typesystem
+module SystemF/Typesystem
 
 language specifications/SystemF/SystemF
 
