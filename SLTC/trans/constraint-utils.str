@@ -26,7 +26,6 @@ rules
         where instantiations := <collect-om(?Var__(_));
                                  find-matching-positions(|pattern);
                                  extract-terms(|terms)> input
-    instantiate(|pattern, terms) = failed(|[pattern, terms])
 
     /**
      * A version of `instantiate' tailored for judgments.
@@ -82,7 +81,6 @@ rules
                     option(map(try(\Error(e) ->
                                        Error(<instantiate(|pattern, terms)> e)
                                     \)))> constraint)
-    instantiate-error(|pattern, terms) = failed(|[pattern, terms])
     
     /**
      * Instantiate variables that occur as an output and as an input and
@@ -135,7 +133,7 @@ rules
      * @type List(List(Int)) -> List(a)
      */
     extract-terms(|terms) = map((id, retrieve(|terms)))
-    extract-terms(|terms) = failed(|[terms])
+    // extract-terms(|terms) = failed(|[terms])
     
     /**
      * Finds the positions of the provided elements in the `pattern'.
@@ -144,7 +142,6 @@ rules
      * @type List(a) -> List((a, List(Int)))
      */
     find-matching-positions(|pattern) = filter(search(|pattern))
-    find-matching-positions(|pattern) = failed(|[pattern])
 
     /**
      * Traverses the pattern like a tree and records the path until `x' is
@@ -155,7 +152,7 @@ rules
      * @type a -> List(Int)
      */
     search(|pattern) : x -> <memo(search')> (x, [], <add-indices> pattern)
-    search(|pattern) = failed(|[pattern])
+    // search(|pattern) = failed(|[pattern])
 
     search' : (x, is, []) -> <fail>
     search' : (x, is, pattern) -> (x, <reverse> [index | is])
@@ -173,7 +170,6 @@ rules
      */
     retrieve(|term) : [p] -> <index> (p, <get-arguments> term)
     retrieve(|term) : [p|path] -> <index; \node -> <retrieve(|node)> path\> (p, <get-arguments> term)
-    retrieve(|term) = failed(|[term])
 
     /**
      * Search for the matching pattern for `inputs' in the constraint templates.
