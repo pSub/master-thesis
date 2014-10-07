@@ -93,7 +93,7 @@ rules
                                       make-implicit-equalities-explicit(false | <get-error-message> premise
                                                                               , c
                                                                               , conclusion'
-                                                                              , <get-typing-judgment; node-is-ctx-lookup < !c + !j;
+                                                                              , <get-typing-judgment; (node-is-ctx-lookup < !c + !j);
                                                                                  get-judgment-types(<get-typing-judgment; node-is-ctx-lookup> premise, "I" | <get-typing-judgment; get-judgment-id> premise)> premise, l
                                                                         )> premise
                                       \)> premisses-list;
