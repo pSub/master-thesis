@@ -21,10 +21,11 @@ exports
   	"{" RecordEntries"}" -> Exp {cons("Record")}
   	Exp "." ID -> Exp {cons("Projection")}
   	
-  	"(" Exp ")" -> Exp   {bracket}
-  	
-  	
+  	"(" Exp ")" -> Exp   {bracket}  	
+
   context-free syntax
-  	"int" -> Type {cons("TInt")}
-  	Type "->" Type -> Type {cons("TArrow")}
-  	-> TRecordEntries {cons("TRecordEntries")}
+    "int" -> Type {cons("TInt")}
+    Type "->" Type -> Type {cons("TArrow")}
+    -> TRecordEntries {cons("TRecordEntries")}
+    ID ":" Type TRecordEntries -> TRecordEntries {cons("TRecordEntries")}
+    "{" TRecordEntries "}" -> Type {cons("TRecord")}
