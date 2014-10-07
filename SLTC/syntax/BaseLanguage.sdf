@@ -40,7 +40,7 @@ exports
 
   %% Imports
   context-free syntax
-  "(" Section+ ")" -> ExcludedSections {cons("ExcludedSections")}
+  "hiding (" Section+ ")" -> ExcludedSections {cons("ExcludedSections")}
   MID ExcludedSections? -> Import         {cons("Import")}
 
 

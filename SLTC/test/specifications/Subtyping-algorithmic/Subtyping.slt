@@ -1,6 +1,6 @@
 module Subtyping
 
-imports Typesystem (language)
+imports Typesystem hiding (language)
 
 language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 
