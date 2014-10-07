@@ -1,5 +1,6 @@
 module sdf-utils
 
+imports constraint-language
 imports utils
 imports libstratego-sdf
 imports org/sugarj/languages/Sdf2
@@ -44,7 +45,7 @@ rules
         ?prod(consituents, _, attributes);
         <mkterm> (<fetch-constructor> attributes,
                   <filter(?sort(_))> consituents)
-    construct-substructure = failed
+    construct-substructure = ?prod(consituents, <id>, attributes)
 
     /**
      * Extracts the constructor from the attribute set of an sdf production.
@@ -52,7 +53,6 @@ rules
      * @type attrs(_) -> String
      */
     fetch-constructor = ?attrs(attributes); <fetch-elem(?term(cons(constructor)); !constructor)> attributes
-    fetch-constructor = failed
     
     get-productions-for-constructor(|language) =
         ?constructor;
