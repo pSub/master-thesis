@@ -1,0 +1,34 @@
+definition
+module specifications/SystemF/SystemF
+exports
+	
+  context-free start-symbols
+    Exp
+    
+  lexical syntax
+  	[a-zA-Z][a-zA-Z0-9]* -> ID
+  	[0-9]+ -> Int
+  	
+  	"int" -> ID {reject}
+
+  lexical restrictions
+  	ID -/- [a-zA-Z0-9\_\-]
+    
+  context-free syntax
+  	Int -> Exp {cons("Int")}
+	ID -> Exp {cons("Var")}
+  	"\\" ID ":" Type "." Exp -> Exp {cons("Abs")}
+  	Exp Exp -> Exp {cons("App"), left}
+  	"\\" ID "." Exp -> Exp {cons("Tabs")}
+	Exp "[" Type "]" -> Exp {cons("Tapp")}
+	
+  	
+  	"(" Exp ")" -> Exp   {bracket}
+  	
+  	
+  context-free syntax
+  	"int" -> Type {cons("TInt")}
+  	ID -> Type {cons("TVar")}
+  	Type "->" Type -> Type {cons("TArrow"), right}
+	"all" ID "." Type -> Type {cons("TAll")}
+	"(" Type ")" -> Type {bracket}
