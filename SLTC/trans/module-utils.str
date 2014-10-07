@@ -60,7 +60,7 @@ rules
      *
      * @type (Contexts, Contexts) -> Contexts
      */
-    merge-contexts : (Contexts(c1), Contexts(c2)) -> Contexts(<conc> (c1, c2))
+    merge-contexts : (Contexts(c1), Contexts(c2)) -> Contexts(<union> (c1, c2))
     merge-contexts = failed
 
     /**
