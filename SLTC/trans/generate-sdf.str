@@ -110,4 +110,4 @@ rules
     make-attr : str  -> <concat-strings> ["{", str, "}"]
 
 strategies
-    toSdf = resolve-imports; make-nodes
+    toSdf = make-nodes
