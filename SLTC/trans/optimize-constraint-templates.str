@@ -203,8 +203,8 @@ rules
                                         + collect-variables-with-types(|language, judgments))> (terms, types)
         where <is-premise> node;
               num := <get-judgment-number> node;
-              input-types := <get-judgment-types("I" | num)> judgments;
-              output-types := <get-judgment-types("O" | num)> judgments;
+              input-types := <get-judgment-types(fail, "I" | num)> judgments;
+              output-types := <get-judgment-types(fail, "O" | num)> judgments;
               types := <conc; map(singelton)> (input-types, output-types);
               terms := <conc> (<get-premise-inputs> node, <get-premise-outputs> node)
     collect-variables-with-types(|language, judgments) : cons#(args) ->
