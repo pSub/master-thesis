@@ -68,7 +68,7 @@ rules
      *
      * @type (MetaVariables, MetaVariables) -> MetaVariables
      */
-    merge-meta-variables : (MetaVariables(m1), MetaVariables(m2)) -> MetaVariables(<conc> (m1, m2))
+    merge-meta-variables : (MetaVariables(m1), MetaVariables(m2)) -> MetaVariables(<union> (m1, m2))
     merge-meta-variables = failed
 
     /**
