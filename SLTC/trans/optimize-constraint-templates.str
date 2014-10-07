@@ -117,9 +117,11 @@ rules
         f@Fork__(ts) -> Fork__(ts')
         where non-syntax-directed-ts := <get-non-syntax-directed-templates> f;
               judgment-number := <Hd; get-conclusion-judgment-number> non-syntax-directed-ts;
-              non-terminals := <get-judgment-types(|judgment-number)> judgments;
+              non-terminals := <get-judgment-types(fail|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
-              ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))> (non-syntax-directed-ts, ts)
+              ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))
+                      // solve-which-ambiguities(|judgments, context-definitions, target-language);
+                      > (non-syntax-directed-ts, ts)
               
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
               // base-cons-product := <cartesian-product> base-constructors;
@@ -231,7 +233,7 @@ rules
                                                      map(\t -> <replace(|property)> (<get-pattern; index(|i)> property, t) \)> pattern
                                                 \); concat> (step-pattern, conclusion);
         ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r))> which-ambiguities'\)> which-ambiguities');
-        ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis), language)); Fst)> (which-ambiguities, ambiguities-premisses)
+        ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis), language, [])); Fst)> (which-ambiguities, ambiguities-premisses)
 
     /**
      * The templates within a fork define a relation if they have no output positions.
