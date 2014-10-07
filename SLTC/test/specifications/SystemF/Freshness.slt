@@ -1,0 +1,35 @@
+module SystemF/Freshness
+
+language specifications/SystemF/SystemF
+
+contexts TypeBinding := ID{I}
+
+meta-variables 	Ctx "$" { TypeBinding }
+				Id "%" { ID }
+
+judgments 
+ID{I} "fresh in" TypeBinding{I}.
+ID{I} "!=" ID{I} is Neq.
+
+
+rules
+
+==============
+%x fresh in ()
+
+%x != %y
+%x fresh in $C
+=====================
+%x fresh in (%y ; $C)
+
+conjectures
+
+/* Positive conjectures */
+
+===
+x fresh in (a; b; c; ())
+
+/* Negative Conjectures */
+
+/===
+x fresh in (y; x; ())

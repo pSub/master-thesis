@@ -1,0 +1,47 @@
+module SystemF/Substitution
+
+language specifications/SystemF/SystemF
+
+contexts
+
+meta-variables  Term "~" { Type Exp }
+                Id "%" { ID }
+
+judgments
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+/**
+ * The following two rules are not syntax-directed.
+ */
+===================== Subst-Eq
+~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
+
+%y != %x
+==================== Subst-Neq
+%y = [ %x -> ~S ] %y
+
+~U = [ %x -> ~S ] ~T
+========================================== Subst-All
+(all %y . ~U) = [ %x -> ~S ] (all %y . ~T)
+
+======================
+int = [ %x -> ~S ] int
+
+~U1 = [ %x -> ~S ] ~T1
+~U2 = [ %x -> ~S ] ~T2
+==================================== Subst-Arrow
+~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
+
+conjectures
+
+===
+y = [ x -> int ] y
+
+===
+int = [ x -> int ] x
+
+/===
+int = [ x -> int ] y

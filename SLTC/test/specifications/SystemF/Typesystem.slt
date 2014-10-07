@@ -1,5 +1,8 @@
 module SystemF/Typesystem
 
+imports SystemF/Freshness hiding (language)
+        SystemF/Substitution hiding (language)
+
 language specifications/SystemF/SystemF
 
 contexts
@@ -14,7 +17,6 @@ meta-variables 	Term "~" { Type Exp }
 judgments
 TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
-ID{I} "fresh in" TypeBinding{I}.
 ID{I} "!=" ID{I} is Neq.
 
 rules
@@ -47,53 +49,9 @@ $C1 | $C2 |- ~e : all %x . ~T   @error ~e "should have type all" %x "." ~T "but 
 ============================== T-Tapp
 $C1 | $C2 |- ~e [ ~S ] : ~U
 
-
-/* Type substitution */
-
-/**
- * The following two rules are not syntax-directed.
- */
-===================== Subst-Eq
-~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
-
-%y != %x
-==================== Subst-Neq
-%y = [ %x -> ~S ] %y
-
-~U = [ %x -> ~S ] ~T
-========================================== Subst-All
-(all %y . ~U) = [ %x -> ~S ] (all %y . ~T)
-
-======================
-int = [ %x -> ~S ] int
-
-~U1 = [ %x -> ~S ] ~T1
-~U2 = [ %x -> ~S ] ~T2
-==================================== Subst-Arrow
-~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
-
-/* Freshness of type variables */
-
-==============
-%x fresh in ()
-
-%x != %y            @error %x "occurs in context".
-%x fresh in $C
-=====================
-%x fresh in (%y ; $C)
-
 conjectures
 
 /* Positive conjectures */
-
-===
-x fresh in (a; b; c; ())
-
-===
-y = [ x -> int ] y
-
-===
-int = [ x -> int ] x
 
 ===
 () | () |- \ x . \ y : x . y : all x . (x -> x)
@@ -126,12 +84,6 @@ int = [ x -> int ] x
 () | () |- (\ x . \ y . \ z : x . z) [ int ] : all y . (int -> int) 
 
 /* Negative Conjectures */
-
-/===
-x fresh in (y; x; ())
-
-/===
-int = [ x -> int ] y
 
 /===
 () | () |- \ x : int . x : int
