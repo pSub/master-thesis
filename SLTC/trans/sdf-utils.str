@@ -33,7 +33,7 @@ rules
         ?non-terminal;
         parse-sdf-definition(|language);
         collect-all(?prod(_,sort(non-terminal),_));
-        map(construct-substructure)
+        (equal(|[]) < ![sort(non-terminal)] + map(construct-substructure))
     get-immediate-substructures(|language) = failed(|[language])
 
     /**
