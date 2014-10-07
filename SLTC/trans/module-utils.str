@@ -76,7 +76,7 @@ rules
      *
      * @type (Judgments, Jugments) -> Judgments
      */
-    merge-judgments : (Judgments(j1), Judgments(j2)) -> Judgments(<conc> (j1, j2))
+    merge-judgments : (Judgments(j1), Judgments(j2)) -> Judgments(<union> (j1, j2))
     merge-judgments = failed
 
     /**
