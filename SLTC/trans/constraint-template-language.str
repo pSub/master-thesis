@@ -51,6 +51,8 @@ rules
      * @type Premise -> Inputs
      */
     get-premise-inputs : Binding__(_, inputs, _) -> inputs
+    get-premise-inputs : Ctx__(num) -> <singelton> Ctx__(num)
+    get-premise-inputs : Reset__(num) -> <singelton> Reset__(num)
     get-premise-inputs : Judgment__(_, inputs, bindings, _, _) ->
         <conc> (inputs, <mapconcat(get-premise-inputs)> bindings)
     get-premise-inputs : Lookup__(_, inputs, _, _) -> inputs
@@ -63,6 +65,8 @@ rules
      * @type Premise -> Inputs
      */
     get-premise-outputs : Binding__(_, _, outputs) -> outputs
+    get-premise-outputs : Ctx__(_) -> []
+    get-premise-outputs : Reset__(_) -> []
     get-premise-outputs : Judgment__(_, _, bindings, outputs, _) ->
         <conc> (outputs, <mapconcat(get-premise-outputs)> bindings)
     get-premise-outputs : Lookup__(_, _, outputs, _) -> outputs
