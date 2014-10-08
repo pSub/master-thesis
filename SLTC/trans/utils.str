@@ -275,6 +275,12 @@ rules
     cartesian-product = foldr(![[]], \(l, a) -> <mapconcat(\x -> <map(\xs -> [x|xs]\)> a\)> l\)
 
     /**
+     * Produces all possible permutations of the elements in the given list.
+     */
+    permute : [] -> [[]]
+    permute : xs -> <mapconcat(\x -> <remove-all(?x); permute; map(\xs -> [x|xs]\)> xs\)> xs
+
+    /**
      * A version of `hashtable-copy' that can deal with hashtables that
      * contain hashtables.
      *
