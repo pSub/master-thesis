@@ -83,7 +83,7 @@ rules
         ((<direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
           some(?VerificationSuccess(_))> goals) <+
         (all-vars-types := <diff; map(get-premisses; map(Fst)); map(conc(|<get-premisses; map(Fst)> rule'); mapconcat(collect-variables-with-types(|language, judgments)))> (ambiguous-templates, [rule']);
-         <zip; map(\(vars-types, goal) -> <proof-by-induction(|"subsumption", templates, context-definitions, language, vars-types)> goal\)> (all-vars-types, goals)))
+         <zip; map(\(vars-types, goal) -> <proof-by-induction(|Some("subsumption-by-induction"), templates, context-definitions, language, vars-types)> goal\)> (all-vars-types, goals)))
 
     /**
      * Main strategy that optimizes when-ambiguities.
@@ -202,13 +202,13 @@ rules
         instances := <cartesian-product> substructures;
         vars-instances := <map(zip(|vars)); nub> instances;
         vars-instances-with-const := <map(introduce-constants)> vars-instances;
-        goals := <map(Dupl; (compute-const-types(|language); concat, replace-all(|proposition)));
+        goals := <map(Dupl; (compute-const-types(|language), replace-all(|proposition)));
                  foldr(![], union((Snd, Snd); eq), ![<id>])> vars-instances-with-const;
-        ihs-goals := <map(\(const-type, goal) -> (<make-induction-hypothesis(|vars, types, const-type, goal); debug> proposition, goal)\)> goals;
-        map(\(ihs, goal) ->
+        ihs-goals := <map(\(const-type, goal) -> (<make-induction-hypothesis(|vars, types, const-type, goal)> proposition, goal)\)> goals;
+        <map(\(ihs, goal) ->
                 <fof-from-templates(|context-definitions, <conc> (ihs, templates));
                  verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name);
-                 all(?VerificationSuccess(_))> [goal]\)
+                 all(?VerificationSuccess(_))> [goal]\)> ihs-goals
         
     introduce-constants =
         ?var-structure;
@@ -218,19 +218,21 @@ rules
         zip; replace-once(|var-structure)
         
     compute-const-types(|language) =
-        map(Snd; \cons#(args) ->
+        map(Snd; Dupl; (id, \cons#(args) ->
             <filter(?Const__(_));
             // FIXME: Ambiguities are not resolved!
-            compute-types(map((id, Hd; ?sort(<id>)))
+            compute-types(map(Snd; Hd; ?sort(<id>))
                          | language
                          , cons
                          , <length> args)> args
-        \)
+        \))
 
-    make-induction-hypothesis(|vars, types, const-type, goal) =
+    make-induction-hypothesis(|vars, types, term-type, goal) =
         ?proposition;
         // configurations := <permute; remove-all(map(Snd); not(equal(|<concat> types)))> const-type;
-        <map(\conf -> <zip; debug; replace-once(|proposition)> (vars, <map(Fst)> conf)\)> [const-type]
+        const-type := <map((collect(?Const__(_)), id))> term-type;
+        possible-confs := <zip; map(\([t], ct) -> <zip; filter(where(Snd;equal(|t))); unzip; Fst> ct\); cartesian-product> (types, const-type);
+        <map(\conf -> <zip; replace-once(|proposition)> (vars, conf)\)> possible-confs
     make-induction-hypothesis(|vars, types, const-type, goal) = ![]
 
     collect-variables-with-types(|langauge, judgments) : cons#([]) -> []
@@ -375,8 +377,8 @@ rules
         {|Fresh:
         <solve-which-ambiguities(|judgments, context-definitions, target-language);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
-        // remove-unsatisfiable-templates(|context-definitions);
-        // remove-valid-premisses(|context-definitions);
+        remove-unsatisfiable-templates(|context-definitions);
+        remove-valid-premisses(|context-definitions);
         order-forks-by-subsumption> templates |}
     optimize-templates(|target-language, context-definitions) = 
         failed(|[target-language, context-definitions])
