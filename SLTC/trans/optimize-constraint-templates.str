@@ -229,7 +229,6 @@ rules
 
     make-induction-hypothesis(|vars, types, term-type, goal) =
         ?proposition;
-        // configurations := <permute; remove-all(map(Snd); not(equal(|<concat> types)))> const-type;
         const-type := <map((collect(?Const__(_)), id))> term-type;
         possible-confs := <zip; map(\([t], ct) -> <zip; filter(where(Snd;equal(|t))); unzip; Fst> ct\); cartesian-product> (types, const-type);
         <map(\conf -> <zip; replace-once(|proposition)> (vars, conf)\)> possible-confs
@@ -251,27 +250,6 @@ rules
         where arg-count := <length> args;
               (vars, rest) := <partition(?Var__(_), not(?Var__(_)))> args
     collect-variables-with-types(|language, judgments) = failed(|[language, judgments])
-                     
-    solve-which-ambiguities-with-induction-hypothesis(|substructures, non-terminals, templates, context-definitions, property, language) =
-        ?which-ambiguities;
-        which-ambiguities' := <make-conclusions-equal(newnames(|"c"))> which-ambiguities;
-        conclusion := <Hd; get-pattern> which-ambiguities';
-        step-pattern := <Hd; get-pattern; zip(|substructures);
-                         map(\(pattern, term) ->
-                                <fetch-elem(where(\p -> <match-constructors(?sort(_), false)> (term, p)\))> pattern
-                             \);
-                         zip(|non-terminals);
-                         {|Fresh: map(\(nt, pattern) ->
-                                        <collect-om(?sort(nt), conc); Dupl;
-                                             (id, length; newnames(|"Z"); map(makeVar));
-                                             zip; replace-once(|pattern)> pattern
-                                      \) |}> which-ambiguities';
-        induction-hypothesis := <zip; map-with-index(\(i, (pattern, term)) ->
-                                                    <collect-om(?Var__(_)); instantiate(|[pattern], [term]);
-                                                     map(\t -> <replace(|property)> (<get-pattern; index(|i)> property, t) \)> pattern
-                                                \); concat> (step-pattern, conclusion);
-        ambiguities-premisses := <zip> (which-ambiguities', <map(\r -> <filter(not(?r))> which-ambiguities'\)> which-ambiguities');
-        ambiguities := <zip; filter(where(Snd; is-subsumed(|[], context-definitions, <conc> (<diff> (templates, [property]), induction-hypothesis), language, [])); Fst)> (which-ambiguities, ambiguities-premisses)
 
     /**
      * The templates within a fork define a relation if they have no output positions.
