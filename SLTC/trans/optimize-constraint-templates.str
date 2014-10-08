@@ -79,9 +79,11 @@ rules
         templates-without-rule := <diff> (templates, [rule]);
         premisses := <diff; map(premisses-to-props)> (ambiguous-templates, [rule']);
         rule-premisses := <premisses-to-props> rule';
-        <map(\ps -> Formula__("subsumption", Impl__(And__(rule-premisses), And__(ps)))\)> premisses;
-        direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
-        some(?VerificationSuccess(_))
+        goals := <map(\ps -> Formula__("subsumption", Impl__(And__(rule-premisses), And__(ps)))\)> premisses;
+        ((<direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
+          some(?VerificationSuccess(_))> goals) <+
+        (all-vars-types := <diff; map(get-premisses; map(Fst)); map(conc(|<get-premisses; map(Fst)> rule'); mapconcat(collect-variables-with-types(|language, judgments)))> (ambiguous-templates, [rule']);
+         <zip; map(\(vars-types, goal) -> <proof-by-induction(|"subsumption", templates, context-definitions, language, vars-types)> goal\)> (all-vars-types, goals)))
 
     /**
      * Main strategy that optimizes when-ambiguities.
@@ -93,7 +95,7 @@ rules
      */
     solve-when-ambiguities(|judgments, target-language, context-definitions) =
         ?templates;
-        where(equivalence-classes := <debug; create-classes> templates);
+        where(equivalence-classes := <create-classes> templates);
         <conc> (<map(mkFork; optimize-relation(|judgments, context-definitions, target-language));
                  remove-trivial-forks> equivalence-classes,
                 <diff(eq)> (templates, <flatten-list> equivalence-classes))
@@ -120,7 +122,7 @@ rules
               non-terminals := <get-judgment-types(fail|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
               ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))
-                      // solve-which-ambiguities(|judgments, context-definitions, target-language);
+                      ;solve-which-ambiguities(|judgments, context-definitions, target-language)
                       > (non-syntax-directed-ts, ts)
               
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
@@ -191,11 +193,45 @@ rules
     direct-proof(|timeout, name, templates, context-definitions) =
         failed(|[timeout, name, templates, context-definitions])
 
-    proof-by-induction(|timeout, name, templates, context-definitions, language, judgments) =
-        ?property;
-        (vars, types) := <collect-variables-with-types(|language, judgments); unzip> property;
-        substructures := <map(map(get-immediate-substructures(|language)); concat)> types;
-        instances := <cartesian-product> substructures
+    proof-by-induction(|name, templates, context-definitions, language, vars-types) =
+        proof-by-induction(|"2", name, templates, context-definitions, language, vars-types)
+    proof-by-induction(|timeout, name, templates, context-definitions, language, vars-types) =
+        ?proposition;
+        (vars, types) := <unzip> vars-types;
+        substructures := <map(mapconcat(get-immediate-substructures(|language)))> types;
+        instances := <cartesian-product> substructures;
+        vars-instances := <map(zip(|vars)); nub> instances;
+        vars-instances-with-const := <map(introduce-constants)> vars-instances;
+        goals := <map(Dupl; (compute-const-types(|language); concat, replace-all(|proposition)));
+                 foldr(![], union((Snd, Snd); eq), ![<id>])> vars-instances-with-const;
+        ihs-goals := <map(\(const-type, goal) -> (<make-induction-hypothesis(|vars, types, const-type, goal); debug> proposition, goal)\)> goals;
+        map(\(ihs, goal) ->
+                <fof-from-templates(|context-definitions, <conc> (ihs, templates));
+                 verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name);
+                 all(?VerificationSuccess(_))> [goal]\)
+        
+    introduce-constants =
+        ?var-structure;
+        collect-om(?sort(_), conc);
+        Dupl;
+        {| Fresh: where(<reset-fresh> "c"); (id, length; newnames(|"c"); map(make-const)) |};
+        zip; replace-once(|var-structure)
+        
+    compute-const-types(|language) =
+        map(Snd; \cons#(args) ->
+            <filter(?Const__(_));
+            // FIXME: Ambiguities are not resolved!
+            compute-types(map((id, Hd; ?sort(<id>)))
+                         | language
+                         , cons
+                         , <length> args)> args
+        \)
+
+    make-induction-hypothesis(|vars, types, const-type, goal) =
+        ?proposition;
+        // configurations := <permute; remove-all(map(Snd); not(equal(|<concat> types)))> const-type;
+        <map(\conf -> <zip; debug; replace-once(|proposition)> (vars, <map(Fst)> conf)\)> [const-type]
+    make-induction-hypothesis(|vars, types, const-type, goal) = ![]
 
     collect-variables-with-types(|langauge, judgments) : cons#([]) -> []
     collect-variables-with-types(|language, judgments) : node ->
@@ -339,8 +375,8 @@ rules
         {|Fresh:
         <solve-which-ambiguities(|judgments, context-definitions, target-language);
         solve-when-ambiguities(|judgments, target-language, context-definitions);
-        remove-unsatisfiable-templates(|context-definitions);
-        remove-valid-premisses(|context-definitions);
+        // remove-unsatisfiable-templates(|context-definitions);
+        // remove-valid-premisses(|context-definitions);
         order-forks-by-subsumption> templates |}
     optimize-templates(|target-language, context-definitions) = 
         failed(|[target-language, context-definitions])
