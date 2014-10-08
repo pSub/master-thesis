@@ -22,6 +22,7 @@
 	Not__ -- "~ (" _1 ")",
 	True__ -- "$true",
 	False__ -- "$false",
+	Const__ -- _1,
 	Var__ -- _1,
 	Pred__ -- _1,
 	Pred__ -- _1 "(" _2 ")",

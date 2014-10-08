@@ -20,6 +20,7 @@ signature
         Neq__ : Prop * Prop -> Prop
         Var__   : String -> Prop                   // variables
         Var__   : String * String -> Prop          // variables annotated with a scope
+        Const__ : String -> Prop
         Pred__  : String -> Prop                   // Constants
         Pred__  : String * List(Prop) -> Prop      // Predicates consisting of a name and a list of arguments
         Term__  : String -> Prop                   // Terms
@@ -73,3 +74,6 @@ rules
      */
     make-neq : (x,y) -> Neq__(x,y)
     make-neq = failed
+    
+    make-const : x -> Const__(x)
+    make-const = failed

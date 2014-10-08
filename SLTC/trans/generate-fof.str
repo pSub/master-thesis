@@ -164,7 +164,8 @@ signature
                          "MetaVariable" <+
                          "Eq" <+
                          "Neq" <+
-                         "Not"
+                         "Not" <+
+                         "Const"
     
     /**
      * Wraps meta-variables into an auxiliary constructor.
@@ -304,7 +305,7 @@ signature
        where <not([])> cons;
              prop-constructors := ["All", "Not", "And", "Or", "Impl", "BiImpl", "Formula",
                                    "Eq", "Neq", "Var", "Pred", "Term", "All", "Exists",
-                                   "True", "False"];
+                                   "True", "False", "Const"];
              <not(fetch-elem(\prop-cons ->  <equal(|<conc-strings> (prop-cons, "__"), cons)> \))> prop-constructors
 
 
