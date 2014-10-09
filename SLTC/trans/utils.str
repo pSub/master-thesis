@@ -20,7 +20,10 @@ rules
     gt(|y) : x -> <gt> (x, y)
 
     /**
+     * A wrapper around `zip'.
      *
+     * @param xs : List(a)
+     * @type List(b) -> List(a, b)
      */
     zip(|xs) : ys -> <zip> (xs, ys)
 
