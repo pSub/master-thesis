@@ -26,8 +26,15 @@ sections, of which two are optional. The sections have to be present
 in the order they are introduced.
 
 \paragraph{Module name} The first section declares the name of the
-specification module. This name is a unique identifier and used for
-imports.
+specification module. This name is an unique identifier and used for
+imports. The module name may contain an arbitrary combination of
+numbers, letters and the symbols \code|.| and \code|/|.
+
+\begin{example}{}
+\begin{lstlisting}[language=sltc]
+module target-language/typesystem
+\end{lstlisting}
+\end{example}
 
 \paragraph{Imports} The second section declares which other type
 system specifications are imported and is optional. It is possible to
