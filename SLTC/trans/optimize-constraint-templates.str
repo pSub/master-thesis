@@ -261,9 +261,10 @@ rules
         instances := <cartesian-product> substructures;
         vars-instances := <map(zip(|vars)); nub> instances;
         vars-instances-with-const := <map(introduce-constants)> vars-instances;
-        goals := <map(Dupl; (compute-const-types(|language), replace-all(|proposition)))
+        goals := <map(Dupl; (id, replace-all(|proposition)))
                  ;foldr(![], union((Snd, Snd); eq), ![<id>])
-                 ;map(debug)> vars-instances-with-const;
+                 ;map((compute-const-types(|language), id))
+                 > vars-instances-with-const;
         ihs-goals := <map(\(const-type, goal) -> (<make-induction-hypothesis(|vars, types, const-type, goal)> proposition, goal)\)> goals;
         <map(\(ihs, goal) ->
                 <fof-from-templates(|context-definitions, <conc> (ihs, templates));
