@@ -68,6 +68,12 @@ rules
         where ts' := <make-conclusions-equal(newnames(|"Z"); map(makeVar))> ts;
               ts'' := <zip; remove-all(is-subsumed(do-induction | judgments, context-definitions, templates, language, ts')); map(Fst)> (ts, ts')
 
+    /**
+     * Renames variables uniformly in structurally equal rules.
+     *
+     * @strategy that creates the new variables
+     * @type List(Template) -> List(Template)
+     */
     make-conclusions-equal(wrap) =
         ?templates;
         vars := <Hd; get-pattern; collect-om(?Var__(_)); length; wrap> templates;
@@ -121,7 +127,7 @@ rules
               judgment-number := <Hd; get-conclusion-judgment-number> non-syntax-directed-ts;
               non-terminals := <get-judgment-types(fail|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
-              ts' := <foldl(derive-syntax-directed-rules(|substructures, non-terminals, context-definitions))
+              ts' := <foldl(derive-syntax-directed-rules(|substructures, context-definitions))
                       ;solve-which-ambiguities(id | judgments, context-definitions, target-language)
                       > (non-syntax-directed-ts, ts)
               
@@ -134,39 +140,81 @@ rules
               // proofs := <zip> (pos-proofs, neg-proofs);
               // <not(some((?VerificationFailure(_), ?VerificationFailure(_))))> proofs;
               // base-templates := <zip; filter(\(goal, (VerificationSuccess(_),_)) -> <make-base-template> (judgment-number, goal)\)> (base-cons-product, proofs)
-              
-    derive-syntax-directed-rules(|substructures, non-terminals, context-definitions) =
+
+    /**
+     * Unfolds non-syntax directed rules.
+     *
+     * @param substructures of the variables in the conclusion
+     * @param context declarations
+     * @type (Rule, List(Template)) -> List(Template)
+     */
+    derive-syntax-directed-rules(|substructures, context-definitions) =
         ?(property, templates);
         substructures-with-vars := <collect-om(?sort(_), conc); Dupl;
                                              (id, length; newnames(|"Z"); map(makeVar));
                                              zip; replace-once(|substructures)> substructures;
         instances := <cartesian-product; map(zip(|<get-pattern> property); replace-all(|property))> substructures-with-vars;
         !<conc> (<diff> (templates, [property]), instances)
-    derive-syntax-directed-rules(|substructures, non-terminals, context-definitions) =
-        failed(|[substructures, non-terminals, context-definitions])
+    derive-syntax-directed-rules(|substructures, context-definitions) =
+        failed(|[substructures, context-definitions])
 
+    /**
+     * Helper strategy. Allows to lift strategies to handle Forks.
+     *
+     * @param the strategy that shall be lifted
+     * @type List(Template) -> List(Template)
+     */
     apply-to-each-template(s) =
         ?templates;
         <partition(?Fork__(_), not(?Fork__(_)));
         (map(\Fork__(ts) -> Fork__(<s> ts)\), s); conc> templates
 
+    /**
+     * Removes all templates that have an unsatisfiable premise
+     *
+     * @param context declarations
+     * @type List(Template) -> List(Template)
+     */
     remove-unsatisfiable-templates(|context-definitions) =
         ?templates;
         apply-to-each-template(remove-unsatisfiable-templates(|context-definitions, templates))
-
     remove-unsatisfiable-templates(|context-definitions) = failed(|[context-definitions])
 
+    /**
+     * Removes all templates that have an unsatisfiable premise.
+     * Note: This variant can only applied to list of templates without forks.
+     * To use in the presence of Forks wrap it with `apply-to-each-template`.
+     *
+     * @param context declarations
+     * @param templates used to proof unsatisfiability
+     * @type List(Template) -> List(Template)
+     */
     remove-unsatisfiable-templates(|context-definitions, templates) =
         remove-all(where(premisses-to-props; where(not(equal(|[])));
                    map(\p -> Formula__("unsatisfiable-premise", Not__(p))\);
                    direct-proof(|Some("neg-premise"), templates, context-definitions); all(?VerificationSuccess(_))
                    ))
-                     
+    remove-unsatisfiable-templates(|context-definitions, templates) =
+        failed(|[context-definitions, templates])
+
+    /**
+     * Removes valid premisses from all given templates.
+     *
+     * @param context declarations
+     * @type List(Template) -> List(Template)
+     */
     remove-valid-premisses(|context-definitions) =
         ?templates;
         <apply-to-each-template(map(remove-valid-premisses(|context-definitions, templates)))> templates
     remove-valid-premisses(|context-definitions) = failed(|[context-definitions])
-        
+
+    /**
+     * Removes valid premisses from the given template.
+     *
+     * @param context declarations
+     * @param templates used to proof validity
+     * @type Template -> Template
+     */
     remove-valid-premisses(|context-definitions, templates) =
         ?template;
         indices := <premisses-to-props; map(\p -> Formula__("valid-premise", p)\);
@@ -177,13 +225,13 @@ rules
     remove-valid-premisses(|context-definitions, templates) = failed(|[context-definitions, templates])
         
     /**
-     * Attempts a direct proofs of the given formula
-     * given the template and context-definitions
+     * Attempts a direct proofs of the given propositions
+     * given the template and context definitions.
      *
      * @param name of the goal
      * @param templates
      * @param context definitions
-     * @type Formula -> Formula
+     * @type List(Formula) -> List(VerificationResult)
      */
     direct-proof(|name, templates, context-definitions) =
         direct-proof(|"2", name, templates, context-definitions)
@@ -193,6 +241,17 @@ rules
     direct-proof(|timeout, name, templates, context-definitions) =
         failed(|[timeout, name, templates, context-definitions])
 
+    /**
+     * Attempts a proof by induction of the given proposition given
+     * the template and context declarations and variable types.
+     * Succeeds if the proposition could be proven, fails otherwise.
+     *
+     * @param name of the goal
+     * @param template declarations
+     * @param context declarations
+     * @param name of the target language
+     * @param types of the variables occruing in the proposition
+     */
     proof-by-induction(|name, templates, context-definitions, language, vars-types) =
         proof-by-induction(|"2", name, templates, context-definitions, language, vars-types)
     proof-by-induction(|timeout, name, templates, context-definitions, language, vars-types) =
@@ -202,21 +261,33 @@ rules
         instances := <cartesian-product> substructures;
         vars-instances := <map(zip(|vars)); nub> instances;
         vars-instances-with-const := <map(introduce-constants)> vars-instances;
-        goals := <map(Dupl; (compute-const-types(|language), replace-all(|proposition)));
-                 foldr(![], union((Snd, Snd); eq), ![<id>])> vars-instances-with-const;
+        goals := <map(Dupl; (compute-const-types(|language), replace-all(|proposition)))
+                 ;foldr(![], union((Snd, Snd); eq), ![<id>])
+                 ;map(debug)> vars-instances-with-const;
         ihs-goals := <map(\(const-type, goal) -> (<make-induction-hypothesis(|vars, types, const-type, goal)> proposition, goal)\)> goals;
         <map(\(ihs, goal) ->
                 <fof-from-templates(|context-definitions, <conc> (ihs, templates));
                  verify-vampire(|timeout, <option-to-string-newname(|"Goal")> name);
                  all(?VerificationSuccess(_))> [goal]\)> ihs-goals
-        
+
+    /**
+     * Replaces sort()'s with fresh constants
+     *
+     * @type List(Var, ATerm) -> List(Var, ATerm)
+     */
     introduce-constants =
         ?var-structure;
         collect-om(?sort(_), conc);
         Dupl;
         {| Fresh: where(<reset-fresh> "c"); (id, length; newnames(|"c"); map(make-const)) |};
         zip; replace-once(|var-structure)
-        
+
+    /**
+     * Computes the types of the substructures.
+     *
+     * @param name of the target langugage
+     * @type List((Var, ATerm)) -> List(ATerm, ATerm)
+     */
     compute-const-types(|language) =
         map(Snd; Dupl; (id, \cons#(args) ->
             <filter(?Const__(_));
@@ -227,6 +298,14 @@ rules
                          , <length> args)> args
         \))
 
+    /**
+     * Creates the induction hypothesis for passed proposition.
+     *
+     * @param variables occuring in the proposition
+     * @param types of the variables in the proposition
+     * @param substructurs with coresponding type
+     * @param goal to be proved
+     */
     make-induction-hypothesis(|vars, types, term-type, goal) =
         ?proposition;
         const-type := <map((collect(?Const__(_)), id))> term-type;
@@ -234,7 +313,15 @@ rules
         <map(\conf -> <zip; replace-once(|proposition)> (vars, conf)\)> possible-confs
     make-induction-hypothesis(|vars, types, const-type, goal) = ![]
 
-    collect-variables-with-types(|langauge, judgments) : cons#([]) -> []
+    /**
+     * Collects all variables of the passed node and returns them
+     * with their associated types.
+     *
+     * @param the name of the target language
+     * @param judgment declarations
+     * @type ATerm -> List(Var, ATerm) 
+     */
+    collect-variables-with-types(|language, judgments) : cons#([]) -> []
     collect-variables-with-types(|language, judgments) : node ->
         <zip; mapconcat((?Var__(_), id) < singelton
                                         + collect-variables-with-types(|language, judgments))> (terms, types)
