@@ -87,9 +87,9 @@ rules
         rule-premisses := <premisses-to-props> rule';
         goals := <map(\ps -> Formula__("subsumption", Impl__(And__(rule-premisses), And__(ps)))\)> premisses;
         ((<direct-proof(|<get-template-name> rule, templates-without-rule, context-definitions);
-          some(?VerificationSuccess(_))> goals) <+ if(do-induction,
+          some(?VerificationSuccess(_))> goals) <+ do-induction;
         (all-vars-types := <diff; map(get-premisses; map(Fst)); map(conc(|<get-premisses; map(Fst)> rule'); mapconcat(collect-variables-with-types(|language, judgments)))> (ambiguous-templates, [rule']);
-         <zip; map(\(vars-types, goal) -> <proof-by-induction(|Some("subsumption-by-induction"), templates, context-definitions, language, vars-types)> goal\)> (all-vars-types, goals))))
+         <zip; map(\(vars-types, goal) -> <proof-by-induction(|Some("subsumption-by-induction"), templates, context-definitions, language, vars-types)> goal\)> (all-vars-types, goals)))
 
     /**
      * Main strategy that optimizes when-ambiguities.
