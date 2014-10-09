@@ -15,9 +15,17 @@ signature
         UndefinedEq : term * List(term) -> term
        
 rules
-    
+
+    /**
+     * Wraps strategy for use as a separate tool.
+     */
     wrapped-generate-templates = io-wrap(generate-templates)
 
+    /**
+     * Generate templates from a type system specification module.
+     *
+     * @type Module -> List(Template)
+     */
     generate-templates :
         Module(ModuleDec(_),
                imports,
@@ -204,8 +212,16 @@ rules
         Dupl; (map((map(Fst), id); zip), mapconcat(make-eq-judgments(|errors)); unzip)
     make-implicit-equalities-explicit(is-conclusion | errors, context-definitions, conclusion, types, language) =
         failed(|[errors, conclusion, types, language])
-        
-    collect-meta-variables(is-conclusion | context-definitions, conclusion, language) : v -> []
+
+    /**
+     * Collects all meta-variables that occur in the given node associated with their types.
+     *
+     * @param is-conclusion: succeeds if the node is from the conclusion, fails otherwise
+     * @param context definitions
+     * @param the conclusion of a rule
+     * @param the name of the target language
+     */
+    collect-meta-variables(is-conclusion | context-definitions, conclusion, language : String) : v -> []
         where <or(node-is-meta-variable, or(is-string, get-arguments; equal(|[])))> v
     collect-meta-variables(is-conclusion | context-definitions, conclusion, language) : v@cons#(args) ->
         <conc> (vars-types, <map(Fst; collect-meta-variables(is-conclusion | context-definitions, conclusion, language))> nodes-types)
@@ -264,6 +280,9 @@ rules
     make-eq-judgments'(|errors) = failed(|[errors])
     
 strategies
+    /**
+     * Strategy that applies the `to-template` strategy.
+     */
     to-templates(|judgments, context-definitions, target-language) =
          ?typing-rules; {|CollectedJudgments: rules(CollectedJudgments :+ _ -> judgments);
          !(<innermost(to-template(|judgments, context-definitions, target-language))> typing-rules,
