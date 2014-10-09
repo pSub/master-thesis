@@ -128,7 +128,8 @@ rules
               non-terminals := <get-judgment-types(fail|judgment-number)> judgments;
               substructures := <map(get-immediate-substructures(|target-language))> non-terminals;
               ts' := <foldl(derive-syntax-directed-rules(|substructures, context-definitions))
-                      ;solve-which-ambiguities(id | judgments, context-definitions, target-language)
+                      ; solve-which-ambiguities(id | judgments, context-definitions, target-language)
+                      ; remove-forks
                       > (non-syntax-directed-ts, ts)
               
               // base-constructors := <map(filter(where(get-arguments; equal(|[]))))> substructures;
