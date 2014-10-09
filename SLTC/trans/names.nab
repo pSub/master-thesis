@@ -14,7 +14,7 @@ binding rules
                 of module-ref mod
         scopes Context, Rule
 
-    Import(m):
+    Import(m, _):
         imports Context, Rule from Module m
         
     ContextDefinition(c,_):
