@@ -2,14 +2,14 @@ module test
 
 language specifications/FeatherweightJava/PCF
 
-meta-variables	Term "~" { Exp }
-				Ctx "$" { Context }
-				Id "%" { ID }
+meta-variables  Term "~" { Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
 
 contexts Context := ID{I} x ID{O}
-		 CT      := ID{I} x Class{O}
+         CT      := ID{I} x Class{O}
 
-judgments Context{I} "|-" Exp{I} ":" Type{O} | ID{I} "<:" ID{I}	  
+judgments Context{I} "|-" Exp{I} ":" Type{O} | ID{I} "<:" ID{I}   
 
 rules
 

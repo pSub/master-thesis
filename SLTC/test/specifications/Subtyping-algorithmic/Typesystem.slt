@@ -4,11 +4,11 @@ language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 
 contexts Context := ID{I} x Type{O}
 
-meta-variables 	Term "~" { Type Exp }
-				Ctx "$" { Context }
-				Id "%" { ID }
-				R "$" {TRecordEntries RecordEntries}
-				Num "&" { Int }
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+                R "$" {TRecordEntries RecordEntries}
+                Num "&" { Int }
 
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.

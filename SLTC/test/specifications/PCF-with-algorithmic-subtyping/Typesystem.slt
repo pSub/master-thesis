@@ -4,10 +4,10 @@ language specifications/PCF-with-algorithmic-subtyping/PCF
 
 contexts Context := ID{I} x Type{O}
 
-meta-variables	Term "~" { Type Exp }
-				Ctx "$" { Context }
-				Id "%" { ID }
-				Num "&" { INT }
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+                Num "&" { INT }
 
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.

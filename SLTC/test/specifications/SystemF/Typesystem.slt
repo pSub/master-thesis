@@ -9,9 +9,9 @@ contexts
 TermBinding := ID{I} x Type{O}
 TypeBinding := ID{I}
 
-meta-variables 	Term "~" { Type Exp }
-				Ctx "$" { TermBinding TypeBinding }
-				Id "%" { ID }
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { TermBinding TypeBinding }
+                Id "%" { ID }
                 Num "&" { Int }
 
 judgments

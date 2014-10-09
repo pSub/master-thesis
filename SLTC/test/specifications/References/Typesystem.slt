@@ -5,10 +5,10 @@ language specifications/References/SimplyTypedLambdaCalculus
 contexts Context := ID{I} x Type{O}
          Store   := LOC{I} x Type{O}
 
-meta-variables 	Term "~" { Type Exp }
-				Ctx "$" { Context Store }
-				Id "%" { ID }
-				Loc "&" { LOC Int }
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { Context Store }
+                Id "%" { ID }
+                Loc "&" { LOC Int }
 
 judgments
 Context{I} "|" Store{I} "|-" Exp{I} ":" Type{O}.

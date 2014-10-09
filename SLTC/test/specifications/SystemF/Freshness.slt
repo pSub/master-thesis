@@ -4,8 +4,8 @@ language specifications/SystemF/SystemF
 
 contexts TypeBinding := ID{I}
 
-meta-variables 	Ctx "$" { TypeBinding }
-				Id "%" { ID }
+meta-variables  Ctx "$" { TypeBinding }
+                Id "%" { ID }
 
 judgments 
 ID{I} "fresh in" TypeBinding{I}.

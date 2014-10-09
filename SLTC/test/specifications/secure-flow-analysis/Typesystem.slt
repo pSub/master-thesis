@@ -5,12 +5,12 @@ language specifications/secure-flow-analysis/Language
 contexts LocationTyping := Int{I} x PhraseType{O}
          VariableTyping := ID{I} x PhraseType{O}
 
-meta-variables 	Type "~" { DataType }
+meta-variables  Type "~" { DataType }
                 Exp "~1" { Exp }
-                Cmd "~2" { Cmd }			
-				Dom "$" { LocationTyping VariableTyping }
-				Id "%" { ID }
-				Num "&" { Int }
+                Cmd "~2" { Cmd }            
+                Dom "$" { LocationTyping VariableTyping }
+                Id "%" { ID }
+                Num "&" { Int }
 
 judgments
 LocationTyping{I} ";" VariableTyping{I} "|-" Phrase{I} ":" PhraseType{O}.
