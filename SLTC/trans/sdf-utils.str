@@ -53,7 +53,13 @@ rules
      * @type attrs(_) -> String
      */
     fetch-constructor = ?attrs(attributes); <fetch-elem(?term(cons(constructor)); !constructor)> attributes
-    
+
+    /**
+     * Retrieves all productions that produce the given constructor.
+     *
+     * @param name of the target language
+     * @type String -> List(ATerm) 
+     */
     get-productions-for-constructor(|language) =
         ?constructor;
         parse-sdf-definition(|language);
