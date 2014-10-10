@@ -463,6 +463,19 @@ The module \code|SLTC| plugs all modules together. It imports the
 module \code|Generated| and instantiates the parameters of module
 \code|BaseLanguage|.
 
+Imports are implemented using the \gls{nabl} that is integrated in
+Spoofax. \gls{nabl} ensures that the module names are unique, that
+imports can be resolved and annotates modules with meta-information
+about modules. The Stratego strategy \code|resolve-imports| does the
+actual resolving of the imports before a module gets used.
+
+First \code|resolve-imports| fetches all module definitions that are
+imported. Then it merges the fetched modules into the current
+module. This results in a module that contains the declarations of the
+current module plus all not excluded declarations from the imported
+modules. All sections are merged separately and redundancies such as
+duplicate declarations are removed.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "../report"
