@@ -92,7 +92,7 @@ signature
     make-injectivity = {|Fresh: where(<reset-fresh> "X"; <reset-fresh> "Y"); make-injectivity'|}
     make-injectivity' : (name, n) -> [Formula__(<conc-strings> (name, "-injective-contraposition"),
                                              Axiom__(),
-                                             All__(<conc>(Xs, Ys), Impl__(<zip; map(make-neq)> (Xs, Ys),
+                                             All__(<conc>(Xs, Ys), Impl__(Or__(<zip; map(make-neq)> (Xs, Ys)),
                                                                           Neq__(Term__(name, Xs), Term__(name, Ys))))
                                              ),
                                      Formula__(<conc-strings> (name, "-injective"),
