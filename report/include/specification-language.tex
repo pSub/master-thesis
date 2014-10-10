@@ -2,8 +2,7 @@
 \label{cha:spec-lang}
 Our type system specification language is a \gls{dsl} for people
 familiar with type systems or type theory. While developing it, we had
-the following goals in mind that will be described below. The
-specification language should be
+the following goals in mind. The specification language should be
 
 \begin{itemize}
 \item close to text-book formalisms used in the type system community
@@ -22,41 +21,50 @@ language with references to a small examples and argue how this
 architecture reflects the goals mentioned above.
 
 Specifications in our specification language are divided into eight
-sections, of which two are optional. The sections have to be present
-in the order they are introduced.
+sections, of which two are optional. In a specification the sections
+have to be present in the order they are introduced here.
 
 \paragraph{Module name} The first section declares the name of the
 specification module. This name is an unique identifier and used for
 imports. The module name may contain an arbitrary combination of
-numbers, letters and the symbols \code|.| and \code|/|.
+numbers, letters and the symbols \code|.| (dot), \code|-| (dash) and
+\code|/| (slash).
 
 \begin{example}{}
 \begin{lstlisting}[language=sltc]
 module target-language/typesystem
 \end{lstlisting}
+\label{ex:module-section}
 \end{example}
+
+Example~\ref{ex:module-section} shows the declaration of a module with
+the unique identifier \code|target-language/typesystem|.
 
 \paragraph{Imports} The second section declares which other type
 system specifications are imported and is optional. It is possible to
 prevent sections of a module from being imported. Sections that shall
-be excluded have to be listed in parenthesis after the module name.
+be excluded have to be listed in parenthesis together with the keyword
+\code|hiding| after the imported module.
 
-\begin{example}{}
+\begin{example}{~}
 \begin{lstlisting}[language=sltc]    
-import some-specification (language contexts)
+imports some-specification hiding (language contexts)
+        another-specification
 \end{lstlisting}
 \label{ex:import-section}
 \end{example}
 
-Example~\ref{ex:import-section} imports the specification module
-\code|some-specification| without the sections \code|language| and
-\code|contexts|.
+The specification in Example~\ref{ex:import-section} imports the
+specification module \code|some-specification| without the sections
+\code|language| and \code|contexts| and it imports the module
+\code|another-specification|.
 
 \paragraph{Language} The third section declares the language for which
 a type system should be specified. This language needs to be present
-as an \gls{sdf} module located at the specified path. We call this
+as a \gls{sdf} module located at the specified path. We call this
 language from now on \emph{target language}. If other modules are
-imported the target language must be defined only once.
+imported the target language must be defined only once in the closure
+of the module.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -65,22 +73,25 @@ language specifications/simply-typed-lambda-calculus/syntax
 \label{ex:language-section}
 \end{example}
 
-In Example~\ref{ex:language-section} the language definition at
-\code|specifications/simply-typed-lambda-calculus/syntax.sdf|
-is used, this path is relative to the \code|syntax| folder of the Spoofax
-project.
+In Example~\ref{ex:language-section} the \gls{sdf} definition at
+\code|specifications/simply-typed-lambda-calculus/syntax.sdf| is used,
+this path is relative to the \code|syntax| folder of the Spoofax
+project. A \gls{sdf} definition file (a file with the suffix
+\code|def|) located at the same path needs to be present for analysis
+of the target language. \todo{Refer to that section} 
 
 \paragraph{Contexts} The fifth section declares the contexts that can
-be used in the judgments and rules. Informally these contexts are
-declared as cross-products of non-terminals, i.e.\ a context is a set
-consisting of tuples of terminals that can be produced by the
-non-terminals in the declaration. Every context has a name, which can
-be used as a non-terminal in the specification.
+be used in the judgments and rules. In specifications contexts are
+used to track or collect information during type checking. Informally
+these contexts are declared as cross-products of non-terminals, i.e.\
+a context is a set consisting of tuples of terminals that can be
+produced by the non-terminals in the declaration. Every context has a
+name, which can be used as a non-terminal in the specification.
 
 Contexts serve in most use cases as bindings for variables. Therefore
 it is necessary to be able to look up terminals in a context. In the
 context declaration each non-terminal is annotated with an input
-(\code|{I}|) and output \code|{O}| tag. Those tags specify the key and
+(\code|{I}|) and output (\code|{O}|) tag. Those tags specify the key and
 value positions of the context. Depending on those annotations we
 generate look up functions. If all non-terminals are tagged as inputs
 the generated look up function will perform a normal membership
@@ -114,27 +125,28 @@ context \code|Binding|.
 meta-variables. In specifications meta-variables are used to refer to
 expressions of the target language and to contexts. The declaration of
 a meta-variable consists of a class, a prefix and a set of
-non-terminals from the target language. We use the class to
-distinguish different kinds of meta-variables. Currently we use
-classes only for merging meta-variable declarations when resolving
-imports. For details see~\ref{sec:generate-sdf}.
+non-terminals from the target language and from the specification. We
+use the class to distinguish different kinds of
+meta-variables. Currently we use classes only for merging
+meta-variable declarations when resolving imports. For details
+see Section~\ref{sec:generate-sdf}.
 
 The set of non-terminals defines the scope of a meta-variable. Every
-non-terminal from the target language contained in this set is
-extended with meta-variables. In other words, a meta-variable is a
-substitute for every terminal that can be produced from one of the
-non-terminals. We explain the extension of the target language in
-detail in Section~\ref{sec:generate-sdf}.
+non-terminal contained in this set is extended with productions for
+meta-variables. In other words, a meta-variable is a substitute for
+every terminal that can be produced from one of the non-terminals. We
+explain the extension of the target language in detail in
+Section~\ref{sec:generate-sdf}.
 
 Syntactically a meta-variable is a string of numbers and letters that
-is prefixed with the prefix of the meta-variable definition. The sole
+is prefixed with the prefix of the meta-variable declaration. The sole
 purpose of the prefix is to avoid syntactic ambiguities. The prefix
 itself can consist of numbers, letters and the following symbols
 \code|~|, \code|$|, \code|%|, \code|&| and \code|?|. %% $
 There is currently no way to add new symbols to that list, but editing
 the syntax definition of the specification language. Usually a prefix
 is chosen such that it is not a prefix of a construct of the target
-language.
+language, to reduce the chance of encountering ambiguities.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -147,7 +159,7 @@ meta-variables 	Term "~" { Type Exp }
 
 Example~\ref{ex:meta-variable-section} declares three classes of
 meta-variables. The first class is called \code|Term| and each
-meta-variable of this class has the prefix \code|"~"|. Productions for
+meta-variable of this class has the prefix \code|~|. Productions for
 meta-variables of this class are added to the non-terminals
 \code|Type| and \code|Exp|.
 
@@ -163,14 +175,16 @@ strings of letters and numbers, non-terminals of the target language
 and the names of the contexts. Those can be mixed freely, as long as a
 string separates the non-terminals and context names. This restriction
 is only needed to reduce the number of syntactic ambiguities in the
-language. Judgments do not have a name as it is not possible to
-quantify over them. To separate judgment declarations from each other,
-each declaration must be finalized with a dot.
+language. Judgments do not have a name as it is currently not possible
+to refer to them in any other way than in instances of them. To
+separate judgment declarations from each other, each declaration must
+be finalized with a dot.
 
 Non-terminals of the target language and context names need to be
-annotated with input/output-tags. Those tags describe which parts of
-the judgment need to be computed by rule applications and which are
-provided as input parameters to the rule application. Contexts
+annotated with input/output-tags in the same way as for
+contexts. Those tags describe which parts of the judgment need to be
+computed by rule applications and which are provided as input
+parameters to the rule application. Non-terminals of contexts
 currently only support the input tag.
 
 \begin{example}{~}
@@ -183,8 +197,8 @@ judgments Context{I} "|-" Exp{I} ":" Type{O}.
 
 Example~\ref{ex:judgment-section} shows two judgments. The first could
 be the typing judgment of a variant of the simply typed lambda
-calculus with a context and an expression of the target language as
-input and a type of the target language as output. The second judgment
+calculus with a context, an expression of the target language as input
+and a type of the target language as output. The second judgment
 defines a relation between the types of the target language, i.e.\ it
 has only input positions. This judgment could represent a subtyping
 relation.
@@ -196,32 +210,32 @@ the form of inference rules: A (possibly empty) list of premises
 separated from a conclusion by a horizontal line. Premises and
 conclusion are instantiated judgments. All meta-variables that occur
 free in rules are implicitly all-quantified. This means that all
-meta-variables are all-quantified, as there is no mechanism to bind
-variables in typing rules.
+meta-variables are all-quantified, as there is currently no mechanism
+to bind variables in typing rules.
 
-Rules can be annotated with a name. The names increase the readability
-of the specification and allow to create human readable derivation
-traces. The rules have also support for custom error messages. There
-are two kinds of error annotations. Premises can be annotated with
-\code|@error msg|, where \code|msg| can contain meta-variables and
-holes (written \code|{}|) interleaved with arbitrary strings. Those
-errors are thrown if the premise could not be derived or if the
-calculated output does not match the expected output. The
-meta-variables are instantiated with the appropriate terms and the
-hole with the expected output. The other kind of errors are prefixed
-with \code|@implicit| and are thrown if an implicit equality between
-two meta-variables cannot be satisfied. The meta-variables are
-distinguished in the error message by \code|@[number]| annotations,
-where \code|number| is a natural number. The conclusion can also be
-annotated with error messages for implicit
-equalities. Section~\ref{sec:constr-gener} and
+Rules can be annotated with a name. Rule names increase the
+readability of the specification and allow to create human readable
+derivation traces. The rules have also support for custom error
+messages. There are two kinds of error annotations. Premises can be
+annotated with \code|@error msg|, where \code|msg| can contain
+meta-variables and holes (written \code|{}|) interleaved with
+arbitrary strings. Those errors are thrown if the premise could not be
+derived or if the calculated output does not match the expected
+output. The meta-variables are instantiated with the appropriate terms
+and the hole with the expected output. The other kind of errors are
+prefixed with \code|@implicit| and are thrown if an implicit equality
+between two meta-variables cannot be satisfied. The meta-variables of
+implicit equalities are distinguished in the error message by
+\code|@[number]| annotations, where \code|[number]| is a natural
+number. The conclusion can also be annotated with error messages for
+implicit equalities. Section~\ref{sec:constr-gener} and
 Section~\ref{sec:constraint-solving} explain how error messages are
 implemented in the type checker generator.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
 judgments
-TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Context{I} "|-" Exp{I} ":" Type{O}.
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
 
 rules
@@ -229,13 +243,19 @@ rules
 ===================== Subst-Eq
 ~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
 
+%x : ~T in $C @error %X "should have type" ~T "but has" {}.
+=============== T-var
+$C |- % : ~T
 
-~U = [ %x -> ~S ] ~T @error ~U "is not" ~T "where" %x "is
-                            replaced by" ~S.
-$C1 | $C2 |- ~e : all %x . ~T 
-@error ~e "should have type all" %x "." %~T "but has type" { }.
-============================== T-Tapp
-$C1 | $C2 |- ~e [ ~S ] : ~U
+(%x : ~T1 ; $C) |- ~e : ~T2
+@error ~e "should have type" ~T2 "but has" {}.
+===================================== T-abs
+$C |- fun %X : ~T1 (~e) : ~T1 -> ~T2
+
+$C |- ~e1 : ~T1 -> ~T2
+$C |- ~e2 : ~T1 @error ~e2 "should have type" ~T1 "but has" {}.
+==================== T-app
+$C |- ~e1 ~e2 : ~T2
 \end{lstlisting}
 \label{ex:rules}
 \end{example}
