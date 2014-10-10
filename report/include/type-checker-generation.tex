@@ -1,15 +1,14 @@
 \chapter{Type Checker Generation}
-\todo[inline]{Terminology: Type Checker vs. Type Inference}
 \section{Goals}
-This section briefly describes and motivates the design and goals of
-the type checker generator.
+In this section we briefly describe and motivate the design and goals
+of the type checker generator.
 
-The first goal is to produce fast type checkers, even if the type
-system specification is not geared towards performance. Mainly this
-means to try to deal with non-syntax directed typing rules without
-backtracking. The motivation for this is that non-syntax directed
-typing rules are often more readable and that changes have mainly
-local effects.
+The first goal is to generate type checkers from high level type
+system specifications that are not geared to type checking. Mainly
+this means to try to deal with non-syntax directed typing rules
+without backtracking. The motivation for this is that non-syntax
+directed typing rules are often more readable and that changes have
+mainly local effects. 
 
 The second goal is to design a modular type checker generator,
 particularly one that can be easily adapted and that facilitates the
@@ -19,19 +18,28 @@ unrelated projects.
 
 The third goal is to generate type checkers that emit readable error
 messages if a program is not well-typed. This is essential to make the
-generated type checker usable in any way.
+generated type checker usable in production in any way.
 \section{Architecture}
 The type checker generator has two phases: Template generation and
 template optimization. The template generation phase transforms the
-type system specification with minor modifications into templates. A
-template is a different representation for a typing rule, that is
+type system specification with modifications into templates. A
+template is a different representation for a typing rule that is
 better suited for type checking. We introduce templates in detail in
 Section~\ref{sec:constraint-templates}. The template optimization
-phase checks which optimizations apply to those templates and applies
-them. The optimizations aim to reduce the amount of non-determinism in
-the type system and therefore reduce the amount of backtracking in the
-type checker. The final product after those two phases is a file that
-contains the optimized templates.
+phase checks which optimizations apply to the generated templates and
+applies them. The optimizations aim to reduce the amount of
+non-determinism in the type system and therefore reduce the amount of
+backtracking in the type checker. The final product after those two
+phases is a file that contains the optimized templates.
+
+The template optimization phase is the key part of the type checker
+generator. It is the link between the type checker generator on the
+one hand and the formula generation and automated theorem provers on
+the other hand. We generate from a single type system specification a
+first-order formula representation suitable for theorem proving and a
+template representation suitable for constraint generation. In the
+optimization phase we combine them by using the automated theorem
+prover to check if optimizations are applicable to the templates.
 
 Instead of generating a type checker directly from the specification,
 we implement a generic constraint-based type checker that takes
@@ -40,7 +48,7 @@ Constraint generation and constraint solving. The constraint
 generation phase takes the templates and the expression that shall be
 type checked as input. We then build a derivation tree according to
 the expression by pattern matching the conclusion of the
-templates. Building and traversing of the derivation tree emits
+templates. The building and traversing of the derivation tree emits
 constraints. In the constraint solving phase we then try to unify the
 emitted constraints. If that succeeds it reports the result otherwise
 it reports the errors that occurred during unification.
@@ -76,12 +84,11 @@ constraint generators or template optimizers.
 \caption{Phases of the type checker generator}
 \label{fig:phases}
 \end{figure}
-\section{Implementation}
-\label{sec:implementation}
+
 The following sections describe the implementation of the type checker
 generator. Each section focuses on one of the phases.
 
-\subsection{Template Generation}
+\section{Template Generation}
 \label{sec:constraint-templates}
 The first phase translates type system specifications into
 templates. This phase is not just a simple translation from a human
@@ -437,7 +444,7 @@ Template(
   \caption{Typing rule and template of T-Var}
   \label{fig:template-example}
 \end{figure}
-\subsection{Constraint Template Optimization}
+\section{Constraint Template Optimization}
 \label{sec:constr-templ-optim}
 In this section we describe and motivate the optimization strategies
 we have used. The template optimization phase can potentially do
@@ -582,7 +589,7 @@ within a fork. Then it checks whether the constructors of the term and
 context pattern of the left operand match the constructors of the term
 and context pattern of the right operand modulo variable names.
 
-\subsection{Constraint Generation}
+\section{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the generated type
 checker. The inputs of this phase are constraint templates and the
@@ -801,7 +808,7 @@ Section~\ref{sec:constr-templ-optim} this procedure ensures that rules
 that potentially that produce solvable constraint sets but do not make
 real progress are deferred to the end.
 
-\subsection{Constraint Solving}
+\section{Constraint Solving}
 \label{sec:constraint-solving}
 Constraint solving is the last phase of the type checker. The
 constraint language is simple because it only consists of three
