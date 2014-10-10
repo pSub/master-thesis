@@ -99,7 +99,7 @@ between premises. All following phases assume normalized templates.
 The normalization allows simplifications in the implementations of the
 phases.
 
-\subsubsection{Templates}
+\subsection{Templates}
 A template is an intermediate representation of a typing rule that is
 more suitable for the constraint generation process and defined in
 Definition~\ref{def:template}.
@@ -115,13 +115,12 @@ the typing rules of the specification language.
 
 \begin{figure}
 \begin{definition}{Definition of the syntax of templates}
-  \todo[inline]{Complete this grammar and synchronize it with the
-    Stratego source code} The Stratego implementation appends to all
-  constructors two underscores to avoid name collisions with target
-  languages. This is necessary as the module system of Stratego is not
-  strong enough to avoid those collisions. We omit these here for the
-  sake of readability. The non-terminals Inputs, Outputs, Term and
-  Error may contain arbitrary terms.
+  The Stratego implementation appends to all constructors two
+  underscores to avoid name collisions with target languages. This is
+  necessary as the module system of Stratego is not strong enough to
+  avoid those collisions. We omit these here for the sake of
+  readability. The non-terminals Inputs, Outputs, Term and Error may
+  contain arbitrary terms.
   \begin{grammar}
     <Template> ::= `Template' <Premises> <Conjecture>
 
@@ -152,25 +151,26 @@ judgments and context definitions by splitting everything up into an
 input and output part. This will become handy in the constraint
 generation phase, where we can see immediately which are the patterns
 to match against the expressions and which are the output positions
-that we compute. As described in the introduction to this chapter, we
-normalize templates. For each implicit equality in the conclusion and
-premises of typing rules we add an explicit equality. Thus every
-variable occurs in each judgment only once. Further we sort premises
-by input/output position dependencies. We describe and motivate the
-normalization process in the remainder of the section. The template
-optimization and constraint generation phase take advantage of these
-normalizations and therefore expect their inputs to be normalized.
+that we have to compute. As described in the introduction to this
+chapter, we also normalize templates. For each implicit equality in
+the conclusion and premises of typing rules we add an explicit
+equality. Thus every variable occurs in each judgment only
+once. Further we sort premises by dependencies between their
+inputs/outputs. We describe and motivate the normalization process in
+the remainder of the section. The template optimization and constraint
+generation phase take advantage of these normalizations and therefore
+expect their inputs to be normalized.
 
 Note: We transform all meta-variables of the specification into the
-variables (\code|Var(name)|) that we use for constraint generation. In
-the next section we describe the rename process.
+variables (\code|Var(name)|) that we use for constraint generation as
+we do not need the additional information of meta-variables anymore.
 
-\paragraph*{Premises}
+\subsubsection{Premises}
 Premises in templates have multiple shapes: Judgments, context
-lookups, equalities and inequalities. A premise always has a list of
-dependencies. This list contains the number and the outputs of the
-judgment the premise depends on. Later on in this section we define
-what it means for premise to have dependencies.
+lookups, equalities and inequalities. A premise always has a (possibly
+empty) list of dependencies. This list contains the number and the
+outputs of the judgment the premise depends on. Later on in this
+section we define what it means for a premise to have dependencies.
 
 \begin{description}
 \item[Judgments] correspond to the user defined judgments of the
@@ -180,7 +180,7 @@ what it means for premise to have dependencies.
   judgment marked as inputs \refcallout{judgment:inputs}, context
   modifications \refcallout{judgment:bind},
   \refcallout{judgment:reset}, \refcallout{judgment:identity}, the
-  output positions of the judgments \refcallout{judgment:outputs} or
+  output positions of the judgments \refcallout{judgment:outputs} and
   error messages \refcallout{judgment:errors}.
 
   A context modification can either be an addition to a context
