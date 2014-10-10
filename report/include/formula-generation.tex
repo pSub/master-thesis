@@ -199,7 +199,6 @@ Those are translated into the following first-order formulas.
   \forall c, x, e, t, s \,.\, (tcheck(bind(x, t, c), e, s) \\ \implies
   tcheck(c, fun(param(x, t), e), funtype(t, s)))
 \end{multline}
-
 \end{example}
 
 We translate judgments in rules into predicates. The built-in
@@ -209,8 +208,6 @@ primitives of \gls{tptp}.
 \label{sec:implementation-fof}
 This section describes the implementation details of the translation
 from the specification language into first-order formulas.
-
-\todo[inline]{Extend for imports.}
 
 The implementation is organized in the following steps. At fist, the
 module is split up into its components, then we transform contexts,
@@ -289,7 +286,7 @@ string within a \code|Term| constructor would be wrapped again in a
 Conjectures are essentially transformed following the same scheme as
 rules, the only difference is that we tag the resulting formulas as
 \code|conjecture| and not as \code|axiom|.
-\section{Performance}
+%\section{Performance}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "../report"
