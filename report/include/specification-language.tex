@@ -187,21 +187,30 @@ computed by rule applications and which are provided as input
 parameters to the rule application. Non-terminals of contexts
 currently only support the input tag.
 
+Equality and inequality are predefined built-ins, but have to be
+introduced as judgments. This enables to define precisely for which
+non-terminals equality/inequality should be available and prevents
+other uses at parse time. Currently it is not possible to define
+(in-)equalities between contexts. Equality and inequality judgments
+are defined by appending \code|is Eq| or respectively \code|is Neq| to
+the judgment declaration.
+
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
 judgments Context{I} "|-" Exp{I} ":" Type{O}.
           Type{I} "<:" Type{I}.
+          Exp{I} "=" Exp{I} is Eq.
 \end{lstlisting}
 \label{ex:judgment-section}
 \end{example}
 
-Example~\ref{ex:judgment-section} shows two judgments. The first could
-be the typing judgment of a variant of the simply typed lambda
+Example~\ref{ex:judgment-section} shows three judgments. The first
+could be the typing judgment of a variant of the simply typed lambda
 calculus with a context, an expression of the target language as input
 and a type of the target language as output. The second judgment
 defines a relation between the types of the target language, i.e.\ it
 has only input positions. This judgment could represent a subtyping
-relation.
+relation. The last judgment declares an equality between expressions.
 
 \paragraph{Rules} The seventh section of the module declares the
 (typing) rules. These rules define the semantics for the judgments
