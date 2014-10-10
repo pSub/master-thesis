@@ -94,8 +94,35 @@ The main contributions of this thesis are:
   the applicability of optimizations.
 \end{enumerate}
 
+Figure~\ref{fig:interconnection} shows how these contributions are
+connected. From a type system specification a first-order formula
+representation and a type checker is generated and the first-order
+formula representation is used in conjunction with an automated
+theorem prover to check the applicability of optimizations for the
+type checker.
+
+\begin{figure}
+  \begin{tikzpicture}[transform shape,->,>=stealth',shorten >=1pt,auto,align=center,node distance=1cm,thick,main node/.style={rectangle,fill=blue!20,draw,font=\small\bfseries}]
+    \node[main node, style={ellipse}] (1) {Type System Specification};
+    \node[main node] (2) [below left=2cm and .5cm of 1]  {First-order Formulas};
+    \node[main node] (3) [below right=2cm and .5cm of 1] {Type Checker};
+
+  \path[every node/.style={}]
+  (1) edge node [outer sep=10pt,left] {Generation} (2)
+  (1) edge node [outer sep=10pt,right] {Generation} (3);
+
+  \path[every node/.style={}, dashed]
+  (2) edge node [above] {used to validate \\ applicability of
+    optimizations} (3);
+  \end{tikzpicture}
+\label{fig:interconnection}
+\caption{Connection between theorem proving and type system optimization}
+\end{figure}
+
 \section{Structure}
 \todo[inline]{Describe how the thesis is structured.}
+
+
 
 %%% Local Variables:
 %%% mode: latex
