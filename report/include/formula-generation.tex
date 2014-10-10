@@ -25,55 +25,46 @@ provers.
 \section{Goals}
 The generation of formulas from type system specifications pursues two
 goals. The first goal is to resemble type system specifications in
-formulas suitable for automated theorem provers and to use this as a
-basis to prove simple properties. The second goal is to explore how
-well automated theorem provers can check if a program is well-typed.
+formulas suitable for automated theorem provers and to use those as a
+basis to prove simple propositions about type systems. In
+Section~\ref{sec:constr-templ-optim} we prove propositions that check
+the applicability of an optimization. The second goal is to explore
+how well automated theorem provers can check if a program is
+well-typed. Being able to type check programs using automated theorem
+provers provides us with free reference implementations for our type
+checker generator. The correctness of those reference implementations
+depends only on the translation of type system specifications into
+first-order formulas and on the correct implementation of the
+automated theorem provers.
 
-\section{Why First-Order Logic?}
-\subsection{Expressiveness}
-\subsection{Tool-Support}
+%\section{Why First-Order Logic?}
+%\subsection{Expressiveness}
+%\subsection{Tool-Support}
 \section{Translations}
 \label{sec:translations}
-We translate context declarations, rules and conjectures into
-first-order formulas. The rest of the specification is not directly
-translated into first-order formulas and it is only needed to ensure
-that the generated formulas are well formed.
+In this section we explain how we translate type system specifications
+into first-order formula. Just context declarations, rules and
+conjectures have an explicit representation as first-order
+formulas. The rest of the specification is not directly translated
+into first-order formulas and it is only needed to ensure that the
+generated formulas are well formed.
 
-\todo[inline]{Implement imports and describe how they are handled.}
-
-We translate context declarations in a uniform way into first-order
-formulas. For every context we generate two formulas, which model the
-look up of entries in the context recursively. In the base case the
-element lookup to look up is the first element of the context. In the
-step case the first element is different from the element we search,
-therefore we have to search in the rest of the context for it.
-
-\begin{figure}
+We represent contexts as a list like structure. Every context $c$ has
+a constant $empty_c$ that represents the empty context and predicate
+$bind_c$ that constructs contexts from the inputs and outputs of the
+context declaration and a context. The look up of elements in a
+context $c$ is modeled by the predicate $lookup_c$. This predicate is
+defined inductively by two formulas shown in the following and checks
+whether an element is contained in a context. In the base case the
+element to look up is the top element of the context. In the step case
+the top element is different from the element we search, therefore we
+have to proceed with the rest of the context.
 \begin{multline}
   \forall e, x_1, \dots, x_n, y_1, \dots, y_m . \\
   (lookup_c(x_1,\dots,x_n,y_1,\dots,y_m,
   bind_c(x_1,\dots,x_n,y_1,\dots,y_m,e)))
 \label{formula:context-base}
 \end{multline}
-\caption{Base case of context lookup}
-\end{figure}
-
-The Formula~\ref{formula:context-base} is the context look up base
-case for a context declared as $c$. We translate all non-terminals in
-the context declaration tagged as input into variables $x_1 \dots x_n$
-and all tagged as output into variables $y_1 \dots y_m$,
-respectively. The variable $e$ represents all possible contexts. For
-each context declaration there is a specialized $bind_c$ predicate
-which models the binding of an input/output pair to a context
-$e$. There is also a specialized $lookup_c$ predicate for each context
-declaration which models the actual look up in the context. This
-predicate checks whether an input/output pair exists in a context. In
-the base case we apply $lookup_c$ to a context that we extended with
-$bind_c$ with exactly the element we want to look up. Therefore the
-element is trivially contained in the context and the look up
-succeeds.
-
-\begin{figure}
 \begin{multline}
   \forall e, x_1, \dots, x_n, x_1', \dots, x_n', y_1, \dots, y_m,
   y_1', \dots,
@@ -83,16 +74,47 @@ succeeds.
   y_1, \dots, y_m, bind_c(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \label{formula:context-step}
 \end{multline}
-\caption{Step case of context lookup}
-\end{figure}
 
-Formula~\ref{formula:context-step} models the context look up step
-case of context $c$. We introduce for each non-terminal two variables,
+Formula~\ref{formula:context-base} shows the base case of the look up
+in context $c$. We translate all non-terminals in the context
+declaration tagged as input into variables $x_1 \dots x_n$ and all
+tagged as output into variables $y_1 \dots y_m$, respectively. The
+variable $e$ represents context. In the base case we apply $lookup_c$
+to a context whose outer most $bind_c$ binds an element that is
+exactly the element we search. Therefore the element is trivially
+contained in the context and the look up succeeds.
+
+Formula~\ref{formula:context-step} models the step case of the look up
+in context $c$. We introduce for each non-terminal two variables,
 $x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
 $y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
 intuition of the formula is that if it is possible look up an
 input/output pair in a context $e$ then we can also look it up in an
-context that contains and additional input/output pair.
+context that contains and additional input/output pair. If read with
+evaluation in mind the intuition is that if the outer most element is
+not the element we look for, i.e.\ all inputs differ, then we have to
+look into the rest of the context. We only check the input positions
+in order to test whether we have a match to lookup the last element
+first. This corresponds to the scoping behavior of most programming
+languages.
+
+\begin{example}
+  The following context declaration models a standard identifier to
+  type binding. It has two components, identifier as inputs and types
+  as outputs.
+\begin{lstlisting}[language=sltc]
+contexts C := ID{I} x Type{O}
+\end{lstlisting}
+  For this declaration we generate the following two formulas to model
+  the behavior of $lookup_{C}$.
+  \begin{align}
+    &\forall i, t, e \,.\, (lookup_{C}(i, t, bind_{}(i, t,
+    e))) \\
+    &\forall i,i',t,t',e \,.\, (lookup_{C}(i, t, e) \land i \neq
+    i' \implies lookup_{C}(i, t, bind_{C}(i', t', e))))
+  \end{align}
+\label{ex:context-formulas}
+\end{example}
 
 We translate the \gls{ast} nodes of the programming language directly
 into predicates that resemble the program structure. For the
@@ -100,25 +122,38 @@ translation we use the following scheme. \gls{ast} nodes of the
 following form $Cons(e_1, \dots, e_n)$ are translated into a predicate
 of the form $cons(p_1, \dots, p_n)$, where we translate all
 constituents $e_i$ into predicates $p_i$ recursively. We create for
-each of those predicates injectivity and univalence
-axioms. Injectivity and univalence holds by definition for those
-predicates as we create those predicates from syntax. These axiom can
-help theorem provers to conduct proofs, for examples see
+each of those predicates the following injectivity and univalence
+axioms.
+\begin{multline}
+  \forall p_1,p_1', \dots, p_n, p_n' \,.\, \\ (cons(p_1, \dots, p_n) =
+  cons(p_1', \dots, p_n') \implies (p_1 = p_1') \land \dots \land (p_n
+  = p_n'))
+\end{multline}
+\begin{multline}
+  \forall p_1,p_1', \dots, p_n, p_n' \,.\, \\ ((p_1 \neq p_1')
+  \lor \dots \lor (p_n \neq p_n') \implies cons(p_1, \dots, p_n) \neq
+  cons(p_1', \dots, p_n'))
+\end{multline}
+\begin{multline}
+  \forall x, y, p_1, \dots, p_n \,.\, \\ ((cons(p_1, \dots, p_n) = x
+  \land cons(p_1, \dots, p_n) = y) \implies x = y)
+\end{multline}
+
+Injectivity and univalence holds by definition for those predicates as
+we create those predicates from syntax. These axiom can help theorem
+provers to conduct proofs, for examples see
 Section~\ref{sec:constr-templ-optim}.
 
 The most important part is the translation of the typing
 rules. Depending on whether the typing rule has premises we use either
 of the following schema:
 
-\begin{figure}
 \begin{align}
   &\forall FV(c) .& c \\
   &\forall FV(p_1,\dots, p_n, c) .& p_1 \land \dots \land p_n \implies
   c
 \label{formula:typing-rule}
 \end{align}
-\caption{Formulas representing typing rules}
-\end{figure}
 
 The predicates $p_i$ represent the premises and $c$ is the conclusion
 of the typing rules. What a typing rule intuitively expresses is that
@@ -135,6 +170,37 @@ derivable/satisfied. The conclusion of the implication is the
 conclusion of the typing rule. This is a safe fact, because the
 conclusion of the typing rule is derivable if all premises are
 derivable, which is exactly the semantics of this implication.
+
+\begin{example}
+  The following we have the typing rules \code|T-var| and \code|T-abs|
+  from the \gls{pcf} specification.
+
+\begin{minipage}{.30\linewidth}
+\begin{lstlisting}[language=sltc]
+%x : ~T in $C
+============= T-var
+$C |- %x : ~T
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.64\linewidth}
+\begin{lstlisting}[language=sltc]
+(%x : ~T1 ; $C) |- ~e : ~T2
+==================================== T-abs
+$C |- fun %x : ~T1 (~e) : ~T1 -> ~T2
+\end{lstlisting}
+\end{minipage}
+
+Those are translated into the following first-order formulas.
+
+\begin{multline}
+  \forall x, t, e \,.\, (lookup(x, t, e) \implies tcheck(e, var(x), t)))
+\end{multline}
+\begin{multline}
+  \forall c, x, e, t, s \,.\, (tcheck(bind(x, t, c), e, s) \\ \implies
+  tcheck(c, fun(param(x, t), e), funtype(t, s)))
+\end{multline}
+
+\end{example}
 
 We translate judgments in rules into predicates. The built-in
 judgments for equality and inequality are translated into the
