@@ -248,12 +248,14 @@ Lookup(
   lookup has no error messages attached.
 
 \item[(In)equalities] are predefined judgments and therefore treated
-  separately. They have exactly two input positions, no output
-  positions and potentially an error message.
+  separately. They have a judgment number, exactly two input
+  positions, no output positions and potentially an error message. The
+  judgment number is used to keep track of the non-terminals of the
+  (in)equality.
 
 \begin{example}
 \begin{lstlisting}[language=sltc]
-Neq(Var("X0"), Var("X1"), None())
+Neq(4, Var("X0"), Var("X1"), None())
 \end{lstlisting}
 \label{ex:neq}
 \end{example}
@@ -349,10 +351,10 @@ template.
 \subsection{Generation}
 The Stratego rule \code|to-template| does the main part of the
 template generation. It takes a rule from a specification and
-transforms that rule into a template. The strategy \code|to-templates| does
-that iteratively for every rule in a specification. The first step in
-the conversion is the elimination of implicit equalities in the
-premises and the conclusion.
+transforms that rule into a template. The strategy \code|to-templates|
+does that iteratively for every rule in a specification. The first
+step in the conversion is the elimination of implicit equalities in
+the premises and the conclusion.
 
 For each implicit equality we create an explicit equality, by
 collecting all variables that occur more than once in an input
@@ -367,17 +369,18 @@ variable occurs only once as a source and thus, cannot introduce
 different values. If a meta-variable occurs more than twice we define
 the equalities for the new variables transitively.
 
-Example~\ref{ex:implicit-equalities} shows this for
-a typing rule of the judgment
+Example~\ref{ex:implicit-equalities} shows this for a typing rule of
+the judgment
 
 \begin{lstlisting}[language=sltc]
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}
 \end{lstlisting}
 
-which could model type substitution in a SystemF specification. On the
-left side of example~\ref{ex:implicit-equalities} you see the typing
-rule with an implicit equality and on the right hand side the
-transformed version without the implicit equality.
+which models type substitution in the SystemF specification in
+Appendix~\ref{appendix:systemf}. On the left side of
+Example~\ref{ex:implicit-equalities} you see the typing rule with an
+implicit equality and on the right hand side the transformed version
+without the implicit equality.
 
 \begin{example}{~}
 \newline
@@ -398,14 +401,35 @@ transformed version without the implicit equality.
 \end{example}
 
 If there are error messages for implicit equalities, we associate
-those error messages with the implicit equalities. Then we replace them
-by the fresh meta-variables of the explicit equality and add the error
-message as a normal error to the explicit equality.
+those error messages with the corresponding implicit equalities. Then
+we replace the variables in the error message by the fresh
+meta-variables of the corresponding explicit equality and add the
+error message as a normal error to the explicit equality.
 
-\todo[inline]{Implicit equalities between inputs and outputs and
-  between the contexts}
+In order to treat the introduced explicit equalities like the
+equalities introduced in the type system specification, we have to
+introduce corresponding judgments. This is important as we rely in the
+template optimization phase on the information about the non-terminals
+in the judgments.
 
-After this step, there are no implicit equalities left, i.e. all
+To introduce judgments for equalities that are generated from implicit
+equalities, we have to determine the non-terminals of the
+equality. We infer the non-terminals by analyzing the surrounding
+terms and by exploiting the scope of the meta-variable.
+
+In case the meta-variable is directly in an input or output position
+of a judgment, context binding or context lookup, we infer the
+non-terminal from the judgment or context definition. Otherwise we
+fetch all productions of the target language that could possibly have
+produced the surrounding term and extract the non-terminal from the
+corresponding position. If there is more than one production that
+could have created that term, we try to disambiguate by the scope of
+the meta-variable. In case there is still more than one production
+with different non-terminals for this meta-variable, we raise an
+exception and this equality has to be made explicit in the
+specification.
+
+After this step, there are no implicit equalities left, i.e.\ all
 meta-variables within a judgment are different. As a next step we
 analyze the premises of the typing rule for dependencies. One premise
 depends on the other, if it uses meta-variables in input positions
