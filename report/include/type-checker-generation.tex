@@ -437,24 +437,26 @@ that occur in an output position of another premise and not as an
 input position in the conclusion. As we need to supply the input
 positions with concrete terms to check if a premise holds, we can only
 evaluate a dependency if we first evaluate all its dependencies. In
-the generation process we do two things: Sort the premises according
-to their dependencies and annotate them with the output positions of
-the dependencies, as described in the previous paragraph. The
-implementation of this ordering is standard. First we collect all
-premises and their dependencies in a graph. Due to the nature of the
-dependency it is more natural to create edges from a premise to the
-premises it depends on. Therefore the resulting dependency graph is a
-transposed dependency graph. We sort this graph topologically with the
-algorithm by Kahn~\cite{Kahn:1962:TSL:368996.369025}. The result is
-the reversed order, as we used the transposed dependency
-graph. Therefore we reverse the result of the topological sort. If we
-encounter cycles in the dependency graph we report them and abort the
-template generation.
+the generation process we do two things: We sort the premises
+topologically according to their dependencies and annotate them with
+the output positions of the dependencies, as described in the previous
+paragraph. The implementation of this ordering is almost
+standard. First we collect all premises and their dependencies in a
+graph. Due to the nature of the dependency it is more natural to
+create edges from a premise to the premises it depends on. As it is
+easy to check if a premise has an input position that does not occur
+in the conclusion but as the output of another premise. Therefore the
+resulting dependency graph is a transposed dependency graph. We sort
+this graph topologically with the algorithm by
+Kahn~\cite{Kahn:1962:TSL:368996.369025}. The result is the reversed
+order, as we used the transposed dependency graph. Therefore we
+reverse the result of the topological sort. If we encounter cycles in
+the dependency graph we report them and abort the template generation.
 
 After we have resolved implicit equalities and dependencies we begin
 to generate templates. This process is, except for technical
 subtleties, a straight forward rewriting of the rules from the
-specification. 
+specification.
 
 \begin{figure}
   \centering
