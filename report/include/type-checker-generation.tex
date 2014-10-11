@@ -165,12 +165,13 @@ Note: We transform all meta-variables of the specification into the
 variables (\code|Var(name)|) that we use for constraint generation as
 we do not need the additional information of meta-variables anymore.
 
-\subsubsection{Premises}
+\subsubsection{Premises in Templates}
 Premises in templates have multiple shapes: Judgments, context
 lookups, equalities and inequalities. A premise always has a (possibly
 empty) list of dependencies. This list contains the number and the
 outputs of the judgment the premise depends on. Later on in this
-section we define what it means for a premise to have dependencies.
+section we define what it means for a premise to have dependencies,
+first we take a look at the different kinds of premises.
 
 \begin{description}
 \item[Judgments] correspond to the user defined judgments of the
@@ -181,20 +182,22 @@ section we define what it means for a premise to have dependencies.
   modifications \refcallout{judgment:bind},
   \refcallout{judgment:reset}, \refcallout{judgment:identity}, the
   output positions of the judgments \refcallout{judgment:outputs} and
-  error messages \refcallout{judgment:errors}.
+  potentially error messages \refcallout{judgment:errors}.
 
-  A context modification can either be an addition to a context
-  \refcallout{judgment:bind} which consists of a context identifier
-  (this identifier refers to the position in the declaration section
-  of the specification), a list of inputs and a list of outputs. It
-  can also be a context identity \refcallout{judgment:identity} which
-  corresponds to a context meta-variable in the specification and
-  context identities do not modify the context and a reset operation
-  \refcallout{judgment:reset} which resets the given context and
-  corresponds to the empty context. Read to context modifications from
-  right to left to obtain a valid context. A detail explanation of the
-  semantics in our type checker will follow in
-  Section~\ref{sec:constr-gener}.
+  The main difference between context modifications in templates and
+  typing rules is that all modifications are at one place and can
+  always be evaluated in the same manner. A context modification can
+  either be an addition to a context \refcallout{judgment:bind} which
+  consists of a context identifier (this identifier refers to the
+  position in the declaration section of the specification), a list of
+  inputs and a list of outputs. It can also be a context identity
+  \refcallout{judgment:identity} which corresponds to a context
+  meta-variable in the specification and context identities do not
+  modify the context and a reset operation \refcallout{judgment:reset}
+  which resets the given context and corresponds to the empty
+  context. Read to context modifications from right to left to obtain
+  a valid context. A detail explanation of the semantics in our type
+  checker will follow in Section~\ref{sec:constr-gener}.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -213,17 +216,20 @@ Judgment(
 \end{example}
 
 In example~\ref{ex:judgment} we have judgment one that has only one
-input position \code|Var("X0"| and one output position
+input position \code|Var("X0")| and one output position
 \code|Var("X3")|. It leaves context two as it is, resets context one
 and then adds the input/output pair \code|Var("X1")| and
-\code|Var("X2")| to context one. In addition it has an error message.
+\code|Var("X2")| to context one. In addition it is annotate with one
+error message.
 
 \item[Context lookups] consist of the context number
   \refcallout{lookup:ctx}, of the input \refcallout{lookup:inputs} and
   of the output \refcallout{lookup:outputs} positions of the context
-  lookup from the specification and of error messages
-  \refcallout{lookup:errors}. We treat context lookups separately,
-  because we generate them from the context declaration.
+  lookup from the specification and potentially of error messages
+  \refcallout{lookup:errors}. We do not treat look ups as normal
+  judgments as their semantics is not defined within the
+  specification. Therefore we have to deal with them separately in the
+  type checker.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -242,8 +248,8 @@ Lookup(
   lookup has no error messages attached.
 
 \item[(In)equalities] are predefined judgments and therefore treated
-  separately. They have two input positions and potentially an error
-  message. Apart from that they behave like normal judgments.
+  separately. They have exactly two input positions, no output
+  positions and potentially an error message.
 
 \begin{example}
 \begin{lstlisting}[language=sltc]
@@ -252,20 +258,22 @@ Neq(Var("X0"), Var("X1"), None())
 \label{ex:neq}
 \end{example}
 
-  In example~\ref{ex:neq} we compare if \code|Var("X0")| and
-  \code|Var("X1")| are not equal and provide no error message.
+In example~\ref{ex:neq} we test if \code|Var("X0")| and
+\code|Var("X1")| are not equal and provide no error message.
 \end{description}
 
 In some cases it is relevant in which order we evaluate premises. As
 we have not talked about evaluation yet, we assume premises are
 evaluated like functions. We provide terms for input positions an
-retrieve terms for the output positions. If we look at
-Example~\ref{ex:premise-dependencies} we see that rule \code|T-Tapp|
-has two premises. When we compare the premises with the judgment
-definitions, we see that \code|%x| occurs as an input of the first
-premise and as within an output of the second premise but not at all
-in the conclusion. If we want to evaluate the first premise we have to
-find a term for \code|%x|, but that term is only provided by
+retrieve terms for the output positions. If we take a look at
+Example~\ref{ex:premise-dependencies} we see that typing rule
+\code|T-Tapp| from Appendix~\ref{appendix:systemf} has two
+premises. When we compare the premises with the judgment definitions,
+we see that \code|%x| occurs as an input of the first
+premise and as within an output position of the second premise, but
+not at all in the conclusion. If we want to evaluate the first premise
+we have to find a term for
+\code|%x|, but that term is only provided by
 the output of the second premise. Therefore we have to evaluate the
 second premise first.
 
@@ -285,30 +293,39 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \end{example}
 
 We make those dependencies visible in the template language by
-annotating each premise with a list of dependencies. Those
+annotating each premise with a list of its dependencies. Those
 dependencies contain the number of the premise on which the premise
-depends and the output of that premise. The outputs are redundant
-information and only added to reduce indirections.
+depends and the output positions of that premise. The outputs are
+redundant information and only added to make it easier to check which
+information are proivded by that dependency.
 The dependency for the first premise in
 Example~\ref{ex:premise-dependencies} the would look like
-\code|(1,[TAll(Var("X0"), Var("X1"))])|. In this example \code|1| refers to the
-second premise, because we sort premises of templates topological
-according to the dependencies, as we will describe in the next
-section.
+\code|(1,[TAll(Var("X0"), Var("X1"))])|. In this example
+\code|TAll(Var("X0"), Var("X1"))| is the only output provided by the
+premise and \code|1| refers to the second premise, because we sort
+premises of templates topological according to the dependencies, as we
+will describe in the next section.
 
-\paragraph{Conclusion}
+\subsubsection{Conclusions in Templates}
 Conclusions contain the judgment identifier
 \refcallout{conclusion:number}, the input positions of the judgment
 \refcallout{conclusion:inputs}, the context modifications
 \refcallout{conclusion:ctx} as well as the output positions of the
-conclusion \refcallout{conclusion:outputs}.
+conclusion \refcallout{conclusion:outputs}. In contrast to the
+conclusion in a typing rule from the specification, a typing rule in a
+template has no error message. As it was only possible to annotate the
+conclusion with error messages for implicit equalities those error
+messages propagate into the premisses that are introduced to make the
+implicit equalities explicit.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
 Conclusion(
       3 %*\callout{conclusion:number}*)
     , ( [Var("X177")] %*\callout{conclusion:inputs}*)
-      , [(2, [Var("X178")], []), Ctx(2)] %*\callout{conclusion:ctx}*)
+      , [ Binding(2, [Var("X178")], [])
+        , Ctx(2)
+        ] %*\callout{conclusion:ctx}*)
       )
     , [] %*\callout{conclusion:outputs}*)
     )
@@ -321,11 +338,15 @@ number three and only one input position. The context pattern specifies
 that there has to be at least one element in the second context. In
 this example judgment three has no outputs.
 
-On the left side of Figure~\ref{fig:template-example} a simple typing
-rule for variables in a $\lambda$-calculus style is shown and on the
-right side its representation as a template.
+A template consists of a name, a list of premisses with dependencies
+and a conclusion. Figure~\ref{fig:template-example} shows how a
+complete template looks like for the variable typing rule in the
+simply typed lambda calculus. On the left side of
+Figure~\ref{fig:template-example} the typing rule from the
+specification is shown and on the right side its representation as a
+template.
 
-\subsubsection{Generation}
+\subsection{Generation}
 The Stratego rule \code|to-template| does the main part of the
 template generation. It takes a rule from a specification and
 transforms that rule into a template. The strategy \code|to-templates| does
