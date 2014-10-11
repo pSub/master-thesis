@@ -494,17 +494,18 @@ Template(
 \section{Constraint Template Optimization}
 \label{sec:constr-templ-optim}
 In this section we describe and motivate the optimization strategies
-we have used. The template optimization phase can potentially do
+we have used to reduce the number of non-syntax directed
+templates. However the template optimization phase can potentially do
 arbitrary modifications. We focus here on optimization strategies that
 reduce ambiguities between the templates.
 
 Informally two templates are ambiguous if it is not known a priori
-which (if any) of the templates we have to use to extend the
-derivation tree to create a successful derivation. Therefore we have
-to use the rules according to a heuristic and to backtrack if the
-decision did not work out. The goal of the optimization strategies
-described in this section, is to rule out some of those ambiguities
-before we even start to create derivations.
+which (if any) of the templates can be used to extend a derivation to
+a successful derivation. Therefore we have to use the rules according
+to a heuristic and to backtrack if the decision did not work out. The
+goal of the optimization strategies described in this section, is to
+eliminate some of those ambiguities before we even start to create
+derivations.
 
 Before introducing the optimization strategies, we define more
 formally what an ambiguity is.
@@ -519,8 +520,8 @@ formally what an ambiguity is.
 Definition~\ref{def:when-ambiguous} describes the general case of an
 ambiguity. There is an ambiguity if there is a template that has an
 syntactic overlap with another template. We call those ambiguities
-when-ambiguity, because it is not clear when we have to apply an
-ambiguous template. 
+when-ambiguity, because it is not clear when (i.e.\ at which point in
+the derivation) we have to apply an ambiguous template.
 
 \begin{definition}
   A template is \textit{which-ambiguous} if there is another template
@@ -529,13 +530,15 @@ ambiguous template.
 \label{def:which-ambiguity}
 \end{definition}
 
-Definition~\ref{def:which-ambiguity} aims at more specialized
-ambiguities. Templates are when-ambiguous if they match exactly the
-same terms. As there are two (or more) templates that apply to exactly
+Definition~\ref{def:which-ambiguity} aims at more limited
+ambiguities. Templates are which-ambiguous if they match exactly the
+same terms. In other words their conclusions are equal modulo variable
+renaming. As there are two (or more) templates that apply to exactly
 the same terms, it is not the question \textit{when} we have to apply
 a template, but only \textit{which} one we have to apply. The
 distinction of those two kinds of ambiguities will help to implement
-optimization strategies.
+optimization strategies. Of course all templates that are
+which-ambiguous are also when-ambiguous.
 
 Before describing the optimization strategies we implemented, we
 extend the template language to make ambiguities explicit.
@@ -545,77 +548,274 @@ extend the template language to make ambiguities explicit.
     \begin{grammar}
     <Template> ::= $\dots$ | `Fork' <Templates>
 
-    <Templates> ::= <Template> | <Template> <Templates>
+    <Templates> ::= <Template> <Template> | <Template> <Templates>
     \end{grammar}
 \end{definition}
 
-The new constructor \code|Fork| has a list that contains at least one
+The new constructor \code|Fork| has a list that contains at least two
 template. The idea is that templates contained in \code|Fork|s are all
-which-ambiguous to each other. We later use those groups of ambiguous
-templates to decide at which point in the derivation we have to
-decide which template we apply.
+when-ambiguous to each other. We later use those groups of ambiguous
+templates to decide at which point in the derivation we have to decide
+which template we apply. A fork with less than two templates contains
+no ambiguities and is therefore always decomposed.
 
+We do four types of optimizations in the optimization phase. First we
+eliminate which-ambiguities that are due to redundancies. Second we
+unfold when-ambiguous templates by inserting all possible structures
+in the variables of the conclusion. Directly after this we eliminate
+which-ambiguities that are due to redundancies and were created by the
+unfolding. Third we remove all templates that have unsatisfiable
+premises and fourth we remove all valid premisses from templates.
+
+\subsubsection{Which-Ambiguities}
 Now we look now into the optimization of which-ambiguities. First we
 identify all which-ambiguities and create \code|Fork|s of them. We
-implement using a strategy that groups arbitrary lists according to a
-comparison strategy.\todo{context} Two templates are which-ambiguous
-if they have the same judgment number and if the term pattern and
-context pattern of the conclusion are equal modulo variables. Of the
-resulting template groups we wrap all groups with more than one
-element into a \code|Fork|.
+implemented this using a strategy that groups lists of templates such
+that each group contains templates only which-ambiguous templates. Two
+templates are which-ambiguous if they have the same judgment number
+and if the term pattern and context pattern of the conclusion are
+equal modulo variables. Of the resulting template groups we wrap all
+groups with more than one element into a \code|Fork|.
 
 We optimize forks containing which-ambiguities by checking whether a
-template of a fork is subsumed by an other template of the same
-fork. Template $t_1$ subsumes template $t_2$ if all premises of $t_2$
-imply at least one premise of $t_1$. This is sufficient, because the
-conclusion of all templates within a fork matches the same terms.
+template of a fork is subsumed by a template that is which-ambiguous
+to that template.
 
-In Example~\ref{ex:which-ambiguity} we have the depth and width
-subtyping rules for records. Those two rules are which-ambiguous to
-each other. Their conclusions contain the same judgment. They have no
-contexts and exactly the same term pattern.
+\begin{definition}
+  A template $t_1$ subsumes another template $t_2$ if $t_1$ and $t_2$
+  are which-ambiguous to each other and
+  \begin{align}
+    \forall FV(p_1,q_1,\dots, p_n,q_m) \,.\, ((p_1 \land\dots\land
+    p_n) \implies (q_1 \land\dots\land q_m))
+  \end{align}
+
+  where $p_1 \dots p_n$ and $q_1 \dots q_m$ are the premisses of $t_2$
+  and $t_1$ respectively.
+\label{def:subsumes}
+\end{definition}
+
+A template $t_2$ that is subsumed by a template $t_1$ can be removed
+without changing the semantics of the type system. To show this, we
+have to argue that at any position where $t_2$ can be applied, we can
+also apply $t_1$. As the conclusion of both templates matches the
+exact same terms, we can attempt to apply both templates at the same
+positions. Now we have to ensure that whenever all premisses of $t_2$
+are satisfied, all premises of $t_1$ are satisfied as well. Which is
+exactly our definition of subsumption.
+
+In Example~\ref{ex:which-ambiguity} we have two subtyping rules for
+records. The rule \code|Depth-1| is the standard depth subtyping rule
+for records from Appendix~\ref{appendix:stlc-records}. The other rule
+\code|Depth-2| was introduced to make depth subtyping of records
+reflexive.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
-======== S-Refl
-~T <: ~T
+judgments Type{I} "<:" Type{I}.
+
+rules
 
 ~T <: ~S
 { $R } <: { $U }
-=============================== S-depth
+=============================== Depth-1
 { %l : ~T $R } <: { %l : ~S $U }
 
 ~T = ~S
 { $R } <: { $U }
-=============================== S-width
-{ %l : ~T $R } <: { %l : ~S $U}
+=============================== Depth-2
+{ %l : ~T $R } <: { %l : ~S $U }
 \end{lstlisting}
 \label{ex:which-ambiguity}
 \end{example}
 
-We know that the subtyping relation \code|<:| is reflexive by the rule
-\code|S-Refl|. Now we show that all premises of \code|S-width| imply
-at least one premise of \code|S-depth|. \code|~T = ~S| implies
-\code|~T <: ~S| because the subtyping relation is reflexive and
-\code|{ $R } <: { $U }| occurs verbatim as a premise of
-\code|S-depth|. Therefore the depth subtyping rule subsumes the width
-subtyping rule and we can remove the width subtyping rule.
+Now we consider the presence of a general reflexivity rule for the
+subtyping relation, like:
 
-We implement this checking whether there exists for each template $t$
-within a fork a template $t'$ such that
+\begin{lstlisting}
+T = S
+====== Refl
+T <: S
+\end{lstlisting}
+
+In the presence of rule \code|Refl| the rule \code|Depth-2| is
+subsumed by the rule \code|Depth-1| as the conclusions of both rules
+are equal modulo variables and we can prove with the help of a
+first-order formula representation of rule \code|Refl| that the
+following formula holds.
+
+\begin{multline}
+  \forall r,u,t,s \,.\, ((t = s \land record(r) <: record(s)) \implies
+  \\ (t <: s \land record(r) <: record(s)))
+\end{multline}
+
+The first conjunct of the conclusion can be proven by applying the
+first conjunct of the premise to the first-order formula
+representation of rule \code|Refl| and the second conjunction is
+verbatim the second conjunct of the premise.
+
+We try to prove that a template subsumes another for all
+which-ambiguous templates using vampire by transforming the templates
+into a first-order formula representation and generating the formula
+of Definition~\ref{def:subsumes}. If the proof succeeds we remove the
+subsumed template from the fork. If no proof can be found in the given
+time limit we assume the template is not subsumed and do not delete
+it. The translation of templates into a first-order formula
+representation is similar to the translation of specifications into a
+first-order formula representation and actually reuses most of the
+code.
+
+\subsubsection{When-Ambiguities}
+Introducing the rule \code|Refl| rendered one of the depth subtyping
+rules for records redundant and we were able to detect and remove that
+redundancy. However the rule \code|Refl| introduces a when-ambiguity
+into the type system, as its conclusion matches all types and not just
+records and there is not just only the rule \code|Refl|.
+
+For the examples we now assume we have the type system specification
+of Appendix~\ref{appendix:stlc-records}, where types are defined as
+following:
+
+\begin{grammar}
+  <Type> ::= `Int' | <Type> `->' <Type> | `{' <Record> `}'
+
+  <Record> ::= $\epsilon$ | <ID> `:' <Type> <Record>
+\end{grammar}
+
+A template within a fork that has only variables in its conclusion
+judgment is always ambiguous as a fork contains at least two
+templates. We unfold such templates to make them syntax
+directed. Unfolding means that we create templates with all possible
+structural variants of the variables. To do this we first look up the
+non-terminals of the variables in the judgment definition. For all
+non-terminals we then fetch the corresponding \gls{sdf} productions
+from the target language. Then we generate templates where we
+instantiate the variables with all possible combinations of the
+productions. Non-terminals in the productions are replaced by fresh
+variables.
+
+\begin{example}{~}
+
+\begin{minipage}{.20\linewidth}
+\begin{lstlisting}[language=sltc]
+Int = Int
+==========
+Int <: Int
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.30\linewidth}
+\begin{lstlisting}[language=sltc]
+~A -> ~B = Int
+===============
+~A -> ~B <: Int
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.30\linewidth}
+\begin{lstlisting}[language=sltc]
+Int = ~C -> ~D
+===============
+Int <: ~C -> ~D
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{.35\linewidth}
+\begin{lstlisting}[language=sltc]
+~A -> ~B = ~C -> ~D
+====================
+~A -> ~B <: ~C -> ~D
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.22\linewidth}
+\begin{lstlisting}[language=sltc]
+{ R } = Int
+============
+{ R } <: Int
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.22\linewidth}
+\begin{lstlisting}[language=sltc]
+Int = { S }
+============
+Int <: { S }
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{.27\linewidth}
+\begin{lstlisting}[language=sltc]
+{ R } = C -> D
+===============
+{ R } <: C -> D
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.27\linewidth}
+\begin{lstlisting}[language=sltc]
+A -> B = { S }
+===============
+A -> B <: { S }
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.27\linewidth}
+\begin{lstlisting}[language=sltc]
+{ R } = { S }
+===============
+{ R } <: { S }
+\end{lstlisting}
+\end{minipage}
+\label{ex:unfolded-refl}
+\end{example}
+
+Example~\ref{ex:unfolded-refl} shows the unfolding for the template
+\code|Refl|. That unfolding creates from a not-syntax directed
+templates a set of syntax directed templates. Of course the unfolding
+can create new ambiguities and not all templates are applicable at
+all. In the current optimization step we will try to eliminate the
+newly created which ambiguities. We do this in the same way as
+described before, except that we now also try to proof the formula
+from Definition~\ref{def:subsumes} by structural induction. Before we
+describe how we do the induction, we explain the problem at
+Example~\ref{ex:unfolded-refl}.
+
+When comparing the typing rules from Example~\ref{ex:unfolded-refl}
+and the typing rules from the type system specification of the simply
+typed lambda calculus from Appendix~\ref{appendix:stlc-records} we see
+that the following two rules have the same conclusion module variable
+renaming.
+
+\begin{minipage}[b]{.4\linewidth}
+\begin{lstlisting}[language=sltc]
+~A -> ~B = ~C -> ~D
+====================
+~A -> ~B <: ~C -> ~D
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}[b]{.5\linewidth}
+\begin{lstlisting}[language=sltc]
+~C <: ~A
+~B <: ~D
+==================== S-arrow 
+~A -> ~B <: ~C -> ~D
+\end{lstlisting}
+\end{minipage}
+
+We can try to show that one of these templates subsumes the other. We
+now try to prove that the left template is subsumed by the right
+template.
 
 \begin{align}
-  (p_1 \implies (q_1 \lor \dots \lor q_m)) \land \dots \land (p_n \implies
-  (q_1 \lor \dots \lor q_m))
-\label{formula:which-ambiguity}
+  \forall a,b,c,d \,.\, (a \text{\code|->|} b = c \text{\code|->|} d \implies (c <:
+  a \land b <: d)) \\
+  \forall a,b,c,d \,.\, (a = c \land b = d \implies (c <: a \land b <:
+  d)) \label{prf:direct-1}\\
+ \forall a,b,c,d \,.\, (c = a \land b = d \implies (c <: a \land b <:
+ d)) \label{prf:direct-2}
 \end{align}
 
-holds. In Formula~\ref{formula:which-ambiguity} $p_i$ are the
-premises of $t$ and $q_i$ are the premises of $t'$. We verify the
-conjuncts in Formula~\ref{formula:which-ambiguity} separately with the
-vampire theorem prover. If vampire succeeds for all conjuncts we
-remove template $t$. 
+\ref{prf:direct-1} follows from the injectivity of the type
+constructor and \ref{prf:direct-2} from the reflexivity of
+equality. However now we are stuck as we cannot show $c = a \implies c
+<: a$ nor $b = d \implies b <: d$, because we have removed the general
+reflexivity rule.
 
+\subsubsection{Ordering}
 At the end of the optimization phase we sort the templates in the
 remaining forks. Forks that have a specialized conclusion are in front
 of forks with a general conclusion. This ordering has the advantage
