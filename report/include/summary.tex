@@ -1,14 +1,31 @@
 \chapter{Summary}
 \section{Conclusion}
 \section{Future Work}
-- Implement contexts using normal key-value lists
-- Implement a nice context interface
-- Convert everything to sdf3
-- Support multiple languages without manual recompilation
-- Make syntax of typing rules more flexible (e.g. dot notation)
-- Modular context descriptions like in Typmix
-- contexts in error messsages
-- Better caching techniques for proofs
+In this thesis we build the foundation to create more sophisticated
+optimizing type checkers. The main future goal is twofold. On the one
+hand we want to develop more strategies to optimize type system
+specifications, for example to detect redundancies between strictly
+when-ambiguous templates. On the other hand we want to investigate
+into a more expressive and efficient way of proving the properties
+needed for the optimization strategies.
+
+Besides that, it is desirable to extend the specification language
+with constructs to quantify of syntactic constructs. This would allow
+for example to express that all elements of a record are well typed
+without explicit recursion. Another improvement of the specification
+language would be a more modular way of specifying contexts. For
+example inspired by Typmix~\cite{bergan2007typmix}.
+
+Furthermore there is room for improvements with regard to
+usability. Currently a project hast to be recompiled on changes of
+meta-variables, contexts and judgments. SugarJ \todo{Cite} provides
+syntax definition on the fly that could solve this problem. An other
+usability thread is the lack of editor integration, for example the
+highlighting of type errors in the program.
+
+To improve the performance of the type checker it would be useful to
+explore different context implementations and to implement or use a
+state of the art constraint solver.
 \section{Related Work}
 \subsubsection{Ott}
 \subsubsection{The Synthesizer Generator}
