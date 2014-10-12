@@ -567,7 +567,7 @@ which-ambiguities that are due to redundancies and were created by the
 unfolding. Third we remove all templates that have unsatisfiable
 premises and fourth we remove all valid premisses from templates.
 
-\subsubsection{Which-Ambiguities}
+\subsection{Which-Ambiguities}
 Now we look now into the optimization of which-ambiguities. First we
 identify all which-ambiguities and create \code|Fork|s of them. We
 implemented this using a strategy that groups lists of templates such
@@ -664,7 +664,7 @@ representation is similar to the translation of specifications into a
 first-order formula representation and actually reuses most of the
 code.
 
-\subsubsection{When-Ambiguities}
+\subsection{When-Ambiguities}
 Introducing the rule \code|Refl| rendered one of the depth subtyping
 rules for records redundant and we were able to detect and remove that
 redundancy. However the rule \code|Refl| introduces a when-ambiguity
@@ -940,7 +940,38 @@ as each constant is structurally smaller than the term in the
 induction case. This is the case because we substituted only
 non-terminals within a substructure with constants.
 
-\subsubsection{Ordering}
+\subsection{Unsatisfiable Templates}
+The optimization in the previous section left us with a bunch of
+templates that do not seem to be applicable at all. For example look
+at template \code|R2| in Example~\ref{ex:unfolded-refl}. This template
+has the premise \code|~A -> ~B = Int| which is unsatisfiable, as those
+terms are syntactically different. However to apply a template, we
+have to satisfy all its premises. Therefore template \code|R2| is not
+applicable at all.
+
+We remove templates with an unsatisifable premise by attempting a
+proof that the negation of the premise is valid. If this proof
+succeeds we remove the whole template, otherwise we cannot be sure and
+keep the template.
+
+Applying this strategy to all templates of
+Example~\ref{ex:unfolded-refl} after the optimization of the previous
+section the following templates of the unfolding remain:
+
+\begin{multicols}{2}
+\begin{lstlisting}[language=sltc]
+Int = Int
+========== R1
+Int <: Int
+\end{lstlisting}
+\begin{lstlisting}[language=sltc]
+{ R } = { S }
+=============== R9
+{ R } <: { S }
+\end{lstlisting}
+\end{multicols}
+
+\subsection{Ordering}
 At the end of the optimization phase we sort the templates in the
 remaining forks. Forks that have a specialized conclusion are in front
 of forks with a general conclusion. This ordering has the advantage
