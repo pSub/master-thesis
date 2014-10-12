@@ -957,7 +957,6 @@ keep the template.
 Applying this strategy to all templates of
 Example~\ref{ex:unfolded-refl} after the optimization of the previous
 section the following templates of the unfolding remain:
-
 \begin{multicols}{2}
 \begin{lstlisting}[language=sltc]
 Int = Int
@@ -986,7 +985,6 @@ and keep the premise.
 If we look at the remaining rules in the previous section, we observe
 that \code|Int = Int| is a valid premise. Therefore the resulting set
 of unfolded templates looks like:
-
 \begin{multicols}{2}
 \begin{lstlisting}[language=sltc]
 
@@ -999,6 +997,13 @@ Int <: Int
 { R } <: { S }
 \end{lstlisting}
 \end{multicols}
+If we compare the remaining rules with a set of hand-crafted syntax
+directed subtyping rules for the type system in
+Appendix~\ref{appendix:stlc-records}, we see that the only possible
+further optimization is to show that template \code|R9| is
+redundant. However this cannot be optimized with the current
+strategies as we can only check if which-ambiguous templates subsume
+each other and \code|R9| is strictly when-ambiguous.
 
 \subsection{Ordering}
 At the end of the optimization phase we sort the templates in the
