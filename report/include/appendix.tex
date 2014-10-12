@@ -1,12 +1,361 @@
 \chapter{Type System Specifications}
 \section{SystemF}
 \label{appendix:systemf}
-\lstinputlisting[language=sltc, breaklines]{../SLTC/test/specifications/SystemF/Typesystem.slt}
-\lstinputlisting[language=sltc]{../SLTC/test/specifications/SystemF/Freshness.slt}
-\lstinputlisting[language=sltc]{../SLTC/test/specifications/SystemF/Substitution.slt}
+\begin{lstlisting}[language=sltc]
+module SystemF/Typesystem
+
+imports SystemF/Freshness hiding (language)
+        SystemF/Substitution hiding (language)
+
+language specifications/SystemF/SystemF
+
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
+
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { TermBinding TypeBinding }
+                Id "%" { ID }
+                Num "&" { Int }
+
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+%x : ~T in $C1 @error %x "should have type" ~T "but has type" {}.
+=============== T-Var
+$C1 | $C2 |- %x : ~T
+
+============== T-int
+$C1 | $C2 |- &i : int
+
+(%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
+@error ~t2 "should have type" ~T2 "but has type" {}.
+==================================== T-Abs
+$C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
+
+$C1 | $C2 |- ~t1 : ~T11 -> ~T12
+@error ~t1 "should have type" ~T11 "->" ~T12 "but has type" {}.
+$C1 | $C2 |- ~t2 : ~T11
+@error ~t2 "should have type" ~T11 "but has type" {}.
+================================ T-App
+$C1 | $C2 |- ~t1 ~t2 : ~T12
+
+$C1 | (%x ; $C2) |- ~t2 : ~T2
+@error ~t2 "should have type" ~T2 "but has type" {}.
+%x fresh in $C2
+======================================= T-Tabs
+$C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
+
+~U = [ %x -> ~S ] ~T 
+@error ~U "is not" ~T "where" %x "is replaced by" ~S.
+$C1 | $C2 |- ~e : all %x . ~T
+@error ~e "should have type all" %x "." ~T "but has type" {}.
+============================== T-Tapp
+$C1 | $C2 |- ~e [ ~S ] : ~U
+\end{lstlisting}
+\newpage
+\begin{lstlisting}[language=sltc]
+module SystemF/Freshness
+
+language specifications/SystemF/SystemF
+
+contexts TypeBinding := ID{I}
+
+meta-variables  Ctx "$" { TypeBinding }
+                Id "%" { ID }
+
+judgments 
+ID{I} "fresh in" TypeBinding{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+==============
+%x fresh in ()
+
+%x != %y
+%x fresh in $C
+=====================
+%x fresh in (%y ; $C)
+\end{lstlisting}
+\newpage
+\begin{lstlisting}[language=sltc]
+module SystemF/Substitution
+
+language specifications/SystemF/SystemF
+
+contexts
+
+meta-variables  Term "~" { Type Exp }
+                Id "%" { ID }
+
+judgments
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+===================== Subst-Eq
+~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
+
+%y != %x
+==================== Subst-Neq
+%y = [ %x -> ~S ] %y
+
+~U = [ %x -> ~S ] ~T
+========================================== Subst-All
+(all %y . ~U) = [ %x -> ~S ] (all %y . ~T)
+
+======================
+int = [ %x -> ~S ] int
+
+~U1 = [ %x -> ~S ] ~T1
+~U2 = [ %x -> ~S ] ~T2
+==================================== Subst-Arrow
+~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
+\end{lstlisting}
 
 \section{Simply Typed Lambda Calculus with Subtying and Records}
 \label{appendix:stlc-records}
+
+\begin{lstlisting}[language=sltc]
+module Typesystem
+
+language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
+
+contexts Context := ID{I} x Type{O}
+
+meta-variables  Term "~" { Type Exp }
+                Ctx "$" { Context }
+                Id "%" { ID }
+                R "$" {TRecordEntries RecordEntries}
+                Num "&" { Int }
+
+judgments
+Context{I} "|-" Exp{I} ":" Type{O}.
+TRecordEntries{I} "has" Exp{I} ":" Type{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+/* Typing rules */
+
+============== T-int
+$C |- &i : int
+
+%x : ~T in $C
+============== T-var
+$C |- %x : ~T
+
+(%x : ~T1 ; $C) |- ~e : ~T2
+================================= T-abs
+$C |- \ %x : ~T1 . ~e : ~T1 -> ~T2
+
+$C |- ~e1 : ~T -> ~S
+$C |- ~e2 : ~T
+========================= T-app
+$C |- ~e1 ~e2 : ~S
+
+$C |- ~e : { $R }
+$R has %l : ~T
+========================= T-proj
+$C |- ~e . %l : ~T
+
+============= T-empty
+$C |- {} : {}
+
+$C |- ~e : ~T
+$C |- { $R } : { $S }
+=====================================  T-record
+$C |- { %l = ~e $R } : { %l : ~T $S }
+
+%m != %l
+$R has %l : ~T
+====================== a
+%m : ~T $R has %l : ~T 
+
+====================== b
+%l : ~T $R has %l : ~T
+\end{lstlisting}
+\newpage
+\begin{lstlisting}[language=sltc]
+module Subtyping
+
+imports Typesystem hiding (language)
+
+language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
+
+contexts
+
+meta-variables
+
+judgments Type{I} "<:" Type{I}.
+
+rules
+
+$C |- ~e1 : ~T11 -> ~T12
+$C |- ~e2 : ~T2
+~T2 <: ~T11
+========================= T-app
+$C |- ~e1 ~e2 : ~T12
+
+/* Definition of the subtyping relation */
+
+======== S-refl
+~S <: ~S
+
+=========== S-ref
+int <: int
+
+~T1 <: ~S1
+~S2 <: ~T2    
+======================== S-arrow 
+~S1 -> ~S2 <: ~T1 -> ~T2
+
+/* Record Subtyping */
+
+============ S-top
+{ $R } <: {}
+
+~T <: ~S
+{ $R } <: { $U }
+=============================== S-depth
+{ %l : ~T $R } <: { %l : ~S $U }
+
+======================================== S-width
+{ %m : ~S %l : ~T $R } <: { %l : ~T $R }
+
+======================================================== S-perm
+{ %l1 : ~T1 %l2 : ~T2 $R } <: { %l2 : ~T2 %l1 : ~T1 $R }
+\end{lstlisting}
+
+\section{Information Flow Security Type System}
+\label{sec:inform-flow-secur}
+
+\begin{lstlisting}[language=sltc]
+module Typesystem
+
+language specifications/STWL/STWL
+
+contexts Domain := ID{I} x Type{O}
+
+meta-variables  Exp "~" { Exp Type }
+                AExp "~1" { AExp }
+                BExp "~2" { BExp }              
+                Dom "$" { Domain }
+                Id "%" { ID }
+                Num "&" { Int }
+
+judgments
+// TODO: Make the domain implicit e.g. using the following notation
+// [Domain{I}] "|-" AExp ":" Type{O}.
+Domain{I} "|-" AExp{I} ":" Type{O}.
+Domain{I} "|-" BExp{I} ":" Type{O}.
+Domain{I} "|" Type{I} "|-" Exp{I}.
+
+rules
+
+================ num
+$dom |- &n : low
+
+%x : low in $dom
+================ var
+$dom |- %x : low
+
+$dom |- ~1e1 : low
+$dom |- ~1e2 : low
+========================= opa
+$dom |- ~1e1 + ~1e2 : low
+
+================== true
+$dom |- true : low
+
+=================== false
+$dom |- false : low
+
+$dom |- ~2e : low
+===================== not
+$dom |- not ~2e : low
+
+$dom |- ~1e1 : low
+$dom |- ~1e2 : low
+========================= opr
+$dom |- ~1e1 < ~1e2 : low
+
+$dom |- ~2e1 : low
+$dom |- ~2e2 : low
+=========================== opb
+$dom |- ~2e1 and ~2e2 : low
+
+================== higha
+$dom |- ~1e : high
+
+================== highb
+$dom |- ~2e : high
+
+================== skip
+$dom | ~pc |- skip
+
+$dom | high |- ~e
+================= sub
+$dom | low |- ~e
+
+%x : high in $dom @error %x "should have type high".
+======================== assgnh
+$dom | ~pc |- %x := ~1e
+
+$dom |- ~1e : low
+======================= assgnl
+$dom | low |- %x := ~1e
+
+$dom | ~pc |- ~e
+$dom | ~pc |- ~f
+===================== seq
+$dom | ~pc |- ~e ; ~f
+
+$dom |- ~2b : ~pc
+$dom | ~pc |- ~e
+================================ while
+$dom | ~pc |- while ~2b do ~e od
+
+$dom |- ~2b : ~pc
+$dom | ~pc |- ~e
+$dom | ~pc |- ~f
+==================================== ite
+$dom | ~pc |- if ~2b then ~e else ~f
+
+conjectures
+
+===
+(z : high ;()) | high |- if z < 0 then z := 0 else z := 1
+
+// Order of domain makes a difference in proof search!
+// For the next two conjectures the applied rules are given
+
+// VerificationSuccess(["lookup base","var","assgnl","goal21","opa"])
+===
+(x : low ; y : low ; z : high ; ()) | low |- z := x + y
+
+// VerificationSuccess(["lookup base","assgnh","goal23"])
+===
+(z : high ; y : low ; x : low ; ()) | low |- z := x + y
+
+===
+(x : low ; y : low ; ()) | low |- x := x + y
+
+===
+(x : low ; y : low ; ()) |- (x + 5) + y : high
+
+/===
+(x : low ; y : high ; ()) | low |- x := y
+
+/===
+(h : high; l : low ; ()) | high |- if h < 1 then l := 1 else skip
+\end{lstlisting}
 
 %%% Local Variables: 
 %%% mode: latex
