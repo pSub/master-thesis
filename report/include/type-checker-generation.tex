@@ -971,6 +971,35 @@ Int <: Int
 \end{lstlisting}
 \end{multicols}
 
+\subsection{Valid Premises}
+Now that we have remove templates that contain unsatisfiable premises,
+we can look at premises that are always satisfied, i.e.\ at valid
+premises. As they are always satisfied, we do not have to check
+whether they are satisfied during type checking and can remove them
+from the corresponding template.
+
+Following the same scheme as in the previous section, we attempt a
+proof that a premise is valid. If that attempt succeeds we remove the
+premise from the corresponding template, otherwise we cannot be sure
+and keep the premise.
+
+If we look at the remaining rules in the previous section, we observe
+that \code|Int = Int| is a valid premise. Therefore the resulting set
+of unfolded templates looks like:
+
+\begin{multicols}{2}
+\begin{lstlisting}[language=sltc]
+
+========== R1
+Int <: Int
+\end{lstlisting}
+\begin{lstlisting}[language=sltc]
+{ R } = { S }
+=============== R9
+{ R } <: { S }
+\end{lstlisting}
+\end{multicols}
+
 \subsection{Ordering}
 At the end of the optimization phase we sort the templates in the
 remaining forks. Forks that have a specialized conclusion are in front
