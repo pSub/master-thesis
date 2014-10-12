@@ -565,7 +565,9 @@ unfold when-ambiguous templates by inserting all possible structures
 in the variables of the conclusion. Directly after this we eliminate
 which-ambiguities that are due to redundancies and were created by the
 unfolding. Third we remove all templates that have unsatisfiable
-premises and fourth we remove all valid premisses from templates.
+premises and fourth we remove all valid premisses from
+templates. After those optimizations we order all templates in forks
+such that the most general templates are evaluated at last.
 
 \subsection{Which-Ambiguities}
 Now we look now into the optimization of which-ambiguities. First we
