@@ -695,68 +695,68 @@ variables.
 
 \begin{example}{~}
 
-\begin{minipage}{.20\linewidth}
+\begin{minipage}{.25\linewidth}
 \begin{lstlisting}[language=sltc]
 Int = Int
-==========
+========== R1
 Int <: Int
 \end{lstlisting}
 \end{minipage}
-\begin{minipage}{.30\linewidth}
+\begin{minipage}{.35\linewidth}
 \begin{lstlisting}[language=sltc]
 ~A -> ~B = Int
-===============
+=============== R2
 ~A -> ~B <: Int
 \end{lstlisting}
 \end{minipage}
-\begin{minipage}{.30\linewidth}
+\begin{minipage}{.3\linewidth}
 \begin{lstlisting}[language=sltc]
 Int = ~C -> ~D
-===============
+=============== R3
 Int <: ~C -> ~D
 \end{lstlisting}
 \end{minipage}
 
-\begin{minipage}{.35\linewidth}
+\begin{minipage}{.38\linewidth}
 \begin{lstlisting}[language=sltc]
 ~A -> ~B = ~C -> ~D
-====================
+==================== R4
 ~A -> ~B <: ~C -> ~D
 \end{lstlisting}
 \end{minipage}
-\begin{minipage}{.22\linewidth}
+\begin{minipage}{.25\linewidth}
 \begin{lstlisting}[language=sltc]
 { R } = Int
-============
+============ R5
 { R } <: Int
 \end{lstlisting}
 \end{minipage}
-\begin{minipage}{.22\linewidth}
+\begin{minipage}{.25\linewidth}
 \begin{lstlisting}[language=sltc]
 Int = { S }
-============
+============ R6
 Int <: { S }
 \end{lstlisting}
 \end{minipage}
 
-\begin{minipage}{.27\linewidth}
+\begin{minipage}{.30\linewidth}
 \begin{lstlisting}[language=sltc]
 { R } = C -> D
-===============
+=============== R7
 { R } <: C -> D
 \end{lstlisting}
 \end{minipage}
-\begin{minipage}{.27\linewidth}
+\begin{minipage}{.30\linewidth}
 \begin{lstlisting}[language=sltc]
 A -> B = { S }
-===============
+=============== R8
 A -> B <: { S }
 \end{lstlisting}
 \end{minipage}
-\begin{minipage}{.27\linewidth}
+\begin{minipage}{.30\linewidth}
 \begin{lstlisting}[language=sltc]
 { R } = { S }
-===============
+=============== R9
 { R } <: { S }
 \end{lstlisting}
 \end{minipage}
@@ -783,7 +783,7 @@ renaming.
 \begin{minipage}[b]{.4\linewidth}
 \begin{lstlisting}[language=sltc]
 ~A -> ~B = ~C -> ~D
-====================
+==================== R4
 ~A -> ~B <: ~C -> ~D
 \end{lstlisting}
 \end{minipage}
@@ -799,10 +799,9 @@ renaming.
 We can try to show that one of these templates subsumes the other. We
 now try to prove that the left template is subsumed by the right
 template.
-
 \begin{align}
   \forall a,b,c,d \,.\, (a \text{\code|->|} b = c \text{\code|->|} d \implies (c <:
-  a \land b <: d)) \\
+  a \land b <: d)) \label{prf:direct-0} \\
   \forall a,b,c,d \,.\, (a = c \land b = d \implies (c <: a \land b <:
   d)) \label{prf:direct-1}\\
  \forall a,b,c,d \,.\, (c = a \land b = d \implies (c <: a \land b <:
@@ -810,10 +809,84 @@ template.
 \end{align}
 
 \ref{prf:direct-1} follows from the injectivity of the type
-constructor and \ref{prf:direct-2} from the reflexivity of
-equality. However now we are stuck as we cannot show $c = a \implies c
-<: a$ nor $b = d \implies b <: d$, because we have removed the general
-reflexivity rule.
+constructor \code|->| and \ref{prf:direct-2} from the symmetry of
+equality. But now we are stuck as we cannot show $c = a \implies c <:
+a$ nor $b = d \implies b <: d$, because we have removed the general
+reflexivity rule. However we can prove \ref{prf:direct-0} by
+structural induction on $a, b, c$ and $d$. We will now prove some
+cases of the induction, the other cases are analogous. We first show
+the base case with $a = b = c = d = \text{\code|Int|}$.
+\begin{align}
+  \text{\code|Int -> Int|} = \text{\code|Int -> Int|} \implies
+  (\text{\code|Int|} <: \text{\code|Int|} \land \text{\code|Int|} <:
+  \text{\code|Int|}) \label{prf:induction-base}
+\end{align}
+
+The premise of the implication in the base case
+\ref{prf:induction-base} is valid as the terms are syntactically
+equal. The conclusion of the implication holds because of rule
+\code|R1|, which was created by the unfolding.
+
+Now we show a step case with $a = a_1 \text{\code|->|} a_2$, $b =
+\text{\code|Int|}$, $c = c_1 \text{\code|->|} c_2$ and $d =
+\text{\code|Int|}$.
+\begin{align}
+  (a_1 \text{\code|->|} a_2) \text{\code|->|} \text{\code|Int|} = (c_1
+  \text{\code|->|} c_2) \text{\code|->|} \text{\code|Int|} &\implies (
+  c_1 \text{\code|->|} c_2 <: a_1 \text{\code|->|} a_2\land
+  \text{\code|Int|} <: \text{\code|Int|}) \\
+  (a_1 \text{\code|->|} a_2) = (c_1 \text{\code|->|} c_2) \land
+  \text{\code|Int|} = \text{\code|Int|} &\implies (c_1
+  \text{\code|->|} c_2 <: a_1 \text{\code|->|} a_2 \land
+  \text{\code|Int|} <:
+  \text{\code|Int|}) \label{prf:induction-arrow-1} \\
+  (a_1 \text{\code|->|} a_2) = (c_1 \text{\code|->|} c_2) &\implies
+  c_1 \text{\code|->|} c_2 <: a_1 \text{\code|->|}
+  a_2 \label{prf:induction-arrow-2} \\
+  (c_1 \text{\code|->|} c_2) = (a_1 \text{\code|->|} a_2) &\implies
+  c_1 \text{\code|->|} c_2 <: a_1 \text{\code|->|}
+  a_2 \label{prf:induction-arrow-3} \\
+  (a_1 <: c_1) \land (c_2 <: a_2) &\implies c_1 \text{\code|->|} c_2
+  <: a_1 \text{\code|->|} a_2 \label{prf:induction-arrow-4}
+\end{align}
+
+\ref{prf:induction-arrow-1} follows from the injectivity of the type
+constructor \code|->|. We can drop \code|Int| $=$ \code|Int| from the
+premise of the implication as it is valid and make the second conjunct
+of the conclusion true by applying rule \code|R1|, which leads to
+\ref{prf:induction-arrow-2}. \ref{prf:induction-arrow-3} follows from
+symmetry of equality and \ref{prf:induction-arrow-4} by applying
+the induction hypothesis to $(c_1 \text{\code|->|} c_2) = (a_1
+\text{\code|->|} a_2)$. \ref{prf:induction-arrow-4} holds as it is a
+variant of rule \code|S-arrow|.
+
+Not that we can apply rule \code|S-arrow| as we want to retain this
+rule, but not \code|R4| as we are trying to show that this rule is
+redundant. If we would need it, it would not be redundant.
+
+We now show the case where $a = \{ r \}$, $b = \text{\code|Int|}$, $c
+= \{s\}$ and $d = \text{\code|Int|}$.
+\begin{align}
+  \{ r \} \text{\code|->|} \text{\code|Int|} = \{ s \}
+  \text{\code|->|} \text{\code|Int|} &\implies (\{s\} <: \{r\} \land
+  \text{\code|Int|} <: \text{\code|Int|}) \\
+  \{ r \} = \{ s \} \land \text{\code|Int|} = \text{\code|Int|}
+  &\implies (\{s\} <: \{r\} \land \text{\code|Int|} <:
+  \text{\code|Int|}) \label{prf:induction-record-1}\\
+  \{ r \} = \{ s \} &\implies \{s\} <:
+  \{r\} \label{prf:induction-record-2} \\
+  \{ s \} = \{ r \} &\implies \{s\} <:
+  \{r\} \label{prf:induction-record-3}
+\end{align}
+
+Here \ref{prf:induction-record-1} again follows from the injectivity
+of the type constructor \code|->|. We can cancel out \code|Int| $=$
+\code|Int| as it is valid and the second conjunct of the conclusion
+follows from rule \code|R1|, which leads to
+\ref{prf:induction-record-2}. Now \ref{prf:induction-record-3} follows
+from symmetry of equality and it holds as it is a variant of rule
+\code|R9|.
+
 
 \subsubsection{Ordering}
 At the end of the optimization phase we sort the templates in the
