@@ -1033,40 +1033,44 @@ modulo variable names.
 \section{Constraint Generation}
 \label{sec:constr-gener}
 Constraint generation is the first phase of the generated type
-checker. The inputs of this phase are constraint templates and the
-expressions that should be type checked. The only input method for
-expression we currently support is via the conjecture section of the
-specification. However it should be straight forward to extend this
-phase with support for e.g.\ \code|stdin|.
+checker. The inputs of this phase are templates generated from a type
+system specification and the program that should be type checked. The
+only input method for expression we currently support is via the
+conjecture section of the specification. However it should be
+straightforward to extend this phase with support for e.g.\
+\code|stdin|.
 
 The constraint generation phase is structured as follows. First we
 initialize contexts and then generate constraints according to the
-program's structure and the templates. After generating the constraints
-we annotate whether the expression should have been well-typed or not.
+program's structure and the templates. After generating the
+constraints we pass to the constraint solver whether the expression
+should be well-typed or not.
 
 Lets first look at the implementation of contexts. We store all
-contexts in a hash table, with the context ID as key. The contexts
-itself are hash tables extended with a list that stores the insertion
-order. Hash tables are a convenient data structure in the Stratego
-standard library to store (multiple) data points at a key. They
-reflect the intuition of the context declarations as cross products of
-the terms corresponding to non-terminals. It is important to track the
-insertion order, because some type systems (e.g.\ ordered type
-systems) might rely on the ordering within contexts.
+contexts in a hash table (called \emph{context store}), with the
+context number as key. The contexts itself are hash tables extended
+with a list that keeps track of the insertion order. Hash tables are a
+convenient data structure in the Stratego standard library to store
+(multiple) data points at a key. They reflect the intuition of the
+context declarations as cross products of the terms corresponding to
+non-terminals. It is important to track the insertion order, because
+some type systems (e.g.\ ordered type systems) might rely on the
+ordering within contexts. For every program expression a fresh context
+store is created and initialized according to the program expression.
 
-For the context representation we decided to use hashtables instead of
-normal key-value lists to reduce the lookup time in realistic programs
-which declare identifiers much less then they refer to them. However
-we do not have experimental evidence if this actually speeds up type
-checking, because we do not have a key-value list implementation of
-contexts.
+For the context representation we decided to use hash tables instead
+of normal key-value lists to reduce the lookup time in realistic
+programs which declare identifiers much less then they refer to
+them. However we do not have experimental evidence if this actually
+speeds up type checking, because we do not have a key-value list
+implementation of contexts for reference.
 
 Implementing contexts using extended hash tables forced us to separate
 context operations from normal inputs. On the one hand this creates
-more exceptional cases (e.g.\ the matching complex matching algorithms
-described in Section~\ref{sec:constr-templ-optim}) and on the other
-hand it leads to a modular context implementation with the potential
-to exchange the implementation easily.
+more exceptional cases (e.g.\ more complex matching algorithms that
+are described in Section~\ref{sec:constr-templ-optim}) and on the
+other hand it leads to a modular context implementation with the
+potential to exchange the implementation easily.
 
 Before we can explain how we generate constraints, we have to define
 the constraint language.
@@ -1077,33 +1081,37 @@ the constraint language.
     \alt `CEq' <Term> <Term> <Error>
     \alt `CNeq' <Term> <Term> <Error>
   \end{grammar}
+\label{def:constraint-language}
 \end{definition}
 
 We annotate all constraints with error messages. These error messages
 are either generated during the constraint generation or passed
 through from the specification. The constraint solver shows the error
-messages if it cannot solve a constraint. There are three types of
+messages if a constraint cannot be solved. In
+Definition~\ref{def:constraint-language} are three types of
 constraints. The constraint \code|CFail| corresponds to false and
 cannot be solved. Further \code|CEq| and \code|CNeq| are equality
 respectively inequality constraints.
 
-As we read the program expressions from the conjecture section of the
-specification, we already have the initial contexts, the judgment
-number and we can tell which are input and output positions. If we
-would only read the program expression (e.g.\ from \code|stdin|) we
-would need to pass information about the initial contexts, the
-judgment number and the output positions separately. Every conjecture
-has a fresh context store, initialized with the initial contexts
-provided in the conjecture.
+To start the constraint generation, we need besides the templates and
+the program, information about the initial contexts, the judgment
+number of the typing judgment and the output positions of that
+judgment. Those information are available as we read the program
+expression from the conjecture section of the type system
+specification. If we would only read the program expression (e.g.\
+from \code|stdin|) we would need to pass information about the initial
+contexts, the judgment number and the output positions separately. In
+this case it makes sense to hard-code that information, as it is
+unlikely to change frequently.
 
 We have divided the main logic of constraint generation into three
-Stratego strategies: \code|generate| selects the template matching the
-current term, \code|generate'| applies the current term to the
+Stratego strategies: \code|generate| selects the template that matches
+the current term, \code|generate'| applies the current term to the
 conclusion of the selected template and \code|execute| evaluates the
 premises of the template. All three strategies return a tuple of the
 computed outputs and the generated constraints. We wrap the computed
-outputs into \code|Option| to model the absence of outputs in cases of
-errors.
+outputs into \code|Option| to model the absence of outputs and
+constraints in cases of errors.
 
 After initializing the contexts we call the strategy \code|generate|
 with the judgment number and the inputs of the conjecture. We also
@@ -1114,73 +1122,38 @@ constraint for the expected and actual outputs.
 
 Now \code|generate| calls \code|find-match| to find a template whose
 conclusion matches the inputs, judgment number and the current state
-of the contexts. First \code|find-match| filters all templates with
-the correct judgment number and tests only those templates for
-matches. \todo{Restructure sentence, First is misleading} In case of
-\code|Fork| only those templates are retained that match. For all
-other templates \code|find-match| checks whether the constructors of
-the term pattern in the conclusion and of the input term match. They
-can have variables for whole levels and match if they have the same
-constructors on all levels. In addition the context pattern of the
-conclusion has to reflect the current state of the contexts. The
-context pattern reflects the state of the contexts if it can be
-applied from left to right to the context without failures.
+of the contexts. Before \code|find-match| tests the inputs and the
+current state of the contexts it filters all templates with the
+correct judgment number and tests only those templates for matches. In
+the case of a \code|Template| \code|find-match| checks whether the
+constructors of the term pattern in the conclusion and of the input
+term match. They can have variables for whole levels and match if they
+have the same constructors on all levels. In addition the context
+pattern of the conclusion has to reflect the current state of the
+contexts. The context pattern reflects the state of the contexts if it
+can be applied from left to right to the context without failures. In
+case of \code|Fork| only those templates are retained int the Fork
+that match.
+
+\begin{example}
+  \todo[inline]{}
+\end{example}
 
 \code|find-match| safely takes the first template that matches,
 because in Section~\ref{sec:constr-templ-optim} we have ensured that
-there is only one template that matches. If no template matches, we
-return \code|None| for the outputs and the singelton list containing
-the constraint that always fails, with an appropriate error
-message. If \code|find-match| succeeds to find a template it calls
-\code|generate'| with that template.
+there is only one template that matches. Remember \code|Fork| is a
+template as well. If no template matches, we return \code|None| for
+the outputs and the singelton list containing the constraint that
+always fails with an appropriate error message. If \code|find-match|
+succeeds to find a template it calls \code|generate'| with that
+template.
 
 The rule \code|generate'| now evaluates the selected template
-according to the given input. In \code|generate'| we use patterns to
-access specific elements of terms. The corresponding element to the
-input term is the term pattern of the templates conclusion. We update
-the terms and patterns if we want to add another term and pattern to
-the scope. The patterns and terms are later used to instantiate
-variables in premises or error messages.
-
-Unless the selected rule is no fork, the evaluation works as
-follows. In correspondence to the bindings in the context pattern of
-the conclusion, we pop all terms from the contexts and bring them into
-scope. Also if a variable occurs in the inputs of a premise but
-neither in the inputs of the conclusion nor in the outputs of other
-premises but int the outputs of the conclusion, then we bring it into
-scope with the expected outputs. \todo{restructure sentence} This
-allows to deal with typing rules that have free variables in their
-premises as for instance in the subsumption rule for subtyping.
-
-\begin{example}{~}
-\begin{lstlisting}[language=sltc]
-$C |- ~e : ~S
-~S <: ~T
-============= T-Sub
-$C |- ~e : ~T
-\end{lstlisting}
-\label{ex:subsumption}
-\end{example}
-
-Example~\ref{ex:subsumption} shows the subsumption rule from
-\todo{Cite}. In the rule \code|~T| occurs free in the second
-premise. Binding it to the expected output of \code|~T| allows to
-still evaluate this premise.
-
-Now we have to replace all variables introduced by the selected
-template with fresh variables, otherwise applying a template twice
-would lead to collisions. All variables introduced in the previous
-phases have a prefix different from \code|Y|. Therefore we replace all
-variables that do not have the prefix \code|Y| with a fresh variable
-with the prefix \code|Y|. Additionally this allows to verify visually
-whether all variables are fresh.
-
-Now we evaluate the premises of the template. A key element in the
-evaluation is the instantiation of the variables in the premise
-patterns according to the conclusion pattern and input term, because
-we need input terms to recursively call \code|generate| on the
-premises or to create solvable (in-)equality
-constraints. \todo{split sentence up}
+according to the given input. In order to evaluate the premisses of
+the selected template we need to extract parts of the current input
+term. We call the substitution of terms for variables
+\emph{instantiation}. For example in a rule for function application
+we have to obtain the body of the function to check its type.
 
 We initialize variables in inputs of a judgment using a term and a
 pattern which describes the structure of the term. We search a
@@ -1193,21 +1166,64 @@ variable that matches. If we find a path to that variable, we use it
 to retrieve terms from the corresponding term, by walking along the
 path and fetching the node at its end. We ensure that the pattern and
 term always have the same structure, otherwise we would retrieve false
-positives.
+positives. Because there are also other sources (e.g.\ premise
+dependencies) we extend the term and pattern if needed. We call adding
+to this tuple \emph{bringing into scope}.
 
-As described in Section~\ref{sec:constraint-templates} the premises
-were topologically sorted we can evaluate them in the given
-order. However, to ensure that the terms of all dependencies are
-available during evaluation, we have to accumulate the outputs of the
-evaluated premises and add those to the patterns and terms used for
-the instantiation.
+Unless the selected rule is no fork, the evaluation works as
+follows. In correspondence to the bindings in the conclusions context
+pattern, we pop all terms from the contexts and bring them into
+scope. This is needed for example in the typing rules for the
+freshness condition in SystemF, see
+Appendix~\ref{appendix:systemf}. 
+
+If a variable is bound by the outputs of the conclusion and used as
+the input of a premise but neither an output of an other premise or an
+input of the conclusion, we bring the variable into scope with the
+expected outputs of the conclusion. This allows to deal with typing
+rules that have free variables in their premises as for instance in
+the subsumption rule for subtyping.
+
+\begin{example}{~}
+\begin{lstlisting}[language=sltc]
+$C |- ~e : ~S
+~S <: ~T
+============= T-Sub
+$C |- ~e : ~T
+\end{lstlisting}
+\label{ex:subsumption}
+\end{example}
+
+Example~\ref{ex:subsumption} shows a subsumption rule for the type
+system in Appendix~\ref{appendix:stlc-records}. In the rule \code|~T|
+occurs free in the second premise. Binding it to the expected output
+of \code|~T| allows to still evaluate this premise.
+
+Now we have to replace all variables introduced by the selected
+template with fresh variables, otherwise applying a template twice
+would lead to collisions. All variables introduced in the previous
+phases have a prefix different from \code|Y|. Therefore we replace all
+variables that do not have the prefix \code|Y| with a fresh variable
+with the prefix \code|Y|. Additionally this allows to verify visually
+whether all variables in a constraint set are fresh.
+
+Now we evaluate the premises of the template. A key element in the
+evaluation is the instantiation of the variables in the premises as
+explained above.
+
+In Section~\ref{sec:constraint-templates} we have described that the
+premises are topologically sorted. Therefore we can evaluate them in
+the given order. However, to ensure that the terms of all dependencies
+are available during evaluation, we have to accumulate the outputs of
+the evaluated premises and add those to the patterns and terms used
+for the instantiation.
 
 The strategy \code|execute| does the evaluation of the premises. We
 call \code|execute| for each premise with a copy of the contexts to
 ensure that one premise cannot pollute the contexts of another
-premise. We have implemented a safe version of \code|hashtable-copy|
-to ensure that after the evaluation of the premise all copies are
-destroyed.
+premise. We have implemented a safe version of the strategy
+\code|hashtable-copy| from the standard library to ensure that after
+the evaluation of the premise all copies are destroyed.
 
 We now describe what \code|execute| does for the different types of
 premises.
@@ -1232,11 +1248,11 @@ premises.
   expected outputs of the judgment to make the binding of free
   variables in premises more precise. After the call to
   \code|generate| returns we generate equality constraints for the
-  bindings in the context pattern of the premise and generate equality
-  constraints between the output pattern and the computed output, with
-  corresponding instantiated error messages. \todo{split up sentence}
-  The hole (\code|{}|) in the error messages is here also replaced by
-  the output variables.
+  bindings in the context pattern of the premise. Further we generate
+  equality constraints between the output pattern and the computed
+  output and instantiate the corresponding error messages. The hole
+  (\code|{}|) in the error messages is here replaced by the output
+  variables.
 \end{description}
 
 In the case \code|generate'| encounters a fork it evaluates all
@@ -1246,8 +1262,8 @@ first evaluation that succeeds. If no templates can be evaluated to a
 solvable constraint set we return the constraint that always fails
 with an appropriate error message. Because of the ordering of forks in
 Section~\ref{sec:constr-templ-optim} this procedure ensures that rules
-that potentially that produce solvable constraint sets but do not make
-real progress are deferred to the end.
+that potentially produce solvable constraint sets but do not make real
+progress are deferred to the end.
 
 \section{Constraint Solving}
 \label{sec:constraint-solving}
