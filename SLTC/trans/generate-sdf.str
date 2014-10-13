@@ -36,6 +36,7 @@ rules
      */
     make-context : (num, ContextDefinition(Name, Definition)) -> [
         prod("\"()\"", Name, <make-cons'> ["ContextEmpty-", <int-to-string> num]),
+        prod(<concat-strings> ["\"(", Name ,")\""], Name, <make-cons'> ["ContextEmpty-", <int-to-string> num]),
         prod(<concat-strings> [elem, " \";\" ", Name], Name,
                                <make-cons'> ["ContextBind-", <int-to-string> num]),
         prod(<concat-strings> ["\"(\" ", Name, " \")\""], Name, <make-attr> "bracket"),
