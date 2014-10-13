@@ -7,11 +7,12 @@ module SystemF/Typesystem
 imports SystemF/Freshness hiding (language)
         SystemF/Substitution hiding (language)
 
+// Available at https://www.github.com/pSub/master-thesis
 language specifications/SystemF/SystemF
 
 contexts
 TermBinding := ID{I} x Type{O}
-TypeBinding := ID{I}
+TypeBinding := ID{I} // Used to check freshness of type variables
 
 meta-variables  Term "~" { Type Exp }
                 Ctx "$" { TermBinding TypeBinding }
@@ -29,13 +30,16 @@ rules
 =============== T-Var
 $C1 | $C2 |- %x : ~T
 
+
 ============== T-int
 $C1 | $C2 |- &i : int
+
 
 (%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
 @error ~t2 "should have type" ~T2 "but has type" {}.
 ==================================== T-Abs
 $C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
+
 
 $C1 | $C2 |- ~t1 : ~T11 -> ~T12
 @error ~t1 "should have type" ~T11 "->" ~T12 "but has type" {}.
@@ -44,11 +48,13 @@ $C1 | $C2 |- ~t2 : ~T11
 ================================ T-App
 $C1 | $C2 |- ~t1 ~t2 : ~T12
 
+
 $C1 | (%x ; $C2) |- ~t2 : ~T2
 @error ~t2 "should have type" ~T2 "but has type" {}.
 %x fresh in $C2
 ======================================= T-Tabs
 $C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
+
 
 ~U = [ %x -> ~S ] ~T 
 @error ~U "is not" ~T "where" %x "is replaced by" ~S.
@@ -61,6 +67,7 @@ $C1 | $C2 |- ~e [ ~S ] : ~U
 \begin{lstlisting}[language=sltc]
 module SystemF/Freshness
 
+// Available at https://www.github.com/pSub/master-thesis
 language specifications/SystemF/SystemF
 
 contexts TypeBinding := ID{I}
@@ -74,18 +81,20 @@ ID{I} "!=" ID{I} is Neq.
 
 rules
 
-==============
+============== Fresh-empty
 %x fresh in ()
+
 
 %x != %y
 %x fresh in $C
-=====================
+===================== Fresh-is-fresh
 %x fresh in (%y ; $C)
 \end{lstlisting}
 \newpage
 \begin{lstlisting}[language=sltc]
 module SystemF/Substitution
 
+// Available at https://www.github.com/pSub/master-thesis
 language specifications/SystemF/SystemF
 
 contexts
@@ -102,16 +111,20 @@ rules
 ===================== Subst-Eq
 ~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
 
+
 %y != %x
 ==================== Subst-Neq
 %y = [ %x -> ~S ] %y
+
 
 ~U = [ %x -> ~S ] ~T
 ========================================== Subst-All
 (all %y . ~U) = [ %x -> ~S ] (all %y . ~T)
 
-======================
+
+====================== Subst-Int
 int = [ %x -> ~S ] int
+
 
 ~U1 = [ %x -> ~S ] ~T1
 ~U2 = [ %x -> ~S ] ~T2
@@ -119,12 +132,14 @@ int = [ %x -> ~S ] int
 ~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
 \end{lstlisting}
 
+\newpage
 \section{Simply Typed Lambda Calculus with Subtying and Records}
 \label{appendix:stlc-records}
 
 \begin{lstlisting}[language=sltc]
 module Typesystem
 
+// Available at https://www.github.com/pSub/master-thesis
 language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 
 contexts Context := ID{I} x Type{O}
@@ -142,43 +157,49 @@ ID{I} "!=" ID{I} is Neq.
 
 rules
 
-/* Typing rules */
-
 ============== T-int
 $C |- &i : int
+
 
 %x : ~T in $C
 ============== T-var
 $C |- %x : ~T
 
+
 (%x : ~T1 ; $C) |- ~e : ~T2
 ================================= T-abs
 $C |- \ %x : ~T1 . ~e : ~T1 -> ~T2
+
 
 $C |- ~e1 : ~T -> ~S
 $C |- ~e2 : ~T
 ========================= T-app
 $C |- ~e1 ~e2 : ~S
 
+
 $C |- ~e : { $R }
 $R has %l : ~T
 ========================= T-proj
 $C |- ~e . %l : ~T
 
+
 ============= T-empty
 $C |- {} : {}
+
 
 $C |- ~e : ~T
 $C |- { $R } : { $S }
 =====================================  T-record
 $C |- { %l = ~e $R } : { %l : ~T $S }
 
+
 %m != %l
 $R has %l : ~T
-====================== a
+====================== Record-step
 %m : ~T $R has %l : ~T 
 
-====================== b
+
+====================== Record-contained
 %l : ~T $R has %l : ~T
 \end{lstlisting}
 \newpage
@@ -187,6 +208,7 @@ module Subtyping
 
 imports Typesystem hiding (language)
 
+// Available at https://www.github.com/pSub/master-thesis
 language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
 
 contexts
@@ -203,42 +225,42 @@ $C |- ~e2 : ~T2
 ========================= T-app
 $C |- ~e1 ~e2 : ~T12
 
-/* Definition of the subtyping relation */
 
 ======== S-refl
 ~S <: ~S
 
-=========== S-ref
-int <: int
 
 ~T1 <: ~S1
 ~S2 <: ~T2    
 ======================== S-arrow 
 ~S1 -> ~S2 <: ~T1 -> ~T2
 
-/* Record Subtyping */
 
 ============ S-top
 { $R } <: {}
+
 
 ~T <: ~S
 { $R } <: { $U }
 =============================== S-depth
 { %l : ~T $R } <: { %l : ~S $U }
 
+
 ======================================== S-width
 { %m : ~S %l : ~T $R } <: { %l : ~T $R }
+
 
 ======================================================== S-perm
 { %l1 : ~T1 %l2 : ~T2 $R } <: { %l2 : ~T2 %l1 : ~T1 $R }
 \end{lstlisting}
-
+\newpage
 \section{Information Flow Security Type System}
 \label{sec:inform-flow-secur}
 
 \begin{lstlisting}[language=sltc]
 module Typesystem
 
+// Available at https://www.github.com/pSub/master-thesis
 language specifications/STWL/STWL
 
 contexts Domain := ID{I} x Type{O}
