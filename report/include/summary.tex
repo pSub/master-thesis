@@ -37,11 +37,11 @@ without explicit recursion. Another improvement of the specification
 language would be a more modular way of specifying contexts. For
 example inspired by Typmix~\cite{bergan2007typmix}.
 
-Furthermore there is room for improvements with regard to
+Furthermore, there is room for improvements with regard to
 usability. Currently a project hast to be recompiled on changes of
 meta-variables, contexts, and judgments. SugarJ\cite{erdweg2011sugarj}
 provides syntax definition on the fly that could solve this
-problem. An other usability thread is the lack of editor integration,
+problem. An other usability concern is the lack of editor integration,
 for example the highlighting of type errors in the program.
 
 To improve the performance of the type checker it would be useful to
@@ -74,7 +74,7 @@ backtracking. A distinguishing feature of Gast's work is the
 possibility to annotate the typing rules with optimizations. For
 example it is possible to reuse (potentially incomplete) proofs using
 subproof extraction. Gast also provides a formal foundation for his
-proof search. However the resulting type checkers do not report
+proof search. However, the resulting type checkers do not report
 specialized error messages on ill-typed programs.
 
 \subsubsection{Automatic Generation of Object-Oriented Type Checkers}
@@ -138,7 +138,7 @@ Just as the present work~\cite{tomb2005automatic} generates a
 two-phase constraint-based type inference system from a high-level
 specification. The advantage of choosing a logic language like Prolog
 is that the correctness of the type inference algorithms is entailed
-by the correctness of the partial evaluator. However the current
+by the correctness of the partial evaluator. However, the current
 approach does only work for language definitions in Prolog and does
 not attempt to reduce the non-determinism that is introduced from
 non-syntax directed rules.

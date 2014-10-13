@@ -1,8 +1,8 @@
 \chapter{Type Checker Generation}
-\section{Goals}
-In this section we briefly describe and motivate the design and goals
+In this chapter we briefly describe and motivate the design and goals
 of the type checker generator.
 
+\section{Goals}
 The first goal is to generate type checkers from high level type
 system specifications that are not geared to type checking. Mainly
 this means to try to deal with non-syntax directed typing rules
@@ -114,13 +114,12 @@ general the structure of the templates is similar to the structure of
 the typing rules of the specification language.
 
 \begin{figure}
-\begin{definition}{Definition of the syntax of templates}
-  The Stratego implementation appends to all constructors two
-  underscores to avoid name collisions with target languages. This is
-  necessary as the module system of Stratego is not strong enough to
-  avoid those collisions. We omit these here for the sake of
-  readability. The non-terminals Inputs, Outputs, Term, and Error may
-  contain arbitrary terms.
+  \begin{definition} The Stratego implementation appends to all
+    constructors two underscores to avoid name collisions with target
+    languages. This is necessary as the module system of Stratego is
+    not strong enough to avoid those collisions. We omit these here
+    for the sake of readability. The non-terminals Inputs, Outputs,
+    Term, and Error may contain arbitrary terms.
   \begin{grammar}
     <Template> ::= `Template' <Premises> <Conjecture>
 
@@ -356,7 +355,7 @@ does that iteratively for every rule in a specification. The first
 step in the conversion is the elimination of implicit equalities in
 the premises and the conclusion.
 
-For each implicit equality we create an explicit equality, by
+For each implicit equality we create an explicit equality by
 collecting all variables that occur more than once in an input
 position of a premise or conclusion. After that we create fresh names
 for the collect variables and create premises that state the equality
@@ -419,7 +418,7 @@ terms and by exploiting the scope of the meta-variable.
 
 In case the meta-variable is directly in an input or output position
 of a judgment, context binding or context lookup, we infer the
-non-terminal from the judgment or context definition. Otherwise we
+non-terminal from the judgment or context definition. Otherwise, we
 fetch all productions of the target language that could possibly have
 produced the surrounding term and extract the non-terminal from the
 corresponding position. If there is more than one production that
@@ -445,7 +444,7 @@ standard. First we collect all premises and their dependencies in a
 graph. Due to the nature of the dependency it is more natural to
 create edges from a premise to the premises it depends on. As it is
 easy to check if a premise has an input position that does not occur
-in the conclusion but as the output of another premise. Therefore the
+in the conclusion but as the output of another premise. Therefore, the
 resulting dependency graph is a transposed dependency graph. We sort
 this graph topologically with the algorithm by
 Kahn~\cite{Kahn:1962:TSL:368996.369025}. The result is the reversed
@@ -495,15 +494,15 @@ Template(
 \label{sec:constr-templ-optim}
 In this section we describe and motivate the optimization strategies
 we have used to reduce the number of non-syntax directed
-templates. However the template optimization phase can potentially do
+templates. However, the template optimization phase can potentially do
 arbitrary modifications. We focus here on optimization strategies that
 reduce ambiguities between the templates.
 
-Informally two templates are ambiguous if it is not known a priori
+Informally, two templates are ambiguous if it is not known a priori
 which (if any) of the templates can be used to extend a derivation to
-a successful derivation. Therefore we have to use the rules according
+a successful derivation. Therefore, we have to use the rules according
 to a heuristic and to backtrack if the decision did not work out. The
-goal of the optimization strategies described in this section, is to
+goal of the optimization strategies described in this section is to
 eliminate some of those ambiguities before we even start to create
 derivations.
 
@@ -947,8 +946,8 @@ The optimization in the previous section left us with a bunch of
 templates that do not seem to be applicable at all. For example look
 at template \code|R2| in Example~\ref{ex:unfolded-refl}. This template
 has the premise \code|~A -> ~B = Int| which is unsatisfiable, as those
-terms are syntactically different. However to apply a template, we
-have to satisfy all its premises. Therefore template \code|R2| is not
+terms are syntactically different. However, to apply a template, we
+have to satisfy all its premises. Therefore, template \code|R2| is not
 applicable at all.
 
 We remove templates with an unsatisifable premise by attempting a
@@ -1231,12 +1230,12 @@ premises.
 \begin{description}
 \item[Lookup:] The inputs of the lookup are instantiated, then the
   resulting term is looked up in the corresponding context. If the
-  lookup succeeds the result is returned as an output, together with a
+  lookup succeeds, the result is returned as an output, together with a
   constraint set that contains equality constraint between the output
   pattern and the looked up output. Those constraints are annotated
   with the corresponding error message, which is instantiated and in
   which the hole (\code|{}|) is replaced by the output variables. If
-  the lookup fails \code|None| is return as output together with the
+  the lookup fails, \code|None| is return as output together with the
   \code|CFail| constraint and an appropriate error message.
 \item[(In)equality:] Equalities and inequalities are initialized and
   returned as constraints, together with the output \code|None| as
@@ -1244,18 +1243,18 @@ premises.
 \item[Judgment:] If the premise is a judgment it is first
   instantiated. Then we call \code|generate| on the resulting input
   term with a version of the store that has been updated according to
-  the context pattern of the judgment. In addition we instantiate the
+  the context pattern of the judgment. In addition, we instantiate the
   expected outputs of the judgment to make the binding of free
   variables in premises more precise. After the call to
   \code|generate| returns we generate equality constraints for the
-  bindings in the context pattern of the premise. Further we generate
+  bindings in the context pattern of the premise. Further, we generate
   equality constraints between the output pattern and the computed
   output and instantiate the corresponding error messages. The hole
   (\code|{}|) in the error messages is here replaced by the output
   variables.
 \end{description}
 
-In the case \code|generate'| encounters a fork it evaluates all
+In case \code|generate'| encounters a fork it evaluates all
 templates contained in the fork by calling \code|generate'|. It tries
 to solve the resulting constraint set and returns the outputs of the
 first evaluation that succeeds. If no templates can be evaluated to a

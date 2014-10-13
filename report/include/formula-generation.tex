@@ -1,11 +1,11 @@
 \chapter{Formula Generation}
 \label{ch:formula-generation}
-Type systems in programming languages can be treated as black boxes
-from a programmers point of view. The programmer interacts with the
-type system for example via type annotations and receives feedback
-from the type system in form of error messages. Errors in the type
-system are hard to detect for the programmer, because he cannot be
-sure if it is an error in his program or in the type system (or its
+Type systems in programming languages are treated as black boxes from
+a programmers point of view. The programmer interacts with the type
+system for example via type annotations and receives feedback from the
+type system in form of error messages. Errors in the type system are
+hard to detect for the programmer, because he cannot be sure if it is
+an error in his program or in the type system (or its
 implementation). In addition he can only debug his program, because of
 the black box view on the type system. Therefore it is desirable to
 ensure that the type system has the intended semantics.
@@ -88,10 +88,10 @@ Formula~\ref{formula:context-step} models the step case of the look up
 in context $c$. We introduce for each non-terminal two variables,
 $x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
 $y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
-intuition of the formula is that if it is possible look up an
-input/output pair in a context $e$ then we can also look it up in an
+intuition of the formula is that if it is possible to look up an
+input/output pair in a context $e$ then we can also look it up in a
 context that contains and additional input/output pair. If read with
-evaluation in mind the intuition is that if the outer most element is
+evaluation in mind the intuition is that if the outermost element is
 not the element we look for, i.e.\ all inputs differ, then we have to
 look into the rest of the context. We only check the input positions
 in order to test whether we have a match to lookup the last element
