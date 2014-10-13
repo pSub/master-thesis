@@ -1,8 +1,10 @@
 \chapter{Type Checker Generation}
+\label{cha:type-check-gener}
 In this chapter we briefly describe and motivate the design and goals
 of the type checker generator.
 
 \section{Goals}
+\label{sec:goals}
 The first goal is to generate type checkers from high level type
 system specifications that are not geared to type checking. Mainly
 this means to try to deal with non-syntax directed typing rules
@@ -20,6 +22,7 @@ The third goal is to generate type checkers that emit readable error
 messages if a program is not well-typed. This is essential to make the
 generated type checker usable in production in any way.
 \section{Architecture}
+\label{sec:architecture}
 The type checker generator has two phases: Template generation and
 template optimization. The template generation phase transforms the
 type system specification with modifications into templates. A
