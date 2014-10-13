@@ -134,7 +134,7 @@ rules
     reset-sections = failed
 
     reset-section : ("language", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,None(),d,e,f,g,h)
-    reset-section : ("meta-variables", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,c,MetaVariables([]),f,g,h)
+    reset-section : ("meta-variables", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,MetaVariables([]),f,g,h)
     reset-section : ("judgments", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,Judgments([]),g,h)
     reset-section : ("conjectures", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,d,e,f,g,None())
     reset-section : ("contexts", Module(a,b,c,d,e,f,g,h)) -> Module(a,b,c,Contexts([]),e,f,g,h)
