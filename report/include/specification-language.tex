@@ -14,7 +14,7 @@ the following goals in mind. The specification language should be
 Those characteristics fit well with the goals of making it easy to
 experiment with type systems and to create type systems from a
 high-level specification.
-\section{Design \& Architecture}
+\section{Language Design}
 \label{sec:design--architecture}
 In this sections we introduce the architecture of the specification
 language with references to a small examples and argue how this
@@ -42,9 +42,8 @@ the unique identifier \code|target-language/typesystem|.
 
 \paragraph{Imports} The second section declares which other type
 system specifications are imported and is optional. It is possible to
-prevent sections of a module from being imported. Sections that shall
-be excluded have to be listed in parenthesis together with the keyword
-\code|hiding| after the imported module.
+prevent sections of a module from being imported with the keyword
+\code|hiding|.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]    
@@ -74,13 +73,13 @@ language specifications/simply-typed-lambda-calculus/syntax
 \end{example}
 
 In Example~\ref{ex:language-section} the \gls{sdf} definition at
-\code|specifications/simply-typed-lambda-calculus/syntax.sdf| is used,
-this path is relative to the \code|syntax| folder of the Spoofax
+\code|specifications/simply-typed-lambda-calculus/syntax.sdf| is used;
+This path is relative to the \code|syntax| folder of the Spoofax
 project. A \gls{sdf} definition file (a file with the suffix
 \code|def|) located at the same path needs to be present for analysis
 of the target language, see Section~\ref{sec:constr-templ-optim}.
 
-\paragraph{Contexts} The fifth section declares the contexts that can
+\paragraph{Contexts} The fourth section declares the contexts that can
 be used in the judgments and rules. In specifications contexts are
 used to track or collect information during type checking. Informally
 these contexts are declared as cross-products of non-terminals, i.e.\
@@ -95,7 +94,7 @@ context declaration each non-terminal is annotated with an input
 value positions of the context. Depending on those annotations we
 generate look up functions. If all non-terminals are tagged as inputs
 the generated look up function will perform a normal membership
-test. However a context with only output tags is not useful as it is
+test. However, a context with only output tags is not useful as it is
 not possible to add elements to it.
 
 Given a context declaration \code|Z := A{I} x B{I} x C{O} x D{O}| an
@@ -121,15 +120,15 @@ represents a terminal produced from \code|ID|, \code|t| a terminal
 produced from \code|Type| and \code|c| represents an instance of
 context \code|Binding|. 
 
-\paragraph{Meta-variables} The fourth section declares
+\paragraph{Meta-variables} The fifth section declares
 meta-variables. In specifications meta-variables are used to refer to
 expressions of the target language and to contexts. The declaration of
 a meta-variable consists of a class, a prefix and a set of
 non-terminals from the target language and from the specification. We
 use the class to distinguish different kinds of
 meta-variables. Currently we use classes only for merging
-meta-variable declarations when resolving imports. For details
-see Section~\ref{sec:generate-sdf}.
+meta-variable declarations when resolving imports. For details see
+Section~\ref{sec:generate-sdf}.
 
 The set of non-terminals defines the scope of a meta-variable. Every
 non-terminal contained in this set is extended with productions for
@@ -143,10 +142,10 @@ is prefixed with the prefix of the meta-variable declaration. The sole
 purpose of the prefix is to avoid syntactic ambiguities. The prefix
 itself can consist of numbers, letters and the following symbols
 \code|~|, \code|$|, \code|%|, \code|&| and \code|?|. %% $
-There is currently no way to add new symbols to that list, but editing
-the syntax definition of the specification language. Usually a prefix
-is chosen such that it is not a prefix of a construct of the target
-language, to reduce the chance of encountering ambiguities.
+There is currently no way to add new symbols to that list, besides
+editing the syntax definition of the specification language. Usually a
+prefix is chosen such that it is not a prefix of a construct of the
+target language, to reduce the chance of encountering ambiguities.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -339,7 +338,7 @@ the second conjecture asserts that the identity function for integers
 \paragraph{Comments} Line comments (\code|//|) and block comments
 (\code|/* ... */|) can be inserted everywhere in the module.
 
-\paragraph{Goals}
+\subsection{Design Assessment}
 How does this design reflect the characteristics from the beginning of
 this chapter? We will address this point by point.
 
@@ -394,7 +393,7 @@ The module \code|Common| only defines character classes and lexical
 restrictions, therefore we will not explain it in detail.
 
 The syntax of the specification language, which is independent of the
-target language, is defined in the module \code|BaseLanguage|, which
+target language, is defined in the module \code|BaseLanguage|, and
 is parameterized by the non-terminals \code|TypingJudgment| and
 \code|MetaVariable|. These non-terminals depend on the actual target
 language and are therefore defined in \code|Generated|.
@@ -438,15 +437,14 @@ the specification.
 
 Figure~\ref{fig:meta-variable-productions} shows the productions
 created by \code|make-variable| for meta-variables. A meta-variable
-consists of its prefix, a name and of an optional error
-annotation. There are two kinds of productions for meta-variables. The
-first kind extends every non-terminal (in the production called
-\textit{Scope}) listed in the meta-variable definition of the target
-language. The second kind (the non-terminal \emph{MetaVariable})
-enables the use of meta-variables in error messages. In the
-constructor of meta-variables \code|m| is either the context number in
-case \textit{Scope} is a context and otherwise the meta-variable
-class.
+consists of its prefix, a name and an optional error annotation. There
+are two kinds of productions for meta-variables. The first kind
+extends every non-terminal (in the production called \textit{Scope})
+listed in the meta-variable definition of the target language. The
+second kind (the non-terminal \emph{MetaVariable}) enables the use of
+meta-variables in error messages. In the constructor of meta-variables
+\code|m| is either the context number in case \textit{Scope} is a
+context and otherwise the meta-variable class.
 
 \begin{figure}
 \begin{grammar}

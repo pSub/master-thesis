@@ -11,19 +11,21 @@ program semantics. Besides ensuring that programs are well-behaved,
 type systems are means to establish abstractions and to enforce
 adherence to these abstractions. Type systems can provide explicit
 type annotations that serve as program documentation, which cannot
-become obsolete. During type checking the program under consideration
-can also be annotated with optimization hints for the compiler. All in
-all type systems can help to develop software more efficiently
+become obsolete as type annotations are verified by the type
+system. During type checking the program under consideration can also
+be annotated with optimization hints for the compiler. All in all type
+systems can help to develop software more efficiently
 (cf.~\cite{Petersen:2014:ECS:2597008.2597152}
 and~\cite{Mayer:2012:ESI:2384616.2384666}).
 
 Type systems are useful tools, particularly if they fit to the
-programming language and the application scenario. To ensure a type
-system fits to a programming language, e.g.\ in the context of a
-\gls{dsl}, it makes sense to adapt and modify existing type systems or
-to create new specialized type systems. Those specializations can lead
-to better error messages, more expressive type systems and the
-detection of more errors (cf.~\cite{Thiemann02programmabletype}
+programming language and the application scenario. If that is not the
+case type systems can event get in the way. To ensure a type system
+fits to a programming language, e.g.\ in the context of a \gls{dsl},
+it makes sense to adapt and modify existing type systems or to create
+new specialized type systems. Those specializations can lead to better
+error messages, more expressive type systems and the detection of more
+errors (cf.~\cite{Thiemann02programmabletype}
 and~\cite{vandenBrand:2010:FST:1868281.1868293}). Currently there are
 only some tools that support the creation and adaption of type systems
 by generating type checkers from a type system specification
@@ -48,9 +50,9 @@ languages are also suited to specify type systems from other areas,
 like language-based information-flow
 security~\cite{Sabelfeld:2006:LIS:2312191.2314769}.
 
-To have more confidence into the properties of a type system, a
-declarative specification can be translated into a first-order formula
-representation, which can be used to conduct proofs of these
+A declarative specification can be translated into a first-order
+formula representation, which can be used to conduct proofs of these
+properties and thus raise the confidence regarding these
 properties. As the proofs of propositions about type systems have to
 change when the type system changes, it is desirable to make most of
 these changes automatically. Automated theorem provers can try to
@@ -61,9 +63,10 @@ type system, the proofs and the generated type checker.
 
 The translation of type system specifications into first-order formula
 representations also enables to provably check for and remove
-redundancies in the type system specification. As redundancies have a
-potential to slow down the generated type checker, the removal leads
-to different optimization strategies for the resulting type checker.
+redundancies within the type system specification. As redundancies
+have a potential to slow down the generated type checker, the removal
+leads to different optimization strategies for the resulting type
+checker.
 
 The goal of this thesis is to narrow the gap between theory and
 implementation of type systems. A declarative specification language

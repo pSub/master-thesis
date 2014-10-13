@@ -28,13 +28,13 @@ languages. Second, it enables the modularity of \gls{sdf}, because the
 composition of generalized LR grammars is a generalized LR
 grammar. This does not hold in general for LR grammars.
 
-An other property of \gls{sdf} is that it is scannerless
+Another property of \gls{sdf} is that it is scannerless
 parsable~\cite{Brand02disambiguationfilters}, i.e.\ tokenization and
 parsing can be done in a single step. The advantages are that only one
 meta-language is needed and non-regular lexical structure are handled
 easily.
 
-\gls{sdf} also has support to specify layout sensitive
+\gls{sdf} supports specification of layout sensitive
 languages~\cite{conf/sle/ErdwegRKO12} like Python or Haskell. It
 enforces context insensitive layout constraints at parse time and
 context sensitive constraints at disambiguation time, i.e.\ all
@@ -60,7 +60,7 @@ exports
 
 Example~\ref{ex:sdf-grammar} shows a grammar that allows to write
 boolean expressions. Conjunctions are represented in the \gls{ast}
-with the constructor \code|And|, written as and infix \code|&| and the
+with the constructor \code|And|, written as an infix \code|&|. The
 layout constraint enforces, that if conjunctions span over multiple
 lines, the right-hand side of \code|&| needs to be indented. Negation
 is represented in the \gls{ast} with the constructor \code|Not| and
@@ -82,7 +82,7 @@ independent of the target language.
 Stratego~\cite{Visser01} is a framework for the development of
 transformation systems. It consists of the transformation language
 Stratego and a set of tools (called XT) for tasks like parsing and
-pretty printing. The paradigm of Stratego is to use user-definable
+pretty printing. The approach of Stratego is to use user-definable
 strategies for rewriting. Stratego distinguishes the following
 abstraction levels.
 
@@ -162,7 +162,7 @@ prove classical first-order logic propositions about type system
 specifications. Vampire is able to parse formulas in the \gls{tptp}
 format and provides detailed output for the conducted proofs. We use
 this output to extract information about the applied axioms, which are
-in our case typing rules. However the choice of Vampire was rather
+in our case typing rules. However, the choice of Vampire was rather
 arbitrary every first order theorem prover that has support for
 \gls{tptp} can will do the job. Of course the results might vary
 depending on the performance of the theorem prover.
@@ -191,16 +191,16 @@ programming languages. Type systems address the problem to ensure that
 programs have meaning, whereas in type theory the problem is the
 ensure the consistency of a logic.
 
-What does it mean to ``ensure that programs have meaning''? First, it
-means that one wants to filter the useful programs. It is not useful
-to have a syntactically valid program that has no semantics as this
-program will behave unexpectedly at some point. A type system assigns
-types to the expressions of a programming language. A \textit{type
-  checker} can then verify, whether the types of the programs
-expressions match according to predefined typing rules. If the type
-checker succeeds the program is \textit{well-typed} and has meaning,
-i.e.\ the program will not misbehave due to undefined semantics. Depending
-on the expressiveness of the type system also the correctness of the
+What does it mean to ``ensure that programs have meaning''? It means
+that one wants to filter the useful programs. It is not useful to have
+a syntactically valid program that has no semantics as this program
+will behave unexpectedly at some point. A type system assigns types to
+the expressions of a programming language. A \textit{type checker} can
+then verify, whether the types of the programs expressions match
+according to predefined typing rules. If the type checker succeeds the
+program is \textit{well-typed} and has meaning, i.e.\ the program will
+not misbehave due to undefined semantics. Depending on the
+expressiveness of the type system also the correctness of the
 computation that the program performs can be shown.
 
 \section{First-Order Logic}
