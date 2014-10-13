@@ -2,25 +2,37 @@ module SystemF/Freshness
 
 language specifications/SystemF/SystemF
 
-contexts TypeBinding := ID{I}
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
 
-meta-variables  Ctx "$" { TypeBinding }
+meta-variables  TermCtx "$" { TermBinding }
+                TypeCtx "?" { TypeBinding }
+                Type "~" { Type }
                 Id "%" { ID }
 
 judgments 
+ID{I} "fresh in" TermBinding{I}.
 ID{I} "fresh in" TypeBinding{I}.
 ID{I} "!=" ID{I} is Neq.
 
-
 rules
 
-==============
-%x fresh in ()
+=========================
+%x fresh in (TermBinding)
+
+=========================
+%x fresh in (TypeBinding)
+
+%x != %y
+%x fresh in ?C
+=====================
+%x fresh in (%y ; ?C)
 
 %x != %y
 %x fresh in $C
-=====================
-%x fresh in (%y ; $C)
+==========================
+%x fresh in (%y : ~T ; $C)
 
 conjectures
 

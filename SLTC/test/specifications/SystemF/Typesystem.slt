@@ -1,6 +1,6 @@
 module SystemF/Typesystem
 
-imports SystemF/Freshness hiding (language)
+imports SystemF/Freshness hiding (language meta-variables)
         SystemF/Substitution hiding (language)
 
 language specifications/SystemF/SystemF
@@ -10,7 +10,8 @@ TermBinding := ID{I} x Type{O}
 TypeBinding := ID{I}
 
 meta-variables  Term "~" { Type Exp }
-                Ctx "$" { TermBinding TypeBinding }
+                TermCtx "$" { TermBinding }
+                TypeCtx "?" { TypeBinding }
                 Id "%" { ID }
                 Num "&" { Int }
 
@@ -21,33 +22,32 @@ ID{I} "!=" ID{I} is Neq.
 
 rules
 
-/* Typing rules */
-
 %x : ~T in $C1        @error %x "should have type" ~T "but has type" {}.
 =============== T-Var
-$C1 | $C2 |- %x : ~T
+$C1 | ?C2 |- %x : ~T
 
 ============== T-int
-$C1 | $C2 |- &i : int
+$C1 | ?C2 |- &i : int
 
-(%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2     @error ~t2 "should have type" ~T2 "but has type" {}.
+(%x : ~T1 ; $C1) | ?C2 |- ~t2 : ~T2     @error ~t2 "should have type" ~T2 "but has type" {}.
+%x fresh in $C1                         @error %x "is not fresh".
 ==================================== T-Abs
-$C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
+$C1 | ?C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
 
-$C1 | $C2 |- ~t1 : ~T11 -> ~T12     @error ~t1 "should have type" ~T11 "->" ~T12 "but has type" {}.
-$C1 | $C2 |- ~t2 : ~T11             @error ~t2 "should have type" ~T11 "but has type" {}.
+$C1 | ?C2 |- ~t1 : ~T11 -> ~T12     @error ~t1 "should have type" ~T11 "->" ~T12 "but has type" {}.
+$C1 | ?C2 |- ~t2 : ~T11             @error ~t2 "should have type" ~T11 "but has type" {}.
 ================================ T-App
-$C1 | $C2 |- ~t1 ~t2 : ~T12
+$C1 | ?C2 |- ~t1 ~t2 : ~T12
 
-$C1 | (%x ; $C2) |- ~t2 : ~T2           @error ~t2 "should have type" ~T2 "but has type" {}.
-%x fresh in $C2
+$C1 | (%x ; ?C2) |- ~t2 : ~T2           @error ~t2 "should have type" ~T2 "but has type" {}.
+%x fresh in ?C2                         @error %x "is not fresh".
 ======================================= T-Tabs
-$C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
+$C1 | ?C2 |- \ %x . ~t2 : all %x . ~T2
 
 ~U = [ %x -> ~S ] ~T            @error ~U "is not" ~T "where" %x "is replaced by" ~S.
-$C1 | $C2 |- ~e : all %x . ~T   @error ~e "should have type all" %x "." ~T "but has type" {}.
+$C1 | ?C2 |- ~e : all %x . ~T   @error ~e "should have type all" %x "." ~T "but has type" {}.
 ============================== T-Tapp
-$C1 | $C2 |- ~e [ ~S ] : ~U
+$C1 | ?C2 |- ~e [ ~S ] : ~U
 
 conjectures
 
