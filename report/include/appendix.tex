@@ -4,7 +4,7 @@
 \begin{lstlisting}[language=sltc]
 module SystemF/Typesystem
 
-imports SystemF/Freshness hiding (language)
+imports SystemF/Freshness hiding (language meta-variables)
         SystemF/Substitution hiding (language)
 
 // Available at https://www.github.com/pSub/master-thesis
@@ -15,7 +15,8 @@ TermBinding := ID{I} x Type{O}
 TypeBinding := ID{I} // Used to check freshness of type variables
 
 meta-variables  Term "~" { Type Exp }
-                Ctx "$" { TermBinding TypeBinding }
+                TermCtx "$" { TermBinding }
+                TypeCtx "?" { TypeBinding }
                 Id "%" { ID }
                 Num "&" { Int }
 
@@ -26,42 +27,44 @@ ID{I} "!=" ID{I} is Neq.
 
 rules
 
-%x : ~T in $C1 @error %x "should have type" ~T "but has type" {}.
+%x : ~T in $C1
+@error %x "should have type" ~T "but has type" {}.
 =============== T-Var
-$C1 | $C2 |- %x : ~T
+$C1 | ?C2 |- %x : ~T
 
 
 ============== T-int
-$C1 | $C2 |- &i : int
+$C1 | ?C2 |- &i : int
 
 
-(%x : ~T1 ; $C1) | $C2 |- ~t2 : ~T2
+(%x : ~T1 ; $C1) | ?C2 |- ~t2 : ~T2
 @error ~t2 "should have type" ~T2 "but has type" {}.
+%x fresh in $C1
+@error %x "is not fresh".
 ==================================== T-Abs
-$C1 | $C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
+$C1 | ?C2 |- \ %x : ~T1 . ~t2 : ~T1 -> ~T2
 
 
-$C1 | $C2 |- ~t1 : ~T11 -> ~T12
+$C1 | ?C2 |- ~t1 : ~T11 -> ~T12
 @error ~t1 "should have type" ~T11 "->" ~T12 "but has type" {}.
-$C1 | $C2 |- ~t2 : ~T11
+$C1 | ?C2 |- ~t2 : ~T11
 @error ~t2 "should have type" ~T11 "but has type" {}.
 ================================ T-App
-$C1 | $C2 |- ~t1 ~t2 : ~T12
+$C1 | ?C2 |- ~t1 ~t2 : ~T12
 
-
-$C1 | (%x ; $C2) |- ~t2 : ~T2
+$C1 | (%x ; ?C2) |- ~t2 : ~T2
 @error ~t2 "should have type" ~T2 "but has type" {}.
-%x fresh in $C2
+%x fresh in ?C2
+@error %x "is not fresh".
 ======================================= T-Tabs
-$C1 | $C2 |- \ %x . ~t2 : all %x . ~T2
+$C1 | ?C2 |- \ %x . ~t2 : all %x . ~T2
 
-
-~U = [ %x -> ~S ] ~T 
+~U = [ %x -> ~S ] ~T
 @error ~U "is not" ~T "where" %x "is replaced by" ~S.
-$C1 | $C2 |- ~e : all %x . ~T
+$C1 | ?C2 |- ~e : all %x . ~T
 @error ~e "should have type all" %x "." ~T "but has type" {}.
 ============================== T-Tapp
-$C1 | $C2 |- ~e [ ~S ] : ~U
+$C1 | ?C2 |- ~e [ ~S ] : ~U
 \end{lstlisting}
 \newpage
 \begin{lstlisting}[language=sltc]
@@ -70,25 +73,40 @@ module SystemF/Freshness
 // Available at https://www.github.com/pSub/master-thesis
 language specifications/SystemF/SystemF
 
-contexts TypeBinding := ID{I}
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
 
-meta-variables  Ctx "$" { TypeBinding }
+meta-variables  TermCtx "$" { TermBinding }
+                TypeCtx "?" { TypeBinding }
+                Type "~" { Type }
                 Id "%" { ID }
 
 judgments 
+ID{I} "fresh in" TermBinding{I}.
 ID{I} "fresh in" TypeBinding{I}.
 ID{I} "!=" ID{I} is Neq.
 
 rules
 
-============== Fresh-empty
-%x fresh in ()
+========================= Fresh-Term-Empty
+%x fresh in (TermBinding)
+
+
+========================= Fresh-Type-Empty
+%x fresh in (TypeBinding)
 
 
 %x != %y
 %x fresh in $C
-===================== Fresh-is-fresh
-%x fresh in (%y ; $C)
+========================== Fresh-Term-Step
+%x fresh in (%y : ~T ; $C)
+
+
+%x != %y
+%x fresh in ?C
+===================== Fresh-Type-Step
+%x fresh in (%y ; ?C)
 \end{lstlisting}
 \newpage
 \begin{lstlisting}[language=sltc]
