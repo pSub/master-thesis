@@ -1,9 +1,130 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
-
+In this chapter we present three type system specifications, discuss
+how the specification language effected the formulation of typing
+rules, and which optimization strategies are successful.
 \section{SytemF}
-\section{Lambda-Calculus with Subtyping}
+\label{sec:sytemf}
+We have implemented a version of the polymorphic lambda calculus
+SystemF that is close to the version described in Figure 23-1 in
+~\cite{Pierce:2002:TPL:509043}. The complete implementation can be
+found in Appendix~\ref{appendix:systemf}. There are three notable
+differences between the version in~\cite{Pierce:2002:TPL:509043} and
+our implementation, that we describe in the following.
 
+In~\cite{Pierce:2002:TPL:509043} term and type variable bindings are
+collected in a single context. We need two separate contexts, one for
+the term variable binding and one for the type variable binding,
+because we can only define homogeneous contexts.
+
+\begin{lstlisting}[language=sltc]
+contexts
+TermBinding := ID{I} x Type{O}
+TypeBinding := ID{I}
+\end{lstlisting}
+
+Context \code|TermBinding| is the term variable binding and associates
+identifier with types. \code|TypeBinding| binds type variables,
+because we have no notion of kinds in SystemF type variables are
+associated to nothing. In our implementation variable and type
+identifiers are build from the same set of identifiers.
+
+The typing judgment has to reflect that we have two
+contexts. Therefore our typing judgment is defined as follows.
+
+\begin{lstlisting}[language=sltc]
+judgments
+TermBinding{I} "|" TypeBinding{I} "|-" Exp{I} ":" Type{O}.
+\end{lstlisting}
+
+The second difference is that in~\cite{Pierce:2002:TPL:509043} it is
+assumed ``that the names of (term and type) variables should be chosen
+so as to be different from all names already bound'' by the
+context. We enforce this by defining an explicit freshness check in
+the type system specification for term and type variables. The
+freshness check is implemented in a separate module, which is imported
+in the specification of SystemF. In the following we show the
+judgments and rules of the freshness check.
+
+\begin{lstlisting}[language=sltc]
+judgments 
+ID{I} "fresh in" TermBinding{I}.
+ID{I} "fresh in" TypeBinding{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+========================= Fresh-Term-Empty
+%x fresh in (TermBinding)
+
+========================= Fresh-Type-Empty
+%x fresh in (TypeBinding)
+
+%x != %y
+%x fresh in $C
+========================== Fresh-Term-Step
+%x fresh in (%y : ~T ; $C)
+
+%x != %y
+%x fresh in ?C
+===================== Fresh-Type-Step
+%x fresh in (%y ; ?C)
+\end{lstlisting}
+
+The last difference between the text book version and our
+implementation is of the same kind as the last difference. In the text
+book version type substitution is assumed to be defined outside of the
+type system. We had to implement type substitution within our
+specification language as we have no built-in substitution
+mechanism. However type substitution is implemented in the same
+fashion like in a functional programming language with pattern
+matching. Substitution is also implemented as a separate module and
+imported into the SystemF specification.
+
+\begin{lstlisting}[language=sltc]
+judgments
+Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}.
+ID{I} "!=" ID{I} is Neq.
+
+rules
+
+===================== Subst-Eq
+~S = [ %x -> ~S ] %x@1    @implicit %x " does not equal " %x@1.
+
+%y != %x
+==================== Subst-Neq
+%y = [ %x -> ~S ] %y
+
+~U = [ %x -> ~S ] ~T
+========================================== Subst-All
+(all %y . ~U) = [ %x -> ~S ] (all %y . ~T)
+
+====================== Subst-Int
+int = [ %x -> ~S ] int
+
+~U1 = [ %x -> ~S ] ~T1
+~U2 = [ %x -> ~S ] ~T2
+==================================== Subst-Arrow
+~U1 -> ~U2 = [ %x -> ~S ] ~T1 -> ~T2
+\end{lstlisting}
+
+This demonstrates that our specification language is well suited to
+express standard type systems in a way close to text books as only one
+difference in the implementation is due to a restriction of our
+specification language. The other differences occur natural as we had
+to define concepts explicitly that were left implicit before.
+
+The generated templates for our SystemF specification show that there
+is only one ambiguity, namely between \code|Subst-Eq| and
+\code|Subst-Neq|. This ambiguity cannot be solved as we would have to
+decide the equality of terms, before actually knowing these
+terms. Nevertheless the creation of forks in the template optimization
+phase is helpful. As we have only one fork, we know that all templates
+besides \code|Subst-Eq| and \code|Subst-Neq| are syntax directed.
+\section{Lambda-Calculus with Subtyping}
+\label{sec:lambda-calculus-with}
+\section{Information Flow Security Type System}
+\label{sec:inform-flow-secur-1}
 
 %%% Local Variables: 
 %%% mode: latex
