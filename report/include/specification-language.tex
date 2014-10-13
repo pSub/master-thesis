@@ -27,7 +27,7 @@ have to be present in the order they are introduced here.
 \paragraph{Module name} The first section declares the name of the
 specification module. This name is an unique identifier and used for
 imports. The module name may contain an arbitrary combination of
-numbers, letters and the symbols \code|.| (dot), \code|-| (dash) and
+numbers, letters, and the symbols \code|.| (dot), \code|-| (dash), and
 \code|/| (slash).
 
 \begin{example}{}
@@ -99,7 +99,7 @@ not possible to add elements to it.
 
 Given a context declaration \code|Z := A{I} x B{I} x C{O} x D{O}| an
 instance of this context looks like \code|(a : b : c : d) ; z| where
-\code|a|, \code|b|, \code|c| and \code|d| are terminals produced from
+\code|a|, \code|b|, \code|c|, and \code|d| are terminals produced from
 the non-terminals \code|A|, \code|B|, \code|C|, \code|D|,
 respectively. \code|z| is an other instance of context \code|Z| or the
 empty context, which is written \code|()|.
@@ -123,7 +123,7 @@ context \code|Binding|.
 \paragraph{Meta-variables} The fifth section declares
 meta-variables. In specifications meta-variables are used to refer to
 expressions of the target language and to contexts. The declaration of
-a meta-variable consists of a class, a prefix and a set of
+a meta-variable consists of a class, a prefix, and a set of
 non-terminals from the target language and from the specification. We
 use the class to distinguish different kinds of
 meta-variables. Currently we use classes only for merging
@@ -141,7 +141,7 @@ Syntactically a meta-variable is a string of numbers and letters that
 is prefixed with the prefix of the meta-variable declaration. The sole
 purpose of the prefix is to avoid syntactic ambiguities. The prefix
 itself can consist of numbers, letters and the following symbols
-\code|~|, \code|$|, \code|%|, \code|&| and \code|?|. %% $
+\code|~|, \code|$|, \code|%|, \code|&|, and \code|?|. %% $
 There is currently no way to add new symbols to that list, besides
 editing the syntax definition of the specification language. Usually a
 prefix is chosen such that it is not a prefix of a construct of the
@@ -265,7 +265,7 @@ $C |- ~e1 ~e2 : ~T2
 \end{example}
 
 Example~\ref{ex:rules} shows the rules typing rules of \gls{pcf} for
-variables (\code|T-var|), function abstraction (\code|T-abs|) and
+variables (\code|T-var|), function abstraction (\code|T-abs|), and
 function application (\code|T-app|). Rule \code|T-var| models that
 some variable \code|%x| has type \code|~T| if it has type \code|~T| in
 context \code|$C|. If this check fails the annotated error message is%$
@@ -344,7 +344,7 @@ this chapter? We will address this point by point.
 
 \begin{description}
 \item[Usage] Formal definitions of type systems usually consist of
-  judgments, rules and auxiliary definitions for contexts. All those
+  judgments, rules, and auxiliary definitions for contexts. All those
   components can be represented in a natural way in the specification
   language. Judgments can be defined as an arbitrary combination of
   non-terminals and separation symbols, as long as the syntax does not
@@ -385,7 +385,7 @@ of four \gls{sdf} modules. The module \code|Common| containts lexical
 definitions that are used in multiple modules, the module
 \code|BaseLanguage| which defines the syntax of the specification
 language, the module \code|Generated| which contains new syntax for
-meta-variables, contexts and jugmens that was defined in a
+meta-variables, contexts, and jugmens that was defined in a
 specification and the main module \code|SLTC| that combines the
 previous modules.
 
@@ -412,11 +412,11 @@ The strategy \code|toSdf| transforms a specification into a \gls{sdf}
 \gls{ast} which is then pretty printed and saved in the syntax
 folder. The generated module \code|Generated| imports module
 \code|Common| and the \gls{sdf} file of the target language. In
-addition it contains context-free grammars for context, meta-variables
-and judgment declarations.
+addition it contains context-free grammars for context,
+meta-variables, and judgment declarations.
 
 For each context declaration the strategy \code|make-contexts|
-generates productions for the empty context, context bindings and
+generates productions for the empty context, context bindings, and
 context look ups. Figure~\ref{fig:context-productions} shows the
 resulting productions, where \textit{Name} is the name of the context
 declaration and \code|n| the position of the context declaration in

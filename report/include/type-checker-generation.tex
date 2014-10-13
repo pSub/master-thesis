@@ -119,7 +119,7 @@ the typing rules of the specification language.
   underscores to avoid name collisions with target languages. This is
   necessary as the module system of Stratego is not strong enough to
   avoid those collisions. We omit these here for the sake of
-  readability. The non-terminals Inputs, Outputs, Term and Error may
+  readability. The non-terminals Inputs, Outputs, Term, and Error may
   contain arbitrary terms.
   \begin{grammar}
     <Template> ::= `Template' <Premises> <Conjecture>
@@ -167,7 +167,7 @@ we do not need the additional information of meta-variables anymore.
 
 \subsubsection{Premises in Templates}
 Premises in templates have multiple shapes: Judgments, context
-lookups, equalities and inequalities. A premise always has a (possibly
+lookups, equalities, and inequalities. A premise always has a (possibly
 empty) list of dependencies. This list contains the number and the
 outputs of the judgment the premise depends on. Later on in this
 section we define what it means for a premise to have dependencies,
@@ -181,7 +181,7 @@ first we take a look at the different kinds of premises.
   judgment marked as inputs \refcallout{judgment:inputs}, context
   modifications \refcallout{judgment:bind},
   \refcallout{judgment:reset}, \refcallout{judgment:identity}, the
-  output positions of the judgments \refcallout{judgment:outputs} and
+  output positions of the judgments \refcallout{judgment:outputs}, and
   potentially error messages \refcallout{judgment:errors}.
 
   The main difference between context modifications in templates and
@@ -585,7 +585,7 @@ to that template.
 
 \begin{definition}
   A template $t_1$ subsumes another template $t_2$ if $t_1$ and $t_2$
-  are which-ambiguous to each other and
+  are which-ambiguous to each other and the following formula holds
   \begin{align}
     \forall FV(p_1,q_1,\dots, p_n,q_m) \,.\, ((p_1 \land\dots\land
     p_n) \implies (q_1 \land\dots\land q_m))
@@ -815,7 +815,7 @@ constructor \code|->| and \ref{prf:direct-2} from the symmetry of
 equality. But now we are stuck as we cannot show $c = a \implies c <:
 a$ nor $b = d \implies b <: d$, because we have removed the general
 reflexivity rule. However we can prove \ref{prf:direct-0} by
-structural induction on $a, b, c$ and $d$. We will now prove some
+structural induction on $a, b, c$, and $d$. We will now prove some
 cases of the induction, the other cases are analogous. We first show
 the base case with $a = b = c = d = \text{\code|Int|}$.
 \begin{align}
@@ -867,7 +867,7 @@ rule, but not \code|R4| as we are trying to show that this rule is
 redundant. If we would need it, it would not be redundant.
 
 We now show the case where $a = \{ r \}$, $b = \text{\code|Int|}$, $c
-= \{s\}$ and $d = \text{\code|Int|}$.
+= \{s\}$, and $d = \text{\code|Int|}$.
 \begin{align}
   \{ r \} \text{\code|->|} \text{\code|Int|} = \{ s \}
   \text{\code|->|} \text{\code|Int|} &\implies (\{s\} <: \{r\} \land

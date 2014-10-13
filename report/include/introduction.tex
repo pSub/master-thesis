@@ -1,6 +1,6 @@
 \chapter{Introduction}
 This chapter motivates the thesis, summarizes the contributions and
-gives and overview of the structure of the thesis.
+gives an overview of the structure of the thesis.
 
 \section{Motiviation}
 Type systems ensure that programs are well-behaved. In other words,
@@ -24,13 +24,13 @@ case type systems can event get in the way. To ensure a type system
 fits to a programming language, e.g.\ in the context of a \gls{dsl},
 it makes sense to adapt and modify existing type systems or to create
 new specialized type systems. Those specializations can lead to better
-error messages, more expressive type systems and the detection of more
+error messages, more expressive type systems, and the detection of more
 errors (cf.~\cite{Thiemann02programmabletype}
 and~\cite{vandenBrand:2010:FST:1868281.1868293}). Currently there are
 only some tools that support the creation and adaption of type systems
 by generating type checkers from a type system specification
 (\cite{Markstrum:2010:JDP:1667048.1667049}, \cite{ortin2014automatic},
-\cite{gast2005generator}, \cite{tomb2005automatic} and
+\cite{gast2005generator}, \cite{tomb2005automatic}, and
 \cite{bergan2007typmix}), but they are not established. Such
 generators accelerate the development of type checkers, make
 development less error prone and fit well into the language
@@ -59,7 +59,7 @@ these changes automatically. Automated theorem provers can try to
 conduct those proves automatically. If the proof search fails one can
 give hints for proof search, e.g.\ by providing induction
 hypothesis. This establishes a direct connection between the specified
-type system, the proofs and the generated type checker.
+type system, the proofs, and the generated type checker.
 
 The translation of type system specifications into first-order formula
 representations also enables to provably check for and remove
@@ -88,7 +88,7 @@ The main contributions of this thesis are:
 \item A transformation of type system specifications into equivalent
   first-order formula representations in the \gls{tptp} format. The
   first-order formula representations are suitable for type checking
-  using theorem provers, theorem proving and serve as a reference
+  using theorem provers, theorem proving, and serve as a reference
   implementation for the type checker generator.
 \item A generator that creates type checkers from type system
   specifications. This generator uses an intermediate representation
@@ -99,7 +99,7 @@ The main contributions of this thesis are:
 
 Figure~\ref{fig:interconnection} shows how these contributions are
 connected. From a type system specification a first-order formula
-representation and a type checker is generated and the first-order
+representation and a type checker is generated. The first-order
 formula representation is used in conjunction with an automated
 theorem prover to check the applicability of optimizations for the
 type checker.
@@ -123,7 +123,7 @@ type checker.
 \end{figure}
 
 The source code of the specification language, the first-order formula
-transformation and the type checker generator including all type
+transformation, and the type checker generator including all type
 system specifications is available as a Spoofax project at
 \url{https://www.github.com/pSub/master-thesis}
 

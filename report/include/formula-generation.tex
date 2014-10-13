@@ -43,7 +43,7 @@ automated theorem provers.
 \section{Translations}
 \label{sec:translations}
 In this section we explain how we translate type system specifications
-into first-order formula. Just context declarations, rules and
+into first-order formula. Just context declarations, rules, and
 conjectures have an explicit representation as first-order
 formulas. The rest of the specification is not directly translated
 into first-order formulas and it is only needed to ensure that the
@@ -211,7 +211,7 @@ from the specification language into first-order formulas.
 
 The implementation is organized in the following steps. At fist, the
 module is split up into its components, then we transform contexts,
-typing rules and conjectures into first-order formulas. After that we
+typing rules, and conjectures into first-order formulas. After that we
 create a file for each conjecture which contains all generated
 formulas. In the following those steps will be explained in detail.
 
@@ -240,7 +240,7 @@ we have first-order terms for the premises and the conclusion, we
 collect all free variables that occur in them. In rules variables are
 not bound, thus all variables are free. However it is important to
 collect only free variables, as conjectures may contain
-quantifiers. At last, we put premises, conjecture and quantification
+quantifiers. At last, we put premises, conjecture, and quantification
 together to construct a formula in the \gls{tptp} format which has the
 structure of Formula~\ref{formula:typing-rule}.
 
