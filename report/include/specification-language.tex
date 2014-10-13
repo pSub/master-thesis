@@ -273,7 +273,14 @@ context \code|$C|. If this check fails the annotated error message is%$
 thrown, where \code|~T| is replaced by the expected type and \code|{}|
 by the actual type of variable \code|%x|.
 
-\todo{Explain the other two typing rules}
+Rule \code|T-abs| in Example~\ref{ex:rules} expresses that function
+with argument \code|%x| of type \code|~T1| and a function body
+\code|~e| has type \code|~T1 -> ~T2| if the function body has type
+\code|~T2| under a context that is extended with the function
+argument. Function application is covered by rule \code|T-app|: if
+\code|~e1| is a function of type \code|~T1 -> ~T2| and the type
+\code|~e2| of matches its argument, then the application of \code|~e2|
+to \code|~e1| has type \code|~T2|.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
