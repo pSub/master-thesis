@@ -1,5 +1,26 @@
 \chapter{Summary}
 \section{Conclusion}
+In this thesis we have presented an optimizing type checker generator
+that optimizes declarative type system specifications according to
+automatically conducted proofs.
+
+We have introduced a high-level declarative type system specification
+language that can be used with most \gls{sdf} syntax specifications of
+programming languages. This specification language allows to define
+type systems modular and close to the notation of text books. Further
+we have developed a translation of type system specifications into
+equivalent first-order formulas and have shown that those are suitable
+for type checking using automated theorem provers.
+
+Based on the type system specification language and the first-order
+model for specifications, we have developed an optimizing type checker
+generator. Our type checker generator is modular, constraint based and
+uses a normalized intermediate representation of the
+specifications. With the optimization phase of the type checker
+generator we make a step towards to generation of efficient and syntax
+directed type checkers from non-syntax directed high-level
+specifications.
+
 \section{Future Work}
 In this thesis we build the foundation to create more sophisticated
 optimizing type checkers. The main future goal is twofold. On the one
@@ -41,7 +62,7 @@ test that a program that is well-typed actually satisfies the
 invariants of the type system. In contrast to~\cite{bergan2007typmix}
 the syntax of Java cannot be extended.
 
-\todo[inline]{Compare with my work}
+%\todo[inline]{Compare with my work}
 
 \subsubsection{A Generator for Type Checkers}
 Gast introduces in~\cite{gast2005generator} a type checker generator
