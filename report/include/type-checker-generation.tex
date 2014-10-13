@@ -1272,11 +1272,11 @@ constraint language is simple because it only consists of three
 constructs, the algorithm to solve a constraint set is simple as well.
 
 We use unification to solve the constraint sets. To be even more
-precise we use a variant of Robinson unificiation
-\todo{Citation}. During the unification we compute a \gls{mgu} to
-instantiate the variables in the outputs and (in case of ill-typed
-programs) in the error messages that we collect every time a
-constraint cannot be solved.
+precise we use a variant of Robinson
+unificiation~\cite{robinson1965machine}. During the unification we
+compute a \gls{mgu} to instantiate the variables in the outputs and
+(in case of ill-typed programs) in the error messages that we collect
+every time a constraint cannot be solved.
 
 During unification we ensure that a certain kind of malformed
 constraint set does not lead to infinite loops in the unification. If
