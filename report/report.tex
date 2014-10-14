@@ -24,14 +24,18 @@
 \usepackage{hyperref}
 \usepackage{multicol}
 \usepackage[final]{listings}
+\usepackage{textcomp}
 \usepackage[titletoc]{appendix}
 \usepackage{titling}
+
 \newcommand{\subtitle}[1]{%
   \posttitle{%
     \par\end{center}
     \begin{center}\large#1\end{center}
     \vskip0.5em}%
 }
+
+\newcommand{\textapprox}{\raisebox{0.5ex}{\texttildelow}}
 
 \usepackage{todonotes}
 
@@ -67,6 +71,7 @@
   basicstyle=\ttfamily,
   columns=fullflexible,
   keepspaces=true,
+  literate={~} {\textapprox}{1},
 }
 
 \lstdefinelanguage{sltc}
