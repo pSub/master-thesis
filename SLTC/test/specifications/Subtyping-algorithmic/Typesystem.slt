@@ -14,6 +14,7 @@ judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 TRecordEntries{I} "has" Exp{I} ":" Type{I}.
 ID{I} "!=" ID{I} is Neq.
+Type{I} "=" Type{I} is Eq.
 
 rules
 
@@ -30,8 +31,9 @@ $C |- %x : ~T
 ================================= T-abs
 $C |- \ %x : ~T1 . ~e : ~T1 -> ~T2
 
-$C |- ~e1 : ~T -> ~S
-$C |- ~e2 : ~T
+$C |- ~e1 : ~T11 -> ~S
+$C |- ~e2 : ~T2
+~T2 = ~T11
 ========================= T-app
 $C |- ~e1 ~e2 : ~S
 
@@ -52,7 +54,7 @@ $C |- { %l = ~e $R } : { %l : ~T $S }
 %m != %l
 $R has %l : ~T
 ====================== a
-%m : ~T $R has %l : ~T 
+%m : ~T $R has %l : ~T
 
 ====================== b
 %l : ~T $R has %l : ~T
