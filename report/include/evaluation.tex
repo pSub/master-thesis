@@ -172,7 +172,22 @@ typed. Rule \code|base| is the base case for this definition and
 assigns the empty record the empty type. Note that we support in
 contrast to~\cite{Pierce:2002:TPL:509043} the empty record. We
 included the empty record in our definition to demonstrate a top rule
-for records in the subtyping module.
+for records in the subtyping module. We have implement the membership
+test for the projection typing rule \code|T-proj| in a similar way.
+
+The module implementing subtyping for this lambda calculus contains a
+typing rule for function application that can deal with subtyping and
+the definition of a subtyping relation. We have added the typing rule
+for function application in favor of a general subsumption rule,
+because we do not have optimization strategies to inline the
+subsumption rule into the function application rule. We are able to
+detect that the function application rule with subtyping is more
+general (in the case of an reflexive subtyping relation) than the
+function application rule without subtyping and therefore are able to
+remove the latter.
+
+
+
 \section{Information Flow Security Type System}
 \label{sec:inform-flow-secur-1}
 
