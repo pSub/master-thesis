@@ -123,6 +123,56 @@ phase is helpful. As we have only one fork, we know that all templates
 besides \code|Subst-Eq| and \code|Subst-Neq| are syntax directed.
 \section{Lambda-Calculus with Subtyping}
 \label{sec:lambda-calculus-with}
+We have implemented a variant of the simply typed lambda calculus with
+records and subtyping as described
+in~\cite{Pierce:2002:TPL:509043}. The specification for this type
+system is divided into two modules. One module specifies the type
+system without subtyping and the other module extends the first module
+with subtyping. The implementation of the type system without differs
+in two aspects from the text book formalization. First, we have to
+implement the freshness condition explicitly, as in the previous
+section. Second, we have to model rules that talk about all elements
+of a record inductively. Formula~\ref{formula:record-typing} shows the
+formalization of the record typing rule
+from~\cite{Pierce:2002:TPL:509043}. This rule says that a record is
+well-typed if all its elements are
+well-typed. In~\ref{formula:record-typing} this is expressed by
+quantification over the elements of the record.
+
+\begin{align}
+\inferrule[]
+{\text{for each} \; i \; \Gamma \vdash t_i : T_i}
+{\Gamma \vdash \{l_i = t_i \ ^{i \in 1\dots n}\} : \{ l_i : T_i \ ^{i
+    \in 1\dots n} \}}
+\label{formula:record-typing}
+\end{align}
+
+That quantification is not possible in our specification
+language. Therefore we model this condition inductively as shown in
+the following.
+
+\begin{minipage}[b]{.30\linewidth}
+\begin{lstlisting}[language=sltc]
+============= base
+$C |- {} : {}
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}[b]{.65\linewidth}
+\begin{lstlisting}
+$C |- ~e : ~T
+$C |- { $R } : { $S }
+===================================== step
+$C |- { %l = ~e $R } : { %l : ~T $S }
+\end{lstlisting}
+\end{minipage}
+
+Here we ensure with rule \code|step| that the first element is
+well-typed and the record without the first element is well
+typed. Rule \code|base| is the base case for this definition and
+assigns the empty record the empty type. Note that we support in
+contrast to~\cite{Pierce:2002:TPL:509043} the empty record. We
+included the empty record in our definition to demonstrate a top rule
+for records in the subtyping module.
 \section{Information Flow Security Type System}
 \label{sec:inform-flow-secur-1}
 
