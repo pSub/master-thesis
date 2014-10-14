@@ -13,7 +13,7 @@ Quick-Start-Guide:
     * Comment all lines after `rules`
     * Click on `Generation` -> `Generate SDF`
     * Build the project again
-    * Uncomment the lines after `rules`?
+    * Uncomment the lines after `rules`
 
 Now you are ready to select actions from the `Typecheck` and
 `Verification` menus, add new typing rules and conjectures. Changes in
