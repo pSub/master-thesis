@@ -286,6 +286,25 @@ string within a \code|Term| constructor would be wrapped again in a
 Conjectures are essentially transformed following the same scheme as
 rules, the only difference is that we tag the resulting formulas as
 \code|conjecture| and not as \code|axiom|.
+
+\section{Editor Support}
+It is possible to use automated theorem provers to type check
+conjectures from within the editor. For type checking using automated
+theorem provers we transform the specification into first order
+formulas and create a file per conclusion, as described in the
+previous section. Then we call the automated theorem prover Vampire on
+for each resulting file and parse the results. For each conjecture we
+visualize in the editor whether the verification succeeded and provide
+in case of success the names of the used first-order formulas.
+
+We provide also a consistency test for specifications. This check
+attempts a proof of \code|1 = 0| with vampire using the first-order
+formulas generated from the specification. This method allows us to
+possibly find inconsistencies in the type system
+specification. However, due to the embedding into first-order logic
+and Gödel's second incompleteness theorem it is not possible to proof
+within first-order logic that the type system is consistent.
+
 %\section{Performance}
 %%% Local Variables: 
 %%% mode: latex
