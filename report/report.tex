@@ -25,6 +25,13 @@
 \usepackage{multicol}
 \usepackage[final]{listings}
 \usepackage[titletoc]{appendix}
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
 
 \usepackage{todonotes}
 
