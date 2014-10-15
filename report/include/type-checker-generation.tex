@@ -58,7 +58,7 @@ it reports the errors that occurred during unification.
 
 \begin{figure}[H]
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
-  thick,main node/.style={rectangle,draw,font=\small\bfseries}]
+  thick,main node/.style={fill=blue!20,rectangle,draw,font=\small\bfseries}]
 
   \node[main node] (1) {Template Generation};
   \node[main node] (2) [right=3cm of 1] {Template Optimization};
@@ -352,7 +352,7 @@ Figure~\ref{fig:template-example} the typing rule from the
 specification is shown and on the right side its representation as a
 template. Note that in the example we hide the underscores in the
 constructor names of the specification language. Due to that we see in
-Figure~\ref{fig:template:example} the term \code|Var(Var("X52"))|
+Figure~\ref{fig:template-example} the term \code|Var(Var("X52"))|
 where actually the outermost \code|Var| constructor is part of the
 target language and the inner \code|Var| is part of the specification
 language.
@@ -385,7 +385,7 @@ the judgment
 Type{O} "= [" ID{I} "->" Type{I} "]" Type{I}
 \end{lstlisting}
 
-which models type substitution in the SystemF specification in
+which models type substitution in the SystemF, see
 Appendix~\ref{appendix:systemf}. On the left side of
 Example~\ref{ex:implicit-equalities} you see the typing rule with an
 implicit equality and on the right hand side the transformed version
@@ -1293,8 +1293,6 @@ constraint set does not lead to infinite loops in the unification. If
 there are only inequalities left that contain at least one variable,
 we abort unification. As inequality is not transitive, we can never
 solve those constraint sets.
-\section{Performance}
-\label{sec:performance}
 
 %%% Local Variables: 
 %%% mode: latex
