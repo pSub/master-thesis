@@ -13,6 +13,7 @@ meta-variables  Term "~" { Type Exp }
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 TRecordEntries{I} "has" Exp{I} ":" Type{I}.
+ID{I} "fresh in" Context{I}.
 ID{I} "!=" ID{I} is Neq.
 Type{I} "=" Type{I} is Eq.
 
@@ -28,6 +29,7 @@ $C |- &i : int
 $C |- %x : ~T
 
 (%x : ~T1 ; $C) |- ~e : ~T2
+%x fresh in $C
 ================================= T-abs
 $C |- \ %x : ~T1 . ~e : ~T1 -> ~T2
 
@@ -58,6 +60,16 @@ $R has %l : ~T
 
 ====================== b
 %l : ~T $R has %l : ~T
+
+/* Freshness Condition */
+
+==============
+%x fresh in ()
+
+%x != %y
+%x fresh in $C
+==========================
+%x fresh in (%y : ~T ; $C)
 
 conjectures
 
