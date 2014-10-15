@@ -6,6 +6,7 @@ makes the tools suitable for achieving the goals of the thesis and
 give a short overview of the alternatives.
 
 \subsection{SDF}
+\glsreset{sdf}
 \gls{sdf}~\cite{Heering:1989:SDF:71605.71607} is a formalism to define
 the syntax of formal languages in the tradition of the
 \gls{bnf}. \gls{sdf} allows to define lexical and context-free
@@ -136,7 +137,7 @@ strategies
 \end{figure}
 
 We choose Stratego to implement the transformation into first-order
-formulas and the type checker generator as interacts well with
+formulas and the type checker generator as it interacts well with
 \gls{sdf}, has facilities to integrate into tool-chains and it allows
 to write abstract and generic transformations.
 
@@ -165,8 +166,8 @@ format and provides detailed output for the conducted proofs. We use
 this output to extract information about the applied axioms, which are
 in our case typing rules. However, the choice of Vampire was rather
 arbitrary every first order theorem prover that has support for
-\gls{tptp} can will do the job. Of course the results might vary
-depending on the performance of the theorem prover.
+\gls{tptp} will do the job. Of course the results might vary depending
+on the performance of the theorem prover.
 
 \subsection{Alternatives}
 We chose Spoofax and its components, because its feature set fits well

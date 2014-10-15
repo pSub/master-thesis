@@ -83,25 +83,26 @@ of the target language, see Section~\ref{sec:constr-templ-optim}.
 be used in the judgments and rules. In specifications contexts are
 used to track or collect information during type checking. Informally
 these contexts are declared as cross-products of non-terminals, i.e.\
-a context is a set consisting of tuples of terminals that can be
-produced by the non-terminals in the declaration. Every context has a
-name, which can be used as a non-terminal in the specification.
+a context instance is a set consisting of tuples of terminals that can
+be produced by the non-terminals in the declaration. Every context has
+a name, which can be used as a non-terminal in the specification.
 
 Contexts serve in most use cases as bindings for variables. Therefore
-it is necessary to be able to look up terminals in a context. In the
-context declaration each non-terminal is annotated with an input
-(\code|{I}|) and output (\code|{O}|) tag. Those tags specify the key and
-value positions of the context. Depending on those annotations we
-generate look up functions. If all non-terminals are tagged as inputs
-the generated look up function will perform a normal membership
-test. However, a context with only output tags is not useful as it is
-not possible to add elements to it.
+it is necessary to be able to look up terminals in a context
+instance. In the context declaration each non-terminal is annotated
+with an input (\code|{I}|) and output (\code|{O}|) tag. Those tags
+specify the key and value positions of the context
+declaration. Depending on those annotations we generate look up
+functions. If all non-terminals are tagged as inputs the generated
+look up function will perform a normal membership test. However, a
+context declaration with only output tags is not useful as it is not
+possible to add elements to it.
 
 Given a context declaration \code|Z := A{I} x B{I} x C{O} x D{O}| an
 instance of this context looks like \code|(a : b : c : d) ; z| where
 \code|a|, \code|b|, \code|c|, and \code|d| are terminals produced from
 the non-terminals \code|A|, \code|B|, \code|C|, \code|D|,
-respectively. \code|z| is an other instance of context \code|Z| or the
+respectively. \code|z| is another instance of context \code|Z| or the
 empty context, which is written \code|()|. Different empty contexts
 can be disambiguate with the context name, e.g.\ \code|(Z)|.
 
@@ -269,9 +270,10 @@ Example~\ref{ex:rules} shows the rules typing rules of \gls{pcf} for
 variables (\code|T-var|), function abstraction (\code|T-abs|), and
 function application (\code|T-app|). Rule \code|T-var| models that
 some variable \code|%x| has type \code|~T| if it has type \code|~T| in
-context \code|$C|. If this check fails the annotated error message is%$
-thrown, where \code|~T| is replaced by the expected type and \code|{}|
-by the actual type of variable \code|%x|.
+context \code|$C|.%$
+If this check fails the annotated error message
+is thrown, where \code|~T| is replaced by the expected type and
+\code|{}| by the actual type of variable \code|%x|.
 
 Rule \code|T-abs| in Example~\ref{ex:rules} expresses that function
 with argument \code|%x| of type \code|~T1| and a function body

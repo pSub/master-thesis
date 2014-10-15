@@ -24,7 +24,7 @@ provers.
  
 \section{Goals}
 The generation of formulas from type system specifications pursues two
-goals. The first goal is to resemble type system specifications in
+goals. The first goal is to represent type system specifications as
 formulas suitable for automated theorem provers and to use those as a
 basis to prove simple propositions about type systems. In
 Section~\ref{sec:constr-templ-optim} we prove propositions that check
@@ -73,7 +73,7 @@ have to proceed with the rest of the context.
   \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup_c(x_1, \dots, x_n,
   y_1, \dots, y_m, bind_c(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \label{formula:context-step}
-\end{multline}
+\end{multline}\todo{see ragnars comment}
 
 Formula~\ref{formula:context-base} shows the base case of the look up
 in context $c$. We translate all non-terminals in the context
@@ -85,18 +85,18 @@ exactly the element we search. Therefore the element is trivially
 contained in the context and the look up succeeds.
 
 Formula~\ref{formula:context-step} models the step case of the look up
-in context $c$. We introduce for each non-terminal two variables,
-$x_1,x_1', \dots, x_n,x_n'$ for non-terminals tagged as input and
-$y_1,y_1', \dots, y_m,y_m'$ for non-terminals tagged as output. The
-intuition of the formula is that if it is possible to look up an
-input/output pair in a context $e$ then we can also look it up in a
-context that contains and additional input/output pair. If read with
-evaluation in mind the intuition is that if the outermost element is
-not the element we look for, i.e.\ all inputs differ, then we have to
-look into the rest of the context. We only check the input positions
-in order to test whether we have a match to lookup the last element
-first. This corresponds to the scoping behavior of most programming
-languages.
+in context $c$. We introduce two variables, $x_1,x_1', \dots,
+x_n,x_n'$ for non-terminals tagged as input and $y_1,y_1', \dots,
+y_m,y_m'$ for non-terminals tagged as output. The intuition of the
+formula is that if it is possible to look up an input/output pair in a
+context $e$ then we can also look it up in a context that contains an
+additional input/output pair. If read with evaluation in mind the
+intuition is that if the outermost element is not the element we look
+for, i.e.\ all inputs differ, then we have to look into the rest of
+the context. We only check the input positions in order to test
+whether we have a match to lookup the last element first.\todo{see
+  ragnars comment} This
+corresponds to the scoping behavior of most programming languages.
 
 \begin{example}
   The following context declaration models a standard identifier to
@@ -149,23 +149,24 @@ rules. Depending on whether the typing rule has premises we use either
 of the following schema:
 
 \begin{align}
-  &\forall FV(c) .& c \\
-  &\forall FV(p_1,\dots, p_n, c) .& p_1 \land \dots \land p_n \implies
+  &\forall FV(c) \,.\, c \\
+  &\forall FV(p_1,\dots, p_n, c) \,.\, p_1 \land \dots \land p_n \implies
   c
 \label{formula:typing-rule}
 \end{align}
 
 The predicates $p_i$ represent the premises and $c$ is the conclusion
-of the typing rules. What a typing rule intuitively expresses is that
-the conclusion can be derived if all premises can be derived. In terms
-of first-order logic ``derived'' means that there exists a proof for
-the proposition. Therefore we translate a typing rule without premises
-into a formula that consists of the conclusion and all-quantifies all
-free variables of the conclusion. Free variables are all-quantified,
-because we want that all possible variants of the conclusion are
-derivable. Typing rules with premises translate into a single
-implication. The premise of the implication is the conjunction of all
-premises of the typing rule. This ensures that all premises need to be
+of the typing rules, $FV$ computes the free variables. What a typing
+rule intuitively expresses is that the conclusion can be derived if
+all premises can be derived. In terms of first-order logic ``derived''
+means that there exists a proof for the proposition. Therefore we
+translate a typing rule without premises into a formula that consists
+of the conclusion and all-quantifies all free variables of the
+conclusion. Free variables are all-quantified, because we want that
+all possible variants of the conclusion are derivable. Typing rules
+with premises translate into a single implication. The premise of the
+implication is the conjunction of all premises of the typing
+rule. This ensures that all premises need to be
 derivable/satisfied. The conclusion of the implication is the
 conclusion of the typing rule. This is a safe fact, because the
 conclusion of the typing rule is derivable if all premises are

@@ -56,19 +56,9 @@ constraints. In the constraint solving phase we then try to unify the
 emitted constraints. If that succeeds it reports the result otherwise
 it reports the errors that occurred during unification.
 
-Figure~\ref{fig:phases} shows the phases and their
-relationships. Nodes represent phases and arrows express that data
-flows from one node to another. Labels on arrows describe the data
-format.
-
-The four phases correspond to modules or tools. Each phase has a
-well-defined interface, therefore the implementation can be exchanged
-freely. This facilitates the use of different constraint solvers,
-constraint generators or template optimizers.
-
-\begin{figure}
+\begin{figure}[H]
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,align=center,node distance=2cm,
-  thick,main node/.style={rectangle,fill=blue!20,draw,font=\small\bfseries}]
+  thick,main node/.style={rectangle,draw,font=\small\bfseries}]
 
   \node[main node] (1) {Template Generation};
   \node[main node] (2) [right=3cm of 1] {Template Optimization};
@@ -87,6 +77,16 @@ constraint generators or template optimizers.
 \caption{Phases of the type checker generator}
 \label{fig:phases}
 \end{figure}
+
+Figure~\ref{fig:phases} shows the phases and their
+relationships. Nodes represent phases and arrows express that data
+flows from one node to another. Labels on arrows describe the data
+format.
+
+The four phases correspond to modules or tools. Each phase has a
+well-defined interface, therefore the implementation can be exchanged
+freely. This facilitates the use of different constraint solvers,
+constraint generators or template optimizers.
 
 The following sections describe the implementation of the type checker
 generator. Each section focuses on one of the phases.
@@ -112,9 +112,9 @@ phase of the type checker. Besides being better suited for constraint
 generation templates also have the advantage that we can adapt the
 system to other specification languages by translation into
 templates. The structure of the templates has no hard requirements on
-the specification language, although it has to be declarative. In
-general the structure of the templates is similar to the structure of
-the typing rules of the specification language.
+the specification language, although it has to be declarative and the
+structure of the templates is similar to the structure of the typing
+rules of the specification language.
 
 \begin{figure}
   \begin{definition} The Stratego implementation appends to all
@@ -126,7 +126,7 @@ the typing rules of the specification language.
   \begin{grammar}
     <Template> ::= `Template' <Premises> <Conjecture>
 
-    <Conjecture> ::= `Conjecture' <Judg> <Name> <Pattern> <Outputs>
+    <Conclusion> ::= `Conclusion' <Judg> <Name> <Pattern> <Outputs>
 
     <Premises> ::= $\epsilon$ | <Premise> <Dependencies> <Premises>
 
@@ -197,9 +197,10 @@ first we take a look at the different kinds of premises.
   meta-variable in the specification and context identities do not
   modify the context and a reset operation \refcallout{judgment:reset}
   which resets the given context and corresponds to the empty
-  context. Read to context modifications from right to left to obtain
-  a valid context. A detail explanation of the semantics in our type
-  checker will follow in Section~\ref{sec:constr-gener}.
+  context. A valid context can be obtained by applying the context
+  modifications from right to left to a context instance. A detail
+  explanation of the semantics in our type checker will follow in
+  Section~\ref{sec:constr-gener}.
 
 \begin{example}{~}
 \begin{lstlisting}[language=sltc]
@@ -303,12 +304,13 @@ depends and the output positions of that premise. The outputs are
 redundant information and only added to make it easier to check which
 information are proivded by that dependency.
 The dependency for the first premise in
-Example~\ref{ex:premise-dependencies} the would look like
-\code|(1,[TAll(Var("X0"), Var("X1"))])|. In this example
-\code|TAll(Var("X0"), Var("X1"))| is the only output provided by the
-premise and \code|1| refers to the second premise, because we sort
-premises of templates topological according to the dependencies, as we
-will describe in the next section.
+Example~\ref{ex:premise-dependencies} would look like
+\code|(1,[TAll(Var("X0"), Var("X1"))])|. Here \code|Var("X0")| and
+\code|Var("X1")| are the generated variable names for \code|%x| and
+\code|~T|. In this example \code|TAll(Var("X0"), Var("X1"))| is the
+only output provided by the premise and \code|1| refers to the second
+premise, because we sort premises of templates topological according
+to the dependencies, as we will describe in the next section.
 
 \subsubsection{Conclusions in Templates}
 Conclusions contain the judgment identifier
@@ -348,7 +350,12 @@ complete template looks like for the variable typing rule in the
 simply typed lambda calculus. On the left side of
 Figure~\ref{fig:template-example} the typing rule from the
 specification is shown and on the right side its representation as a
-template.
+template. Note that in the example we hide the underscores in the
+constructor names of the specification language. Due to that we see in
+Figure~\ref{fig:template:example} the term \code|Var(Var("X52"))|
+where actually the outermost \code|Var| constructor is part of the
+target language and the inner \code|Var| is part of the specification
+language.
 
 \subsection{Generation}
 The Stratego rule \code|to-template| does the main part of the
@@ -403,7 +410,7 @@ without the implicit equality.
 \end{example}
 
 If there are error messages for implicit equalities, we associate
-those error messages with the corresponding implicit equalities. Then
+those error messages with the corresponding explicit equalities. Then
 we replace the variables in the error message by the fresh
 meta-variables of the corresponding explicit equality and add the
 error message as a normal error to the explicit equality.
@@ -575,11 +582,12 @@ such that the most general templates are evaluated at last.
 Now we look now into the optimization of which-ambiguities. First we
 identify all which-ambiguities and create \code|Fork|s of them. We
 implemented this using a strategy that groups lists of templates such
-that each group contains templates only which-ambiguous templates. Two
-templates are which-ambiguous if they have the same judgment number
-and if the term pattern and context pattern of the conclusion are
-equal modulo variables. Of the resulting template groups we wrap all
-groups with more than one element into a \code|Fork|.
+that each group contains only which-ambiguous templates. Two templates
+are which-ambiguous if they have the same judgment number (i.e.\ the
+position in the judgment declaration section) and if the term pattern
+and context pattern of the conclusion are equal modulo variables. Of
+the resulting template groups we wrap all groups with more than one
+element into a \code|Fork|.
 
 We optimize forks containing which-ambiguities by checking whether a
 template of a fork is subsumed by a template that is which-ambiguous
@@ -864,7 +872,7 @@ the induction hypothesis to $(c_1 \text{\code|->|} c_2) = (a_1
 \text{\code|->|} a_2)$. \ref{prf:induction-arrow-4} holds as it is a
 variant of rule \code|S-arrow|.
 
-Not that we can apply rule \code|S-arrow| as we want to retain this
+Note that we can apply rule \code|S-arrow| as we want to retain this
 rule, but not \code|R4| as we are trying to show that this rule is
 redundant. If we would need it, it would not be redundant.
 
@@ -1098,7 +1106,7 @@ respectively inequality constraints.
 To start the constraint generation, we need besides the templates and
 the program, information about the initial contexts, the judgment
 number of the typing judgment and the output positions of that
-judgment. Those information are available as we read the program
+judgment. This information are available as we read the program
 expression from the conjecture section of the type system
 specification. If we would only read the program expression (e.g.\
 from \code|stdin|) we would need to pass information about the initial
@@ -1170,14 +1178,13 @@ path and fetching the node at its end. We ensure that the pattern and
 term always have the same structure, otherwise we would retrieve false
 positives. Because there are also other sources (e.g.\ premise
 dependencies) we extend the term and pattern if needed. We call adding
-to this tuple \emph{bringing into scope}.
+to this tuple \emph{bringing into scope}. \todo{see ragnars comment}
 
-Unless the selected rule is no fork, the evaluation works as
-follows. In correspondence to the bindings in the conclusions context
-pattern, we pop all terms from the contexts and bring them into
-scope. This is needed for example in the typing rules for the
-freshness condition in SystemF, see
-Appendix~\ref{appendix:systemf}. 
+If the selected rule is a fork, the evaluation works as follows. In
+correspondence to the bindings in the conclusions context pattern, we
+pop all terms from the contexts and bring them into scope. This is
+needed for example in the typing rules for the freshness condition in
+SystemF, see Appendix~\ref{appendix:systemf}. 
 
 If a variable is bound by the outputs of the conclusion and used as
 the input of a premise but neither an output of an other premise or an
