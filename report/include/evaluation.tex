@@ -186,7 +186,50 @@ general (in the case of an reflexive subtyping relation) than the
 function application rule without subtyping and therefore are able to
 remove the latter.
 
+The subtyping relation is defined by a generic reflexivity rule
+\code|S-refl| and a rule for function types \code|S-arrow| such that
+the argument type is contravariant and the return type is
+covariant.
 
+\begin{minipage}{.3\linewidth}
+\begin{lstlisting}[language=sltc]
+======== S-refl
+~S <: ~S
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.6\linewidth}
+\begin{lstlisting}[language=sltc]
+~T1 <: ~S1
+~S2 <: ~T2    
+======================== S-arrow 
+~S1 -> ~S2 <: ~T1 -> ~T2
+\end{lstlisting}
+\end{minipage}
+
+As we have seen in Section~\ref{sec:when-ambiguities} rule
+\code|S-refl| is non-syntax directed and can be safely replaced by the
+following two rules.
+
+\begin{minipage}{.3\linewidth}
+\begin{lstlisting}[language=sltc]
+==========
+int <: int
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{.3\linewidth}
+\begin{lstlisting}[language=sltc]
+{ R } = { S }
+==============
+{ R } <: { S }
+\end{lstlisting}
+\end{minipage}
+
+The subtyping relations has further a rule that defines the empty
+record \code|{}| to be the top element of records, as well as rules
+for with and depth subtyping and permutation of record elements. In
+conclusion we could specify a variant of the simply typed lambda
+calculus with an intuitive subtyping relation and reduce the
+non-determinism in the type system.
 
 \section{Information Flow Security Type System}
 \label{sec:inform-flow-secur-1}
