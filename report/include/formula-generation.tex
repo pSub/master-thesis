@@ -192,9 +192,9 @@ $C |- fun %x : ~T1 (~e) : ~T1 -> ~T2
 
 Those are translated into the following first-order formulas.
 
-\begin{multline}
+\begin{align}
   \forall x, t, e \,.\, (lookup(x, t, e) \implies tcheck(e, var(x), t)))
-\end{multline}
+\end{align}
 \begin{multline}
   \forall c, x, e, t, s \,.\, (tcheck(bind(x, t, c), e, s) \\ \implies
   tcheck(c, fun(param(x, t), e), funtype(t, s)))
