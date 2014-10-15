@@ -1,0 +1,185 @@
+[ Fork__(
+    [ Template__(
+        Some("b")
+      , [ (Eq__(6, Var__("X0"), Var__("X3"), None()), [])
+        , (Eq__(7, Var__("X1"), Var__("X4"), None()), [])
+        ]
+      , Conclusion__(
+          2
+        , ( [ TRecordEntries(Var__("X0"), Var__("X1"), Var__("X2"))
+            , Var(Var__("X3"))
+            , Var__("X4")
+            ]
+          , []
+          )
+        , []
+        )
+      )
+    , Template__(
+        Some("a")
+      , [ (Neq__(3, Var__("X0"), Var__("X3"), None()), [])
+        , ( Judgment__(
+              2
+            , [Var__("X2"), Var(Var__("X3")), Var__("X1")]
+            , []
+            , []
+            , None()
+            )
+          , []
+          )
+        , (Eq__(4, Var__("X1"), Var__("X4"), None()), [])
+        ]
+      , Conclusion__(
+          2
+        , ( [ TRecordEntries(Var__("X0"), Var__("X1"), Var__("X2"))
+            , Var(Var__("X3"))
+            , Var__("X4")
+            ]
+          , []
+          )
+        , []
+        )
+      )
+    ]
+  )
+, Template__(
+    Some("T-int")
+  , []
+  , Conclusion__(
+      1
+    , ([Int(Var__("X0"))], [Ctx__(1)])
+    , [TInt()]
+    )
+  )
+, Template__(
+    Some("T-var")
+  , [ ( Lookup__(
+          1
+        , [Var__("X0")]
+        , [Var__("X1")]
+        , None()
+        )
+      , []
+      )
+    ]
+  , Conclusion__(
+      1
+    , ([Var(Var__("X0"))], [Ctx__(1)])
+    , [Var__("X1")]
+    )
+  )
+, Template__(
+    Some("T-abs")
+  , [ ( Judgment__(
+          1
+        , [Var__("X1")]
+        , [ Binding__(1, [Var__("X0")], [Var__("X2")])
+          , Ctx__(1)
+          ]
+        , [Var__("X3")]
+        , None()
+        )
+      , []
+      )
+    ]
+  , Conclusion__(
+      1
+    , ( [Abs(Var__("X0"), Var__("X2"), Var__("X1"))]
+      , [Ctx__(1)]
+      )
+    , [TArrow(Var__("X2"), Var__("X3"))]
+    )
+  )
+, Template__(
+    Some("T-app")
+  , [ ( Judgment__(
+          1
+        , [Var__("X1")]
+        , [Ctx__(1)]
+        , [TArrow(Var__("X0"), Var__("X3"))]
+        , None()
+        )
+      , []
+      )
+    , ( Judgment__(
+          1
+        , [Var__("X2")]
+        , [Ctx__(1)]
+        , [Var__("X0")]
+        , None()
+        )
+      , []
+      )
+    ]
+  , Conclusion__(
+      1
+    , ([App(Var__("X1"), Var__("X2"))], [Ctx__(1)])
+    , [Var__("X3")]
+    )
+  )
+, Template__(
+    Some("T-proj")
+  , [ ( Judgment__(
+          1
+        , [Var__("X1")]
+        , [Ctx__(1)]
+        , [TRecord(Var__("X0"))]
+        , None()
+        )
+      , []
+      )
+    , ( Judgment__(
+          2
+        , [Var__("X0"), Var(Var__("X2")), Var__("X3")]
+        , []
+        , []
+        , None()
+        )
+      , [(1, [TRecord(Var__("X0"))])]
+      )
+    ]
+  , Conclusion__(
+      1
+    , ([Projection(Var__("X1"), Var__("X2"))], [Ctx__(1)])
+    , [Var__("X3")]
+    )
+  )
+, Template__(
+    Some("T-empty")
+  , []
+  , Conclusion__(
+      1
+    , ([Record(RecordEntries())], [Ctx__(1)])
+    , [TRecord(TRecordEntries())]
+    )
+  )
+, Template__(
+    Some("T-record")
+  , [ ( Judgment__(
+          1
+        , [Var__("X0")]
+        , [Ctx__(1)]
+        , [Var__("X3")]
+        , None()
+        )
+      , []
+      )
+    , ( Judgment__(
+          1
+        , [Record(Var__("X1"))]
+        , [Ctx__(1)]
+        , [TRecord(Var__("X4"))]
+        , None()
+        )
+      , []
+      )
+    ]
+  , Conclusion__(
+      1
+    , ( [Record(RecordEntries(Var__("X2"), Var__("X0"), Var__("X1")))]
+      , [Ctx__(1)]
+      )
+    , [TRecord(TRecordEntries(Var__("X2"), Var__("X3"), Var__("X4")))]
+    )
+  )
+]

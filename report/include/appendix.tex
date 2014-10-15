@@ -33,6 +33,7 @@ rules
 $C1 | ?C2 |- %x : ~T
 
 
+
 ============== T-int
 $C1 | ?C2 |- &i : int
 
@@ -158,7 +159,7 @@ int = [ %x -> ~S ] int
 module Typesystem
 
 // Available at https://www.github.com/pSub/master-thesis
-language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
+language specifications/Subtyping-Algo/SimplyTypedLambdaCalculus
 
 contexts Context := ID{I} x Type{O}
 
@@ -171,6 +172,7 @@ meta-variables  Term "~" { Type Exp }
 judgments
 Context{I} "|-" Exp{I} ":" Type{O}.
 TRecordEntries{I} "has" Exp{I} ":" Type{I}.
+ID{I} "fresh in" Context{I}.
 ID{I} "!=" ID{I} is Neq.
 
 rules
@@ -219,6 +221,17 @@ $R has %l : ~T
 
 ====================== Record-contained
 %l : ~T $R has %l : ~T
+
+/* Freshness Condition */
+
+==============
+%x fresh in ()
+
+
+%x != %y
+%x fresh in $C
+==========================
+%x fresh in (%y : ~T ; $C)
 \end{lstlisting}
 \newpage
 \begin{lstlisting}[language=sltc]
@@ -227,7 +240,7 @@ module Subtyping
 imports Typesystem hiding (language)
 
 // Available at https://www.github.com/pSub/master-thesis
-language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
+language specifications/Subtyping-Algo/SimplyTypedLambdaCalculus
 
 contexts
 
@@ -291,8 +304,6 @@ meta-variables  Exp "~" { Exp Type }
                 Num "&" { Int }
 
 judgments
-// TODO: Make the domain implicit e.g. using the following notation
-// [Domain{I}] "|-" AExp ":" Type{O}.
 Domain{I} "|-" AExp{I} ":" Type{O}.
 Domain{I} "|-" BExp{I} ":" Type{O}.
 Domain{I} "|" Type{I} "|-" Exp{I}.
@@ -368,6 +379,13 @@ $dom | ~pc |- ~f
 ==================================== ite
 $dom | ~pc |- if ~2b then ~e else ~f
 
+
+
+
+
+
+
+
 conjectures
 
 ===
@@ -376,11 +394,12 @@ conjectures
 // Order of domain makes a difference in proof search!
 // For the next two conjectures the applied rules are given
 
-// VerificationSuccess(["lookup base","var","assgnl","goal21","opa"])
+// VerificationSuccess(["lookup base","var","assgnl",
+//                      "goal","opa"])
 ===
 (x : low ; y : low ; z : high ; ()) | low |- z := x + y
 
-// VerificationSuccess(["lookup base","assgnh","goal23"])
+// VerificationSuccess(["lookup base","assgnh","goal"])
 ===
 (z : high ; y : low ; x : low ; ()) | low |- z := x + y
 

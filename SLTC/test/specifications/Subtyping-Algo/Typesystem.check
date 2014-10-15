@@ -1,0 +1,19 @@
+[ Some(
+    [TRecord(TRecordEntries("x", TInt(), TRecordEntries("y", TInt(), TRecordEntries())))]
+  )
+, Some([TInt()])
+, Some([TInt()])
+, Some(
+    [ TArrow(
+        TRecord(TRecordEntries("y", TInt(), TRecordEntries()))
+      , TRecord(TRecordEntries("y", TInt(), TRecordEntries()))
+      )
+    ]
+  )
+, Some([TRecord(TRecordEntries("y", TInt(), TRecordEntries()))])
+, Some([TRecord(TRecordEntries("x", TInt(), TRecordEntries()))])
+, Some([TInt()])
+, Some(
+    [TArrow(TRecord(TRecordEntries("x", TInt(), TRecordEntries())), TInt())]
+  )
+]

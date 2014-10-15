@@ -1,0 +1,85 @@
+[ Fork__(
+    [ Template__(
+        Some("S-refl")
+      , []
+      , Conclusion__(5, ([TInt(), TInt()], []), [])
+      )
+    , Template__(
+        Some("S-refl")
+      , [ ( Eq__(
+              6
+            , TArrow(Var__("Z2"), Var__("Z3"))
+            , TArrow(Var__("Z5"), Var__("Z6"))
+            , None()
+            )
+          , []
+          )
+        ]
+      , Conclusion__(
+          5
+        , ( [ TArrow(Var__("Z2"), Var__("Z3"))
+            , TArrow(Var__("Z5"), Var__("Z6"))
+            ]
+          , []
+          )
+        , []
+        )
+      )
+    , Template__(
+        Some("S-refl")
+      , [ ( Eq__(
+              6
+            , TRecord(Var__("Z4"))
+            , TRecord(Var__("Z7"))
+            , None()
+            )
+          , []
+          )
+        ]
+      , Conclusion__(
+          5
+        , ([TRecord(Var__("Z4")), TRecord(Var__("Z7"))], [])
+        , []
+        )
+      )
+    ]
+  )
+, Template__(
+    Some("T-app")
+  , [ ( Judgment__(
+          1
+        , [Var__("X2")]
+        , [Ctx__(1)]
+        , [TArrow(Var__("X0"), Var__("X4"))]
+        , None()
+        )
+      , []
+      )
+    , ( Judgment__(
+          1
+        , [Var__("X3")]
+        , [Ctx__(1)]
+        , [Var__("X1")]
+        , None()
+        )
+      , []
+      )
+    , ( Judgment__(
+          5
+        , [Var__("X1"), Var__("X0")]
+        , []
+        , []
+        , None()
+        )
+      , [ (1, [TArrow(Var__("X0"), Var__("X4"))])
+        , (2, [Var__("X1")])
+        ]
+      )
+    ]
+  , Conclusion__(
+      1
+    , ([App(Var__("X2"), Var__("X3"))], [Ctx__(1)])
+    , [Var__("X4")]
+    )
+  )
+]

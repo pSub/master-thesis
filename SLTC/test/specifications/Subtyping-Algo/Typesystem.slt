@@ -1,6 +1,6 @@
 module Typesystem
 
-language specifications/Subtyping-algorithmic/SimplyTypedLambdaCalculus
+language specifications/Subtyping-Algo/SimplyTypedLambdaCalculus
 
 contexts Context := ID{I} x Type{O}
 
