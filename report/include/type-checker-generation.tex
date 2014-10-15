@@ -229,7 +229,7 @@ error message.
   \refcallout{lookup:ctx}, of the input \refcallout{lookup:inputs} and
   of the output \refcallout{lookup:outputs} positions of the context
   lookup from the specification and potentially of error messages
-  \refcallout{lookup:errors}. We do not treat look ups as normal
+  \refcallout{lookup:errors}. We do not treat lookups as normal
   judgments as their semantics is not defined within the
   specification. Therefore we have to deal with them separately in the
   type checker.
@@ -562,7 +562,7 @@ extend the template language to make ambiguities explicit.
 \end{definition}
 
 The new constructor \code|Fork| has a list that contains at least two
-template. The idea is that templates contained in \code|Fork|s are all
+templates. The idea is that templates contained in \code|Fork|s are all
 when-ambiguous to each other. We later use those groups of ambiguous
 templates to decide at which point in the derivation we have to decide
 which template we apply. A fork with less than two templates contains
@@ -777,20 +777,20 @@ A -> B <: { S }
 \end{example}
 
 Example~\ref{ex:unfolded-refl} shows the unfolding for the template
-\code|Refl|. That unfolding creates from a not-syntax directed
-templates a set of syntax directed templates. Of course the unfolding
-can create new ambiguities and not all templates are applicable at
-all. In the current optimization step we will try to eliminate the
-newly created which ambiguities. We do this in the same way as
-described before, except that we now also try to proof the formula
-from Definition~\ref{def:subsumes} by structural induction. Before we
+\code|Refl|. That unfolding creates from non-syntax directed templates
+a set of syntax directed templates. Of course the unfolding can create
+new ambiguities and not all templates are applicable at all. In the
+current optimization step we will try to eliminate the newly created
+which ambiguities. We do this in the same way as described before,
+except that we now also try to proof the formula from
+Definition~\ref{def:subsumes} by structural induction. Before we
 describe how we do the induction, we explain the problem at
 Example~\ref{ex:unfolded-refl}.
 
 When comparing the typing rules from Example~\ref{ex:unfolded-refl}
 and the typing rules from the type system specification of the simply
 typed lambda calculus from Appendix~\ref{appendix:stlc-records} we see
-that the following two rules have the same conclusion module variable
+that the following two rules have the same conclusion modulo variable
 renaming.
 
 \begin{minipage}[b]{.4\linewidth}
@@ -907,7 +907,7 @@ tedious to proof those propositions by hand, we have implemented a
 tactic that attempts fully automated structural induction proofs of
 this kind.
 
-After unfolding the non-syntax directed templates we collect all
+After unfolding the non-syntax directed templates we collect
 which-ambiguous templates and attempt for each pair a direct proof
 that one is subsumed by the other. If this proof fails we attempt a
 structural induction on all free variables.
@@ -918,7 +918,7 @@ for a variable we collect all of them to be sure that we do not miss a
 case. After we have collected the non-terminals we fetch the
 corresponding productions and create every possible combination of
 productions under consideration of the variable position. All
-non-terminals productions are replaced by fresh and arbitrary
+non-terminal productions are replaced by fresh and arbitrary
 constants. We introduce constants instead of variables to be able to
 control where induction hypothesis are applied.
 
@@ -946,7 +946,7 @@ What is left to do is the generation of induction hypothesis. While
 creating the induction cases we keep track of the non-terminals of the
 constants. In Example~\ref{ex:induction-cases} all variables have the
 non-terminal \code|Type|. Now we create induction hypothesis for each
-case, by substituting constants into the proposition we than to prove
+case, by substituting constants into the proposition we then to prove
 such that the type of the variables in the proposition matches the
 type of the substituted constants. We can do this for all constants,
 as each constant is structurally smaller than the term in the
@@ -1146,10 +1146,6 @@ can be applied from left to right to the context without failures. In
 case of \code|Fork| only those templates are retained int the Fork
 that match.
 
-\begin{example}
-  \todo[inline]{}
-\end{example}
-
 \code|find-match| safely takes the first template that matches,
 because in Section~\ref{sec:constr-templ-optim} we have ensured that
 there is only one template that matches. Remember \code|Fork| is a
@@ -1179,7 +1175,7 @@ path and fetching the node at its end. We ensure that the pattern and
 term always have the same structure, otherwise we would retrieve false
 positives. Because there are also other sources (e.g.\ premise
 dependencies) we extend the term and pattern if needed. We call adding
-to this tuple \emph{bringing into scope}. \todo{see ragnars comment}
+to this tuple \emph{bringing into scope}. 
 
 If the selected rule is a fork, the evaluation works as follows. In
 correspondence to the bindings in the conclusions context pattern, we

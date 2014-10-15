@@ -54,8 +54,8 @@ imports some-specification hiding (language contexts)
 \end{example}
 
 The specification in Example~\ref{ex:import-section} imports the
-specification module \code|some-specification| without the sections
-\code|language| and \code|contexts| and it imports the module
+module \code|some-specification| without the sections \code|language|
+and \code|contexts| and it imports the module
 \code|another-specification|.
 
 \paragraph{Language} The third section declares the language for which
@@ -266,7 +266,7 @@ $C |- ~e1 ~e2 : ~T2
 \label{ex:rules}
 \end{example}
 
-Example~\ref{ex:rules} shows the rules typing rules of \gls{pcf} for
+Example~\ref{ex:rules} shows the typing rules of \gls{pcf} for
 variables (\code|T-var|), function abstraction (\code|T-abs|), and
 function application (\code|T-app|). Rule \code|T-var| models that
 some variable \code|%x| has type \code|~T| if it has type \code|~T| in
@@ -420,7 +420,7 @@ meta-variables, and judgment declarations.
 
 For each context declaration the strategy \code|make-contexts|
 generates productions for the empty context, context bindings, and
-context look ups. Figure~\ref{fig:context-productions} shows the
+context lookups. Figure~\ref{fig:context-productions} shows the
 resulting productions, where \textit{Name} is the name of the context
 declaration and \code|n| the position of the context declaration in
 the specification.

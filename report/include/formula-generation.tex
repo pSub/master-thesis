@@ -52,7 +52,7 @@ generated formulas are well formed.
 We represent contexts as a list like structure. Every context $c$ has
 a constant $empty_c$ that represents the empty context and predicate
 $bind_c$ that constructs contexts from the inputs and outputs of the
-context declaration and a context. The look up of elements in a
+context declaration and a context. The lookup of elements in a
 context $c$ is modeled by the predicate $lookup_c$. This predicate is
 defined inductively by two formulas shown in the following and checks
 whether an element is contained in a context. In the base case the
@@ -73,18 +73,18 @@ have to proceed with the rest of the context.
   \dots, x_n, y_1, \dots, y_m, e) \implies \\ lookup_c(x_1, \dots, x_n,
   y_1, \dots, y_m, bind_c(x_1',\dots,x_n',y_1',\dots,y_m',e))
 \label{formula:context-step}
-\end{multline}\todo{see ragnars comment}
+\end{multline}
 
-Formula~\ref{formula:context-base} shows the base case of the look up
+Formula~\ref{formula:context-base} shows the base case of the lookup
 in context $c$. We translate all non-terminals in the context
 declaration tagged as input into variables $x_1 \dots x_n$ and all
 tagged as output into variables $y_1 \dots y_m$, respectively. The
 variable $e$ represents context. In the base case we apply $lookup_c$
 to a context whose outer most $bind_c$ binds an element that is
 exactly the element we search. Therefore the element is trivially
-contained in the context and the look up succeeds.
+contained in the context and the lookup succeeds.
 
-Formula~\ref{formula:context-step} models the step case of the look up
+Formula~\ref{formula:context-step} models the step case of the lookup
 in context $c$. We introduce two variables, $x_1,x_1', \dots,
 x_n,x_n'$ for non-terminals tagged as input and $y_1,y_1', \dots,
 y_m,y_m'$ for non-terminals tagged as output. The intuition of the
@@ -94,8 +94,7 @@ additional input/output pair. If read with evaluation in mind the
 intuition is that if the outermost element is not the element we look
 for, i.e.\ all inputs differ, then we have to look into the rest of
 the context. We only check the input positions in order to test
-whether we have a match to lookup the last element first.\todo{see
-  ragnars comment} This
+whether we have a match to lookup the last element first. This
 corresponds to the scoping behavior of most programming languages.
 
 \begin{example}
@@ -246,7 +245,7 @@ together to construct a formula in the \gls{tptp} format which has the
 structure of Formula~\ref{formula:typing-rule}.
 
 Now we present the details of the \texttt{rewrite} strategy, which
-transforms premises and conclusions. We this strategy is defined as a
+transforms premises and conclusions. This strategy is defined as a
 sequence of two top down traversals. The first traversal is the actual
 rewrite of the typing judgments and the second is a special treatment
 for strings. The second traversal is necessary to wrap all target
@@ -260,7 +259,7 @@ implementation. However all those nodes have a regular structure. That
 is why it is possible to use the \code|cons#(args)| pattern to extract
 the relevant parts in a generic manner. The rule \code|make-aux-cons|
 wraps all generic nodes\footnote{Generic nodes of the specification
-  language, i.e\ empty context, context binds, context look ups,
+  language, i.e\ empty context, context binds, context lookups,
   typing judgment and meta-variable nodes.} into the auxiliary
 constructor \code|AuxCons| with three parameters, the static part of
 the constructor name, the generic part of the constructor name and the
