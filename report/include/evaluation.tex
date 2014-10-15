@@ -1,7 +1,7 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
 In this chapter we present three type system specifications, discuss
-how the specification language effected the formulation of typing
+how the specification language affected the formulation of typing
 rules, and which optimization strategies are successful.
 \section{SytemF}
 \label{sec:sytemf}
@@ -10,7 +10,7 @@ SystemF that is close to the version described in Figure 23-1 in
 ~\cite{Pierce:2002:TPL:509043}. The complete implementation can be
 found in Appendix~\ref{appendix:systemf}. There are three notable
 differences between the version in~\cite{Pierce:2002:TPL:509043} and
-our implementation, that we describe in the following.
+our implementation, which we will describe in the following.
 
 In~\cite{Pierce:2002:TPL:509043} term and type variable bindings are
 collected in a single context. We need two separate contexts, one for
@@ -24,13 +24,13 @@ TypeBinding := ID{I}
 \end{lstlisting}
 
 Context \code|TermBinding| is the term variable binding and associates
-identifier with types. \code|TypeBinding| binds type variables,
-because we have no notion of kinds in SystemF type variables are
-associated to nothing. In our implementation variable and type
-identifiers are build from the same set of identifiers.
+identifier with types. \code|TypeBinding| binds type variables. Type
+variables are associated to nothing because we have no notion of kinds
+in SystemF . In our implementation variable and type identifiers are
+build from the same set of identifiers.
 
 The typing judgment has to reflect that we have two
-contexts. Therefore our typing judgment is defined as follows.
+contexts. Therefore our typing judgment is defined as follows:
 
 \begin{lstlisting}[language=sltc]
 judgments
@@ -79,7 +79,7 @@ specification language as we have no built-in substitution
 mechanism. However type substitution is implemented in the same
 fashion like in a functional programming language with pattern
 matching. Substitution is also implemented as a separate module and
-imported into the SystemF specification.
+then imported into the SystemF specification.
 
 \begin{lstlisting}[language=sltc]
 judgments
@@ -128,11 +128,13 @@ records and subtyping as described
 in~\cite{Pierce:2002:TPL:509043}. The specification for this type
 system is divided into two modules. One module specifies the type
 system without subtyping and the other module extends the first module
-with subtyping. The implementation of the type system without differs
-in two aspects from the text book formalization. First, we have to
-implement the freshness condition explicitly, as in the previous
-section. Second, we have to model rules that talk about all elements
-of a record inductively. Formula~\ref{formula:record-typing} shows the
+with subtyping. The implementation of the type system without
+subtyping differs in two aspects from the text book
+formalization. First, we have to implement the freshness condition
+explicitly, as in the previous section. Second, we have to model rules
+that talk about all elements of a record inductively.
+
+Formula~\ref{formula:record-typing} shows the
 formalization of the record typing rule
 from~\cite{Pierce:2002:TPL:509043}. This rule says that a record is
 well-typed if all its elements are
@@ -147,7 +149,7 @@ quantification over the elements of the record.
 \label{formula:record-typing}
 \end{align}
 
-That quantification is not possible in our specification
+This quantification is not possible in our specification
 language. Therefore we model this condition inductively as shown in
 the following.
 
@@ -169,10 +171,10 @@ $C |- { %l = ~e $R } : { %l : ~T $S }
 Here we ensure with rule \code|step| that the first element is
 well-typed and the record without the first element is well
 typed. Rule \code|base| is the base case for this definition and
-assigns the empty record the empty type. Note that we support in
-contrast to~\cite{Pierce:2002:TPL:509043} the empty record. We
+assigns the empty record the empty record type. Note that we support
+in contrast to~\cite{Pierce:2002:TPL:509043} the empty record. We
 included the empty record in our definition to demonstrate a top rule
-for records in the subtyping module. We have implement the membership
+for records in the subtyping module. We have implemented the membership
 test for the projection typing rule \code|T-proj| in a similar way.
 
 The module implementing subtyping for this lambda calculus contains a
@@ -224,10 +226,10 @@ int <: int
 \end{lstlisting}
 \end{minipage}
 
-The subtyping relations has further a rule that defines the empty
+The subtyping relations have a further rule that defines the empty
 record \code|{}| to be the top element of records, as well as rules
 for with and depth subtyping and permutation of record elements. In
-conclusion we could specify a variant of the simply typed lambda
+conclusion we can specify a variant of the simply typed lambda
 calculus with an intuitive subtyping relation and reduce the
 non-determinism in the type system.
 
