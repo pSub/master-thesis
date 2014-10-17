@@ -1,6 +1,23 @@
 master-thesis
 =============
 
+Abstract:
+
+Type systems are important tools to detect semantic inconsistencies,
+to establish abstractions and to guide programmers in the development
+process. However, there is currently a lack of established tools
+supporting the development of type systems, tools like lexer and
+parser generators but for type systems. We introduce a declarative
+specification language for type systems that allows to specify type
+systems in a natural deductive style. We generate two products out of
+a type system specification: A first-order formula representation to
+facilitate the use of automated theorem provers and a type
+checker. The type checker generator uses results proven by automated
+theorem provers to check the applicability of optimization strategies
+and the first-order formula representation is also a reference
+implementation. Both results aim to accelerate the development cycle
+for type systems and to narrow the gap between theory and practice.
+
 Quick-Start-Guide:
 
     * Clone repository
