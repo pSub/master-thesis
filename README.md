@@ -1,7 +1,8 @@
-master-thesis
-=============
+A Language for the Specification and Efficient Implementation of Type Systems
+===
 
 Abstract:
+---
 
 Type systems are important tools to detect semantic inconsistencies,
 to establish abstractions and to guide programmers in the development
@@ -19,6 +20,7 @@ implementation. Both results aim to accelerate the development cycle
 for type systems and to narrow the gap between theory and practice.
 
 Quick-Start-Guide:
+---
 
     * Clone repository
     * Install vampire and make sure it is in PATH
@@ -36,3 +38,4 @@ Now you are ready to select actions from the `Typecheck` and
 `Verification` menus, add new typing rules and conjectures. Changes in
 the sections meta-variables, contexts and judgments require the
 regeneration of the sdf file and a rebuild of the project.
+
