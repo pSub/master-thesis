@@ -1,7 +1,7 @@
 A Language for the Specification and Efficient Implementation of Type Systems
 ===
 
-Abstract:
+Abstract
 ---
 
 Type systems are important tools to detect semantic inconsistencies,
@@ -19,7 +19,7 @@ and the first-order formula representation is also a reference
 implementation. Both results aim to accelerate the development cycle
 for type systems and to narrow the gap between theory and practice.
 
-Quick-Start-Guide:
+Quick-Start-Guide
 ---
 
     * Clone repository
@@ -39,3 +39,12 @@ Now you are ready to select actions from the `Typecheck` and
 the sections meta-variables, contexts and judgments require the
 regeneration of the sdf file and a rebuild of the project.
 
+Documents
+---
+
+   * [Master thesis](https://users.pascal-wittmann.de/pascal/master-thesis/thesis.pdf)
+   * [Slides of the defense](https://users.pascal-wittmann.de/pascal/master-thesis/slides-of-the-defense.pdf)
+   * [Summary for SPLASH SRC application](https://users.pascal-wittmann.de/pascal/master-thesis/summary-for-splash-src-application.pdf)
+   * [Slides for SRC at SPLASH](https://users.pascal-wittmann.de/pascal/master-thesis/slides-for-src-at-splash.pdf)
+   * [Poster for SPLASH Poster Track](https://users.pascal-wittmann.de/pascal/master-thesis/poster-for-splash.pdf)
+   * [Slides for the HessPL workshop](https://users.pascal-wittmann.de/pascal/master-thesis/slides-for-hesspl.pdf)
