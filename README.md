@@ -24,7 +24,7 @@ Quick-Start-Guide
 
     * Clone repository
     * Install vampire and make sure it is in PATH
-    * Install Eclipse plugin Spoofax (https://www.metaborg.org/en/latest/source/install.html)
+    * Install Eclipse plugin Spoofax (https://spoofax.dev/getting-started/)
     * Import project into Eclipse
     * Build the project to make sure everything works
     * Restart Eclipse
