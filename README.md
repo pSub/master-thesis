@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> This repository has been moved from GitHub to Codeberg (https://codeberg.org/pSub/master-thesis). 
+> The GitHub repository is archieved will no longer receive updates. Please update your bookmarks and clones accordingly.
+
 A Language for the Specification and Efficient Implementation of Type Systems
 ===
 
